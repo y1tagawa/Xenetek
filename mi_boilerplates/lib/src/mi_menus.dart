@@ -8,10 +8,12 @@ import '../mi_boilerplates.dart';
 
 /// カスタムポップアップメニューアイテム
 ///
-/// * AppBar上の[PopupMenuButton]など、[IconTheme]が変更されている場合、メニュー上のアイコン色が適切でない
-///   場合があるので修正する。
+/// * AppBar上の[PopupMenuButton]など、[IconTheme]が変更されている場合、
+///   メニュー上のアイコン色が見づらい場合があるので修正する。
+///   TODO: PopupMenuThemeData.colorを考慮する
 
 class MiPopupMenuItem<T> extends PopupMenuItem<T> {
+  // ウィジェットではStateにプロパティを渡すだけ
   const MiPopupMenuItem({
     super.key,
     super.value,
@@ -28,6 +30,7 @@ class MiPopupMenuItem<T> extends PopupMenuItem<T> {
 }
 
 class _MiPopupMenuItemState<T> extends PopupMenuItemState<T, MiPopupMenuItem<T>> {
+  // StateでPopupMenuItemState#buildをIconThemeでラップする
   @override
   Widget build(BuildContext context) {
     final iconColor = Theme.of(context).colorScheme.onSurface;
