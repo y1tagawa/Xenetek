@@ -69,6 +69,8 @@ extension SetHelper<T> on Set<T> {
 }
 
 /// ラベル
+///
+/// [icon]がnullの場合、その部分は空白となる。
 
 class MiIcon extends StatelessWidget {
   final bool enabled;
@@ -143,7 +145,7 @@ class MiIcon extends StatelessWidget {
 
 /// カラーチップ
 ///
-/// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、Icons.blockを表示する。
+/// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
 
 class MiColorChip extends StatelessWidget {
   final bool enabled;
