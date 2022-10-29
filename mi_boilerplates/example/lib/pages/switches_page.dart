@@ -34,19 +34,14 @@ const _switchItems = [
     title: Text('Memory'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.record_voice_over_outlined),
-    iconOff: Icon(Icons.voice_over_off_outlined),
-    title: Text('Pride'),
+    iconOn: Icon(Icons.directions_run),
+    iconOff: Icon(Icons.airline_seat_flat_outlined),
+    title: Text('Health'),
   ),
   _SwitchItem(
     iconOn: Icon(Icons.attach_money_outlined),
     iconOff: Icon(Icons.money_off_outlined),
     title: Text('Money'),
-  ),
-  _SwitchItem(
-    iconOn: Icon(Icons.cloud_outlined),
-    iconOff: Icon(Icons.cloud_off_outlined),
-    title: Text('Good weather'),
   ),
   _SwitchItem(
     iconOn: Icon(Icons.air_outlined),
@@ -59,13 +54,6 @@ const _switchItems = [
     title: Text('Bath'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.directions_run),
-    iconOff: Icon(Icons.airline_seat_flat_outlined),
-    title: Text('Health'),
-  ),
-  _SwitchItem(
-    // iconOn: Icon(Icons.hourglass_empty_outlined),
-    // iconOff: Icon(Icons.hourglass_disabled_outlined),
     iconOn: Icon(Icons.hourglass_top_outlined),
     iconOff: Icon(Icons.hourglass_bottom_outlined),
     title: Text('Life time'),
@@ -155,10 +143,13 @@ class SwitchesPage extends ConsumerWidget {
                       size: 48,
                       color: loVisColor,
                     )
-                  : Icon(
-                      Icons.person_off_outlined,
-                      size: 48,
-                      color: loVisColor,
+                  : MiRotate(
+                      angleDegree: 90,
+                      child: Icon(
+                        Icons.crop_7_5,
+                        size: 48,
+                        color: loVisColor,
+                      ),
                     ),
             ),
           ],

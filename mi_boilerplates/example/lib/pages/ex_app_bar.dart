@@ -38,13 +38,12 @@ class _BrightnessButton extends ConsumerWidget {
     final state = ref.watch(brightnessProvider.state);
     final isDark = state.state.isDark;
 
-    return IconButton(
+    return MiIconButton(
+      enabled: enabled,
       icon: isDark ? const Icon(Icons.dark_mode_outlined) : const Icon(Icons.light_mode_outlined),
-      onPressed: enabled
-          ? () {
-              state.state = isDark ? Brightness.light : Brightness.dark;
-            }
-          : null,
+      onPressed: () {
+        state.state = isDark ? Brightness.light : Brightness.dark;
+      },
       tooltip: isDark ? 'Brightness: DARK' : 'Brightness: LIGHT',
     );
   }
@@ -56,13 +55,12 @@ class _UseMaterial3Button extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final useM3 = ref.watch(useM3Provider);
 
-    return IconButton(
+    return MiIconButton(
+      enabled: enabled,
       icon: useM3 ? const Icon(Icons.filter_3_outlined) : const Icon(Icons.filter_2_outlined),
-      onPressed: enabled
-          ? () {
-              ref.read(useM3Provider.state).state = !useM3;
-            }
-          : null,
+      onPressed: () {
+        ref.read(useM3Provider.state).state = !useM3;
+      },
       tooltip: useM3 ? 'Material design: 3' : 'Material design: 2',
     );
   }

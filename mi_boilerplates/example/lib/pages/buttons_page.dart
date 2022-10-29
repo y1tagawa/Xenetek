@@ -199,7 +199,7 @@ class _PushButtonsTab extends ConsumerWidget {
                 ),
                 MiIcon(
                   icon: Icon(Icons.tsunami_outlined),
-                  tooltip: 'Landslide',
+                  tooltip: 'Tsunami',
                 ),
                 MiIcon(
                   icon: Icon(Icons.tornado_outlined),
@@ -211,7 +211,7 @@ class _PushButtonsTab extends ConsumerWidget {
                 ),
                 MiIcon(
                   icon: Icon(Icons.volcano_outlined),
-                  tooltip: 'Landslide',
+                  tooltip: 'Volcano',
                 ),
               ],
             ),
