@@ -11,6 +11,9 @@ extension BrightnessExtension on Brightness {
 }
 
 extension SwitchThemeDataHelper on SwitchThemeData {
+  /// 任意の色から生成
+  ///
+  /// 例えばAppBar上に置く時とか
   SwitchThemeData withColor({
     required Color thumbColor,
     Brightness brightness = Brightness.light,
@@ -58,18 +61,6 @@ extension ThemeDataHelper on ThemeData {
       (listTileTheme.contentPadding) ?? const EdgeInsets.symmetric(horizontal: 16.0);
 
   /// 現状のmaterial widgetsの実装では、ダークテーマの挙動がまちまちなので、一貫性を持たせる。
-  ///
-  /// * ウィジェットの基本色はライト時はprimary color, ダーク時はsecondary color。
-  ///   参照 https://material.io/design/color/dark-theme.html#anatomy
-  /// その他、
-  /// * SnackBar
-  ///   actionTextColorがちょっと見づらいので調整
-  /// * TabBar
-  ///   ラベルの色が明暗に関わらず固定なので対応する。
-  ///   M3時のインジケータ位置調整。
-  /// * AppBar.
-  ///   M3時のelevationの調整。
-
   ThemeData withMiThemes() {
     // ボタンのforegroundColor
     // * ダークテーマ時はsecondary。
@@ -187,8 +178,8 @@ extension ThemeDataHelper on ThemeData {
     );
 
     // SnackBar
-    // * actionTextColorをちょっと見やすく
-    // TODO: ライトテーマ時はprimaryの明色を試す
+    // * actionTextColorをちょっと見やすく（独自研究）
+    // TODO: primary, secondaryの明色？
     final snackBarTheme_ = snackBarTheme.copyWith(
       actionTextColor: isDark
           ? Color.alphaBlend(colorScheme.secondary.withAlpha(178), colorScheme.surface)
