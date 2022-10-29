@@ -13,8 +13,17 @@ Flutterマテリアルウィジェットは素晴らしい製品ですが、一�
 APIも不安定ですのでライブラリとしての利用は推奨できません。
 
 参考：
+フォントを変えたら、文字の読めなかった子どもが障害を乗り越え歓喜の涙！ ユニバーサルデザインの書式とは？
 https://finders.me/articles.php?id=880
+
+色覚の多様性と色覚バリアフリーなプレゼンテーション
 https://www.nig.ac.jp/color/barrierfree/
+
+## Getting started
+
+1. Checkout.
+2. flutter pub get at project root.
+3. flutter pub get at project root/example.
 
 ## Additional information
 
