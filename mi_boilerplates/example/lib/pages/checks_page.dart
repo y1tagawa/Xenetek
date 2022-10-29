@@ -96,6 +96,7 @@ class ChecksPage extends ConsumerWidget {
               MiExpansionTile(
                 enabled: enableActions,
                 initiallyExpanded: true,
+                // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
                 leading: Checkbox(
                   value: (box && text && check)
                       ? true
@@ -103,9 +104,11 @@ class ChecksPage extends ConsumerWidget {
                           ? null
                           : false,
                   tristate: true,
-                  onChanged: (value) {
-                    setTally(value != null);
-                  },
+                  onChanged: enableActions
+                      ? (value) {
+                          setTally(value != null);
+                        }
+                      : null,
                 ),
                 title: MiIcon(
                   icon: Icon(combinedIcon),

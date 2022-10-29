@@ -277,7 +277,7 @@ class MiIconButton extends IconButton {
         );
 }
 
-/// 明示的にintの値をとる[Slider]。
+/// 明示的にintの値をとる[Slider]
 class MiIntSlider extends StatelessWidget {
   final bool enabled;
   final int value;
