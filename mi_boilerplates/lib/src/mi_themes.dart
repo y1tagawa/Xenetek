@@ -218,7 +218,8 @@ extension ThemeDataHelper on ThemeData {
           : null,
     );
 
-    // AppBar.
+    // AppBar
+    // * マテリアルデザイン3の見栄え調整（独自研究）
     final appBarTheme_ = appBarTheme.copyWith(
       elevation: useMaterial3 ? 4.0 : null,
       shadowColor: useMaterial3 ? Colors.black : null,
@@ -237,7 +238,7 @@ extension ThemeDataHelper on ThemeData {
       snackBarTheme: snackBarTheme_,
       tabBarTheme: tabBarTheme_,
       appBarTheme: appBarTheme_,
-      // *ListTileのselectedColorのデフォルト値
+      // *ListTileのselectedColor
       toggleableActiveColor: foregroundColor,
     );
   }
