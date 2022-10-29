@@ -38,7 +38,8 @@ class AnimationsPage extends ConsumerWidget {
           dimension: 19.5,
           child: Image.asset(
             'assets/lottieIcon.png',
-            color: theme.tabLabelColor,
+            // TODO: 末端でテーマ設定はよくない
+            color: theme.tabBarTheme.labelColor ?? theme.colorScheme.onSurface,
           ),
         ),
         tooltip: 'Lottie',

@@ -57,13 +57,6 @@ extension ThemeDataHelper on ThemeData {
   EdgeInsetsGeometry get listTileContentPadding =>
       (listTileTheme.contentPadding) ?? const EdgeInsets.symmetric(horizontal: 16.0);
 
-  /// Tabのラべル色。
-  Color get tabLabelColor => useMaterial3
-      ? colorScheme.onSurface
-      : isDark
-          ? colorScheme.onSurface
-          : colorScheme.onPrimary;
-
   /// 現状のmaterial widgetsの実装では、ダークテーマの挙動がまちまちなので、一貫性を持たせる。
   ///
   /// * ウィジェットの基本色はライト時はprimary color, ダーク時はsecondary color。
@@ -204,9 +197,13 @@ extension ThemeDataHelper on ThemeData {
 
     // TabBar
     // * ラベル文字色のマテリアルデザイン3対応
-    // * インジケータ位置もちょっと調整
+    // * インジケータ位置もちょっと調整（独自研究）
     final tabBarTheme_ = tabBarTheme.copyWith(
-      labelColor: tabLabelColor,
+      labelColor: useMaterial3
+          ? colorScheme.onSurface
+          : isDark
+              ? colorScheme.onSurface
+              : colorScheme.onPrimary,
       indicator: useMaterial3
           ? UnderlineTabIndicator(
               borderSide: BorderSide(

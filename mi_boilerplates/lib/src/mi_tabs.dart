@@ -4,11 +4,9 @@
 
 import 'package:flutter/material.dart';
 
-import 'mi_themes.dart';
-
-/// カスタム[Tab]。
+/// カスタム[Tab]
 ///
-/// * [tooltip]を付加。
+/// * [tooltip]追加
 
 class MiTab extends StatelessWidget {
   final String? text;
@@ -48,9 +46,9 @@ class MiTab extends StatelessWidget {
   }
 }
 
-/// カスタム[TabBar]。
+/// カスタム[TabBar]
 ///
-/// * [enabled]を付加。
+/// * [enabled]追加
 
 class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
   final bool enabled;
@@ -74,9 +72,11 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: disable時だけ生成
     final theme = Theme.of(context);
-    final textColor = _tabBar.labelColor ?? theme.tabLabelColor;
-    final loTextColor = textColor.withAlpha(179);
+    final textColor =
+        _tabBar.labelColor ?? theme.tabBarTheme.labelColor ?? theme.colorScheme.onSurface;
+    final disabledTextColor = textColor.withAlpha(179);
 
     Decoration disabledIndicator() {
       final indicator = theme.tabBarTheme.indicator ?? const UnderlineTabIndicator();
@@ -84,20 +84,24 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
         return indicator;
       }
       return UnderlineTabIndicator(
-        borderSide: indicator.borderSide.copyWith(color: loTextColor),
+        borderSide: indicator.borderSide.copyWith(color: disabledTextColor),
         insets: indicator.insets,
       );
     }
 
-    final tabBarTheme = TabBarTheme.of(context).copyWith(
-      labelColor: enabled ? null : loTextColor,
+    final disabledIconTheme = IconTheme.of(context).copyWith(
+      color: theme.disabledColor,
+    );
+    final disabledTabBarTheme = TabBarTheme.of(context).copyWith(
+      labelColor: enabled ? null : disabledTextColor,
       unselectedLabelColor: enabled ? null : theme.disabledColor,
       indicator: enabled ? null : disabledIndicator(),
     );
 
     return Theme(
       data: theme.copyWith(
-        tabBarTheme: enabled ? null : tabBarTheme,
+        iconTheme: enabled ? null : disabledIconTheme,
+        tabBarTheme: enabled ? null : disabledTabBarTheme,
       ),
       child: IgnorePointer(
         ignoring: !enabled,
@@ -109,7 +113,7 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 
 /// カスタム[DefaultTabController]。
 ///
-/// * タブインデックス変更検知イベント[onIndexChanged]を付加。
+/// * [onIndexChanged]追加
 ///
 /// s.a. https://api.flutter.dev/flutter/material/TabController-class.html
 ///   https://api.flutter.dev/flutter/material/DefaultTabController-class.html
