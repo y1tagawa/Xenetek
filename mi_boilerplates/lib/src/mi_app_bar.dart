@@ -131,9 +131,11 @@ class MiAppBar extends StatelessWidget implements PreferredSizeWidget {
                               .copyWith(
                             color: foregroundColor ??
                                 theme.appBarTheme.foregroundColor ??
-                                (theme.isDark
+                                (theme.useMaterial3
                                     ? theme.colorScheme.onSurface
-                                    : theme.colorScheme.onPrimary),
+                                    : theme.isDark
+                                        ? theme.colorScheme.onSurface
+                                        : theme.colorScheme.onPrimary),
                           ),
                           child: title,
                         ),

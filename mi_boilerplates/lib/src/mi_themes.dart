@@ -63,8 +63,8 @@ extension ThemeDataHelper on ThemeData {
   /// 現状のmaterial widgetsの実装では、ダークテーマの挙動がまちまちなので、一貫性を持たせる。
   ThemeData withMiThemes() {
     // ボタンのforegroundColor
-    // * ダークテーマ時はsecondary。
-    // * ライトテーマ時はprimaryだが、明るい色だと文字・アイコンが見づらくなるので調整する。
+    // * ダークテーマ時はsecondary
+    // * ライトテーマ時はprimaryだが、明るい色だと文字・アイコンが見づらくなるので調整
     final foregroundColor = isDark
         ? colorScheme.secondary
         : HSLColor.fromColor(colorScheme.primary).let((it) {
@@ -89,7 +89,7 @@ extension ThemeDataHelper on ThemeData {
 
     // TextButton, OutlinedButton
     // * foregroundColor調整
-    // * ダークテーマ時の色をCheckbox等と同じくsecondaryに変更。
+    // * ダークテーマ時のforegroundColorをsecondaryに変更
     final textButtonTheme_ = TextButtonThemeData(
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.resolveWith(
@@ -107,7 +107,7 @@ extension ThemeDataHelper on ThemeData {
     );
 
     // ElevatedButton
-    // * ダークテーマ時の色をsecondaryに変更。
+    // * ダークテーマ時のforegroundColorをsecondaryに変更
     final elevatedButtonTheme_ = ElevatedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.resolveWith(
@@ -127,7 +127,7 @@ extension ThemeDataHelper on ThemeData {
     );
 
     // Checkbox, Radio
-    // * ライトテーマ時のforegroundColor調整
+    // * ライトテーマ時のfillColor調整
     // TODO: ダーク時、checkColorをsurfaceにした方が良い？（secondaryが明色だとvと-が見分けづらいので）
     Color resolveToggleableColor(Set<MaterialState> states) {
       if (states.contains(MaterialState.disabled)) {
@@ -147,7 +147,7 @@ extension ThemeDataHelper on ThemeData {
     );
 
     // Switch
-    // * ライトテーマ時のforegroundColor調整
+    // * ライトテーマ時のthumbColor, trackColor調整
     final switchTheme_ = switchTheme.withColor(
       thumbColor: foregroundColor,
       brightness: brightness,
@@ -157,7 +157,7 @@ extension ThemeDataHelper on ThemeData {
     // https://github.com/flutter/flutter/blob/cc2aedd17aee7203a035a8b3f5968ce040bfbe8f/packages/flutter/lib/src/material/slider.dart#L743
 
     // ToggleButtons
-    // * ダークテーマ時のselectedColorをsecondaryに変更
+    // * ダークテーマ時のselectedColor, fillColorをsecondaryに変更
     final toggleButtonsTheme_ = toggleButtonsTheme.copyWith(
       selectedColor: foregroundColor,
       // TODO: SOURCE LINK
