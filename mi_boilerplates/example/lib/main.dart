@@ -203,7 +203,7 @@ class MyApp extends ConsumerWidget {
             brightness: ref.watch(brightnessProvider),
           ),
           useMaterial3: ref.watch(useM3Provider),
-        ).let((it) => ref.watch(useMiThemesProvider) ? it.withMiThemes() : it),
+        ).let((it) => ref.watch(useMiThemesProvider) ? it.adjust() : it),
       ),
     );
   }

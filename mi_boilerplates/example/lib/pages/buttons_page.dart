@@ -81,7 +81,6 @@ class ButtonsPage extends ConsumerWidget {
             bottom: MiTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: SafeArea(
@@ -90,7 +89,7 @@ class ButtonsPage extends ConsumerWidget {
               physics: enabled ? null : const NeverScrollableScrollPhysics(),
               children: const [
                 _PushButtonsTab(),
-                _PushButtonsTab(),
+                _TabContainerTab(),
               ],
             ),
           ),
@@ -238,5 +237,74 @@ class _PushButtonsTab extends ConsumerWidget {
     ).also((_) {
       _logger.fine('[o] build');
     });
+  }
+}
+
+//
+//
+//
+
+class _TabContainerTab extends ConsumerWidget {
+  static final _logger = Logger((_TabContainerTab).toString());
+
+  const _TabContainerTab();
+
+  static const _tabs = <Widget>[
+    MiTab(
+      icon: Icon(Icons.looks_one_outlined),
+      text: 'One',
+    ),
+    MiTab(
+      icon: Icon(Icons.looks_two_outlined),
+      text: 'Two',
+    ),
+    MiTab(
+      icon: Icon(Icons.looks_3_outlined),
+      text: 'Three',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(enableActionsProvider);
+
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      child: MiDefaultTabController(
+        length: 3,
+        initialIndex: 0,
+        builder: (context) {
+          return Column(
+            children: [
+              MiTabBar(
+                enabled: enabled,
+                surface: true,
+                tabs: _tabs,
+              ),
+              const SizedBox(
+                height: 300,
+                child: TabBarView(
+                  children: [
+                    Center(
+                      child: Text('One'),
+                    ),
+                    Center(
+                      child: Text('Two'),
+                    ),
+                    Center(
+                      child: Text('Þree'),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 /// カスタム[Tab]
 ///
@@ -52,12 +53,14 @@ class MiTab extends StatelessWidget {
 
 class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
   final bool enabled;
+  final bool surface;
   final TabBar _tabBar;
 
   // TODO: 必要に応じて他の引数を追加
   MiTabBar({
     super.key,
     this.enabled = true,
+    this.surface = false,
     required List<Widget> tabs,
     bool isScrollable = false,
     void Function(int)? onTap,
@@ -74,8 +77,13 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     // TODO: disable時だけ生成
     final theme = Theme.of(context);
-    final textColor =
-        _tabBar.labelColor ?? theme.tabBarTheme.labelColor ?? theme.colorScheme.onSurface;
+    final textColor = surface
+        ? theme.useMaterial3
+            ? theme.colorScheme.onSurface
+            : theme.isDark
+                ? theme.colorScheme.secondary
+                : theme.foregroundColor
+        : _tabBar.labelColor ?? theme.tabBarTheme.labelColor ?? theme.colorScheme.onPrimary;
     final disabledTextColor = textColor.withAlpha(179);
 
     Decoration disabledIndicator() {
@@ -89,6 +97,19 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
+    final surfaceIconTheme = IconTheme.of(context).copyWith(
+      color: theme.colorScheme.onSurface,
+    );
+    final surfaceTabBarTheme = TabBarTheme.of(context).copyWith(
+      labelColor: enabled ? textColor : disabledTextColor,
+      unselectedLabelColor: enabled ? textColor : theme.disabledColor,
+      indicator: enabled
+          ? UnderlineTabIndicator(
+              borderSide: BorderSide(width: 2, color: textColor),
+            )
+          : disabledIndicator(),
+    );
+
     final disabledIconTheme = IconTheme.of(context).copyWith(
       color: theme.disabledColor,
     );
@@ -100,8 +121,8 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 
     return Theme(
       data: theme.copyWith(
-        iconTheme: enabled ? null : disabledIconTheme,
-        tabBarTheme: enabled ? null : disabledTabBarTheme,
+        iconTheme: enabled ? /*null*/ surfaceIconTheme : disabledIconTheme,
+        tabBarTheme: enabled ? /*null*/ surfaceTabBarTheme : disabledTabBarTheme,
       ),
       child: IgnorePointer(
         ignoring: !enabled,
