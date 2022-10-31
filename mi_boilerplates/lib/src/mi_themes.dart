@@ -157,28 +157,30 @@ extension ThemeDataHelper on ThemeData {
 
     // SnackBar
     // * actionTextColorをちょっと見やすく（独自研究）
-    // TODO: primary, secondaryの明色？
     final snackBarTheme_ = snackBarTheme.copyWith(
-      actionTextColor: isDark
-          ? Color.alphaBlend(colorScheme.secondary.withAlpha(178), colorScheme.surface)
-          : Color.alphaBlend(colorScheme.secondary.withAlpha(160), colorScheme.surface),
+      actionTextColor: isDark ? colorScheme.secondary : primaryColorLight,
     );
 
     // TabBar
     // * ラベル文字色、インジケータ色のM3対応
-    final indicatorColor = useMaterial3
+    final indicatorColor_ = useMaterial3
+        ? colorScheme.onSurface
+        : isDark
+            ? colorScheme.secondary
+            : colorScheme.onPrimary;
+    final labelColor = useMaterial3
         ? colorScheme.onSurface
         : isDark
             ? colorScheme.onSurface
             : colorScheme.onPrimary;
     final tabBarTheme_ = tabBarTheme.copyWith(
-      labelColor: indicatorColor,
       indicator: UnderlineTabIndicator(
         borderSide: BorderSide(
           width: 2.0,
-          color: indicatorColor,
+          color: indicatorColor_,
         ),
       ),
+      labelColor: labelColor,
     );
     // AppBar
     // * M3時のelevation調整（独自研究）

@@ -7,11 +7,15 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+// s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L26
+const double _kTabHeight = 46.0;
+const double _kTextAndIconTabHeight = 72.0;
+
 /// カスタム[Tab]
 ///
 /// * [tooltip]追加
 
-class MiTab extends StatelessWidget {
+class MiTab extends StatelessWidget implements PreferredSizeWidget {
   final String? text;
   final Widget? icon;
   final EdgeInsetsGeometry iconMargin;
@@ -28,6 +32,18 @@ class MiTab extends StatelessWidget {
     this.tooltip,
   });
 
+  // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L153
+  @override
+  Size get preferredSize {
+    if (height != null) {
+      return Size.fromHeight(height!);
+    } else if ((text != null || child != null) && icon != null) {
+      return const Size.fromHeight(_kTextAndIconTabHeight);
+    } else {
+      return const Size.fromHeight(_kTabHeight);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final tab = Tab(
@@ -37,10 +53,9 @@ class MiTab extends StatelessWidget {
       height: height,
       child: child,
     );
-    final tooltip_ = tooltip ?? text;
-    if (tooltip_ != null && tooltip_.isNotEmpty) {
+    if (tooltip != null && tooltip!.isNotEmpty) {
       return Tooltip(
-        message: tooltip_,
+        message: tooltip,
         child: tab,
       );
     } else {
@@ -76,11 +91,10 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
     this.embedded = false,
   });
 
+  // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L885
   @override
   Size get preferredSize {
-    // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L26
-    // https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L885
-    double maxHeight = 46.0;
+    double maxHeight = _kTabHeight;
     for (final Widget item in tabs) {
       if (item is PreferredSizeWidget) {
         final double itemHeight = item.preferredSize.height;
@@ -92,6 +106,17 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (enabled && !embedded) {
+      return TabBar(
+        tabs: tabs,
+        isScrollable: isScrollable,
+        indicatorColor: indicatorColor,
+        indicatorWeight: indicatorWeight,
+        labelColor: labelColor,
+        onTap: onTap,
+      );
+    }
+
     final theme = Theme.of(context);
     final indicatorColor_ = indicatorColor ??
         (embedded
@@ -103,24 +128,37 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
             : theme.isDark
                 ? theme.colorScheme.secondary
                 : theme.colorScheme.onPrimary);
-    final disabledColor = indicatorColor_.withAlpha(179);
+    final disabledIndicatorColor = indicatorColor_.withAlpha(179);
+
+    final labelColor_ = labelColor ??
+        (embedded
+            ? theme.useMaterial3
+                ? theme.colorScheme.onSurface
+                : theme.isDark
+                    ? theme.colorScheme.onSurface
+                    : theme.primaryColorDark
+            : theme.isDark
+                ? theme.colorScheme.onSurface
+                : theme.colorScheme.onPrimary);
+    final disabledLabelColor = theme.disabledColor;
 
     return Theme(
       data: theme.copyWith(
         tabBarTheme: TabBarTheme.of(context).copyWith(
           indicator: UnderlineTabIndicator(
             borderSide: BorderSide(
-              color: enabled ? indicatorColor_ : disabledColor,
+              color: enabled ? indicatorColor_ : disabledIndicatorColor,
               width: indicatorWeight,
             ),
           ),
-          labelColor: enabled ? indicatorColor_ : disabledColor,
+          labelColor: enabled ? labelColor_ : disabledLabelColor,
         ),
       ),
       child: IgnorePointer(
         ignoring: !enabled,
         child: TabBar(
           tabs: tabs,
+          isScrollable: isScrollable,
           onTap: onTap,
         ),
       ),
