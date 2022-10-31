@@ -106,6 +106,7 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 追加機能が不要な場合はそのまま
     if (enabled && !embedded) {
       return TabBar(
         tabs: tabs,
@@ -117,6 +118,7 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
       );
     }
 
+    // 追加機能はテーマ変更を伴う
     final theme = Theme.of(context);
     final indicatorColor_ = indicatorColor ??
         (embedded
@@ -125,9 +127,11 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
                 : theme.isDark
                     ? theme.colorScheme.secondary
                     : theme.primaryColorDark
-            : theme.isDark
-                ? theme.colorScheme.secondary
-                : theme.colorScheme.onPrimary);
+            : theme.useMaterial3
+                ? theme.colorScheme.onSurface
+                : theme.isDark
+                    ? theme.colorScheme.secondary
+                    : theme.colorScheme.onPrimary);
     final disabledIndicatorColor = indicatorColor_.withAlpha(179);
 
     final labelColor_ = labelColor ??
@@ -137,9 +141,11 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
                 : theme.isDark
                     ? theme.colorScheme.onSurface
                     : theme.primaryColorDark
-            : theme.isDark
+            : theme.useMaterial3
                 ? theme.colorScheme.onSurface
-                : theme.colorScheme.onPrimary);
+                : theme.isDark
+                    ? theme.colorScheme.onSurface
+                    : theme.colorScheme.onPrimary);
     final disabledLabelColor = theme.disabledColor;
 
     return Theme(
