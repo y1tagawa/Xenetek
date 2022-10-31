@@ -98,9 +98,11 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
             ? theme.useMaterial3
                 ? theme.colorScheme.onSurface
                 : theme.isDark
-                    ? theme.colorScheme.onSurface
+                    ? theme.colorScheme.secondary
                     : theme.primaryColorDark
-            : theme.colorScheme.onPrimary);
+            : theme.isDark
+                ? theme.colorScheme.secondary
+                : theme.colorScheme.onPrimary);
     final disabledColor = indicatorColor_.withAlpha(179);
 
     return Theme(
