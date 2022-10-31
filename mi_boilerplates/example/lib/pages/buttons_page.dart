@@ -281,7 +281,7 @@ class _TabContainerTab extends ConsumerWidget {
             children: [
               MiTabBar(
                 enabled: enabled,
-                surface: true,
+                embedded: true,
                 tabs: _tabs,
               ),
               const SizedBox(

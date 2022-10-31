@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
@@ -53,80 +55,72 @@ class MiTab extends StatelessWidget {
 
 class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
   final bool enabled;
-  final bool surface;
-  final TabBar _tabBar;
+  final List<Widget> tabs;
+  final bool isScrollable;
+  final Color? indicatorColor;
+  final double indicatorWeight;
+  final Color? labelColor;
+  final ValueChanged<int>? onTap;
+  final bool embedded;
 
   // TODO: 必要に応じて他の引数を追加
-  MiTabBar({
+  const MiTabBar({
     super.key,
     this.enabled = true,
-    this.surface = false,
-    required List<Widget> tabs,
-    bool isScrollable = false,
-    void Function(int)? onTap,
-  }) : _tabBar = TabBar(
-          tabs: tabs,
-          isScrollable: isScrollable,
-          onTap: onTap,
-        );
+    required this.tabs,
+    this.isScrollable = false,
+    this.indicatorColor,
+    this.indicatorWeight = 2.0,
+    this.labelColor,
+    this.onTap,
+    this.embedded = false,
+  });
 
   @override
-  Size get preferredSize => _tabBar.preferredSize;
+  Size get preferredSize {
+    // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L26
+    // https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L885
+    double maxHeight = 46.0;
+    for (final Widget item in tabs) {
+      if (item is PreferredSizeWidget) {
+        final double itemHeight = item.preferredSize.height;
+        maxHeight = math.max(itemHeight, maxHeight);
+      }
+    }
+    return Size.fromHeight(maxHeight + indicatorWeight);
+  }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: disable時だけ生成
     final theme = Theme.of(context);
-    final textColor = surface
-        ? theme.useMaterial3
-            ? theme.colorScheme.onSurface
-            : theme.isDark
-                ? theme.colorScheme.secondary
-                : theme.foregroundColor
-        : _tabBar.labelColor ?? theme.tabBarTheme.labelColor ?? theme.colorScheme.onPrimary;
-    final disabledTextColor = textColor.withAlpha(179);
-
-    Decoration disabledIndicator() {
-      final indicator = theme.tabBarTheme.indicator ?? const UnderlineTabIndicator();
-      if (indicator is! UnderlineTabIndicator) {
-        return indicator;
-      }
-      return UnderlineTabIndicator(
-        borderSide: indicator.borderSide.copyWith(color: disabledTextColor),
-        insets: indicator.insets,
-      );
-    }
-
-    final surfaceIconTheme = IconTheme.of(context).copyWith(
-      color: theme.colorScheme.onSurface,
-    );
-    final surfaceTabBarTheme = TabBarTheme.of(context).copyWith(
-      labelColor: enabled ? textColor : disabledTextColor,
-      unselectedLabelColor: enabled ? textColor : theme.disabledColor,
-      indicator: enabled
-          ? UnderlineTabIndicator(
-              borderSide: BorderSide(width: 2, color: textColor),
-            )
-          : disabledIndicator(),
-    );
-
-    final disabledIconTheme = IconTheme.of(context).copyWith(
-      color: theme.disabledColor,
-    );
-    final disabledTabBarTheme = TabBarTheme.of(context).copyWith(
-      labelColor: enabled ? null : disabledTextColor,
-      unselectedLabelColor: enabled ? null : theme.disabledColor,
-      indicator: enabled ? null : disabledIndicator(),
-    );
+    final indicatorColor_ = indicatorColor ??
+        (embedded
+            ? theme.useMaterial3
+                ? theme.colorScheme.onSurface
+                : theme.isDark
+                    ? theme.colorScheme.onSurface
+                    : theme.primaryColorDark
+            : theme.colorScheme.onPrimary);
+    final disabledColor = indicatorColor_.withAlpha(179);
 
     return Theme(
       data: theme.copyWith(
-        iconTheme: enabled ? /*null*/ surfaceIconTheme : disabledIconTheme,
-        tabBarTheme: enabled ? /*null*/ surfaceTabBarTheme : disabledTabBarTheme,
+        tabBarTheme: TabBarTheme.of(context).copyWith(
+          indicator: UnderlineTabIndicator(
+            borderSide: BorderSide(
+              color: enabled ? indicatorColor_ : disabledColor,
+              width: indicatorWeight,
+            ),
+          ),
+          labelColor: enabled ? indicatorColor_ : disabledColor,
+        ),
       ),
       child: IgnorePointer(
         ignoring: !enabled,
-        child: _tabBar,
+        child: TabBar(
+          tabs: tabs,
+          onTap: onTap,
+        ),
       ),
     );
   }
