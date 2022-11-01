@@ -85,7 +85,7 @@ class SwitchesPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: enableActions ? icon : const Icon(Icons.toggle_off_outlined),
+        icon: enableActions ? icon : const Icon(Icons.toggle_off_outlined),
         title: title,
       ),
       body: SafeArea(

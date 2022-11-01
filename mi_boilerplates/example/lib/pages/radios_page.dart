@@ -53,7 +53,7 @@ class RadiosPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
       ),
       body: SafeArea(

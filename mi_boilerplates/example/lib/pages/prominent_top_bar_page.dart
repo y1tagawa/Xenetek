@@ -128,10 +128,10 @@ class ProminentTopBarPage extends ConsumerWidget {
           return Scaffold(
             appBar: ExAppBar(
               prominent: prominent,
-              leading: icon,
+              icon: icon,
               title: title,
               centerTitle: centerTitle,
-              bottom: MiTabBar(tabs: _tabs),
+              bottom: const MiTabBar(tabs: _tabs),
               flexibleSpace: flexibleSpace,
             ),
             body: body,
@@ -143,7 +143,7 @@ class ProminentTopBarPage extends ConsumerWidget {
       return Scaffold(
         appBar: ExAppBar(
           prominent: ref.watch(prominentProvider),
-          leading: icon,
+          icon: icon,
           title: title,
           centerTitle: centerTitle,
           flexibleSpace: flexibleSpace,

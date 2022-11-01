@@ -226,8 +226,8 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        //leading: icon,
-        title: const MiIcon(icon: icon, text: title),
+        icon: icon,
+        title: title,
       ),
       drawer: Drawer(
         child: ListView(

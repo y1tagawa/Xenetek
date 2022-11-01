@@ -151,6 +151,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
   final Widget title;
+  final Widget? icon;
   final PreferredSizeWidget? bottom;
   final Widget? flexibleSpace;
   final List<Widget>? actions;
@@ -162,6 +163,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.prominent = false,
     this.leading,
     required this.title,
+    this.icon,
     this.bottom,
     this.flexibleSpace,
     this.actions,
@@ -190,7 +192,20 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         child: title,
       ),
       bottom: bottom,
-      flexibleSpace: flexibleSpace,
+      flexibleSpace: flexibleSpace ??
+          icon?.let(
+            (it) => IconTheme(
+              data: IconThemeData(color: Colors.white.withAlpha(36)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  clipBehavior: Clip.hardEdge,
+                  child: it,
+                ),
+              ),
+            ),
+          ),
       actions: <Widget>[
         if (actions != null) ...actions!,
         if (prominent) ...[
