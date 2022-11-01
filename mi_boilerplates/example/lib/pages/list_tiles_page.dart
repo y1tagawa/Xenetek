@@ -33,7 +33,7 @@ class ListTilesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final useMiThemes = ref.watch(adjustThemeProvider);
+    final adjustTheme = ref.watch(adjustThemeProvider);
     final check = ref.watch(_checkProvider);
     final radio = ref.watch(_radioProvider);
     final switch_ = ref.watch(_switchProvider);
@@ -110,7 +110,7 @@ class ListTilesPage extends ConsumerWidget {
                   text: Text('SwitchListTile'),
                 ),
               ),
-              if (useMiThemes)
+              if (adjustTheme)
                 MiExpansionTile(
                   enabled: enableActions,
                   title: const MiIcon(

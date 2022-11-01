@@ -142,9 +142,13 @@ class _ColorGridTab extends ConsumerWidget {
           Expanded(
             child: SingleChildScrollView(
               child: MiColorGrid(
-                initialColor: ref.watch(primarySwatchProvider),
-                items: colorItems,
-              ),
+                  initialColor: ref.watch(primarySwatchProvider),
+                  items: colorItems,
+                  onChanged: (color) {
+                    if (color != null) {
+                      ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
+                    }
+                  }),
             ),
           ),
         ],
@@ -229,7 +233,7 @@ class _ColorSchemeTab extends ConsumerWidget {
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
     //final enabled = ref.watch(enableActionsProvider);
-    final useMiThemes = ref.watch(adjustThemeProvider);
+    final adjustTheme = ref.watch(adjustThemeProvider);
 
     final theme = Theme.of(context);
 
@@ -240,7 +244,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.light,
       ),
-    ).let((it) => useMiThemes ? it.adjust() : it);
+    ).let((it) => adjustTheme ? it.adjust() : it);
 
     final darkTheme = ThemeData(
       primarySwatch: primarySwatch,
@@ -249,7 +253,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.dark,
       ),
-    ).let((it) => useMiThemes ? it.adjust() : it);
+    ).let((it) => adjustTheme ? it.adjust() : it);
 
     Widget colorRow(String key, String title) {
       final getter = _themeColorItems[key]!;
