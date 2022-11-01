@@ -7,7 +7,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-Iterable<int> iota(int n) => Iterable<int>.generate(n);
+Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
 
 T run<T>(T Function() fun) => fun();
 

@@ -53,7 +53,7 @@ class AnimationsPage extends ConsumerWidget {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
-            leading: icon,
+            //leading: icon,
             title: _title,
             bottom: MiTabBar(
               enabled: enableActions,
