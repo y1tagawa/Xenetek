@@ -56,33 +56,25 @@ extension ThemeDataHelper on ThemeData {
   EdgeInsetsGeometry get listTileContentPadding =>
       (listTileTheme.contentPadding) ?? const EdgeInsets.symmetric(horizontal: 16.0);
 
-  /// 現状のmaterial widgetsの実装は、ダークテーマの挙動がまちまちなので、一貫するよう調節
+  /// 現状のmaterial widgetsの実装は、ダークテーマの挙動がまちまちなので、一貫するよう調整
   ThemeData adjust() {
     final foregroundColor = isDark ? colorScheme.secondary : primaryColorDark;
 
-    Color Function(Set<MaterialState> states) resolveButtonColor(
-      Color color,
-      Color disabledColor,
-    ) {
-      return (Set<MaterialState> states) =>
-          states.contains(MaterialState.disabled) ? disabledColor : color;
+    Color? Function(Set<MaterialState> states) resolveButtonColor(Color color) {
+      return (Set<MaterialState> states) => states.contains(MaterialState.disabled) ? null : color;
     }
 
     // TextButton, OutlinedButton
     // * ダーク時の色をsecondaryに変更
     final textButtonTheme_ = TextButtonThemeData(
       style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.resolveWith(
-          resolveButtonColor(foregroundColor, disabledColor),
-        ),
+        foregroundColor: MaterialStateProperty.resolveWith(resolveButtonColor(foregroundColor)),
       ).merge(textButtonTheme.style),
     );
 
     final outlinedButtonTheme_ = OutlinedButtonThemeData(
       style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.resolveWith(
-          resolveButtonColor(foregroundColor, disabledColor),
-        ),
+        foregroundColor: MaterialStateProperty.resolveWith(resolveButtonColor(foregroundColor)),
       ).merge(outlinedButtonTheme.style),
     );
 
@@ -91,45 +83,28 @@ extension ThemeDataHelper on ThemeData {
     final elevatedButtonTheme_ = ElevatedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.resolveWith(
-          resolveButtonColor(
-            isDark ? colorScheme.onSecondary : colorScheme.onPrimary,
-            disabledColor,
-          ),
+          resolveButtonColor(isDark ? colorScheme.onSecondary : colorScheme.onPrimary),
         ),
         backgroundColor: MaterialStateProperty.resolveWith(
-          // TODO: SOURCE LINK
-          resolveButtonColor(
-            isDark ? colorScheme.secondary : colorScheme.primary,
-            colorScheme.onSurface.withOpacity(0.12),
-          ),
+          resolveButtonColor(isDark ? colorScheme.secondary : colorScheme.primary),
         ),
       ).merge(elevatedButtonTheme.style),
     );
 
-    // Checkbox, Radio
-    // TODO: ダーク時、checkColorをsurfaceにした方が良い？（secondaryが明色だとvと-が見分けづらいので）
-    // Color resolveToggleableColor(Set<MaterialState> states) {
-    //   if (states.contains(MaterialState.disabled)) {
-    //     return disabledColor;
-    //   } else if (states.contains(MaterialState.selected)) {
-    //     return isDark ? colorScheme.secondary : primaryColorDark;
-    //   } else {
-    //     return unselectedWidgetColor;
-    //   }
-    // }
+    // Checkbox
+    // * ダーク時のcheckColorを調整
+    Color? Function(Set<MaterialState> states) resolveCheckColor() {
+      return (Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return isDark ? colorScheme.surface : colorScheme.onPrimary;
+        }
+        return null;
+      };
+    }
 
-    // final checkboxTheme_ = checkboxTheme.copyWith(
-    //   fillColor: MaterialStateProperty.resolveWith(resolveToggleableColor),
-    // );
-    // final radioTheme_ = radioTheme.copyWith(
-    //   fillColor: MaterialStateProperty.resolveWith(resolveToggleableColor),
-    // );
-
-    // Switch
-    // final switchTheme_ = switchTheme.adjustByColor(
-    //   thumbColor: primaryColorDark,
-    //   brightness: brightness,
-    // );
+    final checkboxTheme_ = checkboxTheme.copyWith(
+      checkColor: MaterialStateProperty.resolveWith<Color?>(resolveCheckColor()),
+    );
 
     // TODO: Slider.
     // https://github.com/flutter/flutter/blob/cc2aedd17aee7203a035a8b3f5968ce040bfbe8f/packages/flutter/lib/src/material/slider.dart#L743
@@ -193,7 +168,7 @@ extension ThemeDataHelper on ThemeData {
       textButtonTheme: textButtonTheme_,
       outlinedButtonTheme: outlinedButtonTheme_,
       elevatedButtonTheme: elevatedButtonTheme_,
-      // checkboxTheme: checkboxTheme_,
+      checkboxTheme: checkboxTheme_,
       // radioTheme: radioTheme_,
       // switchTheme: switchTheme_,
       toggleButtonsTheme: toggleButtonsTheme_,
