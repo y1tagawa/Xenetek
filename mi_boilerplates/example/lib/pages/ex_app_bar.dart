@@ -119,9 +119,8 @@ class _PopupMenu extends ConsumerWidget {
             enabled: enabled,
             checked: ref.watch(brightnessProvider) == Brightness.dark,
             child: const Text('Dark mode'),
-            onChanged: (value) {
-              ref.read(brightnessProvider.state).state = value ? Brightness.dark : Brightness.light;
-            },
+            onChanged: (value) => ref.read(brightnessProvider.state).state =
+                value ? Brightness.dark : Brightness.light,
           ),
           MiPopupMenuItem(
             enabled: enabled,
@@ -137,7 +136,7 @@ class _PopupMenu extends ConsumerWidget {
       offset: const Offset(0, 40),
       tooltip: <String>[
         if (ref.read(enableActionsProvider)) 'Enabled',
-        if (ref.read(adjustThemeProvider)) 'MiTheme',
+        if (ref.read(adjustThemeProvider)) 'Adjusted',
         ref.read(useM3Provider) ? 'M3' : 'M2',
         if (ref.read(brightnessProvider) == Brightness.dark) 'Dark',
       ].join(', '),
@@ -245,8 +244,12 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize =>
-      Size.fromHeight(MiTabBar.preferredHeight(tabs: tabs, indicatorWeight: indicatorWeight));
+  Size get preferredSize => Size.fromHeight(
+        MiTabBar.preferredHeight(
+          tabs: tabs,
+          indicatorWeight: indicatorWeight,
+        ),
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
