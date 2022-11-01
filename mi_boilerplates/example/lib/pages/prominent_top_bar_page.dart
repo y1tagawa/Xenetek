@@ -131,7 +131,7 @@ class ProminentTopBarPage extends ConsumerWidget {
               icon: icon,
               title: title,
               centerTitle: centerTitle,
-              bottom: const MiTabBar(tabs: _tabs),
+              bottom: const ExTabBar(tabs: _tabs),
               flexibleSpace: flexibleSpace,
             ),
             body: body,

@@ -55,7 +55,7 @@ class AnimationsPage extends ConsumerWidget {
             prominent: ref.watch(prominentProvider),
             icon: icon,
             title: _title,
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enableActions,
               tabs: tabs,
             ),

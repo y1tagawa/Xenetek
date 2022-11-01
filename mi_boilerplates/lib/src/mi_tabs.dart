@@ -69,6 +69,21 @@ class MiTab extends StatelessWidget implements PreferredSizeWidget {
 /// * [enabled]追加
 
 class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
+  // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L885
+  static double preferredHeight({
+    required List<Widget> tabs,
+    double indicatorWeight = 2.0,
+  }) {
+    double maxHeight = _kTabHeight;
+    for (final Widget item in tabs) {
+      if (item is PreferredSizeWidget) {
+        final double itemHeight = item.preferredSize.height;
+        maxHeight = math.max(itemHeight, maxHeight);
+      }
+    }
+    return maxHeight + indicatorWeight;
+  }
+
   final bool enabled;
   final List<Widget> tabs;
   final bool isScrollable;
@@ -91,34 +106,13 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
     this.embedded = false,
   });
 
-  // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L885
   @override
-  Size get preferredSize {
-    double maxHeight = _kTabHeight;
-    for (final Widget item in tabs) {
-      if (item is PreferredSizeWidget) {
-        final double itemHeight = item.preferredSize.height;
-        maxHeight = math.max(itemHeight, maxHeight);
-      }
-    }
-    return Size.fromHeight(maxHeight + indicatorWeight);
-  }
+  Size get preferredSize =>
+      Size.fromHeight(preferredHeight(tabs: tabs, indicatorWeight: indicatorWeight));
 
   @override
   Widget build(BuildContext context) {
-    // 追加機能が不要な場合はそのまま
-    if (enabled && !embedded) {
-      return TabBar(
-        tabs: tabs,
-        isScrollable: isScrollable,
-        indicatorColor: indicatorColor,
-        indicatorWeight: indicatorWeight,
-        labelColor: labelColor,
-        onTap: onTap,
-      );
-    }
-
-    // 追加機能はテーマ変更を伴う
+    // TODO: テーマ変更点ドキュメント
     final theme = Theme.of(context);
     final indicatorColor_ = indicatorColor ??
         (embedded

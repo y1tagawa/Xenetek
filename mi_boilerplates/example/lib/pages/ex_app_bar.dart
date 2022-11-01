@@ -66,18 +66,17 @@ class _UseMaterial3Button extends ConsumerWidget {
   }
 }
 
-class _UseMiThemeCheckbox extends ConsumerWidget {
+class _AdjustThemeCheckbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
-    final state = ref.watch(useMiThemesProvider.state);
-    final useMiTheme = state.state;
+    final adjustTheme = ref.watch(adjustThemeProvider);
 
     return Tooltip(
-      message: useMiTheme ? 'Use mi theme: ON' : 'Use mi theme: OFF',
+      message: adjustTheme ? 'Adjust theme: ON' : 'Adjust theme: OFF',
       child: Checkbox(
-        value: useMiTheme,
-        onChanged: enabled ? (value) => state.state = value! : null,
+        value: adjustTheme,
+        onChanged: enabled ? (value) => ref.read(adjustThemeProvider.state).state = value! : null,
       ),
     );
   }
@@ -102,10 +101,10 @@ class _PopupMenu extends ConsumerWidget {
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
-            checked: ref.watch(useMiThemesProvider),
-            child: const Text('Use MiThemes'),
+            checked: ref.watch(adjustThemeProvider),
+            child: const Text('Adjust theme'),
             onChanged: (value) {
-              ref.read(useMiThemesProvider.state).state = value;
+              ref.read(adjustThemeProvider.state).state = value;
             },
           ),
           MiCheckPopupMenuItem(
@@ -138,7 +137,7 @@ class _PopupMenu extends ConsumerWidget {
       offset: const Offset(0, 40),
       tooltip: <String>[
         if (ref.read(enableActionsProvider)) 'Enabled',
-        if (ref.read(useMiThemesProvider)) 'MiTheme',
+        if (ref.read(adjustThemeProvider)) 'MiTheme',
         ref.read(useM3Provider) ? 'M3' : 'M2',
         if (ref.read(brightnessProvider) == Brightness.dark) 'Dark',
       ].join(', '),
@@ -216,7 +215,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         if (actions != null) ...actions!,
         if (prominent) ...[
           _EnableActionsSwitch(),
-          _UseMiThemeCheckbox(),
+          _AdjustThemeCheckbox(),
           _UseMaterial3Button(),
           _BrightnessButton(),
         ] else
@@ -224,5 +223,44 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ],
       centerTitle: centerTitle,
     );
+  }
+}
+
+class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
+  final bool enabled;
+  final List<Widget> tabs;
+  final bool isScrollable;
+  final double indicatorWeight;
+  final ValueChanged<int>? onTap;
+  final bool embedded;
+
+  const ExTabBar({
+    super.key,
+    this.enabled = true,
+    required this.tabs,
+    this.isScrollable = false,
+    this.indicatorWeight = 2.0,
+    this.onTap,
+    this.embedded = false,
+  });
+
+  @override
+  Size get preferredSize =>
+      Size.fromHeight(MiTabBar.preferredHeight(tabs: tabs, indicatorWeight: indicatorWeight));
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final adjustTheme = ref.watch(adjustThemeProvider);
+    return adjustTheme
+        ? MiTabBar(
+            enabled: enabled,
+            tabs: tabs,
+            isScrollable: isScrollable,
+            embedded: embedded,
+          )
+        : TabBar(
+            tabs: tabs,
+            isScrollable: isScrollable,
+          );
   }
 }

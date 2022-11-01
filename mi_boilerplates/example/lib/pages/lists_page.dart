@@ -78,10 +78,9 @@ class ListsPage extends ConsumerWidget {
             prominent: ref.watch(prominentProvider),
             icon: icon,
             title: title,
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: const SafeArea(

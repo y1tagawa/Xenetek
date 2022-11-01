@@ -78,7 +78,7 @@ class ButtonsPage extends ConsumerWidget {
                 tooltip: 'IconButton',
               ),
             ],
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -279,7 +279,7 @@ class _TabContainerTab extends ConsumerWidget {
         builder: (context) {
           return Column(
             children: [
-              MiTabBar(
+              ExTabBar(
                 enabled: enabled,
                 embedded: true,
                 tabs: _tabs,

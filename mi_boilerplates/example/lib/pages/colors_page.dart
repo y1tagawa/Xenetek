@@ -53,7 +53,7 @@ class ColorsPage extends ConsumerWidget {
             prominent: ref.watch(prominentProvider),
             icon: icon,
             title: title,
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
               isScrollable: true,
@@ -229,7 +229,7 @@ class _ColorSchemeTab extends ConsumerWidget {
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
     //final enabled = ref.watch(enableActionsProvider);
-    final useMiThemes = ref.watch(useMiThemesProvider);
+    final useMiThemes = ref.watch(adjustThemeProvider);
 
     final theme = Theme.of(context);
 
