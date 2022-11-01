@@ -31,7 +31,10 @@ final _imageProvider = StateProvider<Widget?>((ref) => null);
 int _tabIndex = 0;
 
 class ProminentTopBarPage extends ConsumerWidget {
-  static const icon = Icon(Icons.inbox_outlined);
+  static const icon = MiRotate(
+    angleDegree: 180.0,
+    child: Icon(Icons.horizontal_split_outlined),
+  );
   static const title = Text('Prominent top bar');
 
   static final _logger = Logger((ProminentTopBarPage).toString());
