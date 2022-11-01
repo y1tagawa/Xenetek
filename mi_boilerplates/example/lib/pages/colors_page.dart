@@ -89,7 +89,7 @@ class _ColorGridTab extends ConsumerWidget {
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
-    final colorItems = <Color?>[
+    final colors = <Color?>[
       null,
       ...Colors.primaries,
     ];
@@ -106,7 +106,7 @@ class _ColorGridTab extends ConsumerWidget {
                 final ok = await showColorGridDialog(
                     context: context,
                     initialColor: initialColor,
-                    colors: colorItems,
+                    colors: colors,
                     onChanged: (color) {
                       if (color != null) {
                         ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
@@ -124,7 +124,7 @@ class _ColorGridTab extends ConsumerWidget {
             child: SingleChildScrollView(
               child: MiColorGrid(
                   initialColor: ref.watch(primarySwatchProvider),
-                  colors: colorItems,
+                  colors: colors,
                   onChanged: (color) {
                     if (color != null) {
                       ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
