@@ -182,6 +182,8 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+
     return MiAppBar(
       prominent: prominent,
       leading: leading,
@@ -195,7 +197,11 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
       flexibleSpace: flexibleSpace ??
           icon?.let(
             (it) => IconTheme(
-              data: IconThemeData(color: Colors.white.withAlpha(36)),
+              data: IconThemeData(
+                color: theme.isDark
+                    ? theme.colorScheme.onSurface.withAlpha(36)
+                    : theme.colorScheme.onPrimary.withAlpha(36),
+              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: FittedBox(
