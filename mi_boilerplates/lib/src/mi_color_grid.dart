@@ -6,15 +6,6 @@ import 'package:flutter/material.dart';
 
 import '../mi_boilerplates.dart';
 
-class MiColorGridItem {
-  final Color? color;
-  final String text;
-  const MiColorGridItem({
-    required this.color,
-    required this.text,
-  });
-}
-
 /// カラーグリッド
 ///
 /// TODO: グリッド部分切り出し
@@ -22,15 +13,17 @@ class MiColorGridItem {
 class MiColorGrid extends StatefulWidget {
   final Color? initialColor;
   final double? chipSize;
-  final List<MiColorGridItem> items;
+  final List<Color?> colors;
   final ValueChanged<Color?>? onChanged;
+  final void Function(Color?, bool)? onHover;
 
   const MiColorGrid({
     super.key,
     this.initialColor,
     this.chipSize = 40,
-    required this.items,
+    required this.colors,
     this.onChanged,
+    this.onHover,
   });
 
   @override
@@ -53,23 +46,20 @@ class _MiColorGridState extends State<MiColorGrid> {
       child: Wrap(
         spacing: 4,
         runSpacing: 4,
-        children: widget.items.map((item) {
-          return Tooltip(
-            message: item.text,
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _color = item.color;
-                });
-                widget.onChanged?.call(item.color);
-              },
-              child: SizedBox(
-                width: widget.chipSize,
-                height: widget.chipSize,
-                child: item.color != null
-                    ? ColoredBox(color: item.color!)
-                    : const Icon(Icons.block_outlined),
-              ),
+        children: widget.colors.map((color) {
+          return InkWell(
+            onTap: () {
+              setState(() {
+                _color = color;
+              });
+              widget.onChanged?.call(color);
+            },
+            onHover: (enter) {
+              widget.onHover?.call(color, enter);
+            },
+            child: SizedBox.square(
+              dimension: widget.chipSize,
+              child: color != null ? ColoredBox(color: color) : const Icon(Icons.block_outlined),
             ),
           );
         }).toList(),
@@ -86,7 +76,7 @@ Future<bool> showColorGridDialog({
   Widget? icon,
   Widget? title,
   Color? initialColor,
-  required List<MiColorGridItem> items,
+  required List<Color?> colors,
   ValueChanged<Color?>? onChanged,
   bool barrierDismissible = true,
 }) async {
@@ -104,7 +94,7 @@ Future<bool> showColorGridDialog({
             child: SingleChildScrollView(
               child: MiColorGrid(
                 initialColor: initialColor,
-                items: items,
+                colors: colors,
                 onChanged: (value) {
                   setState(() => color = value);
                   onChanged?.call(value);

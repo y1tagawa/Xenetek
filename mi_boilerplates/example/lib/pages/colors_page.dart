@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../data/primary_color_names.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 import 'ex_bottom_navigation_bar.dart';
@@ -91,26 +89,9 @@ class _ColorGridTab extends ConsumerWidget {
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
-    final colorItems = <MiColorGridItem>[
-      const MiColorGridItem(color: null, text: 'null'),
-      ...Colors.primaries.mapIndexed(
-        (index, color) => MiColorGridItem(
-          color: color,
-          text: 'Flutter: ${primaryColorNames[index]}',
-        ),
-      ),
-      // ...x11Colors.mapIndexed(
-      //   (index, color) => MiColorGridItem(
-      //     color: color,
-      //     text: 'X11: ${x11ColorNames[index]}',
-      //   ),
-      // ),
-      // ...jisCommonColors.mapIndexed(
-      //   (index, color) => MiColorGridItem(
-      //     color: color,
-      //     text: 'JIS: ${jisCommonColorNames[index]}',
-      //   ),
-      // ),
+    final colorItems = <Color?>[
+      null,
+      ...Colors.primaries,
     ];
 
     return Padding(
@@ -125,7 +106,7 @@ class _ColorGridTab extends ConsumerWidget {
                 final ok = await showColorGridDialog(
                     context: context,
                     initialColor: initialColor,
-                    items: colorItems,
+                    colors: colorItems,
                     onChanged: (color) {
                       if (color != null) {
                         ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
@@ -143,7 +124,7 @@ class _ColorGridTab extends ConsumerWidget {
             child: SingleChildScrollView(
               child: MiColorGrid(
                   initialColor: ref.watch(primarySwatchProvider),
-                  items: colorItems,
+                  colors: colorItems,
                   onChanged: (color) {
                     if (color != null) {
                       ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
