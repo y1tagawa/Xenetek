@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 /// 非選択状態可能な[BottomNavigationBar]。
 ///
 /// [currentIndex]が負またはitems範囲外の場合、見た目だけ、どのアイテムも選択されていないように表示する。
 
 class MiBottomNavigationBar extends StatelessWidget {
+  static final _logger = Logger((MiBottomNavigationBar).toString());
+
   final bool enabled;
   final List<BottomNavigationBarItem> items;
   final int currentIndex;

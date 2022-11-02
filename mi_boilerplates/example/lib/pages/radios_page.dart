@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
@@ -42,6 +43,8 @@ final _classProvider = StateProvider((ref) => _Class.fighter);
 class RadiosPage extends ConsumerWidget {
   static const icon = Icon(Icons.radio_button_checked_outlined);
   static const title = Text('Radios');
+
+  static final _logger = Logger((RadiosPage).toString());
 
   const RadiosPage({super.key});
 
@@ -83,7 +86,7 @@ class RadiosPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(10),
                 child: IconTheme(
                   data: IconThemeData(
-                    color: Theme.of(context).unselectedIconColor,
+                    color: Theme.of(context).disabledColor,
                     size: 60,
                   ),
                   child: _radioItems[class_]!.iconBuilder(true),

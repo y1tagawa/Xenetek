@@ -134,7 +134,7 @@ class ChecksPage extends ConsumerWidget {
                 child: Icon(
                   combinedIcon,
                   size: 60,
-                  color: Theme.of(context).unselectedIconColor,
+                  color: Theme.of(context).disabledColor,
                 ),
               )
             ],

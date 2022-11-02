@@ -5,11 +5,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
 
 class ExBottomNavigationBar extends ConsumerWidget {
+  static final _logger = Logger((ExBottomNavigationBar).toString());
+
   const ExBottomNavigationBar({super.key});
 
   @override
