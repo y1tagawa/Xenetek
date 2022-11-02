@@ -164,17 +164,14 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
           icon?.let(
             (it) => IconTheme(
               data: IconThemeData(
-                color: theme.isDark
-                    ? theme.colorScheme.onSurface.withAlpha(36)
-                    : theme.colorScheme.onPrimary.withAlpha(36),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  clipBehavior: Clip.hardEdge,
-                  child: it,
-                ),
+                  color: theme.isDark
+                      ? theme.colorScheme.onSurface.withAlpha(36)
+                      : theme.colorScheme.onPrimary.withAlpha(36),
+                  size: 240),
+              child: FittedBox(
+                fit: BoxFit.none,
+                clipBehavior: Clip.hardEdge,
+                child: it,
               ),
             ),
           ),

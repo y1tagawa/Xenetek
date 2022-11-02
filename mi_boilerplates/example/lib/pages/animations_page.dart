@@ -241,14 +241,18 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 
 class _Animated extends StatefulWidget {
+  final bool enabled;
+  final Widget Function(AnimationController controller) builder;
   final Duration duration;
-  final Widget Function(AnimationController) builder;
-  final void Function(AnimationController)? onInitialized;
-  final void Function(AnimationController)? onCompleted;
-  final void Function(AnimationController)? onTap;
+  final void Function(AnimationController controller)? onInitialized;
+  final void Function(AnimationController controller)? onCompleted;
+  final void Function(AnimationController controller)? onTap;
+  final void Function(AnimationController controller, bool enter)? onHover;
   final Widget? child;
 
   const _Animated({
+    // ignore: unused_element
+    this.enabled = true,
     required this.builder,
     // ignore: unused_element
     this.duration = const Duration(milliseconds: 1000),
@@ -258,6 +262,8 @@ class _Animated extends StatefulWidget {
     this.onCompleted,
     // ignore: unused_element
     this.onTap,
+    // ignore: unused_element
+    this.onHover,
     // ignore: unused_element
     this.child,
   });
@@ -291,10 +297,11 @@ class _AnimatedState extends State<_Animated> with SingleTickerProviderStateMixi
   Widget build(BuildContext context) {
     _logger.fine('[i] build ${_controller.value}');
     Widget child = widget.builder(_controller);
-    if (widget.onTap != null) {
+    if (widget.onTap != null || widget.onHover != null) {
       child = InkWell(
+        onTap: widget.enabled ? () => widget.onTap?.call(_controller) : null,
+        onHover: widget.enabled ? (enter) => widget.onHover?.call(_controller, enter) : null,
         child: child,
-        onTap: () => widget.onTap!.call(_controller),
       );
     }
     return child.also((_) {

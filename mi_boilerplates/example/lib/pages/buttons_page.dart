@@ -187,17 +187,6 @@ class _PushButtonsTab extends ConsumerWidget {
             ),
           ),
           ListTile(
-            iconColor: theme.colorScheme.onSurface,
-            leading: MiCheckIconButton(
-              enabled: enabled,
-              checked: t,
-              onChanged: (value) {
-                _ping(ref);
-                ref.read(_tProvider.state).state = value;
-              },
-            ),
-          ),
-          ListTile(
             leading: ToggleButtons(
               isSelected: toggle,
               onPressed: (index) {
