@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -37,11 +38,15 @@ class AnimationsPage extends ConsumerWidget {
           dimension: 19.5,
           child: Image.asset(
             'assets/lottieIcon.png',
-            // TODO: 末端でテーマ設定はよくない
+            // TODO: 末端でテーマ設定はよくない・非選択色対応
             color: theme.tabBarTheme.labelColor ?? theme.colorScheme.onSurface,
           ),
         ),
         tooltip: 'Lottie',
+      ),
+      const MiTab(
+        icon: Icon(Icons.access_alarm_outlined),
+        tooltip: 'Animated icons',
       ),
     ];
 
@@ -65,6 +70,7 @@ class AnimationsPage extends ConsumerWidget {
               children: [
                 _AnimatedBuilderTab(),
                 _LottieTab(),
+                _AnimatedIconsTab(),
               ],
             ),
           ),
@@ -76,7 +82,7 @@ class AnimationsPage extends ConsumerWidget {
 }
 
 //
-// AnimationController tab.
+// AnimationController tab
 //
 // s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
 //   https://api.flutter.dev/flutter/animation/AnimationController-class.html
@@ -100,7 +106,7 @@ class _AnimatedIcon extends StatefulWidget {
 }
 
 class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderStateMixin {
-  static final _log = Logger((_AnimatedIconState).toString());
+  static final _logger = Logger((_AnimatedIconState).toString());
 
   late final AnimationController _controller = AnimationController(
     vsync: this, // the SingleTickerProviderStateMixin.
@@ -119,7 +125,7 @@ class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderS
 
   @override
   Widget build(BuildContext context) {
-    _log.fine('[i] build ${_controller.value}');
+    _logger.fine('[i] build ${_controller.value}');
 
     return AnimatedBuilder(
       animation: _controller,
@@ -159,7 +165,7 @@ class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderS
         );
       },
     ).also((_) {
-      _log.fine('[o] build');
+      _logger.fine('[o] build');
     });
   }
 }
@@ -199,7 +205,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 }
 
 //
-// Lottie tab.
+// Lottie tab
 //
 // s.a. https://pub.dev/packages/lottie
 //
@@ -300,6 +306,91 @@ class _LottieTab extends ConsumerWidget {
       ),
     ).also((_) {
       _log.fine('[o] build');
+    });
+  }
+}
+
+//
+// Animated icons catalogue tab
+//
+
+const _animatedIcons = <AnimatedIconData>[
+  AnimatedIcons.arrow_menu,
+  AnimatedIcons.close_menu,
+  AnimatedIcons.ellipsis_search,
+  AnimatedIcons.event_add,
+  AnimatedIcons.home_menu,
+  AnimatedIcons.list_view,
+  AnimatedIcons.menu_arrow,
+  AnimatedIcons.menu_close,
+  AnimatedIcons.menu_home,
+  AnimatedIcons.pause_play,
+  AnimatedIcons.play_pause,
+  AnimatedIcons.search_ellipsis,
+  AnimatedIcons.view_list,
+];
+
+const _animatedIconNames = [
+  'arrow_menu',
+  'close_menu',
+  'ellipsis_search',
+  'event_add',
+  'home_menu',
+  'list_view',
+  'menu_arrow',
+  'menu_close',
+  'menu_home',
+  'pause_play',
+  'play_pause',
+  'search_ellipsis',
+  'view_list',
+];
+
+final _animatedIconDirections = List<bool>.generate(_animatedIcons.length, (_) => true);
+
+class _AnimatedIconsTab extends ConsumerWidget {
+  static final _logger = Logger((_AnimatedIconsTab).toString());
+
+  const _AnimatedIconsTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    assert(_animatedIcons.length == _animatedIconNames.length);
+    _logger.fine('[i] build');
+
+    final theme = Theme.of(context);
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ..._animatedIcons.mapIndexed(
+          (index, data) => _Animated(
+            builder: (controller) {
+              return Tooltip(
+                message: _animatedIconNames[index],
+                child: AnimatedIcon(
+                  icon: data,
+                  progress: controller,
+                  size: 48,
+                  color: theme.colorScheme.background,
+                ),
+              );
+            },
+            onTap: (controller) {
+              final direction = _animatedIconDirections[index];
+              if (direction) {
+                controller.forward(from: controller.value);
+              } else {
+                controller.reverse(from: controller.value);
+              }
+              _animatedIconDirections[index] = !direction;
+            },
+          ),
+        ),
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
     });
   }
 }
