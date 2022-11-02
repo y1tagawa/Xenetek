@@ -8,7 +8,6 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 enum _Class { fighter, cleric, mage, thief }
 

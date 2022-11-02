@@ -12,7 +12,6 @@ import '../data/primary_color_names.dart';
 import '../data/x11_colors.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 ///
 /// Exampleアプリの設定ページ。

@@ -8,7 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../my_flutter_app_icons.dart';
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 const _mediaUrl = 'https://upload.wikimedia.org/wikipedia/commons/f/fd/Ghostscript_Tiger.svg';
 const _mediaPageUrl = 'https://commons.wikimedia.org/wiki/File:Ghostscript_Tiger.svg';

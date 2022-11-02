@@ -10,7 +10,6 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../main.dart';
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 //
 // Animations trial page.

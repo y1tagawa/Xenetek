@@ -8,7 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 class _SwitchItem {
   final Icon checkIcon;

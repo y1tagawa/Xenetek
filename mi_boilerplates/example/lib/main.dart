@@ -22,7 +22,6 @@ import 'pages/checks_page.dart';
 import 'pages/colors_page.dart';
 import 'pages/dialogs_page.dart';
 import 'pages/ex_app_bar.dart';
-import 'pages/ex_bottom_navigation_bar.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
