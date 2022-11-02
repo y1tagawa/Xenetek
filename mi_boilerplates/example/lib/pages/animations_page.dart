@@ -212,19 +212,19 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 
 class _Animated extends StatefulWidget {
-  final bool initiallyForward;
   final Duration duration;
   final Widget Function(AnimationController) builder;
+  final void Function(AnimationController)? onInitialized;
   final void Function(AnimationController)? onCompleted;
   final void Function(AnimationController)? onTap;
   final Widget? child;
 
   const _Animated({
-    // ignore: unused_element
-    this.initiallyForward = false,
     required this.builder,
     // ignore: unused_element
     this.duration = const Duration(milliseconds: 1000),
+    // ignore: unused_element
+    this.onInitialized,
     // ignore: unused_element
     this.onCompleted,
     // ignore: unused_element
@@ -244,15 +244,13 @@ class _AnimatedState extends State<_Animated> with SingleTickerProviderStateMixi
     vsync: this, // the SingleTickerProviderStateMixin.
     duration: widget.duration,
   ).also((it) {
-    if (widget.initiallyForward) {
-      it.forward();
-    }
-  })
-    ..addStatusListener((status) {
+    it.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         widget.onCompleted?.call(_controller);
       }
     });
+    widget.onInitialized?.call(it);
+  });
 
   @override
   void dispose() {
@@ -386,6 +384,13 @@ class _AnimatedIconsTab extends ConsumerWidget {
                 ),
               );
             },
+            // onInitialized: (controller) {
+            //   controller.forward();
+            // },
+            // onCompleted: (controller) {
+            //   controller.reset();
+            //   controller.forward();
+            // },
             onTap: (controller) {
               final direction = _animatedIconDirections[index];
               if (direction) {
