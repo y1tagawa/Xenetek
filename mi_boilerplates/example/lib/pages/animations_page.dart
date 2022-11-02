@@ -16,6 +16,24 @@ import 'ex_app_bar.dart';
 // Animations trial page.
 //
 
+class _ImageIcon extends StatelessWidget {
+  final Image image;
+
+  const _ImageIcon({
+    super.key,
+    required this.image,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = IconTheme.of(context);
+    return Image(
+      image: image.image,
+      color: theme.color,
+    );
+  }
+}
+
 var _tabIndex = 0;
 
 class AnimationsPage extends ConsumerWidget {
@@ -34,14 +52,12 @@ class AnimationsPage extends ConsumerWidget {
     final theme = Theme.of(context);
 
     final tabs = <Widget>[
-      const MiTab(icon: icon, tooltip: 'Animated builder'),
+      const MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
       MiTab(
         icon: SizedBox.square(
           dimension: 19.5,
-          child: Image.asset(
-            'assets/lottieIcon.png',
-            // TODO: 末端でテーマ設定はよくない・非選択色対応
-            color: theme.tabBarTheme.labelColor ?? theme.colorScheme.onSurface,
+          child: _ImageIcon(
+            image: Image.asset('assets/lottieIcon.png'),
           ),
         ),
         tooltip: 'Lottie',
