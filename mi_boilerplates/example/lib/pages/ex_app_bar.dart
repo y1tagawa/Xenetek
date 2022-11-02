@@ -145,6 +145,7 @@ class _PopupMenu extends ConsumerWidget {
   }
 }
 
+/// Exampleアプリ用AppBar
 class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
@@ -180,6 +181,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final enabled = ref.watch(enableActionsProvider);
     final theme = Theme.of(context);
 
     return MiAppBar(
@@ -215,7 +217,15 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         if (prominent) ...[
           _EnableActionsSwitch(),
           _AdjustThemeCheckbox(),
-          _UseMaterial3Button(),
+          MiCheckIconButton(
+            enabled: enabled,
+            checked: ref.watch(useM3Provider),
+            onChanged: (value) {
+              ref.read(useM3Provider.state).state = value;
+            },
+            checkIcon: const Icon(Icons.filter_3_outlined),
+            uncheckIcon: const Icon(Icons.filter_2_outlined),
+          ),
           _BrightnessButton(),
         ] else
           _PopupMenu(),
@@ -225,6 +235,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 }
 
+/// Exampleアプリ用TabBar
 class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   final bool enabled;
   final List<Widget> tabs;
@@ -253,8 +264,8 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final adjustTheme = ref.watch(adjustThemeProvider);
-    return adjustTheme
+    // テーマ調整ON/OFFによって切り替える
+    return ref.watch(adjustThemeProvider)
         ? MiTabBar(
             enabled: enabled,
             tabs: tabs,
