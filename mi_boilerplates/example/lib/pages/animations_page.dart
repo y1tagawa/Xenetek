@@ -89,6 +89,22 @@ class AnimationsPage extends ConsumerWidget {
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
             icon: icon,
+            // icon: _Animated(
+            //   builder: (controller) {
+            //     _logger.fine(controller.value);
+            //     return Transform.rotate(
+            //       angle: controller.value * 6.28,
+            //       child: icon,
+            //     );
+            //   },
+            //   onInitialized: (controller) {
+            //     controller.forward();
+            //   },
+            //   onCompleted: (controller) {
+            //     controller.reset();
+            //     controller.forward();
+            //   },
+            // ),
             title: _title,
             bottom: ExTabBar(
               enabled: enableActions,
