@@ -311,7 +311,7 @@ class MiCheckIconButton extends StatelessWidget {
         duration: duration ?? const Duration(milliseconds: 200),
         crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
         firstChild: checkIcon ?? const Icon(Icons.check_box_outlined),
-        secondChild: checkIcon ?? const Icon(Icons.check_box_outline_blank),
+        secondChild: uncheckIcon ?? const Icon(Icons.check_box_outline_blank),
       ),
     );
   }

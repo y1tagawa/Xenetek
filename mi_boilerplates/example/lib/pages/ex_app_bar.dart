@@ -31,41 +31,6 @@ class _EnableActionsSwitch extends ConsumerWidget {
   }
 }
 
-class _BrightnessButton extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
-    final state = ref.watch(brightnessProvider.state);
-    final isDark = state.state.isDark;
-
-    return MiIconButton(
-      enabled: enabled,
-      icon: isDark ? const Icon(Icons.dark_mode_outlined) : const Icon(Icons.light_mode_outlined),
-      onPressed: () {
-        state.state = isDark ? Brightness.light : Brightness.dark;
-      },
-      tooltip: isDark ? 'Brightness: DARK' : 'Brightness: LIGHT',
-    );
-  }
-}
-
-class _UseMaterial3Button extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
-    final useM3 = ref.watch(useM3Provider);
-
-    return MiIconButton(
-      enabled: enabled,
-      icon: useM3 ? const Icon(Icons.filter_3_outlined) : const Icon(Icons.filter_2_outlined),
-      onPressed: () {
-        ref.read(useM3Provider.state).state = !useM3;
-      },
-      tooltip: useM3 ? 'Material design: 3' : 'Material design: 2',
-    );
-  }
-}
-
 class _AdjustThemeCheckbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,8 +47,8 @@ class _AdjustThemeCheckbox extends ConsumerWidget {
   }
 }
 
-class _PopupMenu extends ConsumerWidget {
-  static final _logger = Logger((_PopupMenu).toString());
+class _OverflowMenu extends ConsumerWidget {
+  static final _logger = Logger((_OverflowMenu).toString());
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -215,7 +180,6 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
       actions: <Widget>[
         if (actions != null) ...actions!,
         if (prominent) ...[
-          _EnableActionsSwitch(),
           _AdjustThemeCheckbox(),
           MiCheckIconButton(
             enabled: enabled,
@@ -226,9 +190,18 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
             checkIcon: const Icon(Icons.filter_3_outlined),
             uncheckIcon: const Icon(Icons.filter_2_outlined),
           ),
-          _BrightnessButton(),
+          MiCheckIconButton(
+            enabled: enabled,
+            checked: ref.watch(brightnessProvider).isDark,
+            onChanged: (value) {
+              ref.read(brightnessProvider.state).state = value ? Brightness.dark : Brightness.light;
+            },
+            checkIcon: const Icon(Icons.dark_mode_outlined),
+            uncheckIcon: const Icon(Icons.light_mode_outlined),
+          ),
+          _EnableActionsSwitch(),
         ] else
-          _PopupMenu(),
+          _OverflowMenu(),
       ],
       centerTitle: centerTitle,
     );
