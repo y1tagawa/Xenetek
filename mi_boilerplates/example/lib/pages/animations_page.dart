@@ -23,6 +23,8 @@ class AnimationsPage extends ConsumerWidget {
   static const title = Text('Anima-\ntions');
   static const _title = Text('Animations');
 
+  static final _logger = Logger((AnimationsPage).toString());
+
   const AnimationsPage({super.key});
 
   @override
@@ -131,7 +133,6 @@ class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderS
       animation: _controller,
       child: null,
       builder: (context, _) {
-        //log('$_tag AnimatedBuilder.builder ${_controller.value}');
         final t = _controller.value;
         return SizedBox.square(
           dimension: 120,
@@ -171,13 +172,13 @@ class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderS
 }
 
 class _AnimatedBuilderTab extends ConsumerWidget {
-  static final _log = Logger((_AnimatedBuilderTab).toString());
+  static final _logger = Logger((_AnimatedBuilderTab).toString());
 
   const _AnimatedBuilderTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    _log.fine('[i] build');
+    _logger.fine('[i] build');
 
     final productName = ref.watch(productNameProvider).when(
           data: (value) => value,
@@ -195,11 +196,11 @@ class _AnimatedBuilderTab extends ConsumerWidget {
           controller.forward();
         },
         onCompleted: (_) {
-          _log.fine('_AnimatedIcon.onCompleted');
+          _logger.fine('_AnimatedIcon.onCompleted');
         },
       ),
     ).also((_) {
-      _log.fine('[o] build');
+      _logger.fine('[o] build');
     });
   }
 }
@@ -211,6 +212,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 
 class _Animated extends StatefulWidget {
+  final bool initiallyForward;
   final Duration duration;
   final Widget Function(AnimationController) builder;
   final void Function(AnimationController)? onCompleted;
@@ -218,6 +220,8 @@ class _Animated extends StatefulWidget {
   final Widget? child;
 
   const _Animated({
+    // ignore: unused_element
+    this.initiallyForward = false,
     required this.builder,
     // ignore: unused_element
     this.duration = const Duration(milliseconds: 1000),
@@ -234,12 +238,17 @@ class _Animated extends StatefulWidget {
 }
 
 class _AnimatedState extends State<_Animated> with SingleTickerProviderStateMixin {
-  static final _log = Logger((_AnimatedState).toString());
+  static final _logger = Logger((_AnimatedState).toString());
 
   late final AnimationController _controller = AnimationController(
     vsync: this, // the SingleTickerProviderStateMixin.
     duration: widget.duration,
-  )..addStatusListener((status) {
+  ).also((it) {
+    if (widget.initiallyForward) {
+      it.forward();
+    }
+  })
+    ..addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         widget.onCompleted?.call(_controller);
       }
@@ -253,12 +262,12 @@ class _AnimatedState extends State<_Animated> with SingleTickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
-    _log.fine('[i] build ${_controller.value}');
+    _logger.fine('[i] build ${_controller.value}');
     return InkWell(
       child: widget.builder(_controller),
       onTap: () => widget.onTap?.call(_controller),
     ).also((_) {
-      _log.fine('[o] build');
+      _logger.fine('[o] build');
     });
   }
 }
