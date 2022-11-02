@@ -11,54 +11,77 @@ import 'ex_app_bar.dart';
 import 'ex_bottom_navigation_bar.dart';
 
 class _SwitchItem {
-  final Icon iconOn;
-  final Icon iconOff;
+  final Icon checkIcon;
+  final Icon uncheckIcon;
   final Widget title;
-  const _SwitchItem({required this.iconOn, required this.iconOff, required this.title});
+  const _SwitchItem({required this.checkIcon, required this.uncheckIcon, required this.title});
 }
 
 const _switchItems = [
   _SwitchItem(
-    iconOn: Icon(Icons.visibility_outlined),
-    iconOff: Icon(Icons.visibility_off_outlined),
+    checkIcon: Icon(Icons.visibility_outlined),
+    uncheckIcon: Icon(Icons.visibility_off_outlined),
     title: Text('Vision'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.hearing_outlined),
-    iconOff: Icon(Icons.hearing_disabled_outlined),
+    checkIcon: Icon(Icons.hearing_outlined),
+    uncheckIcon: Icon(Icons.hearing_disabled_outlined),
     title: Text('Hearing'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.psychology_outlined),
-    iconOff: Icon(Icons.question_mark),
+    checkIcon: Icon(Icons.psychology_outlined),
+    uncheckIcon: Icon(Icons.question_mark),
     title: Text('Memory'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.directions_run),
-    iconOff: Icon(Icons.airline_seat_flat_outlined),
+    checkIcon: Icon(Icons.directions_run),
+    uncheckIcon: Icon(Icons.airline_seat_flat_outlined),
     title: Text('Health'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.attach_money_outlined),
-    iconOff: Icon(Icons.money_off_outlined),
+    checkIcon: Icon(Icons.attach_money_outlined),
+    uncheckIcon: Icon(Icons.money_off_outlined),
     title: Text('Money'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.air_outlined),
-    iconOff: Icon(Icons.thermostat),
+    checkIcon: Icon(Icons.air_outlined),
+    uncheckIcon: Icon(Icons.thermostat),
     title: Text('Air conditioning'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.bathroom_outlined),
-    iconOff: Icon(Icons.format_color_reset_outlined),
+    checkIcon: Icon(Icons.bathroom_outlined),
+    uncheckIcon: Icon(Icons.format_color_reset_outlined),
     title: Text('Bath'),
   ),
   _SwitchItem(
-    iconOn: Icon(Icons.hourglass_top_outlined),
-    iconOff: Icon(Icons.hourglass_bottom_outlined),
+    checkIcon: Icon(Icons.hourglass_top_outlined),
+    uncheckIcon: Icon(Icons.hourglass_bottom_outlined),
     title: Text('Life time'),
   ),
 ];
+
+class _ToggleIcon extends StatelessWidget {
+  final bool checked;
+  final Widget checkIcon;
+  final Widget uncheckIcon;
+
+  const _ToggleIcon({
+    super.key,
+    required this.checked,
+    required this.checkIcon,
+    required this.uncheckIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedCrossFade(
+      duration: const Duration(milliseconds: 300),
+      crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      firstChild: checkIcon,
+      secondChild: uncheckIcon,
+    );
+  }
+}
 
 final _switchProvider = StateProvider((ref) => List.filled(_switchItems.length, true));
 
@@ -74,9 +97,9 @@ class SwitchesPage extends ConsumerWidget {
     final switchValueStates = ref.watch(_switchProvider.state);
     final switchValues = switchValueStates.state;
 
-    final loVisColor = Theme.of(context).disabledColor;
+    final theme = Theme.of(context);
 
-    final MyHp = switchValues.where((value) => value).length;
+    final myHp = switchValues.where((value) => value).length;
 
     void reset(bool value) {
       switchValueStates.state = List.filled(_switchItems.length, value);
@@ -85,7 +108,11 @@ class SwitchesPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        icon: enableActions ? icon : const Icon(Icons.toggle_off_outlined),
+        icon: _ToggleIcon(
+          checked: enableActions,
+          checkIcon: icon,
+          uncheckIcon: const Icon(Icons.toggle_off_outlined),
+        ),
         title: title,
       ),
       body: SafeArea(
@@ -96,7 +123,7 @@ class SwitchesPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 MiTextButton(
-                  enabled: enableActions && MyHp < _switchItems.length,
+                  enabled: enableActions && myHp < _switchItems.length,
                   onPressed: () => reset(true),
                   child: const MiIcon(
                     icon: Icon(Icons.refresh),
@@ -104,7 +131,7 @@ class SwitchesPage extends ConsumerWidget {
                   ),
                 ),
                 MiTextButton(
-                  enabled: enableActions && MyHp > 0,
+                  enabled: enableActions && myHp > 0,
                   onPressed: () => reset(false),
                   child: const MiIcon(
                     icon: Icon(Icons.clear),
@@ -124,7 +151,11 @@ class SwitchesPage extends ConsumerWidget {
                       enabled: enableActions,
                       value: switchValue,
                       title: MiIcon(
-                        icon: switchValue ? item.iconOn : item.iconOff,
+                        icon: _ToggleIcon(
+                          checked: switchValue,
+                          checkIcon: item.checkIcon,
+                          uncheckIcon: item.uncheckIcon,
+                        ),
                         text: item.title,
                       ),
                       onChanged: (value) =>
@@ -137,18 +168,18 @@ class SwitchesPage extends ConsumerWidget {
             const Divider(),
             Container(
               padding: const EdgeInsets.all(10),
-              child: MyHp > 0
+              child: myHp > 0
                   ? Icon(
                       Icons.person_outline_outlined,
                       size: 48,
-                      color: loVisColor,
+                      color: theme.disabledColor,
                     )
                   : MiRotate(
                       angleDegree: 90,
                       child: Icon(
                         Icons.crop_7_5,
                         size: 48,
-                        color: loVisColor,
+                        color: theme.disabledColor,
                       ),
                     ),
             ),

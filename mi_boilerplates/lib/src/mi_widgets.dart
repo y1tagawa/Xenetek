@@ -277,7 +277,7 @@ class MiIconButton extends IconButton {
         );
 }
 
-/// トグル式アイコンボタン
+/// トグルアイコンボタン
 class MiCheckIconButton extends StatelessWidget {
   final bool enabled;
   final bool checked;
@@ -308,7 +308,7 @@ class MiCheckIconButton extends StatelessWidget {
           : null,
       iconSize: iconSize,
       icon: AnimatedCrossFade(
-        duration: duration ?? const Duration(milliseconds: 200),
+        duration: duration ?? const Duration(milliseconds: 300),
         crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
         firstChild: checkIcon ?? const Icon(Icons.check_box_outlined),
         secondChild: uncheckIcon ?? const Icon(Icons.check_box_outline_blank),
