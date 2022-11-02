@@ -277,6 +277,46 @@ class MiIconButton extends IconButton {
         );
 }
 
+/// トグル式アイコンボタン
+class MiCheckIconButton extends StatelessWidget {
+  final bool enabled;
+  final bool checked;
+  final double? iconSize;
+  final ValueChanged<bool>? onChanged;
+  final Widget? checkIcon;
+  final Widget? uncheckIcon;
+  final Duration? duration;
+
+  const MiCheckIconButton({
+    super.key,
+    this.enabled = true,
+    required this.checked,
+    this.iconSize,
+    this.onChanged,
+    this.checkIcon,
+    this.uncheckIcon,
+    this.duration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: enabled
+          ? () {
+              onChanged?.call(!checked);
+            }
+          : null,
+      iconSize: iconSize,
+      icon: AnimatedCrossFade(
+        duration: duration ?? const Duration(milliseconds: 200),
+        crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+        firstChild: checkIcon ?? const Icon(Icons.check_box_outlined),
+        secondChild: checkIcon ?? const Icon(Icons.check_box_outline_blank),
+      ),
+    );
+  }
+}
+
 /// 明示的にintの値をとる[Slider]
 class MiIntSlider extends StatelessWidget {
   final bool enabled;

@@ -114,6 +114,7 @@ class ButtonsPage extends ConsumerWidget {
 /// TextButton, OutlinedButton, ElevatedButton, IconButton tab.
 ///
 
+final _tProvider = StateProvider((ref) => false);
 final _toggleProvider = StateProvider((ref) => List<bool>.filled(5, false));
 
 class _PushButtonsTab extends ConsumerWidget {
@@ -127,6 +128,7 @@ class _PushButtonsTab extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
     final toggle = ref.watch(_toggleProvider);
+    final t = ref.watch(_tProvider);
 
     final theme = Theme.of(context);
 
@@ -183,6 +185,17 @@ class _PushButtonsTab extends ConsumerWidget {
               onPressed: enabled ? () => _ping(ref) : null,
               icon: const Icon(Icons.notifications_outlined),
               tooltip: 'IconButton',
+            ),
+          ),
+          ListTile(
+            iconColor: theme.colorScheme.onSurface,
+            leading: MiCheckIconButton(
+              enabled: enabled,
+              checked: t,
+              onChanged: (value) {
+                _ping(ref);
+                ref.read(_tProvider.state).state = value;
+              },
             ),
           ),
           ListTile(
