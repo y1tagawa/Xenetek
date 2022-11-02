@@ -47,7 +47,20 @@ class AnimationsPage extends ConsumerWidget {
         tooltip: 'Lottie',
       ),
       const MiTab(
-        icon: Icon(Icons.access_alarm_outlined),
+        icon: Icon(Icons.play_arrow),
+        // icon: _Animated(
+        //   duration: const Duration(seconds: 10),
+        //   builder: (controller) {
+        //     return AnimatedIcon(icon: AnimatedIcons.arrow_menu, progress: controller);
+        //   },
+        //   onInitialized: (controller) {
+        //     controller.forward();
+        //   },
+        //   onCompleted: (controller) {
+        //     controller.reset();
+        //     controller.forward();
+        //   },
+        // ),
         tooltip: 'Animated icons',
       ),
     ];
@@ -261,10 +274,14 @@ class _AnimatedState extends State<_Animated> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     _logger.fine('[i] build ${_controller.value}');
-    return InkWell(
-      child: widget.builder(_controller),
-      onTap: () => widget.onTap?.call(_controller),
-    ).also((_) {
+    Widget child = widget.builder(_controller);
+    if (widget.onTap != null) {
+      child = InkWell(
+        child: child,
+        onTap: () => widget.onTap!.call(_controller),
+      );
+    }
+    return child.also((_) {
       _logger.fine('[o] build');
     });
   }
