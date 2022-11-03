@@ -114,7 +114,8 @@ class _ColorGridTab extends ConsumerWidget {
                     context: context,
                     initialColor: initialColor,
                     colors: colors,
-                    onChanged: (color) {
+                    onChanged: (_, index) {
+                      final color = colors[index];
                       if (color != null) {
                         ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
                       }
@@ -135,7 +136,8 @@ class _ColorGridTab extends ConsumerWidget {
                     context: context,
                     initialColor: initialColor,
                     colorTabs: colorTabs,
-                    onChanged: (color) {
+                    onChanged: (key, index) {
+                      final color = colorTabs[key]![index];
                       if (color != null) {
                         ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
                       }
@@ -153,7 +155,8 @@ class _ColorGridTab extends ConsumerWidget {
               child: MiColorGrid(
                   initialColor: ref.watch(primarySwatchProvider),
                   colors: colors,
-                  onChanged: (color) {
+                  onChanged: (index) {
+                    final color = colors[index];
                     if (color != null) {
                       ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
                     }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../mi_boilerplates.dart';
@@ -14,8 +15,8 @@ class MiColorGrid extends StatefulWidget {
   final Color? initialColor;
   final double? chipSize;
   final List<Color?> colors;
-  final ValueChanged<Color?>? onChanged;
-  final void Function(Color?, bool)? onHover;
+  final ValueChanged<int>? onChanged;
+  final void Function(int, bool)? onHover;
 
   const MiColorGrid({
     super.key,
@@ -45,20 +46,20 @@ class _MiColorGridState extends State<MiColorGrid> {
     return Wrap(
       spacing: 4,
       runSpacing: 4,
-      children: widget.colors.map((color) {
+      children: widget.colors.mapIndexed((index, value) {
         return InkWell(
           onTap: () {
             setState(() {
-              _color = color;
+              _color = value;
             });
-            widget.onChanged?.call(color);
+            widget.onChanged?.call(index);
           },
           onHover: (enter) {
-            widget.onHover?.call(color, enter);
+            widget.onHover?.call(index, enter);
           },
           child: SizedBox.square(
             dimension: widget.chipSize,
-            child: color != null ? ColoredBox(color: color) : const Icon(Icons.block_outlined),
+            child: value != null ? ColoredBox(color: value) : const Icon(Icons.block_outlined),
           ),
         );
       }).toList(),
@@ -76,7 +77,7 @@ Future<bool> showColorGridDialog({
   Color? initialColor,
   List<Color?>? colors,
   Map<String, List<Color?>>? colorTabs,
-  ValueChanged<Color?>? onChanged,
+  void Function(String? key, int index)? onChanged,
   bool barrierDismissible = true,
 }) async {
   assert(colors != null || colorTabs != null);
@@ -104,14 +105,14 @@ Future<bool> showColorGridDialog({
                         const SizedBox(height: 4),
                         Expanded(
                           child: TabBarView(
-                            children: colorTabs.values
+                            children: colorTabs.entries
                                 .map(
-                                  (colors) => SingleChildScrollView(
+                                  (entry) => SingleChildScrollView(
                                     child: MiColorGrid(
-                                      colors: colors,
-                                      onChanged: (value) {
-                                        setState(() => color = value);
-                                        onChanged?.call(value);
+                                      colors: entry.value,
+                                      onChanged: (index) {
+                                        setState(() => color = entry.value[index]);
+                                        onChanged?.call(entry.key, index);
                                       },
                                     ),
                                   ),
@@ -126,9 +127,9 @@ Future<bool> showColorGridDialog({
                   child: MiColorGrid(
                     initialColor: initialColor,
                     colors: colors!,
-                    onChanged: (value) {
-                      setState(() => color = value);
-                      onChanged?.call(value);
+                    onChanged: (index) {
+                      setState(() => color = colors[index]);
+                      onChanged?.call(null, index);
                     },
                   ),
                 ),
