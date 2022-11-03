@@ -122,87 +122,6 @@ class AnimationsPage extends ConsumerWidget {
 //   https://api.flutter.dev/flutter/animation/AnimationController-class.html
 //
 
-class _AnimatedIcon extends StatefulWidget {
-  final Duration duration;
-  final void Function(AnimationController)? onCompleted;
-  final void Function(AnimationController)? onTap;
-
-  const _AnimatedIcon({
-    // ignore: unused_element
-    this.duration = const Duration(milliseconds: 1000),
-    // ignore: unused_element
-    this.onCompleted,
-    this.onTap,
-  });
-
-  @override
-  State<StatefulWidget> createState() => _AnimatedIconState();
-}
-
-class _AnimatedIconState extends State<_AnimatedIcon> with SingleTickerProviderStateMixin {
-  static final _logger = Logger((_AnimatedIconState).toString());
-
-  late final AnimationController _controller = AnimationController(
-    vsync: this, // the SingleTickerProviderStateMixin.
-    duration: widget.duration,
-  )..addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        widget.onCompleted?.call(_controller);
-      }
-    });
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    _logger.fine('[i] build ${_controller.value}');
-
-    return AnimatedBuilder(
-      animation: _controller,
-      child: null,
-      builder: (context, _) {
-        final t = _controller.value;
-        return SizedBox.square(
-          dimension: 120,
-          child: InkWell(
-            onTap: () => widget.onTap?.call(_controller),
-            child: Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.center,
-              children: [
-                //
-                Transform.rotate(
-                  angle: (360.0 * t).toRadian(),
-                  child: const Icon(
-                    Icons.refresh,
-                    size: 60,
-                  ),
-                ),
-                //
-                if (t != 0.0 && t < 0.99)
-                  Transform.translate(
-                    offset: Offset(200.0 * t, 200.0 * t * t),
-                    child: const Icon(
-                      Icons.star,
-                      size: 24,
-                      color: Colors.orange,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
 class _AnimatedBuilderTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedBuilderTab).toString());
 
@@ -219,16 +138,43 @@ class _AnimatedBuilderTab extends ConsumerWidget {
         );
 
     return Center(
-      child: _AnimatedIcon(
+      child: _Animated(
         duration: productName == 'S6-KC'
             ? const Duration(seconds: 6) // Mi Android One.
             : const Duration(milliseconds: 200),
+        builder: (_, controller, __) {
+          final t = controller.value;
+          return SizedBox.square(
+            dimension: 120,
+            child: Stack(
+              fit: StackFit.expand,
+              alignment: Alignment.center,
+              children: [
+                // arrow
+                Transform.rotate(
+                  angle: (360.0 * t).toRadian(),
+                  child: const Icon(
+                    Icons.refresh,
+                    size: 60,
+                  ),
+                ),
+                // star
+                if (t != 0.0 && t < 0.99)
+                  Transform.translate(
+                    offset: Offset(200.0 * t, 200.0 * t * t),
+                    child: const Icon(
+                      Icons.star,
+                      size: 24,
+                      color: Colors.orange,
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
         onTap: (controller) {
           controller.reset();
           controller.forward();
-        },
-        onCompleted: (_) {
-          _logger.fine('_AnimatedIcon.onCompleted');
         },
       ),
     ).also((_) {
@@ -245,7 +191,11 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 
 class _Animated extends StatefulWidget {
   final bool enabled;
-  final Widget Function(AnimationController controller) builder;
+  final Widget Function(
+    BuildContext context,
+    AnimationController controller,
+    Widget? child,
+  ) builder;
   final Duration duration;
   final void Function(AnimationController controller)? onInitialized;
   final void Function(AnimationController controller)? onCompleted;
@@ -267,7 +217,6 @@ class _Animated extends StatefulWidget {
     this.onTap,
     // ignore: unused_element
     this.onHover,
-    // ignore: unused_element
     this.child,
   });
 
@@ -299,7 +248,7 @@ class _AnimatedState extends State<_Animated> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     _logger.fine('[i] build ${_controller.value}');
-    Widget child = widget.builder(_controller);
+    Widget child = widget.builder(context, _controller, widget.child);
     if (widget.onTap != null || widget.onHover != null) {
       child = InkWell(
         onTap: widget.enabled ? () => widget.onTap?.call(_controller) : null,
@@ -332,7 +281,7 @@ class _LottieTab extends ConsumerWidget {
 
     return Center(
       child: _Animated(
-        builder: (controller) {
+        builder: (_, controller, __) {
           return Lottie.network(
             'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/Mobilo/A.json',
             controller: controller,
@@ -416,7 +365,7 @@ class _AnimatedIconsTab extends ConsumerWidget {
       children: [
         ..._animatedIcons.mapIndexed(
           (index, data) => _Animated(
-            builder: (controller) {
+            builder: (_, controller, __) {
               return Tooltip(
                 message: _animatedIconNames[index],
                 child: AnimatedIcon(
@@ -427,13 +376,6 @@ class _AnimatedIconsTab extends ConsumerWidget {
                 ),
               );
             },
-            // onInitialized: (controller) {
-            //   controller.forward();
-            // },
-            // onCompleted: (controller) {
-            //   controller.reset();
-            //   controller.forward();
-            // },
             onTap: (controller) {
               final direction = _animatedIconDirections[index];
               if (direction) {
