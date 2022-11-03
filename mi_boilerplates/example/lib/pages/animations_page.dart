@@ -142,37 +142,40 @@ class _AnimatedBuilderTab extends ConsumerWidget {
         duration: productName == 'S6-KC'
             ? const Duration(seconds: 6) // Mi Android One.
             : const Duration(milliseconds: 200),
-        builder: (_, controller, __) {
-          final t = controller.value;
-          _logger.fine(t);
-          return SizedBox.square(
-            dimension: 120,
-            child: Stack(
-              fit: StackFit.expand,
-              alignment: Alignment.center,
-              children: [
-                // arrow
-                Transform.rotate(
-                  angle: (360.0 * t).toRadian(),
-                  child: const Icon(
-                    Icons.refresh,
-                    size: 60,
-                  ),
-                ),
-                // star
-                if (t != 0.0 && t < 0.99)
-                  Transform.translate(
-                    offset: Offset(200.0 * t, 200.0 * t * t),
+        builder: (_, controller, __) => AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            final t = controller.value;
+            _logger.fine(t);
+            return SizedBox.square(
+              dimension: 120,
+              child: Stack(
+                fit: StackFit.expand,
+                alignment: Alignment.center,
+                children: [
+                  // arrow
+                  Transform.rotate(
+                    angle: (360.0 * t).toRadian(),
                     child: const Icon(
-                      Icons.star,
-                      size: 24,
-                      color: Colors.orange,
+                      Icons.refresh,
+                      size: 60,
                     ),
                   ),
-              ],
-            ),
-          );
-        },
+                  // star
+                  if (t != 0.0 && t < 0.99)
+                    Transform.translate(
+                      offset: Offset(200.0 * t, 200.0 * t * t),
+                      child: const Icon(
+                        Icons.star,
+                        size: 24,
+                        color: Colors.orange,
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
         onTap: (controller) {
           _logger.fine('tap');
           controller.reset();
