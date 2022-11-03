@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-/// [AnimationController]内蔵[AnimatedBuilder]
+/// [AnimationController]内蔵ウィジェット
 ///
 /// s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
-class MiAnimatedBuilder extends StatefulWidget {
+class MiAnimationController extends StatefulWidget {
   final bool enabled;
   final Widget Function(
     BuildContext context,
@@ -19,7 +19,7 @@ class MiAnimatedBuilder extends StatefulWidget {
   final void Function(AnimationController controller, bool enter)? onHover;
   final Widget? child;
 
-  const MiAnimatedBuilder({
+  const MiAnimationController({
     super.key,
     this.enabled = true,
     required this.builder,
@@ -32,11 +32,12 @@ class MiAnimatedBuilder extends StatefulWidget {
   });
 
   @override
-  State<StatefulWidget> createState() => _MiAnimatedBuilderState();
+  State<StatefulWidget> createState() => _MiAnimationControllerState();
 }
 
-class _MiAnimatedBuilderState extends State<MiAnimatedBuilder> with SingleTickerProviderStateMixin {
-  static final _logger = Logger((_MiAnimatedBuilderState).toString());
+class _MiAnimationControllerState extends State<MiAnimationController>
+    with SingleTickerProviderStateMixin {
+  static final _logger = Logger((_MiAnimationControllerState).toString());
 
   late final AnimationController _controller = AnimationController(
     vsync: this, // the SingleTickerProviderStateMixin.
@@ -58,7 +59,7 @@ class _MiAnimatedBuilderState extends State<MiAnimatedBuilder> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    _logger.fine('[i] build ${_controller.value}');
+    //_logger.fine('[i] build ${_controller.value}');
     Widget child = widget.builder(context, _controller, widget.child);
     if (widget.onTap != null || widget.onHover != null) {
       child = InkWell(
@@ -67,8 +68,7 @@ class _MiAnimatedBuilderState extends State<MiAnimatedBuilder> with SingleTicker
         child: child,
       );
     }
-    return child.also((_) {
-      _logger.fine('[o] build');
-    });
+    return child //.also((_) { _logger.fine('[o] build');})
+        ;
   }
 }

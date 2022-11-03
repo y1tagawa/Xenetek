@@ -138,7 +138,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
         );
 
     return Center(
-      child: MiAnimatedBuilder(
+      child: MiAnimationController(
         duration: productName == 'S6-KC'
             ? const Duration(seconds: 6) // Mi Android One.
             : const Duration(milliseconds: 200),
@@ -212,7 +212,7 @@ class _LottieTab extends ConsumerWidget {
     _log.fine('productName=[$productName]');
 
     return Center(
-      child: MiAnimatedBuilder(
+      child: MiAnimationController(
         builder: (_, controller, __) {
           return Lottie.network(
             'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/Mobilo/A.json',
@@ -296,7 +296,7 @@ class _AnimatedIconsTab extends ConsumerWidget {
       runSpacing: 8,
       children: [
         ..._animatedIcons.mapIndexed(
-          (index, data) => MiAnimatedBuilder(
+          (index, data) => MiAnimationController(
             builder: (_, controller, __) {
               return Tooltip(
                 message: _animatedIconNames[index],
