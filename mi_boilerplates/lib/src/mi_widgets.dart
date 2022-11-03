@@ -192,6 +192,30 @@ class MiColorChip extends StatelessWidget {
   }
 }
 
+/// [Image] (PNGとか)をアイコンにする
+class MiImageIcon extends StatelessWidget {
+  final Image image;
+  final double? size;
+
+  const MiImageIcon({
+    super.key,
+    required this.image,
+    this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = IconTheme.of(context);
+    return SizedBox.square(
+      dimension: size ?? theme.size,
+      child: Image(
+        image: image.image,
+        color: theme.color,
+      ),
+    );
+  }
+}
+
 /// カスタム[TextButton]
 ///
 /// [enabled]を追加しただけ。
