@@ -40,7 +40,7 @@ class AnimationsPage extends ConsumerWidget {
       MiTab(
         icon: MiImageIcon(
           image: Image.asset('assets/lottie_icon_outlined.png'),
-          size: 19.5,
+          size: 17,
         ),
         tooltip: 'Lottie',
       ),
