@@ -42,28 +42,26 @@ class _MiColorGridState extends State<MiColorGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Wrap(
-        spacing: 4,
-        runSpacing: 4,
-        children: widget.colors.map((color) {
-          return InkWell(
-            onTap: () {
-              setState(() {
-                _color = color;
-              });
-              widget.onChanged?.call(color);
-            },
-            onHover: (enter) {
-              widget.onHover?.call(color, enter);
-            },
-            child: SizedBox.square(
-              dimension: widget.chipSize,
-              child: color != null ? ColoredBox(color: color) : const Icon(Icons.block_outlined),
-            ),
-          );
-        }).toList(),
-      ),
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: widget.colors.map((color) {
+        return InkWell(
+          onTap: () {
+            setState(() {
+              _color = color;
+            });
+            widget.onChanged?.call(color);
+          },
+          onHover: (enter) {
+            widget.onHover?.call(color, enter);
+          },
+          child: SizedBox.square(
+            dimension: widget.chipSize,
+            child: color != null ? ColoredBox(color: color) : const Icon(Icons.block_outlined),
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -76,10 +74,13 @@ Future<bool> showColorGridDialog({
   Widget? icon,
   Widget? title,
   Color? initialColor,
-  required List<Color?> colors,
+  List<Color?>? colors,
+  Map<String, List<Color?>>? colorTabs,
   ValueChanged<Color?>? onChanged,
   bool barrierDismissible = true,
 }) async {
+  assert(colors != null || colorTabs != null);
+
   Color? color = initialColor;
 
   return await showDialog<bool>(
@@ -89,19 +90,48 @@ Future<bool> showColorGridDialog({
         return MiOkCancelDialog<bool>(
           icon: MiColorChip(color: color),
           title: title,
-          content: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: SingleChildScrollView(
-              child: MiColorGrid(
-                initialColor: initialColor,
-                colors: colors,
-                onChanged: (value) {
-                  setState(() => color = value);
-                  onChanged?.call(value);
-                },
-              ),
-            ),
-          ),
+          content: colorTabs != null
+              ? MiDefaultTabController(
+                  length: colorTabs.length,
+                  initialIndex: 0,
+                  builder: (context) {
+                    return Column(
+                      children: [
+                        MiTabBar(
+                          embedded: true,
+                          tabs: colorTabs.keys.map((key) => MiTab(text: key)).toList(),
+                        ),
+                        const SizedBox(height: 4),
+                        Expanded(
+                          child: TabBarView(
+                            children: colorTabs.values
+                                .map(
+                                  (colors) => SingleChildScrollView(
+                                    child: MiColorGrid(
+                                      colors: colors,
+                                      onChanged: (value) {
+                                        setState(() => color = value);
+                                        onChanged?.call(value);
+                                      },
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    );
+                  })
+              : SingleChildScrollView(
+                  child: MiColorGrid(
+                    initialColor: initialColor,
+                    colors: colors!,
+                    onChanged: (value) {
+                      setState(() => color = value);
+                      onChanged?.call(value);
+                    },
+                  ),
+                ),
           getValue: (ok) => ok,
         );
       },

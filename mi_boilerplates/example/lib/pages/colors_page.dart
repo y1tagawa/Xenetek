@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:example/data/jis_common_colors.dart';
+import 'package:example/data/x11_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -93,6 +95,12 @@ class _ColorGridTab extends ConsumerWidget {
       ...Colors.primaries,
     ];
 
+    final colorTabs = <String, List<Color?>>{
+      'Flutter': [null, ...Colors.primaries],
+      'X11': x11Colors,
+      'JIS': jisCommonColors,
+    };
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
@@ -117,6 +125,27 @@ class _ColorGridTab extends ConsumerWidget {
                 }
               },
               child: const Text('Show dialog'),
+            ),
+          ),
+          ListTile(
+            leading: MiTextButton(
+              onPressed: () async {
+                final initialColor = ref.watch(primarySwatchProvider);
+                final ok = await showColorGridDialog(
+                    context: context,
+                    initialColor: initialColor,
+                    colorTabs: colorTabs,
+                    onChanged: (color) {
+                      if (color != null) {
+                        ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
+                      }
+                    });
+                if (!ok) {
+                  // canceled.
+                  ref.read(primarySwatchProvider.state).state = initialColor;
+                }
+              },
+              child: const Text('Show dialog(tabs)'),
             ),
           ),
           Expanded(
