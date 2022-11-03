@@ -21,6 +21,7 @@ import 'pages/buttons_page.dart';
 import 'pages/checks_page.dart';
 import 'pages/colors_page.dart';
 import 'pages/dialogs_page.dart';
+import 'pages/embedded_tab_view_page.dart';
 import 'pages/ex_app_bar.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
@@ -82,6 +83,12 @@ final _pages = <_PageItem>[
     title: DialogsPage.title,
     path: '/dialogs',
     builder: (_, __) => const DialogsPage(),
+  ),
+  _PageItem(
+    icon: EmbeddedTabViewPage.icon,
+    title: EmbeddedTabViewPage.title,
+    path: '/embedded_tab_view',
+    builder: (_, __) => const EmbeddedTabViewPage(),
   ),
   _PageItem(
     icon: ListsPage.icon,
