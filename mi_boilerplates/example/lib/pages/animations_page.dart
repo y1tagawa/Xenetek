@@ -29,6 +29,8 @@ class AnimationsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
     final enableActions = ref.watch(enableActionsProvider);
 
     final theme = Theme.of(context);
@@ -55,23 +57,29 @@ class AnimationsPage extends ConsumerWidget {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
-            icon: icon,
-            // icon: _Animated(
-            //   builder: (controller) {
-            //     _logger.fine(controller.value);
-            //     return Transform.rotate(
-            //       angle: controller.value * 6.28,
-            //       child: icon,
-            //     );
-            //   },
-            //   onInitialized: (controller) {
-            //     controller.forward();
-            //   },
-            //   onCompleted: (controller) {
-            //     controller.reset();
-            //     controller.forward();
-            //   },
-            // ),
+            //icon: icon,
+            icon: MiAnimationController(
+              duration: const Duration(seconds: 120),
+              builder: (_, controller, __) {
+                _logger.fine(controller.value);
+                return AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, _) {
+                    return MiRotate(
+                      angleDegree: controller.value * 360,
+                      child: icon,
+                    );
+                  },
+                );
+              },
+              onInitialized: (controller) {
+                controller.forward();
+              },
+              onCompleted: (controller) {
+                controller.reset();
+                controller.forward();
+              },
+            ),
             title: _title,
             bottom: ExTabBar(
               enabled: enableActions,
@@ -91,12 +99,14 @@ class AnimationsPage extends ConsumerWidget {
           bottomNavigationBar: const ExBottomNavigationBar(),
         );
       },
-    );
+    ).also((it) {
+      _logger.fine('[o] build');
+    });
   }
 }
 
 //
-// AnimationController tab
+// Animation builder tab
 //
 // s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
 //   https://api.flutter.dev/flutter/animation/AnimationController-class.html
@@ -120,8 +130,8 @@ class _AnimatedBuilderTab extends ConsumerWidget {
     return Center(
       child: MiAnimationController(
         duration: productName == 'S6-KC'
-            ? const Duration(seconds: 6) // Mi Android One.
-            : const Duration(milliseconds: 200),
+            ? const Duration(seconds: 80) // Mi Android One.
+            : const Duration(milliseconds: 800),
         builder: (_, controller, __) => AnimatedBuilder(
           animation: controller,
           builder: (context, _) {
@@ -133,9 +143,9 @@ class _AnimatedBuilderTab extends ConsumerWidget {
                 fit: StackFit.expand,
                 alignment: Alignment.center,
                 children: [
-                  // arrow
+                  // dispenser
                   Transform.rotate(
-                    angle: (360.0 * t).toRadian(),
+                    angle: (360.0 * Curves.bounceOut.transform(t)).toRadian(),
                     child: const Icon(
                       Icons.refresh,
                       size: 60,
@@ -144,7 +154,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
                   // star
                   if (t != 0.0 && t < 0.99)
                     Transform.translate(
-                      offset: Offset(200.0 * t, 200.0 * t * t),
+                      offset: Offset(400.0 * t, 400.0 * t * t),
                       child: const Icon(
                         Icons.star,
                         size: 24,
