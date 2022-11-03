@@ -10,8 +10,8 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../main.dart';
 
-/// Exampleアプリでウィジェットの[enable]を切り替えて動作を見る情況が頻出するので、一個フラグを設ける。
-/// 各ウィジェットの対応はそれぞれのページで行う。
+// Exampleアプリでウィジェットの[enable]を切り替えて動作を見る情況が頻出するので、一個フラグを設ける。
+// 各ウィジェットの対応はそれぞれのページで行う。
 final enableActionsProvider = StateProvider((ref) => true);
 
 final prominentProvider = StateProvider((ref) => false);
@@ -112,6 +112,8 @@ class _OverflowMenu extends ConsumerWidget {
 }
 
 /// Exampleアプリ用AppBar
+///
+/// テーマ調整ON/OFFによりTabBarを切り替える
 class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
@@ -150,63 +152,84 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final enabled = ref.watch(enableActionsProvider);
     final theme = Theme.of(context);
 
-    return MiAppBar(
-      prominent: prominent,
-      leading: leading,
-      title: InkWell(
-        onTap: () {
-          ref.read(prominentProvider.state).state = !prominent;
-        },
-        child: title,
-      ),
-      bottom: bottom,
-      flexibleSpace: flexibleSpace ??
-          icon?.let(
-            (it) => IconTheme(
-              data: IconThemeData(
-                  color: theme.isDark
-                      ? theme.colorScheme.onSurface.withAlpha(36)
-                      : theme.colorScheme.onPrimary.withAlpha(36),
-                  size: 240),
-              child: FittedBox(
-                fit: BoxFit.none,
-                clipBehavior: Clip.hardEdge,
-                child: it,
-              ),
+    final flexibleSpace_ = flexibleSpace ??
+        icon?.let((it) {
+          return IconTheme(
+            data: IconThemeData(
+                color: theme.isDark
+                    ? theme.colorScheme.onSurface.withAlpha(36)
+                    : theme.colorScheme.onPrimary.withAlpha(36),
+                size: 240),
+            child: FittedBox(
+              fit: BoxFit.none,
+              clipBehavior: Clip.hardEdge,
+              child: it,
             ),
-          ),
-      actions: <Widget>[
-        if (actions != null) ...actions!,
-        if (prominent) ...[
+          );
+        });
+
+    if (ref.watch(adjustThemeProvider)) {
+      return MiAppBar(
+        prominent: prominent,
+        leading: leading,
+        title: InkWell(
+          onTap: () {
+            ref.read(prominentProvider.state).state = !prominent;
+          },
+          child: title,
+        ),
+        bottom: bottom,
+        flexibleSpace: flexibleSpace_,
+        actions: <Widget>[
+          if (actions != null) ...actions!,
+          if (prominent) ...[
+            _AdjustThemeCheckbox(),
+            MiCheckIconButton(
+              enabled: enabled,
+              checked: ref.watch(useM3Provider),
+              onChanged: (value) {
+                ref.read(useM3Provider.state).state = value;
+              },
+              checkIcon: const Icon(Icons.filter_3_outlined),
+              uncheckIcon: const Icon(Icons.filter_2_outlined),
+            ),
+            MiCheckIconButton(
+              enabled: enabled,
+              checked: ref.watch(brightnessProvider).isDark,
+              onChanged: (value) {
+                ref.read(brightnessProvider.state).state =
+                    value ? Brightness.dark : Brightness.light;
+              },
+              checkIcon: const Icon(Icons.dark_mode_outlined),
+              uncheckIcon: const Icon(Icons.light_mode_outlined),
+            ),
+            _EnableActionsSwitch(),
+          ] else
+            _OverflowMenu(),
+        ],
+        centerTitle: centerTitle,
+      );
+    } else {
+      return AppBar(
+        leading: leading,
+        title: title,
+        bottom: bottom,
+        flexibleSpace: flexibleSpace_,
+        actions: <Widget>[
+          if (actions != null) ...actions!,
           _AdjustThemeCheckbox(),
-          MiCheckIconButton(
-            enabled: enabled,
-            checked: ref.watch(useM3Provider),
-            onChanged: (value) {
-              ref.read(useM3Provider.state).state = value;
-            },
-            checkIcon: const Icon(Icons.filter_3_outlined),
-            uncheckIcon: const Icon(Icons.filter_2_outlined),
-          ),
-          MiCheckIconButton(
-            enabled: enabled,
-            checked: ref.watch(brightnessProvider).isDark,
-            onChanged: (value) {
-              ref.read(brightnessProvider.state).state = value ? Brightness.dark : Brightness.light;
-            },
-            checkIcon: const Icon(Icons.dark_mode_outlined),
-            uncheckIcon: const Icon(Icons.light_mode_outlined),
-          ),
           _EnableActionsSwitch(),
-        ] else
           _OverflowMenu(),
-      ],
-      centerTitle: centerTitle,
-    );
+        ],
+        centerTitle: centerTitle,
+      );
+    }
   }
 }
 
 /// Exampleアプリ用TabBar
+///
+/// テーマ調整ON/OFFによりTabBarを切り替える
 class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   final bool enabled;
   final List<Widget> tabs;
@@ -235,7 +258,6 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // テーマ調整ON/OFFによって切り替える
     return ref.watch(adjustThemeProvider)
         ? MiTabBar(
             enabled: enabled,

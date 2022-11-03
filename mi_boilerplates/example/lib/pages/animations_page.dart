@@ -64,19 +64,6 @@ class AnimationsPage extends ConsumerWidget {
       ),
       const MiTab(
         icon: Icon(Icons.play_arrow),
-        // icon: _Animated(
-        //   duration: const Duration(seconds: 10),
-        //   builder: (controller) {
-        //     return AnimatedIcon(icon: AnimatedIcons.arrow_menu, progress: controller);
-        //   },
-        //   onInitialized: (controller) {
-        //     controller.forward();
-        //   },
-        //   onCompleted: (controller) {
-        //     controller.reset();
-        //     controller.forward();
-        //   },
-        // ),
         tooltip: 'Animated icons',
       ),
     ];
