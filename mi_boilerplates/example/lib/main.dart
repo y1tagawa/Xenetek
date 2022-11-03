@@ -162,7 +162,7 @@ final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
 final secondaryColorProvider = StateProvider<Color?>((ref) => null);
 final brightnessProvider = StateProvider((ref) => Brightness.light);
 final useM3Provider = StateProvider((ref) => false);
-final adjustThemeProvider = StateProvider((ref) => true);
+final themeAdjustmentProvider = StateProvider((ref) => true);
 
 final productNameProvider = FutureProvider<String?>((ref) async {
   if (!kIsWeb && Platform.isAndroid) {
@@ -202,7 +202,7 @@ class MyApp extends ConsumerWidget {
             brightness: ref.watch(brightnessProvider),
           ),
           useMaterial3: ref.watch(useM3Provider),
-        ).let((it) => ref.watch(adjustThemeProvider) ? it.adjust() : it),
+        ).let((it) => ref.watch(themeAdjustmentProvider) ? it.adjust() : it),
       ),
     );
   }

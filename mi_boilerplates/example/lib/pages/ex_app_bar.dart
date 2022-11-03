@@ -32,17 +32,18 @@ class _EnableActionsSwitch extends ConsumerWidget {
   }
 }
 
-class _AdjustThemeCheckbox extends ConsumerWidget {
+class _ThemeAdjustmentCheckbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
-    final adjustTheme = ref.watch(adjustThemeProvider);
+    final themeAdjustment = ref.watch(themeAdjustmentProvider);
 
     return Tooltip(
-      message: adjustTheme ? 'Adjust theme: ON' : 'Adjust theme: OFF',
+      message: themeAdjustment ? 'Theme adjustment: ON' : 'Theme adjustment: OFF',
       child: Checkbox(
-        value: adjustTheme,
-        onChanged: enabled ? (value) => ref.read(adjustThemeProvider.state).state = value! : null,
+        value: themeAdjustment,
+        onChanged:
+            enabled ? (value) => ref.read(themeAdjustmentProvider.state).state = value! : null,
       ),
     );
   }
@@ -67,10 +68,10 @@ class _OverflowMenu extends ConsumerWidget {
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
-            checked: ref.watch(adjustThemeProvider),
+            checked: ref.watch(themeAdjustmentProvider),
             child: const Text('Adjust theme'),
             onChanged: (value) {
-              ref.read(adjustThemeProvider.state).state = value;
+              ref.read(themeAdjustmentProvider.state).state = value;
             },
           ),
           MiCheckPopupMenuItem(
@@ -102,7 +103,7 @@ class _OverflowMenu extends ConsumerWidget {
       offset: const Offset(0, 40),
       tooltip: <String>[
         if (ref.read(enableActionsProvider)) 'Enabled',
-        if (ref.read(adjustThemeProvider)) 'Adjusted',
+        if (ref.read(themeAdjustmentProvider)) 'Adjusted',
         ref.read(useM3Provider) ? 'M3' : 'M2',
         if (ref.read(brightnessProvider) == Brightness.dark) 'Dark',
       ].join(', '),
@@ -168,7 +169,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
           );
         });
 
-    if (ref.watch(adjustThemeProvider)) {
+    if (ref.watch(themeAdjustmentProvider)) {
       return MiAppBar(
         prominent: prominent,
         leading: leading,
@@ -183,7 +184,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         actions: <Widget>[
           if (actions != null) ...actions!,
           if (prominent) ...[
-            _AdjustThemeCheckbox(),
+            _ThemeAdjustmentCheckbox(),
             MiCheckIconButton(
               enabled: enabled,
               checked: ref.watch(useM3Provider),
@@ -217,7 +218,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         flexibleSpace: flexibleSpace_,
         actions: <Widget>[
           if (actions != null) ...actions!,
-          _AdjustThemeCheckbox(),
+          _ThemeAdjustmentCheckbox(),
           _EnableActionsSwitch(),
           _OverflowMenu(),
         ],
@@ -258,7 +259,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(adjustThemeProvider)
+    return ref.watch(themeAdjustmentProvider)
         ? MiTabBar(
             enabled: enabled,
             tabs: tabs,

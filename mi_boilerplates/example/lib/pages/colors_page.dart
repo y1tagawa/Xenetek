@@ -213,7 +213,7 @@ class _ColorSchemeTab extends ConsumerWidget {
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
     //final enabled = ref.watch(enableActionsProvider);
-    final adjustTheme = ref.watch(adjustThemeProvider);
+    final themeAdjustment = ref.watch(themeAdjustmentProvider);
 
     final theme = Theme.of(context);
 
@@ -224,7 +224,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.light,
       ),
-    ).let((it) => adjustTheme ? it.adjust() : it);
+    ).let((it) => themeAdjustment ? it.adjust() : it);
 
     final darkTheme = ThemeData(
       primarySwatch: primarySwatch,
@@ -233,7 +233,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.dark,
       ),
-    ).let((it) => adjustTheme ? it.adjust() : it);
+    ).let((it) => themeAdjustment ? it.adjust() : it);
 
     Widget colorRow(String key, String title) {
       final getter = _themeColorItems[key]!;
