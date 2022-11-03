@@ -5,6 +5,7 @@
 library mi_boilerplates;
 
 export 'src/color_helper.dart';
+export 'src/mi_animated_builder.dart';
 export 'src/mi_app_bar.dart';
 export 'src/mi_bottom_navigation_bar.dart';
 export 'src/mi_color_grid.dart';
