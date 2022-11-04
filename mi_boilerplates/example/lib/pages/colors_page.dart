@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:example/data/jis_common_colors.dart';
-import 'package:example/data/x11_colors.dart';
+import 'package:example/data/primary_color_names.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../data/primary_color_names.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 
@@ -91,76 +89,22 @@ class _ColorGridTab extends ConsumerWidget {
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
-    final colors = <Color?>[null, ...Colors.primaries];
-    final tooltips = <String>['null', ...primaryColorNames];
-
-    final colorTabs = <String, List<Color?>>{
-      'Flutter': [null, ...Colors.primaries],
-      'X11': x11Colors,
-      'JIS': jisCommonColors,
-    };
-
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ListTile(
-            leading: MiTextButton(
-              onPressed: () async {
-                final initialColor = ref.watch(primarySwatchProvider);
-                final ok = await showColorGridDialog(
-                    context: context,
-                    initialColor: initialColor,
-                    colors: colors,
-                    tooltips: tooltips,
-                    onChanged: (_, index) {
-                      final color = colors[index];
-                      if (color != null) {
-                        ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
-                      }
-                    });
-                if (!ok) {
-                  // canceled.
-                  ref.read(primarySwatchProvider.state).state = initialColor;
-                }
-              },
-              child: const Text('Show dialog'),
-            ),
-          ),
-          ListTile(
-            leading: MiTextButton(
-              onPressed: () async {
-                final initialColor = ref.watch(primarySwatchProvider);
-                final ok = await showColorGridDialog(
-                    context: context,
-                    initialColor: initialColor,
-                    colorTabs: colorTabs,
-                    onChanged: (key, index) {
-                      final color = colorTabs[key]![index];
-                      if (color != null) {
-                        ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
-                      }
-                    });
-                if (!ok) {
-                  // canceled.
-                  ref.read(primarySwatchProvider.state).state = initialColor;
-                }
-              },
-              child: const Text('Show dialog(tabs)'),
-            ),
-          ),
           Expanded(
             child: SingleChildScrollView(
               child: MiColorGrid(
-                  initialColor: ref.watch(primarySwatchProvider),
-                  colors: colors,
-                  onChanged: (index) {
-                    final color = colors[index];
-                    if (color != null) {
-                      ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
-                    }
-                  }),
+                initialColor: ref.watch(primarySwatchProvider),
+                colors: Colors.primaries,
+                tooltips: primaryColorNames,
+                onChanged: (index) {
+                  final color = Colors.primaries[index];
+                  ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
+                },
+              ),
             ),
           ),
         ],

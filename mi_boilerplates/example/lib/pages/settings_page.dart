@@ -55,6 +55,7 @@ class MiEmbeddedTabView extends StatelessWidget {
 
 Future<bool> _showColorSelectDialog({
   required BuildContext context,
+  Widget? title,
   Color? initialColor,
   required List<Widget> tabs,
   required List<List<Color?>> colors,
@@ -69,6 +70,7 @@ Future<bool> _showColorSelectDialog({
       builder: (context, setState) {
         return MiOkCancelDialog<bool>(
           icon: MiColorChip(color: color),
+          title: title,
           content: MiEmbeddedTabView(
             tabs: tabs,
             initialIndex: 0,
@@ -96,12 +98,13 @@ Future<bool> _showColorSelectDialog({
 
 Future<bool> showColorSelectDialog({
   required BuildContext context,
+  Widget? title,
   required Color? initialColor,
   void Function(Color? value)? onChanged,
   bool nullable = false,
 }) async {
   const tabs = <Widget>[
-    MiTab(text: 'F'),
+    MiTab(icon: Icon(Icons.flutter_dash)),
     MiTab(text: 'X11'),
     MiTab(text: 'JIS'),
   ];
@@ -120,6 +123,7 @@ Future<bool> showColorSelectDialog({
 
   final ok = await _showColorSelectDialog(
       context: context,
+      title: title,
       initialColor: initialColor,
       tabs: tabs,
       colors: colors,
@@ -145,27 +149,12 @@ class SettingsPage extends ConsumerWidget {
 
   const SettingsPage({super.key});
 
-  ///
-  //bool showColorGridDialog()
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     assert(x11Colors.length == x11ColorNames.length);
 
     final theme = Theme.of(context);
-
-    final primarySwatchItems = [
-      ...Colors.primaries.mapIndexed(
-        (index, color) => DropdownMenuItem<MaterialColor>(
-          value: color,
-          child: MiColorChip(
-            color: color,
-            tooltip: primaryColorNames[index],
-          ),
-        ),
-      ),
-    ];
 
     return Scaffold(
       appBar: ExAppBar(
@@ -190,6 +179,7 @@ class SettingsPage extends ConsumerWidget {
                 onPressed: () async {
                   showColorSelectDialog(
                     context: context,
+                    title: const Text('Primary swatch'),
                     initialColor: ref.watch(primarySwatchProvider),
                     onChanged: (value) {
                       ref.read(primarySwatchProvider.state).state = value!.toMaterialColor();
@@ -207,6 +197,7 @@ class SettingsPage extends ConsumerWidget {
                 onPressed: () async {
                   showColorSelectDialog(
                     context: context,
+                    title: const Text('Secondary color'),
                     initialColor: ref.watch(secondaryColorProvider),
                     nullable: true,
                     onChanged: (value) {
