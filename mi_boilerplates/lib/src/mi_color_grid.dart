@@ -2,47 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../mi_boilerplates.dart';
 
-/// カラーグリッド
-///
-/// TODO: グリッド部分切り出し
+class MiGrid<T> extends StatefulWidget {
+  final T initialValue;
+  final int length;
+  final Widget Function(
+    BuildContext context,
+    int index,
+    void Function(T) setter,
+  ) itemBuilder;
 
-class MiColorGrid extends StatefulWidget {
-  static const double kItemSize = 40.0;
-
-  final Color? initialColor;
-  final double? chipSize;
-  final List<Color?> colors;
-  final List<String>? tooltips;
-  final ValueChanged<int>? onChanged;
-  final void Function(int, bool)? onHover;
-
-  const MiColorGrid({
+  const MiGrid({
     super.key,
-    this.initialColor,
-    this.chipSize,
-    required this.colors,
-    this.tooltips,
-    this.onChanged,
-    this.onHover,
-  }) : assert(tooltips == null || tooltips.length == colors.length);
+    required this.initialValue,
+    required this.length,
+    required this.itemBuilder,
+  });
 
   @override
-  State<StatefulWidget> createState() => _MiColorGridState();
+  State<StatefulWidget> createState() => _MiGridState<T>();
 }
 
-class _MiColorGridState extends State<MiColorGrid> {
+class _MiGridState<T> extends State<MiGrid<T>> {
   // ignore: unused_field
-  Color? _color;
+  late T _value;
 
   @override
   void initState() {
     super.initState();
-    _color = widget.initialColor;
+    _value = widget.initialValue;
+  }
+
+  void _setValue(T value) {
+    setState(() {
+      _value = value;
+    });
   }
 
   @override
@@ -50,32 +47,67 @@ class _MiColorGridState extends State<MiColorGrid> {
     return Wrap(
       spacing: 4,
       runSpacing: 4,
-      children: widget.colors.mapIndexed((index, value) {
+      children: [
+        for (int i = 0; i < widget.length; ++i) widget.itemBuilder(context, i, _setValue),
+      ],
+    );
+  }
+}
+
+/// カラーグリッド
+
+class MiColorGrid extends StatelessWidget {
+  static const double kItemSize = 40.0;
+
+  final Color? initialColor;
+  final List<Color?> colors;
+  final List<String>? tooltips;
+  final double? itemSize;
+  final ValueChanged<int>? onChanged;
+  final void Function(int, bool)? onHover;
+
+  const MiColorGrid({
+    super.key,
+    this.initialColor,
+    required this.colors,
+    this.tooltips,
+    this.itemSize,
+    this.onChanged,
+    this.onHover,
+  }) : assert(tooltips == null || tooltips.length == colors.length);
+
+  @override
+  Widget build(BuildContext context) {
+    return MiGrid<Color?>(
+      initialValue: initialColor,
+      length: colors.length,
+      itemBuilder: (context, index, setter) {
         return InkWell(
           onTap: () {
-            setState(() {
-              _color = value;
-            });
-            widget.onChanged?.call(index);
+            setter(colors[index]);
+            onChanged?.call(index);
           },
           onHover: (enter) {
-            widget.onHover?.call(index, enter);
+            onHover?.call(index, enter);
           },
-          child: run(() {
-            Widget item = SizedBox.square(
-              dimension: widget.chipSize ?? MiColorGrid.kItemSize,
-              child: value != null ? ColoredBox(color: value) : const Icon(Icons.block_outlined),
-            );
-            if (widget.tooltips != null) {
-              item = Tooltip(
-                message: widget.tooltips![index],
-                child: item,
+          child: run(
+            () {
+              final value = colors[index];
+              Widget item = SizedBox.square(
+                dimension: itemSize ?? kItemSize,
+                child: value != null ? ColoredBox(color: value) : const Icon(Icons.block_outlined),
               );
-            }
-            return item;
-          }),
+              if (tooltips != null) {
+                item = Tooltip(
+                  message: tooltips![index],
+                  child: item,
+                );
+              }
+              return item;
+            },
+          ),
         );
-      }).toList(),
+      },
     );
   }
 }
