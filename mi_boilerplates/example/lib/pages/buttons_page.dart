@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -88,7 +90,7 @@ class ButtonsPage extends ConsumerWidget {
               physics: enabled ? null : const NeverScrollableScrollPhysics(),
               children: const [
                 _PushButtonsTab(),
-                _TabContainerTab(),
+                _MonospaceTab(),
               ],
             ),
           ),
@@ -245,25 +247,28 @@ class _PushButtonsTab extends ConsumerWidget {
 //
 //
 
-class _TabContainerTab extends ConsumerWidget {
-  static final _logger = Logger((_TabContainerTab).toString());
+class _MonospaceTab extends ConsumerWidget {
+  static final _logger = Logger((_MonospaceTab).toString());
 
-  const _TabContainerTab();
+  const _MonospaceTab();
 
-  static const _tabs = <Widget>[
-    MiTab(
-      icon: Icon(Icons.looks_one_outlined),
-      text: 'One',
-    ),
-    MiTab(
-      icon: Icon(Icons.looks_two_outlined),
-      text: 'Two',
-    ),
-    MiTab(
-      icon: Icon(Icons.looks_3_outlined),
-      text: 'Three',
-    ),
-  ];
+  static const _data = '''
+Some say the world will end in fire,
+Some say in ice.
+From what I’ve tasted of desire
+I hold with those who favor fire.
+
+But if it had to perish twice,
+I think I know enough of hate
+To say that for destruction ice
+Is also great
+And would suffice.
+
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789 (){}[]
++-*/= .,;:!? #&\$%@|^
+  ''';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -274,37 +279,23 @@ class _TabContainerTab extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      child: MiDefaultTabController(
-        length: 3,
-        initialIndex: 0,
-        builder: (context) {
-          return Column(
-            children: [
-              ExTabBar(
-                enabled: enabled,
-                embedded: true,
-                tabs: _tabs,
-              ),
-              const SizedBox(
-                height: 300,
-                child: TabBarView(
-                  children: [
-                    Center(
-                      child: Text('One'),
-                    ),
-                    Center(
-                      child: Text('Two'),
-                    ),
-                    Center(
-                      child: Text('Þree'),
-                    ),
-                  ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ..._data.split('\n').map(
+                (line) => Text(
+                  line,
+                  softWrap: false,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Courier New',
+                  ),
                 ),
               ),
-              const Divider(),
-            ],
-          );
-        },
+          const Divider(),
+        ],
       ),
     );
   }
