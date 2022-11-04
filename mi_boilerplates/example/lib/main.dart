@@ -87,7 +87,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: EmbeddedTabViewPage.icon,
     title: EmbeddedTabViewPage.title,
-    path: '/embedded_tab_view',
+    path: '/drawer/embedded_tab_view',
     builder: (_, __) => const EmbeddedTabViewPage(),
   ),
   _PageItem(

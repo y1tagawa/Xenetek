@@ -208,3 +208,45 @@ class MiDefaultTabController extends StatelessWidget {
     );
   }
 }
+
+/// AppBarのbottom以外用[TabBarView]
+///
+/// https://m2.material.io/components/tabs#placement
+class MiEmbeddedTabView extends StatelessWidget {
+  final List<Widget> tabs;
+  final int initialIndex;
+  final List<Widget> children;
+  final double? spacing;
+
+  const MiEmbeddedTabView({
+    super.key,
+    required this.tabs,
+    this.initialIndex = 0,
+    required this.children,
+    this.spacing,
+  }) : assert(tabs.length == children.length);
+
+  @override
+  Widget build(BuildContext context) {
+    return MiDefaultTabController(
+      length: tabs.length,
+      initialIndex: initialIndex,
+      builder: (context) {
+        return Column(
+          children: [
+            MiTabBar(
+              embedded: true,
+              tabs: tabs,
+            ),
+            SizedBox(height: spacing ?? 4.0),
+            Expanded(
+              child: TabBarView(
+                children: children,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

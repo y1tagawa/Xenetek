@@ -14,45 +14,6 @@ import '../data/x11_colors.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 
-class MiEmbeddedTabView extends StatelessWidget {
-  final List<Widget> tabs;
-  final int initialIndex;
-  final List<Widget> children;
-  final double? spacing;
-
-  const MiEmbeddedTabView({
-    super.key,
-    required this.tabs,
-    this.initialIndex = 0,
-    required this.children,
-    this.spacing,
-  }) : assert(tabs.length == children.length);
-
-  @override
-  Widget build(BuildContext context) {
-    return MiDefaultTabController(
-      length: tabs.length,
-      initialIndex: initialIndex,
-      builder: (context) {
-        return Column(
-          children: [
-            MiTabBar(
-              embedded: true,
-              tabs: tabs,
-            ),
-            SizedBox(height: spacing ?? 4.0),
-            Expanded(
-              child: TabBarView(
-                children: children,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
 Future<bool> _showColorSelectDialog({
   required BuildContext context,
   Widget? title,
@@ -138,7 +99,7 @@ Future<bool> showColorSelectDialog({
 }
 
 ///
-/// Exampleアプリの設定ページ。
+/// Exampleアプリの設定ページ
 ///
 
 class SettingsPage extends ConsumerWidget {
