@@ -45,4 +45,11 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 # TODO
 
 * 回避策の実態コメント
-* animation_page: _Animatedに統一・共通化
+* x11, JisColorをライブラリに移動
+* colors整理
+  * gridを削除？
+  * themeをスクロールせず見やすく出来ないか
+* snackbarのサンプル+toastの実験ページ
+* buttonsからembedded tab削除
+* embedded tabのもっとおもしろいやつ
+* ex_appbar整理
