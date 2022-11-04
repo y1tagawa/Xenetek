@@ -145,12 +145,16 @@ class _SnackBarTab extends ConsumerWidget {
     //final enabled = ref.watch(enableActionsProvider);
 
     final theme = Theme.of(context);
+    // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L446
+    final actionTextColor = theme.snackBarTheme.actionTextColor ??
+        (theme.isDark ? theme.colorScheme.primary : theme.colorScheme.secondary);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // SnackBarエミュレーション
           ListTile(
             // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L235
             // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L451
@@ -161,17 +165,24 @@ class _SnackBarTab extends ConsumerWidget {
                         theme.colorScheme.onSurface.withOpacity(0.80), theme.colorScheme.surface)),
             leading: DefaultTextStyle(
               style: theme.snackBarTheme.contentTextStyle ??
+                  theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.surface) ??
                   TextStyle(color: theme.colorScheme.surface),
               child: const Text('Snack bar text'),
             ),
             trailing: DefaultTextStyle(
-              style: TextStyle(color: theme.snackBarTheme.actionTextColor),
+              style: theme.snackBarTheme.contentTextStyle?.copyWith(color: actionTextColor) ??
+                  theme.textTheme.titleMedium?.copyWith(color: actionTextColor) ??
+                  TextStyle(color: actionTextColor),
               child: const Text('ACTION'),
             ),
           ),
+          // SnackBar表示
           ListTile(
-            leading: MiIconButton(
-              icon: const Icon(Icons.notifications_outlined),
+            leading: MiTextButton(
+              child: const MiIcon(
+                icon: Icon(Icons.notifications_outlined),
+                text: Text('Ping'),
+              ),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -187,7 +198,6 @@ class _SnackBarTab extends ConsumerWidget {
                 );
               },
             ),
-            title: const Text('Ping'),
           ),
         ],
       ),

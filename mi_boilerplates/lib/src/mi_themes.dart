@@ -133,7 +133,9 @@ extension ThemeDataHelper on ThemeData {
     // SnackBar
     // * actionTextColorをちょっと見やすく（独自研究）
     final snackBarTheme_ = snackBarTheme.copyWith(
-      actionTextColor: isDark ? colorScheme.secondary : primaryColorLight,
+      actionTextColor: isDark
+          ? Color.alphaBlend(colorScheme.secondary.withAlpha(80), colorScheme.surface)
+          : primaryColorLight,
     );
 
     // TabBar
