@@ -8,7 +8,6 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 const _imageUrls = <String>[
   // ゴッホ 星月夜
@@ -31,7 +30,10 @@ final _imageProvider = StateProvider<Widget?>((ref) => null);
 int _tabIndex = 0;
 
 class ProminentTopBarPage extends ConsumerWidget {
-  static const icon = Icon(Icons.inbox_outlined);
+  static const icon = MiRotate(
+    angleDegree: 180.0,
+    child: Icon(Icons.horizontal_split_outlined),
+  );
   static const title = Text('Prominent top bar');
 
   static final _logger = Logger((ProminentTopBarPage).toString());
@@ -125,10 +127,10 @@ class ProminentTopBarPage extends ConsumerWidget {
           return Scaffold(
             appBar: ExAppBar(
               prominent: prominent,
-              leading: icon,
+              icon: icon,
               title: title,
               centerTitle: centerTitle,
-              bottom: MiTabBar(tabs: _tabs),
+              bottom: const ExTabBar(tabs: _tabs),
               flexibleSpace: flexibleSpace,
             ),
             body: body,
@@ -140,7 +142,7 @@ class ProminentTopBarPage extends ConsumerWidget {
       return Scaffold(
         appBar: ExAppBar(
           prominent: ref.watch(prominentProvider),
-          leading: icon,
+          icon: icon,
           title: title,
           centerTitle: centerTitle,
           flexibleSpace: flexibleSpace,

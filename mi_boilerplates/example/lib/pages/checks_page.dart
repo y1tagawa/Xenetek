@@ -7,7 +7,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 const _combinedIcons = <IconData?>[
   null,
@@ -85,7 +84,7 @@ class ChecksPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
       ),
       body: SafeArea(
@@ -134,7 +133,7 @@ class ChecksPage extends ConsumerWidget {
                 child: Icon(
                   combinedIcon,
                   size: 60,
-                  color: Theme.of(context).unselectedIconColor,
+                  color: Theme.of(context).disabledColor,
                 ),
               )
             ],

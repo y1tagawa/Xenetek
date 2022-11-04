@@ -21,8 +21,8 @@ import 'pages/buttons_page.dart';
 import 'pages/checks_page.dart';
 import 'pages/colors_page.dart';
 import 'pages/dialogs_page.dart';
+import 'pages/embedded_tab_view_page.dart';
 import 'pages/ex_app_bar.dart';
-import 'pages/ex_bottom_navigation_bar.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
@@ -85,6 +85,12 @@ final _pages = <_PageItem>[
     builder: (_, __) => const DialogsPage(),
   ),
   _PageItem(
+    icon: EmbeddedTabViewPage.icon,
+    title: EmbeddedTabViewPage.title,
+    path: '/drawer/embedded_tab_view',
+    builder: (_, __) => const EmbeddedTabViewPage(),
+  ),
+  _PageItem(
     icon: ListsPage.icon,
     title: ListsPage.title,
     path: '/lists',
@@ -93,7 +99,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: ListTilesPage.icon,
     title: ListTilesPage.title,
-    path: '/list_tiles',
+    path: '/drawer/list_tiles',
     builder: (_, __) => const ListTilesPage(),
   ),
   _PageItem(
@@ -111,7 +117,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: ProminentTopBarPage.icon,
     title: ProminentTopBarPage.title,
-    path: '/prominent_top_bar',
+    path: '/drawer/prominent_top_bar',
     builder: (_, __) => const ProminentTopBarPage(),
   ),
   _PageItem(
@@ -163,7 +169,7 @@ final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
 final secondaryColorProvider = StateProvider<Color?>((ref) => null);
 final brightnessProvider = StateProvider((ref) => Brightness.light);
 final useM3Provider = StateProvider((ref) => false);
-final useMiThemesProvider = StateProvider((ref) => true);
+final themeAdjustmentProvider = StateProvider((ref) => true);
 
 final productNameProvider = FutureProvider<String?>((ref) async {
   if (!kIsWeb && Platform.isAndroid) {
@@ -203,7 +209,7 @@ class MyApp extends ConsumerWidget {
             brightness: ref.watch(brightnessProvider),
           ),
           useMaterial3: ref.watch(useM3Provider),
-        ).let((it) => ref.watch(useMiThemesProvider) ? it.withMiThemes() : it),
+        ).let((it) => ref.watch(themeAdjustmentProvider) ? it.adjust() : it),
       ),
     );
   }
@@ -226,8 +232,33 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            InkWell(
+              onTap: () => Navigator.pop(context),
+              child: const DrawerHeader(
+                child: HomePage.title,
+              ),
+            ),
+            ...iota(_pages.length - 1, start: 1)
+                .where((index) => _pages[index].path.startsWith('/drawer/'))
+                .map((index) {
+              final item = _pages[index];
+              return ListTile(
+                leading: item.icon,
+                title: item.title,
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(_pages[index].path);
+                },
+              );
+            }),
+          ],
+        ),
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(8),
@@ -236,22 +267,25 @@ class HomePage extends ConsumerWidget {
             child: Wrap(
               spacing: 2,
               runSpacing: 8,
-              children: _pages.mapIndexed((index, _) => index).skip(1) // Home
-                  .map(
-                (index) {
-                  return TextButton(
-                    onPressed: () => context.push(_pages[index].path),
-                    child: Container(
-                      width: 76,
-                      height: 72,
-                      padding: const EdgeInsets.all(2),
-                      child: Column(
-                        children: [_pages[index].icon, _pages[index].title],
+              children: [
+                ...iota(_pages.length - 1, start: 1)
+                    .whereNot((index) => _pages[index].path.startsWith('/drawer/'))
+                    .map(
+                  (index) {
+                    return TextButton(
+                      onPressed: () => context.push(_pages[index].path),
+                      child: Container(
+                        width: 76,
+                        height: 72,
+                        padding: const EdgeInsets.all(2),
+                        child: Column(
+                          children: [_pages[index].icon, _pages[index].title],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ).toList(),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

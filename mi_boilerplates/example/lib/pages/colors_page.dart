@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
+import 'package:example/data/primary_color_names.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../data/primary_color_names.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 ///
 /// Color grid example page.
@@ -51,9 +49,9 @@ class ColorsPage extends ConsumerWidget {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
-            leading: icon,
+            icon: icon,
             title: title,
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
               isScrollable: true,
@@ -91,59 +89,21 @@ class _ColorGridTab extends ConsumerWidget {
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
-    final colorItems = <MiColorGridItem>[
-      const MiColorGridItem(color: null, text: 'null'),
-      ...Colors.primaries.mapIndexed(
-        (index, color) => MiColorGridItem(
-          color: color,
-          text: 'Flutter: ${primaryColorNames[index]}',
-        ),
-      ),
-      // ...x11Colors.mapIndexed(
-      //   (index, color) => MiColorGridItem(
-      //     color: color,
-      //     text: 'X11: ${x11ColorNames[index]}',
-      //   ),
-      // ),
-      // ...jisCommonColors.mapIndexed(
-      //   (index, color) => MiColorGridItem(
-      //     color: color,
-      //     text: 'JIS: ${jisCommonColorNames[index]}',
-      //   ),
-      // ),
-    ];
-
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ListTile(
-            leading: MiTextButton(
-              onPressed: () async {
-                final initialColor = ref.watch(primarySwatchProvider);
-                final ok = await showColorGridDialog(
-                    context: context,
-                    initialColor: initialColor,
-                    items: colorItems,
-                    onChanged: (color) {
-                      if (color != null) {
-                        ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
-                      }
-                    });
-                if (!ok) {
-                  // canceled.
-                  ref.read(primarySwatchProvider.state).state = initialColor;
-                }
-              },
-              child: const Text('Show dialog'),
-            ),
-          ),
           Expanded(
             child: SingleChildScrollView(
               child: MiColorGrid(
                 initialColor: ref.watch(primarySwatchProvider),
-                items: colorItems,
+                colors: Colors.primaries,
+                tooltips: primaryColorNames,
+                onChanged: (index) {
+                  final color = Colors.primaries[index];
+                  ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
+                },
               ),
             ),
           ),
@@ -229,7 +189,7 @@ class _ColorSchemeTab extends ConsumerWidget {
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
     //final enabled = ref.watch(enableActionsProvider);
-    final useMiThemes = ref.watch(useMiThemesProvider);
+    final themeAdjustment = ref.watch(themeAdjustmentProvider);
 
     final theme = Theme.of(context);
 
@@ -240,7 +200,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.light,
       ),
-    ).let((it) => useMiThemes ? it.withMiThemes() : it);
+    ).let((it) => themeAdjustment ? it.adjust() : it);
 
     final darkTheme = ThemeData(
       primarySwatch: primarySwatch,
@@ -249,7 +209,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.dark,
       ),
-    ).let((it) => useMiThemes ? it.withMiThemes() : it);
+    ).let((it) => themeAdjustment ? it.adjust() : it);
 
     Widget colorRow(String key, String title) {
       final getter = _themeColorItems[key]!;

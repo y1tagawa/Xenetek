@@ -10,7 +10,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 const _imageWidth = 138.0;
 const _imageHeight = 240.0;
@@ -56,7 +55,7 @@ class TabViewPage extends ConsumerWidget {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
-            leading: icon,
+            icon: icon,
             title: title,
             bottom: const TabBar(tabs: _tabs),
           ),

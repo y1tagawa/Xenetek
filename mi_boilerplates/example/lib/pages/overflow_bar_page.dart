@@ -7,7 +7,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 ///
 /// Overflow bar example page.
@@ -54,7 +53,7 @@ class OverflowBarPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
       ),
       body: SafeArea(

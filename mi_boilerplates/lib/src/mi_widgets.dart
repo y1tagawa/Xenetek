@@ -7,7 +7,7 @@ import 'dart:math' as math;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-Iterable<int> iota(int n) => Iterable<int>.generate(n);
+Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
 
 T run<T>(T Function() fun) => fun();
 
@@ -192,6 +192,30 @@ class MiColorChip extends StatelessWidget {
   }
 }
 
+/// [Image] (PNGとか)をアイコンにする
+class MiImageIcon extends StatelessWidget {
+  final Image image;
+  final double? size;
+
+  const MiImageIcon({
+    super.key,
+    required this.image,
+    this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = IconTheme.of(context);
+    return SizedBox.square(
+      dimension: size ?? theme.size,
+      child: Image(
+        image: image.image,
+        color: theme.color,
+      ),
+    );
+  }
+}
+
 /// カスタム[TextButton]
 ///
 /// [enabled]を追加しただけ。
@@ -275,6 +299,46 @@ class MiIconButton extends IconButton {
   }) : super(
           onPressed: enabled ? onPressed : null,
         );
+}
+
+/// トグルアイコンボタン
+class MiCheckIconButton extends StatelessWidget {
+  final bool enabled;
+  final bool checked;
+  final double? iconSize;
+  final ValueChanged<bool>? onChanged;
+  final Widget? checkIcon;
+  final Widget? uncheckIcon;
+  final Duration? duration;
+
+  const MiCheckIconButton({
+    super.key,
+    this.enabled = true,
+    required this.checked,
+    this.iconSize,
+    this.onChanged,
+    this.checkIcon,
+    this.uncheckIcon,
+    this.duration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: enabled
+          ? () {
+              onChanged?.call(!checked);
+            }
+          : null,
+      iconSize: iconSize,
+      icon: AnimatedCrossFade(
+        duration: duration ?? const Duration(milliseconds: 300),
+        crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+        firstChild: checkIcon ?? const Icon(Icons.check_box_outlined),
+        secondChild: uncheckIcon ?? const Icon(Icons.check_box_outline_blank),
+      ),
+    );
+  }
 }
 
 /// 明示的にintの値をとる[Slider]

@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../main.dart';
 
-/// Exampleアプリでウィジェットの[enable]を切り替えて動作を見る情況が頻出するので、一個フラグを設ける。
-/// 各ウィジェットの対応はそれぞれのページで行う。
+// Exampleアプリでウィジェットの[enable]を切り替えて動作を見る情況が頻出するので、一個フラグを設ける。
+// 各ウィジェットの対応はそれぞれのページで行う。
 final enableActionsProvider = StateProvider((ref) => true);
 
 final prominentProvider = StateProvider((ref) => false);
@@ -31,62 +32,25 @@ class _EnableActionsSwitch extends ConsumerWidget {
   }
 }
 
-class _BrightnessButton extends ConsumerWidget {
+class _ThemeAdjustmentCheckbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
-    final state = ref.watch(brightnessProvider.state);
-    final isDark = state.state.isDark;
-
-    return IconButton(
-      icon: isDark ? const Icon(Icons.dark_mode_outlined) : const Icon(Icons.light_mode_outlined),
-      onPressed: enabled
-          ? () {
-              state.state = isDark ? Brightness.light : Brightness.dark;
-            }
-          : null,
-      tooltip: isDark ? 'Brightness: DARK' : 'Brightness: LIGHT',
-    );
-  }
-}
-
-class _UseMaterial3Button extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
-    final useM3 = ref.watch(useM3Provider);
-
-    return IconButton(
-      icon: useM3 ? const Icon(Icons.filter_3_outlined) : const Icon(Icons.filter_2_outlined),
-      onPressed: enabled
-          ? () {
-              ref.read(useM3Provider.state).state = !useM3;
-            }
-          : null,
-      tooltip: useM3 ? 'Material design: 3' : 'Material design: 2',
-    );
-  }
-}
-
-class _UseMiThemeCheckbox extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
-    final state = ref.watch(useMiThemesProvider.state);
-    final useMiTheme = state.state;
+    final themeAdjustment = ref.watch(themeAdjustmentProvider);
 
     return Tooltip(
-      message: useMiTheme ? 'Use mi theme: ON' : 'Use mi theme: OFF',
+      message: themeAdjustment ? 'Theme adjustment: ON' : 'Theme adjustment: OFF',
       child: Checkbox(
-        value: useMiTheme,
-        onChanged: enabled ? (value) => state.state = value! : null,
+        value: themeAdjustment,
+        onChanged:
+            enabled ? (value) => ref.read(themeAdjustmentProvider.state).state = value! : null,
       ),
     );
   }
 }
 
-class _PopupMenu extends ConsumerWidget {
-  static final _logger = Logger((_PopupMenu).toString());
+class _OverflowMenu extends ConsumerWidget {
+  static final _logger = Logger((_OverflowMenu).toString());
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,10 +68,10 @@ class _PopupMenu extends ConsumerWidget {
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
-            checked: ref.watch(useMiThemesProvider),
-            child: const Text('Use MiThemes'),
+            checked: ref.watch(themeAdjustmentProvider),
+            child: const Text('Adjust theme'),
             onChanged: (value) {
-              ref.read(useMiThemesProvider.state).state = value;
+              ref.read(themeAdjustmentProvider.state).state = value;
             },
           ),
           MiCheckPopupMenuItem(
@@ -122,9 +86,8 @@ class _PopupMenu extends ConsumerWidget {
             enabled: enabled,
             checked: ref.watch(brightnessProvider) == Brightness.dark,
             child: const Text('Dark mode'),
-            onChanged: (value) {
-              ref.read(brightnessProvider.state).state = value ? Brightness.dark : Brightness.light;
-            },
+            onChanged: (value) => ref.read(brightnessProvider.state).state =
+                value ? Brightness.dark : Brightness.light,
           ),
           MiPopupMenuItem(
             enabled: enabled,
@@ -140,7 +103,7 @@ class _PopupMenu extends ConsumerWidget {
       offset: const Offset(0, 40),
       tooltip: <String>[
         if (ref.read(enableActionsProvider)) 'Enabled',
-        if (ref.read(useMiThemesProvider)) 'MiTheme',
+        if (ref.read(themeAdjustmentProvider)) 'Adjusted',
         ref.read(useM3Provider) ? 'M3' : 'M2',
         if (ref.read(brightnessProvider) == Brightness.dark) 'Dark',
       ].join(', '),
@@ -149,10 +112,14 @@ class _PopupMenu extends ConsumerWidget {
   }
 }
 
+/// Exampleアプリ用AppBar
+///
+/// テーマ調整ON/OFFによりTabBarを切り替える
 class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
   final Widget title;
+  final Widget? icon;
   final PreferredSizeWidget? bottom;
   final Widget? flexibleSpace;
   final List<Widget>? actions;
@@ -164,6 +131,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.prominent = false,
     this.leading,
     required this.title,
+    this.icon,
     this.bottom,
     this.flexibleSpace,
     this.actions,
@@ -182,28 +150,194 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MiAppBar(
-      prominent: prominent,
-      leading: leading,
-      title: InkWell(
-        onTap: () {
-          ref.read(prominentProvider.state).state = !prominent;
-        },
-        child: title,
-      ),
-      bottom: bottom,
-      flexibleSpace: flexibleSpace,
-      actions: <Widget>[
-        if (actions != null) ...actions!,
-        if (prominent) ...[
+    final enabled = ref.watch(enableActionsProvider);
+    final theme = Theme.of(context);
+
+    final flexibleSpace_ = flexibleSpace ??
+        icon?.let((it) {
+          return IconTheme(
+            data: IconThemeData(
+                color: theme.isDark
+                    ? theme.colorScheme.onSurface.withAlpha(36)
+                    : theme.colorScheme.onPrimary.withAlpha(36),
+                size: 240),
+            child: FittedBox(
+              fit: BoxFit.none,
+              clipBehavior: Clip.hardEdge,
+              child: it,
+            ),
+          );
+        });
+
+    if (ref.watch(themeAdjustmentProvider)) {
+      return MiAppBar(
+        prominent: prominent,
+        leading: leading,
+        title: InkWell(
+          onTap: () {
+            ref.read(prominentProvider.state).state = !prominent;
+          },
+          child: title,
+        ),
+        bottom: bottom,
+        flexibleSpace: flexibleSpace_,
+        actions: <Widget>[
+          if (actions != null) ...actions!,
+          if (prominent) ...[
+            _ThemeAdjustmentCheckbox(),
+            MiCheckIconButton(
+              enabled: enabled,
+              checked: ref.watch(useM3Provider),
+              onChanged: (value) {
+                ref.read(useM3Provider.state).state = value;
+              },
+              checkIcon: const Icon(Icons.filter_3_outlined),
+              uncheckIcon: const Icon(Icons.filter_2_outlined),
+            ),
+            MiCheckIconButton(
+              enabled: enabled,
+              checked: ref.watch(brightnessProvider).isDark,
+              onChanged: (value) {
+                ref.read(brightnessProvider.state).state =
+                    value ? Brightness.dark : Brightness.light;
+              },
+              checkIcon: const Icon(Icons.dark_mode_outlined),
+              uncheckIcon: const Icon(Icons.light_mode_outlined),
+            ),
+            _EnableActionsSwitch(),
+          ] else
+            _OverflowMenu(),
+        ],
+        centerTitle: centerTitle,
+      );
+    } else {
+      return AppBar(
+        leading: leading,
+        title: title,
+        bottom: bottom,
+        flexibleSpace: flexibleSpace_,
+        actions: <Widget>[
+          if (actions != null) ...actions!,
+          _ThemeAdjustmentCheckbox(),
           _EnableActionsSwitch(),
-          _UseMiThemeCheckbox(),
-          _UseMaterial3Button(),
-          _BrightnessButton(),
-        ] else
-          _PopupMenu(),
-      ],
-      centerTitle: centerTitle,
+          _OverflowMenu(),
+        ],
+        centerTitle: centerTitle,
+      );
+    }
+  }
+}
+
+/// Exampleアプリ用TabBar
+///
+/// テーマ調整ON/OFFによりTabBarを切り替える
+class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
+  final bool enabled;
+  final List<Widget> tabs;
+  final bool isScrollable;
+  final double indicatorWeight;
+  final ValueChanged<int>? onTap;
+  final bool embedded;
+
+  const ExTabBar({
+    super.key,
+    this.enabled = true,
+    required this.tabs,
+    this.isScrollable = false,
+    this.indicatorWeight = 2.0,
+    this.onTap,
+    this.embedded = false,
+  });
+
+  @override
+  Size get preferredSize => Size.fromHeight(
+        MiTabBar.preferredHeight(
+          tabs: tabs,
+          indicatorWeight: indicatorWeight,
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(themeAdjustmentProvider)
+        ? MiTabBar(
+            enabled: enabled,
+            tabs: tabs,
+            isScrollable: isScrollable,
+            embedded: embedded,
+          )
+        : TabBar(
+            tabs: tabs,
+            isScrollable: isScrollable,
+          );
+  }
+}
+
+/// Exampleアプリ用BottomNavigationBar
+///
+/// TODO: 横画面でNavigationRail
+class ExBottomNavigationBar extends ConsumerWidget {
+  static final _logger = Logger((ExBottomNavigationBar).toString());
+
+  const ExBottomNavigationBar({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final items = [
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.home_outlined),
+        label: 'Home',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.settings_outlined),
+        label: 'Settings',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.help_outline),
+        label: 'About',
+      ),
+    ];
+
+    final currentIndex = GoRouter.of(context).location.let((it) {
+      switch (it) {
+        case '/':
+          return 0;
+        case '/settings':
+          return 1;
+        default:
+          return -1;
+      }
+    });
+
+    return MiBottomNavigationBar(
+      enabled: ref.watch(enableActionsProvider),
+      type: BottomNavigationBarType.fixed,
+      currentIndex: currentIndex,
+      items: items,
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            if (currentIndex != 0) {
+              context.go('/');
+            }
+            break;
+          case 1:
+            if (currentIndex != 1) {
+              context.go('/settings');
+            }
+            break;
+          case 2:
+            showAboutDialog(
+              context: context,
+              applicationName: 'Mi example',
+              applicationVersion: 'Ever unstable',
+              children: [
+                const Text('An example for Mi boilerplates.'),
+              ],
+            );
+            break;
+        }
+      },
     );
   }
 }

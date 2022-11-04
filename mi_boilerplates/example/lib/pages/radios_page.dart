@@ -4,10 +4,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 enum _Class { fighter, cleric, mage, thief }
 
@@ -43,6 +43,8 @@ class RadiosPage extends ConsumerWidget {
   static const icon = Icon(Icons.radio_button_checked_outlined);
   static const title = Text('Radios');
 
+  static final _logger = Logger((RadiosPage).toString());
+
   const RadiosPage({super.key});
 
   @override
@@ -53,7 +55,7 @@ class RadiosPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
       ),
       body: SafeArea(
@@ -83,7 +85,7 @@ class RadiosPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(10),
                 child: IconTheme(
                   data: IconThemeData(
-                    color: Theme.of(context).unselectedIconColor,
+                    color: Theme.of(context).disabledColor,
                     size: 60,
                   ),
                   child: _radioItems[class_]!.iconBuilder(true),

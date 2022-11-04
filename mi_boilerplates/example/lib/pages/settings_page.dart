@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
+import 'package:example/data/jis_common_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -12,13 +13,94 @@ import '../data/primary_color_names.dart';
 import '../data/x11_colors.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
+
+Future<bool> _showColorSelectDialog({
+  required BuildContext context,
+  Widget? title,
+  Color? initialColor,
+  required List<Widget> tabs,
+  required List<List<Color?>> colors,
+  required List<List<String>> tooltips,
+  void Function(int tabIndex, int colorIndex)? onChanged,
+}) async {
+  Color? color = initialColor;
+
+  return await showDialog<bool>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) {
+        return MiOkCancelDialog<bool>(
+          icon: MiColorChip(color: color),
+          title: title,
+          content: MiEmbeddedTabView(
+            tabs: tabs,
+            initialIndex: 0,
+            children: colors
+                .mapIndexed(
+                  (tabIndex, colors_) => SingleChildScrollView(
+                    child: MiColorGrid(
+                      colors: colors_,
+                      tooltips: tooltips[tabIndex],
+                      onChanged: (colorIndex) {
+                        setState(() => color = colors_[colorIndex]);
+                        onChanged?.call(tabIndex, colorIndex);
+                      },
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          getValue: (ok) => ok,
+        );
+      },
+    ),
+  ).then((value) => value ?? false);
+}
+
+Future<bool> showColorSelectDialog({
+  required BuildContext context,
+  Widget? title,
+  required Color? initialColor,
+  void Function(Color? value)? onChanged,
+  bool nullable = false,
+}) async {
+  const tabs = <Widget>[
+    MiTab(icon: Icon(Icons.flutter_dash)),
+    MiTab(text: 'X11'),
+    MiTab(text: 'JIS'),
+  ];
+
+  final colors = <List<Color?>>[
+    [if (nullable) null, ...Colors.primaries],
+    x11Colors,
+    jisCommonColors,
+  ];
+
+  final tooltips = [
+    [if (nullable) 'null', ...primaryColorNames],
+    x11ColorNames,
+    jisCommonColorNames,
+  ];
+
+  final ok = await _showColorSelectDialog(
+      context: context,
+      title: title,
+      initialColor: initialColor,
+      tabs: tabs,
+      colors: colors,
+      tooltips: tooltips,
+      onChanged: (tabIndex, colorIndex) {
+        onChanged?.call(colors[tabIndex][colorIndex]);
+      });
+  if (!ok) {
+    onChanged?.call(initialColor);
+  }
+  return ok;
+}
 
 ///
-/// Exampleアプリの設定ページ。
+/// Exampleアプリの設定ページ
 ///
-
-final _useX11ColorProvider = StateProvider((ref) => false);
 
 class SettingsPage extends ConsumerWidget {
   static const icon = Icon(Icons.settings_outlined);
@@ -28,53 +110,17 @@ class SettingsPage extends ConsumerWidget {
 
   const SettingsPage({super.key});
 
-  ///
-  //bool showColorGridDialog()
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     assert(x11Colors.length == x11ColorNames.length);
 
-    final useX11ColorState = ref.watch(_useX11ColorProvider.state);
-    final useX11Color = useX11ColorState.state;
-
     final theme = Theme.of(context);
-
-    final primarySwatchItems = [
-      ...Colors.primaries.mapIndexed(
-        (index, color) => DropdownMenuItem<MaterialColor>(
-          value: color,
-          child: MiColorChip(
-            color: color,
-            tooltip: primaryColorNames[index],
-          ),
-        ),
-      ),
-      if (useX11Color)
-        ...x11Colors.mapIndexed(
-          (index, color) => DropdownMenuItem<MaterialColor>(
-            value: color.toMaterialColor(),
-            child: MiColorChip(
-              color: color,
-              tooltip: x11ColorNames[index],
-            ),
-          ),
-        ),
-    ];
-
-    final secondaryColorItems = <DropdownMenuItem<Color?>>[
-      const DropdownMenuItem<Color?>(
-        value: null,
-        child: MiColorChip(color: null, tooltip: 'null'),
-      ),
-      ...primarySwatchItems,
-    ];
 
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
       ),
       body: SafeArea(
@@ -84,29 +130,41 @@ class SettingsPage extends ConsumerWidget {
           children: <Widget>[
             // テーマ
             Text('Theme', style: theme.textTheme.headline6),
-            CheckboxListTile(
-              value: useX11Color,
-              title: const Text('X11 colors'),
-              controlAffinity: ListTileControlAffinity.leading,
-              onChanged: (value) => useX11ColorState.state = value!,
-            ),
+            // primarySwatch
             ListTile(
               title: const Text('Primary swatch'),
-              trailing: DropdownButton<MaterialColor>(
-                value: ref.watch(primarySwatchProvider),
-                items: primarySwatchItems,
-                onChanged: (value) {
-                  ref.read(primarySwatchProvider.state).state = value!;
+              trailing: MiIconButton(
+                icon: MiColorChip(
+                  color: ref.watch(primarySwatchProvider),
+                ),
+                onPressed: () async {
+                  showColorSelectDialog(
+                    context: context,
+                    title: const Text('Primary swatch'),
+                    initialColor: ref.watch(primarySwatchProvider),
+                    onChanged: (value) {
+                      ref.read(primarySwatchProvider.state).state = value!.toMaterialColor();
+                    },
+                  );
                 },
               ),
             ),
             ListTile(
               title: const Text('Secondary color'),
-              trailing: DropdownButton<Color?>(
-                value: ref.watch(secondaryColorProvider),
-                items: secondaryColorItems,
-                onChanged: (value) {
-                  ref.read(secondaryColorProvider.state).state = value;
+              trailing: MiIconButton(
+                icon: MiColorChip(
+                  color: ref.watch(secondaryColorProvider),
+                ),
+                onPressed: () async {
+                  showColorSelectDialog(
+                    context: context,
+                    title: const Text('Secondary color'),
+                    initialColor: ref.watch(secondaryColorProvider),
+                    nullable: true,
+                    onChanged: (value) {
+                      ref.read(secondaryColorProvider.state).state = value;
+                    },
+                  );
                 },
               ),
             ),
@@ -126,10 +184,10 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             CheckboxListTile(
-              value: ref.watch(useMiThemesProvider),
-              title: const Text('Use mi themes'),
+              value: ref.watch(themeAdjustmentProvider),
+              title: const Text('Adjust theme'),
               onChanged: (value) {
-                ref.read(useMiThemesProvider.state).state = value!;
+                ref.read(themeAdjustmentProvider.state).state = value!;
               },
             ),
             const Divider(),

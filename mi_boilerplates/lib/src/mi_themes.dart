@@ -4,17 +4,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 extension BrightnessExtension on Brightness {
   bool get isDark => this == Brightness.dark;
 }
 
 extension SwitchThemeDataHelper on SwitchThemeData {
-  /// 任意の色から生成
-  ///
-  /// 例えばAppBar上に置く時とか
-  SwitchThemeData withColor({
+  SwitchThemeData adjustByColor({
     required Color thumbColor,
     Brightness brightness = Brightness.light,
   }) {
@@ -51,113 +47,70 @@ extension ThemeDataHelper on ThemeData {
 
   bool get isDark => brightness.isDark;
 
-  /// ListTileのデフォルトのIconやCheckbox, Radioの色。disabledColorとonSurfaceの中間。
+  /// ListTileのIconやCheckbox, Radioの色。disabledColorとonSurfaceの中間
   /// s.a. https://github.com/flutter/flutter/blob/cc2aedd17aee7203a035a8b3f5968ce040bfbe8f/packages/flutter/lib/src/material/list_tile.dart#L609
   Color get unselectedIconColor => colorScheme.onSurface.withAlpha(0x73);
 
-  /// ListTileのデフォルトのパディング。
+  /// ListTileのデフォルトのパディング
   /// s.a. https://api.flutter.dev/flutter/material/ListTile/contentPadding.html
   EdgeInsetsGeometry get listTileContentPadding =>
       (listTileTheme.contentPadding) ?? const EdgeInsets.symmetric(horizontal: 16.0);
 
-  /// 現状のmaterial widgetsの実装では、ダークテーマの挙動がまちまちなので、一貫性を持たせる。
-  ThemeData withMiThemes() {
-    // ボタンのforegroundColor
-    // * ダークテーマ時はsecondary
-    // * ライトテーマ時はprimaryだが、明るい色だと文字・アイコンが見づらくなるので調整
-    final foregroundColor = isDark
-        ? colorScheme.secondary
-        : HSLColor.fromColor(colorScheme.primary).let((it) {
-            // 独自研究による閾値
-            if (it.lightness <= 0.53) {
-              return colorScheme.primary;
-            }
-            final index = colorScheme.primary.indexOfPrimaries();
-            if (index >= 0) {
-              return Colors.primaries[index].shade800;
-            }
-            return it.withLightness((it.lightness - 0.2).clamp(0, 1)).toColor();
-          });
+  /// 現状のmaterial widgetsの実装は、ダークテーマの挙動がまちまちなので、一貫するよう調整
+  ThemeData adjust() {
+    final foregroundColor = isDark ? colorScheme.secondary : primaryColorDark;
 
-    Color Function(Set<MaterialState> states) resolveButtonColor(
-      Color color,
-      Color disabledColor,
-    ) {
-      return (Set<MaterialState> states) =>
-          states.contains(MaterialState.disabled) ? disabledColor : color;
+    Color? Function(Set<MaterialState> states) resolveButtonColor(Color color) {
+      return (Set<MaterialState> states) => states.contains(MaterialState.disabled) ? null : color;
     }
 
     // TextButton, OutlinedButton
-    // * foregroundColor調整
-    // * ダークテーマ時のforegroundColorをsecondaryに変更
+    // * ダーク時の色をsecondaryに変更
     final textButtonTheme_ = TextButtonThemeData(
       style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.resolveWith(
-          resolveButtonColor(foregroundColor, disabledColor),
-        ),
+        foregroundColor: MaterialStateProperty.resolveWith(resolveButtonColor(foregroundColor)),
       ).merge(textButtonTheme.style),
     );
 
     final outlinedButtonTheme_ = OutlinedButtonThemeData(
       style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.resolveWith(
-          resolveButtonColor(foregroundColor, disabledColor),
-        ),
+        foregroundColor: MaterialStateProperty.resolveWith(resolveButtonColor(foregroundColor)),
       ).merge(outlinedButtonTheme.style),
     );
 
     // ElevatedButton
-    // * ダークテーマ時のforegroundColorをsecondaryに変更
+    // * ダーク時の色をsecondaryに変更
     final elevatedButtonTheme_ = ElevatedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.resolveWith(
-          resolveButtonColor(
-            isDark ? colorScheme.onSecondary : colorScheme.onPrimary,
-            disabledColor,
-          ),
+          resolveButtonColor(isDark ? colorScheme.onSecondary : colorScheme.onPrimary),
         ),
         backgroundColor: MaterialStateProperty.resolveWith(
-          // TODO: SOURCE LINK
-          resolveButtonColor(
-            isDark ? colorScheme.secondary : colorScheme.primary,
-            colorScheme.onSurface.withOpacity(0.12),
-          ),
+          resolveButtonColor(isDark ? colorScheme.secondary : colorScheme.primary),
         ),
       ).merge(elevatedButtonTheme.style),
     );
 
-    // Checkbox, Radio
-    // * ライトテーマ時のfillColor調整
-    // TODO: ダーク時、checkColorをsurfaceにした方が良い？（secondaryが明色だとvと-が見分けづらいので）
-    Color resolveToggleableColor(Set<MaterialState> states) {
-      if (states.contains(MaterialState.disabled)) {
-        return disabledColor;
-      } else if (states.contains(MaterialState.selected)) {
-        return isDark ? colorScheme.secondary : foregroundColor;
-      } else {
-        return unselectedWidgetColor;
-      }
+    // Checkbox
+    // * ダーク時のcheckColorを調整
+    Color? Function(Set<MaterialState> states) resolveCheckColor() {
+      return (Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return isDark ? colorScheme.surface : colorScheme.onPrimary;
+        }
+        return null;
+      };
     }
 
     final checkboxTheme_ = checkboxTheme.copyWith(
-      fillColor: MaterialStateProperty.resolveWith(resolveToggleableColor),
-    );
-    final radioTheme_ = radioTheme.copyWith(
-      fillColor: MaterialStateProperty.resolveWith(resolveToggleableColor),
-    );
-
-    // Switch
-    // * ライトテーマ時のthumbColor, trackColor調整
-    final switchTheme_ = switchTheme.withColor(
-      thumbColor: foregroundColor,
-      brightness: brightness,
+      checkColor: MaterialStateProperty.resolveWith<Color?>(resolveCheckColor()),
     );
 
     // TODO: Slider.
     // https://github.com/flutter/flutter/blob/cc2aedd17aee7203a035a8b3f5968ce040bfbe8f/packages/flutter/lib/src/material/slider.dart#L743
 
     // ToggleButtons
-    // * ダークテーマ時のselectedColor, fillColorをsecondaryに変更
+    // * ダーク時の色をsecondaryに変更
     final toggleButtonsTheme_ = toggleButtonsTheme.copyWith(
       selectedColor: foregroundColor,
       // TODO: SOURCE LINK
@@ -165,13 +118,13 @@ extension ThemeDataHelper on ThemeData {
     );
 
     // ListTile
-    // * ダークテーマ時のselectedColorをsecondaryに変更
+    // * ダーク時の色をsecondaryに変更
     final listTileTheme_ = listTileTheme.copyWith(
       selectedColor: foregroundColor,
     );
 
     // ExpansionTile
-    // * ダークテーマ時のselectedColorをsecondaryに変更
+    // * ダーク時の色をsecondaryに変更
     final expansionTileTheme_ = expansionTileTheme.copyWith(
       textColor: foregroundColor,
       iconColor: foregroundColor,
@@ -179,37 +132,35 @@ extension ThemeDataHelper on ThemeData {
 
     // SnackBar
     // * actionTextColorをちょっと見やすく（独自研究）
-    // TODO: primary, secondaryの明色？
     final snackBarTheme_ = snackBarTheme.copyWith(
-      actionTextColor: isDark
-          ? Color.alphaBlend(colorScheme.secondary.withAlpha(178), colorScheme.surface)
-          : Color.alphaBlend(colorScheme.secondary.withAlpha(160), colorScheme.surface),
+      actionTextColor: isDark ? colorScheme.secondary : primaryColorLight,
     );
 
     // TabBar
-    // * ラベル文字色のマテリアルデザイン3対応
-    // * インジケータ位置もちょっと調整（独自研究）
+    // * ラベル文字色、インジケータ色のM3対応
+    final indicatorColor_ = useMaterial3
+        ? colorScheme.onSurface
+        : isDark
+            ? colorScheme.secondary
+            : colorScheme.onPrimary;
+    final labelColor = useMaterial3
+        ? colorScheme.onSurface
+        : isDark
+            ? colorScheme.onSurface
+            : colorScheme.onPrimary;
     final tabBarTheme_ = tabBarTheme.copyWith(
-      labelColor: useMaterial3
-          ? colorScheme.onSurface
-          : isDark
-              ? colorScheme.onSurface
-              : colorScheme.onPrimary,
-      indicator: useMaterial3
-          ? UnderlineTabIndicator(
-              borderSide: BorderSide(
-                width: 2.0,
-                color: colorScheme.onSurface,
-              ),
-              insets: const EdgeInsets.only(bottom: 4.0),
-            )
-          : null,
+      indicator: UnderlineTabIndicator(
+        borderSide: BorderSide(
+          width: 2.0,
+          color: indicatorColor_,
+        ),
+      ),
+      labelColor: labelColor,
     );
-
     // AppBar
-    // * マテリアルデザイン3の見栄え調整（独自研究）
+    // * M3時のelevation調整（独自研究）
     final appBarTheme_ = appBarTheme.copyWith(
-      elevation: useMaterial3 ? 4.0 : null,
+      elevation: useMaterial3 ? 2.0 : null,
       shadowColor: useMaterial3 ? Colors.black : null,
     );
 
@@ -218,8 +169,8 @@ extension ThemeDataHelper on ThemeData {
       outlinedButtonTheme: outlinedButtonTheme_,
       elevatedButtonTheme: elevatedButtonTheme_,
       checkboxTheme: checkboxTheme_,
-      radioTheme: radioTheme_,
-      switchTheme: switchTheme_,
+      // radioTheme: radioTheme_,
+      // switchTheme: switchTheme_,
       toggleButtonsTheme: toggleButtonsTheme_,
       listTileTheme: listTileTheme_,
       expansionTileTheme: expansionTileTheme_,
@@ -227,6 +178,7 @@ extension ThemeDataHelper on ThemeData {
       tabBarTheme: tabBarTheme_,
       appBarTheme: appBarTheme_,
       // *ListTileのselectedColor
+      // TODO: source link
       toggleableActiveColor: foregroundColor,
     );
   }

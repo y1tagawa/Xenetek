@@ -8,7 +8,6 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 ///
 /// buttons example page.
@@ -69,7 +68,7 @@ class ButtonsPage extends ConsumerWidget {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
-            leading: icon,
+            icon: icon,
             title: title,
             actions: [
               IconButton(
@@ -78,10 +77,9 @@ class ButtonsPage extends ConsumerWidget {
                 tooltip: 'IconButton',
               ),
             ],
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: SafeArea(
@@ -90,7 +88,7 @@ class ButtonsPage extends ConsumerWidget {
               physics: enabled ? null : const NeverScrollableScrollPhysics(),
               children: const [
                 _PushButtonsTab(),
-                _PushButtonsTab(),
+                _TabContainerTab(),
               ],
             ),
           ),
@@ -115,6 +113,7 @@ class ButtonsPage extends ConsumerWidget {
 /// TextButton, OutlinedButton, ElevatedButton, IconButton tab.
 ///
 
+final _tProvider = StateProvider((ref) => false);
 final _toggleProvider = StateProvider((ref) => List<bool>.filled(5, false));
 
 class _PushButtonsTab extends ConsumerWidget {
@@ -128,6 +127,7 @@ class _PushButtonsTab extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
     final toggle = ref.watch(_toggleProvider);
+    final t = ref.watch(_tProvider);
 
     final theme = Theme.of(context);
 
@@ -199,7 +199,7 @@ class _PushButtonsTab extends ConsumerWidget {
                 ),
                 MiIcon(
                   icon: Icon(Icons.tsunami_outlined),
-                  tooltip: 'Landslide',
+                  tooltip: 'Tsunami',
                 ),
                 MiIcon(
                   icon: Icon(Icons.tornado_outlined),
@@ -211,7 +211,7 @@ class _PushButtonsTab extends ConsumerWidget {
                 ),
                 MiIcon(
                   icon: Icon(Icons.volcano_outlined),
-                  tooltip: 'Landslide',
+                  tooltip: 'Volcano',
                 ),
               ],
             ),
@@ -238,5 +238,74 @@ class _PushButtonsTab extends ConsumerWidget {
     ).also((_) {
       _logger.fine('[o] build');
     });
+  }
+}
+
+//
+//
+//
+
+class _TabContainerTab extends ConsumerWidget {
+  static final _logger = Logger((_TabContainerTab).toString());
+
+  const _TabContainerTab();
+
+  static const _tabs = <Widget>[
+    MiTab(
+      icon: Icon(Icons.looks_one_outlined),
+      text: 'One',
+    ),
+    MiTab(
+      icon: Icon(Icons.looks_two_outlined),
+      text: 'Two',
+    ),
+    MiTab(
+      icon: Icon(Icons.looks_3_outlined),
+      text: 'Three',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(enableActionsProvider);
+
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      child: MiDefaultTabController(
+        length: 3,
+        initialIndex: 0,
+        builder: (context) {
+          return Column(
+            children: [
+              ExTabBar(
+                enabled: enabled,
+                embedded: true,
+                tabs: _tabs,
+              ),
+              const SizedBox(
+                height: 300,
+                child: TabBarView(
+                  children: [
+                    Center(
+                      child: Text('One'),
+                    ),
+                    Center(
+                      child: Text('Two'),
+                    ),
+                    Center(
+                      child: Text('Þree'),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

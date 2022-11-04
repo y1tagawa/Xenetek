@@ -8,7 +8,6 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 ///
 /// Menus example page.
@@ -59,9 +58,9 @@ class MenusPage extends ConsumerWidget {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
-            leading: icon,
+            icon: icon,
             title: title,
-            bottom: MiTabBar(
+            bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
               isScrollable: true,

@@ -9,7 +9,6 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../main.dart';
 import 'ex_app_bar.dart';
-import 'ex_bottom_navigation_bar.dart';
 
 //
 // List tiles examples page.
@@ -33,7 +32,7 @@ class ListTilesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final useMiThemes = ref.watch(useMiThemesProvider);
+    final themeAdjustment = ref.watch(themeAdjustmentProvider);
     final check = ref.watch(_checkProvider);
     final radio = ref.watch(_radioProvider);
     final switch_ = ref.watch(_switchProvider);
@@ -50,7 +49,7 @@ class ListTilesPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        leading: icon,
+        icon: icon,
         title: title,
       ),
       body: SafeArea(
@@ -110,7 +109,7 @@ class ListTilesPage extends ConsumerWidget {
                   text: Text('SwitchListTile'),
                 ),
               ),
-              if (useMiThemes)
+              if (themeAdjustment)
                 MiExpansionTile(
                   enabled: enableActions,
                   title: const MiIcon(
