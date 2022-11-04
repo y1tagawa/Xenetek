@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../data/primary_color_names.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 
@@ -90,10 +91,8 @@ class _ColorGridTab extends ConsumerWidget {
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
-    final colors = <Color?>[
-      null,
-      ...Colors.primaries,
-    ];
+    final colors = <Color?>[null, ...Colors.primaries];
+    final tooltips = <String>['null', ...primaryColorNames];
 
     final colorTabs = <String, List<Color?>>{
       'Flutter': [null, ...Colors.primaries],
@@ -114,6 +113,7 @@ class _ColorGridTab extends ConsumerWidget {
                     context: context,
                     initialColor: initialColor,
                     colors: colors,
+                    tooltips: tooltips,
                     onChanged: (_, index) {
                       final color = colors[index];
                       if (color != null) {
