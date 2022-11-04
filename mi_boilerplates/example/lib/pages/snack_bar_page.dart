@@ -77,63 +77,6 @@ class SnackBarPage extends ConsumerWidget {
 /// Snack bar tab
 ///
 
-/// [IconTheme]を設定する[SnackBar]。
-///
-/// マテリアルデザイン上はSnackBarにアイコンを出すの禁止ではあるのだが……
-/// https://material.io/components/snackbars#anatomy
-ScaffoldFeatureController _showMySnackBar({
-  required BuildContext context,
-  required Widget content,
-  SnackBarAction? action,
-  Duration duration = const Duration(milliseconds: 4000),
-}) {
-  return ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: IconTheme(
-        data: IconTheme.of(context).merge(
-          IconThemeData(
-            color: Theme.of(context).colorScheme.surface,
-          ),
-        ),
-        child: content,
-      ),
-      action: action,
-      duration: duration,
-    ),
-  );
-}
-
-void _ping({
-  required BuildContext context,
-  required WidgetRef ref,
-  String? content,
-}) async {
-//  final enableTransitionState = ref.watch(enableTransitionProvider.state);
-
-//  enableTransitionState.state = false;
-  await _showMySnackBar(
-    context: context,
-    action: SnackBarAction(
-      label: 'CLOSE',
-      onPressed: () {
-        ScaffoldMessenger.of(context).clearSnackBars();
-      },
-    ),
-    content: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Icon(
-          Icons.notifications_active_outlined,
-        ),
-        const SizedBox(width: 8),
-        Text(content ?? 'Ping!'),
-      ],
-    ),
-    duration: const Duration(milliseconds: 500),
-  ); //.closed.then((_) => enableTransitionState.state = true);
-}
-
 class _SnackBarTab extends ConsumerWidget {
   static final _logger = Logger((_SnackBarTab).toString());
 
@@ -193,7 +136,6 @@ class _SnackBarTab extends ConsumerWidget {
                         ScaffoldMessenger.of(context).clearSnackBars();
                       },
                     ),
-                    duration: const Duration(seconds: 4),
                   ),
                 );
               },
