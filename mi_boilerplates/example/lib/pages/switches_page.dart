@@ -165,15 +165,23 @@ class SwitchesPage extends ConsumerWidget {
               ),
             ),
             const Divider(),
-            Container(
+            Padding(
               padding: const EdgeInsets.all(10),
-              child: myHp > 0
-                  ? Icon(
+              child: Stack(
+                children: [
+                  AnimatedOpacity(
+                    opacity: myHp.toDouble() / _switchItems.length,
+                    duration: const Duration(milliseconds: 500),
+                    child: Icon(
                       Icons.person_outline_outlined,
                       size: 48,
                       color: theme.disabledColor,
-                    )
-                  : MiRotate(
+                    ),
+                  ),
+                  AnimatedOpacity(
+                    opacity: myHp > 0 ? 0.0 : 1.0,
+                    duration: const Duration(milliseconds: 500),
+                    child: MiRotate(
                       angleDegree: 90,
                       child: Icon(
                         Icons.crop_7_5,
@@ -181,6 +189,9 @@ class SwitchesPage extends ConsumerWidget {
                         color: theme.disabledColor,
                       ),
                     ),
+                  )
+                ],
+              ),
             ),
           ],
         ),

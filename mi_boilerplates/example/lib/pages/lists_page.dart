@@ -41,8 +41,6 @@ class _ListTile extends ConsumerWidget {
   }
 }
 
-var _tabIndex = 0;
-
 class ListsPage extends ConsumerWidget {
   static const icon = Icon(Icons.list);
   static const title = Text('Lists');
@@ -70,7 +68,7 @@ class ListsPage extends ConsumerWidget {
 
     return MiDefaultTabController(
       length: _tabs.length,
-      initialIndex: _tabIndex,
+      initialIndex: 0,
       builder: (context) {
         return Scaffold(
           appBar: ExAppBar(

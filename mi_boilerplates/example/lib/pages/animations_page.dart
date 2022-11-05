@@ -185,13 +185,13 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 
 class _LottieTab extends ConsumerWidget {
-  static final _log = Logger((_LottieTab).toString());
+  static final _logger = Logger((_LottieTab).toString());
 
   const _LottieTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    _log.fine('[i] build');
+    _logger.fine('[i] build');
 
     final productName = ref.watch(productNameProvider).when(
           data: (value) => value,
@@ -199,7 +199,7 @@ class _LottieTab extends ConsumerWidget {
           loading: () => null,
         );
 
-    _log.fine('productName=[$productName]');
+    _logger.fine('productName=[$productName]');
 
     return Center(
       child: MiAnimationController(
@@ -209,7 +209,7 @@ class _LottieTab extends ConsumerWidget {
             controller: controller,
             repeat: false,
             onLoaded: (composition) {
-              _log.fine('onLoaded: ${composition.duration}');
+              _logger.fine('onLoaded: ${composition.duration}');
               if (productName == 'S6-KC') {
                 controller.duration = composition.duration * 10; // Mi Android One.
               } else {
@@ -226,7 +226,92 @@ class _LottieTab extends ConsumerWidget {
         },
       ),
     ).also((_) {
-      _log.fine('[o] build');
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Animated icons catalogue tab
+//
+
+const _animatedIcons = <AnimatedIconData>[
+  AnimatedIcons.arrow_menu,
+  AnimatedIcons.close_menu,
+  AnimatedIcons.ellipsis_search,
+  AnimatedIcons.event_add,
+  AnimatedIcons.home_menu,
+  AnimatedIcons.list_view,
+  AnimatedIcons.menu_arrow,
+  AnimatedIcons.menu_close,
+  AnimatedIcons.menu_home,
+  AnimatedIcons.pause_play,
+  AnimatedIcons.play_pause,
+  AnimatedIcons.search_ellipsis,
+  AnimatedIcons.view_list,
+];
+
+const _animatedIconNames = [
+  'arrow_menu',
+  'close_menu',
+  'ellipsis_search',
+  'event_add',
+  'home_menu',
+  'list_view',
+  'menu_arrow',
+  'menu_close',
+  'menu_home',
+  'pause_play',
+  'play_pause',
+  'search_ellipsis',
+  'view_list',
+];
+
+final _animatedIconDirections = List<bool>.generate(_animatedIcons.length, (_) => true);
+
+class _AnimatedIconsTab extends ConsumerWidget {
+  static final _logger = Logger((_AnimatedIconsTab).toString());
+
+  const _AnimatedIconsTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    assert(_animatedIcons.length == _animatedIconNames.length);
+    _logger.fine('[i] build');
+
+    final theme = Theme.of(context);
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        ..._animatedIcons.mapIndexed(
+          (index, data) => MiAnimationController(
+            builder: (_, controller, __) {
+              return Tooltip(
+                message: _animatedIconNames[index],
+                child: AnimatedIcon(
+                  icon: data,
+                  progress: controller,
+                  size: 48,
+                  color: theme.colorScheme.background,
+                ),
+              );
+            },
+            onTap: (controller) {
+              final direction = _animatedIconDirections[index];
+              if (direction) {
+                controller.forward(from: controller.value);
+              } else {
+                controller.reverse(from: controller.value);
+              }
+              _animatedIconDirections[index] = !direction;
+            },
+          ),
+        ),
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
     });
   }
 }

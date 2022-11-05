@@ -97,7 +97,6 @@ class _ColorGridTab extends ConsumerWidget {
           Expanded(
             child: SingleChildScrollView(
               child: MiColorGrid(
-                initialColor: ref.watch(primarySwatchProvider),
                 colors: Colors.primaries,
                 tooltips: primaryColorNames,
                 onChanged: (index) {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -10,18 +12,16 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'ex_app_bar.dart';
 
 ///
-/// buttons example page.
+/// Buttons example page.
 ///
 
 final _tabIndexProvider = StateProvider((ref) => 0);
-final _pingProvider = StateProvider((ref) => 0);
+
+AnimationController? _pingController;
 
 void _ping(WidgetRef ref) async {
-  ref.read(_pingProvider.state).state += 1;
-  await Future.delayed(
-    const Duration(milliseconds: 500),
-    () => ref.read(_pingProvider.state).state -= 1,
-  );
+  _pingController?.reset();
+  _pingController?.forward();
 }
 
 class ButtonsPage extends ConsumerWidget {
@@ -52,8 +52,6 @@ class ButtonsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    // final pfbStyle = ref.watch(_persistentBottomButtonsProvider);
-
     final tabIndexState = ref.watch(_tabIndexProvider.state);
     final tabIndex = tabIndexState.state;
 
@@ -71,11 +69,12 @@ class ButtonsPage extends ConsumerWidget {
             icon: icon,
             title: title,
             actions: [
-              IconButton(
-                onPressed: enabled ? () => _ping(ref) : null,
-                icon: const Icon(Icons.notifications_outlined),
-                tooltip: 'IconButton',
-              ),
+              if (tabIndex == 0)
+                IconButton(
+                  onPressed: () => _ping(ref),
+                  icon: const Icon(Icons.notifications_outlined),
+                  tooltip: 'IconButton',
+                ),
             ],
             bottom: ExTabBar(
               enabled: enabled,
@@ -88,7 +87,7 @@ class ButtonsPage extends ConsumerWidget {
               physics: enabled ? null : const NeverScrollableScrollPhysics(),
               children: const [
                 _PushButtonsTab(),
-                _TabContainerTab(),
+                _MonospaceTab(),
               ],
             ),
           ),
@@ -110,11 +109,10 @@ class ButtonsPage extends ConsumerWidget {
 }
 
 ///
-/// TextButton, OutlinedButton, ElevatedButton, IconButton tab.
+/// Push buttons tab
 ///
 
-final _tProvider = StateProvider((ref) => false);
-final _toggleProvider = StateProvider((ref) => List<bool>.filled(5, false));
+// TODO: https://assets10.lottiefiles.com/datafiles/WgRBwbT0n0IN0Uu/data.json
 
 class _PushButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_PushButtonsTab).toString());
@@ -126,8 +124,6 @@ class _PushButtonsTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
-    final toggle = ref.watch(_toggleProvider);
-    final t = ref.watch(_tProvider);
 
     final theme = Theme.of(context);
 
@@ -186,51 +182,26 @@ class _PushButtonsTab extends ConsumerWidget {
               tooltip: 'IconButton',
             ),
           ),
-          ListTile(
-            leading: ToggleButtons(
-              isSelected: toggle,
-              onPressed: (index) {
-                ref.read(_toggleProvider.state).state = toggle.replaced(index, !toggle[index]);
-              },
-              children: const [
-                MiIcon(
-                  icon: Icon(Icons.flood_outlined),
-                  tooltip: 'Flood',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.tsunami_outlined),
-                  tooltip: 'Tsunami',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.tornado_outlined),
-                  tooltip: 'Tornado',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.landslide_outlined),
-                  tooltip: 'Landslide',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.volcano_outlined),
-                  tooltip: 'Volcano',
-                ),
-              ],
-            ),
-          ),
           const Divider(),
           Padding(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(10),
             child: Center(
-              child: ref.watch(_pingProvider) > 0
-                  ? Icon(
-                      Icons.notifications_active_outlined,
-                      size: 48,
-                      color: theme.unselectedIconColor,
-                    )
-                  : const Icon(
-                      Icons.notifications_outlined,
-                      size: 48,
-                      color: Colors.transparent,
-                    ),
+              child: MiRingingIcon(
+                duration: const Duration(seconds: 2),
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  size: 48,
+                  color: theme.disabledColor,
+                ),
+                ringingIcon: Icon(
+                  Icons.notifications_active_outlined,
+                  size: 48,
+                  color: theme.disabledColor,
+                ),
+                origin: const Offset(0, -20),
+                onInitialized: (controller) => _pingController = controller,
+                onDispose: () => _pingController = null,
+              ),
             ),
           ),
         ],
@@ -245,25 +216,28 @@ class _PushButtonsTab extends ConsumerWidget {
 //
 //
 
-class _TabContainerTab extends ConsumerWidget {
-  static final _logger = Logger((_TabContainerTab).toString());
+class _MonospaceTab extends ConsumerWidget {
+  static final _logger = Logger((_MonospaceTab).toString());
 
-  const _TabContainerTab();
+  const _MonospaceTab();
 
-  static const _tabs = <Widget>[
-    MiTab(
-      icon: Icon(Icons.looks_one_outlined),
-      text: 'One',
-    ),
-    MiTab(
-      icon: Icon(Icons.looks_two_outlined),
-      text: 'Two',
-    ),
-    MiTab(
-      icon: Icon(Icons.looks_3_outlined),
-      text: 'Three',
-    ),
-  ];
+  static const _data = '''
+Some say the world will end in fire,
+Some say in ice.
+From what I’ve tasted of desire
+I hold with those who favor fire.
+
+But if it had to perish twice,
+I think I know enough of hate
+To say that for destruction ice
+Is also great
+And would suffice.
+
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789 (){}[]
++-*/= .,;:!? #&\$%@|^
+  ''';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -274,37 +248,23 @@ class _TabContainerTab extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
-      child: MiDefaultTabController(
-        length: 3,
-        initialIndex: 0,
-        builder: (context) {
-          return Column(
-            children: [
-              ExTabBar(
-                enabled: enabled,
-                embedded: true,
-                tabs: _tabs,
-              ),
-              const SizedBox(
-                height: 300,
-                child: TabBarView(
-                  children: [
-                    Center(
-                      child: Text('One'),
-                    ),
-                    Center(
-                      child: Text('Two'),
-                    ),
-                    Center(
-                      child: Text('Þree'),
-                    ),
-                  ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ..._data.split('\n').map(
+                (line) => Text(
+                  line,
+                  softWrap: false,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Courier New',
+                  ),
                 ),
               ),
-              const Divider(),
-            ],
-          );
-        },
+          const Divider(),
+        ],
       ),
     );
   }

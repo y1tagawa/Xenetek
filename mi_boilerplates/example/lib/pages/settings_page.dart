@@ -35,20 +35,20 @@ Future<bool> _showColorSelectDialog({
           content: MiEmbeddedTabView(
             tabs: tabs,
             initialIndex: 0,
-            children: colors
-                .mapIndexed(
-                  (tabIndex, colors_) => SingleChildScrollView(
-                    child: MiColorGrid(
-                      colors: colors_,
-                      tooltips: tooltips[tabIndex],
-                      onChanged: (colorIndex) {
-                        setState(() => color = colors_[colorIndex]);
-                        onChanged?.call(tabIndex, colorIndex);
-                      },
-                    ),
+            children: [
+              ...colors.mapIndexed(
+                (tabIndex, colors_) => SingleChildScrollView(
+                  child: MiColorGrid(
+                    colors: colors_,
+                    tooltips: tooltips[tabIndex],
+                    onChanged: (colorIndex) {
+                      setState(() => color = colors_[colorIndex]);
+                      onChanged?.call(tabIndex, colorIndex);
+                    },
                   ),
-                )
-                .toList(),
+                ),
+              ),
+            ],
           ),
           getValue: (ok) => ok,
         );
