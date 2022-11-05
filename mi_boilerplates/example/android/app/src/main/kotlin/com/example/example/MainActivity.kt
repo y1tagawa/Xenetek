@@ -1,11 +1,15 @@
 package com.example.example
 
+import android.os.Build
+import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     companion object {
         private const val CHANNEL = "com.xenetek.mi_boilerplates/examples"
-        private const val METHOD_GET_BUILD_MODEL = "getAndroidBuildModel"
+        private const val METHOD_GET_ANDROID_BUILD_MODEL = "getAndroidBuildModel"
     }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
