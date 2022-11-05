@@ -205,23 +205,6 @@ class _PushButtonsTab extends ConsumerWidget {
               ),
             ),
           ),
-
-          // Padding(
-          //   padding: const EdgeInsets.all(4),
-          //   child: Center(
-          //     child: ref.watch(_pingProvider) > 0
-          //         ? Icon(
-          //             Icons.notifications_active_outlined,
-          //             size: 48,
-          //             color: theme.unselectedIconColor,
-          //           )
-          //         : const Icon(
-          //             Icons.notifications_outlined,
-          //             size: 48,
-          //             color: Colors.transparent,
-          //           ),
-          //   ),
-          // ),
         ],
       ),
     ).also((_) {
