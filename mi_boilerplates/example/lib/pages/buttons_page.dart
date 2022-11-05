@@ -12,18 +12,16 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'ex_app_bar.dart';
 
 ///
-/// buttons example page.
+/// Buttons example page.
 ///
 
 final _tabIndexProvider = StateProvider((ref) => 0);
-final _pingProvider = StateProvider((ref) => 0);
+
+AnimationController? _pingController;
 
 void _ping(WidgetRef ref) async {
-  ref.read(_pingProvider.state).state += 1;
-  await Future.delayed(
-    const Duration(milliseconds: 500),
-    () => ref.read(_pingProvider.state).state -= 1,
-  );
+  _pingController?.reset();
+  _pingController?.forward();
 }
 
 class ButtonsPage extends ConsumerWidget {
@@ -54,8 +52,6 @@ class ButtonsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    // final pfbStyle = ref.watch(_persistentBottomButtonsProvider);
-
     final tabIndexState = ref.watch(_tabIndexProvider.state);
     final tabIndex = tabIndexState.state;
 
@@ -73,11 +69,12 @@ class ButtonsPage extends ConsumerWidget {
             icon: icon,
             title: title,
             actions: [
-              IconButton(
-                onPressed: enabled ? () => _ping(ref) : null,
-                icon: const Icon(Icons.notifications_outlined),
-                tooltip: 'IconButton',
-              ),
+              if (tabIndex == 0)
+                IconButton(
+                  onPressed: () => _ping(ref),
+                  icon: const Icon(Icons.notifications_outlined),
+                  tooltip: 'IconButton',
+                ),
             ],
             bottom: ExTabBar(
               enabled: enabled,
@@ -112,7 +109,7 @@ class ButtonsPage extends ConsumerWidget {
 }
 
 ///
-/// TextButton, OutlinedButton, ElevatedButton, IconButton tab.
+/// Push buttons tab
 ///
 
 final _toggleProvider = StateProvider((ref) => List<bool>.filled(5, false));
@@ -217,25 +214,44 @@ class _PushButtonsTab extends ConsumerWidget {
             ),
           ),
           const Divider(),
-          const MiRingingIcon(
-            initiallyRinging: true,
-          ),
           Padding(
             padding: const EdgeInsets.all(4),
             child: Center(
-              child: ref.watch(_pingProvider) > 0
-                  ? Icon(
-                      Icons.notifications_active_outlined,
-                      size: 48,
-                      color: theme.unselectedIconColor,
-                    )
-                  : const Icon(
-                      Icons.notifications_outlined,
-                      size: 48,
-                      color: Colors.transparent,
-                    ),
+              child: MiRingingIcon(
+                duration: const Duration(seconds: 2),
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  size: 48,
+                  color: theme.disabledColor,
+                ),
+                ringingIcon: Icon(
+                  Icons.notifications_active_outlined,
+                  size: 48,
+                  color: theme.disabledColor,
+                ),
+                origin: const Offset(0, -20),
+                onInitialized: (controller) => _pingController = controller,
+                onDispose: () => _pingController = null,
+              ),
             ),
           ),
+
+          // Padding(
+          //   padding: const EdgeInsets.all(4),
+          //   child: Center(
+          //     child: ref.watch(_pingProvider) > 0
+          //         ? Icon(
+          //             Icons.notifications_active_outlined,
+          //             size: 48,
+          //             color: theme.unselectedIconColor,
+          //           )
+          //         : const Icon(
+          //             Icons.notifications_outlined,
+          //             size: 48,
+          //             color: Colors.transparent,
+          //           ),
+          //   ),
+          // ),
         ],
       ),
     ).also((_) {
