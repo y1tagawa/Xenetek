@@ -110,23 +110,16 @@ final _checkItems = [
   ),
 ];
 
-Widget _tallyIcon(WidgetRef ref) {
-  const tallyIcons = <Icon>[
-    Icon(null),
-    Icon(Icons.square_outlined), // 1
-    Icon(Icons.subject), // 2
-    Icon(Icons.article_outlined),
-    Icon(Icons.check), // 4
-    Icon(Icons.check_box_outlined),
-    Icon(Icons.playlist_add_check_outlined),
-    Icon(Icons.fact_check_outlined),
-  ];
-
-  final box = ref.read(_boxCheckProvider);
-  final text = ref.read(_textCheckProvider);
-  final check = ref.read(_checkCheckProvider);
-  return tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
-}
+const _tallyIcons = <Icon>[
+  Icon(null),
+  Icon(Icons.square_outlined), // 1
+  Icon(Icons.subject), // 2
+  Icon(Icons.article_outlined),
+  Icon(Icons.check), // 4
+  Icon(Icons.check_box_outlined),
+  Icon(Icons.playlist_add_check_outlined),
+  Icon(Icons.fact_check_outlined),
+];
 
 class _CheckboxTab extends ConsumerWidget {
   const _CheckboxTab({super.key});
@@ -138,7 +131,7 @@ class _CheckboxTab extends ConsumerWidget {
     final text = ref.watch(_textCheckProvider);
     final check = ref.watch(_checkCheckProvider);
 
-    final tallyIcon = _tallyIcon(ref);
+    final tallyIcon = _tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
 
     void setTally(bool value) {
       ref.read(_boxCheckProvider.state).state = value;
