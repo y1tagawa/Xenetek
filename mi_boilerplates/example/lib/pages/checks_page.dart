@@ -13,60 +13,6 @@ import 'ex_app_bar.dart';
 // Checkbox examples page.
 //
 
-// But see also https://pub.dev/packages/flutter_treeview ,
-// https://pub.dev/packages/flutter_simple_treeview .
-
-class _CheckItem {
-  final StateProvider<bool> provider;
-  final Widget icon;
-  final String text;
-  const _CheckItem({
-    required this.provider,
-    required this.icon,
-    required this.text,
-  });
-}
-
-final _boxCheckProvider = StateProvider((ref) => true);
-final _textCheckProvider = StateProvider((ref) => true);
-final _checkCheckProvider = StateProvider((ref) => true);
-
-final _checkItems = [
-  _CheckItem(
-    provider: _boxCheckProvider,
-    icon: const Icon(Icons.square_outlined),
-    text: 'Box',
-  ),
-  _CheckItem(
-    provider: _textCheckProvider,
-    icon: const Icon(Icons.subject),
-    text: 'Text',
-  ),
-  _CheckItem(
-    provider: _checkCheckProvider,
-    icon: const Icon(Icons.check),
-    text: 'Check',
-  ),
-];
-
-Widget _tallyIcon(WidgetRef ref) {
-  const tallyIcons = <Icon>[
-    Icon(null),
-    Icon(Icons.square_outlined), // 1
-    Icon(Icons.subject), // 2
-    Icon(Icons.article_outlined),
-    Icon(Icons.check), // 4
-    Icon(Icons.check_box_outlined),
-    Icon(Icons.playlist_add_check_outlined),
-    Icon(Icons.fact_check_outlined),
-  ];
-
-  final box = ref.read(_boxCheckProvider);
-  final text = ref.read(_textCheckProvider);
-  final check = ref.read(_checkCheckProvider);
-  return tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
-}
-
 class ChecksPage extends ConsumerWidget {
   static const icon = Icon(Icons.check_box_outlined);
   static const title = Text('Checks');
@@ -124,7 +70,63 @@ class ChecksPage extends ConsumerWidget {
   }
 }
 
+//
 // Checkbox tab
+//
+
+// But see also https://pub.dev/packages/flutter_treeview ,
+// https://pub.dev/packages/flutter_simple_treeview .
+
+class _CheckItem {
+  final StateProvider<bool> provider;
+  final Widget icon;
+  final Widget text;
+  const _CheckItem({
+    required this.provider,
+    required this.icon,
+    required this.text,
+  });
+}
+
+final _boxCheckProvider = StateProvider((ref) => true);
+final _textCheckProvider = StateProvider((ref) => true);
+final _checkCheckProvider = StateProvider((ref) => true);
+
+final _checkItems = [
+  _CheckItem(
+    provider: _boxCheckProvider,
+    icon: const Icon(Icons.square_outlined),
+    text: const Text('Box'),
+  ),
+  _CheckItem(
+    provider: _textCheckProvider,
+    icon: const Icon(Icons.subject),
+    text: const Text('Text'),
+  ),
+  _CheckItem(
+    provider: _checkCheckProvider,
+    icon: const Icon(Icons.check),
+    text: const Text('Check'),
+  ),
+];
+
+Widget _tallyIcon(WidgetRef ref) {
+  const tallyIcons = <Icon>[
+    Icon(null),
+    Icon(Icons.square_outlined), // 1
+    Icon(Icons.subject), // 2
+    Icon(Icons.article_outlined),
+    Icon(Icons.check), // 4
+    Icon(Icons.check_box_outlined),
+    Icon(Icons.playlist_add_check_outlined),
+    Icon(Icons.fact_check_outlined),
+  ];
+
+  final box = ref.read(_boxCheckProvider);
+  final text = ref.read(_textCheckProvider);
+  final check = ref.read(_checkCheckProvider);
+  return tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
+}
 
 class _CheckboxTab extends ConsumerWidget {
   const _CheckboxTab({super.key});
@@ -175,7 +177,7 @@ class _CheckboxTab extends ConsumerWidget {
                 contentPadding: const EdgeInsets.only(left: 28),
                 title: MiIcon(
                   icon: item.icon,
-                  text: Text(item.text),
+                  text: item.text,
                 ),
                 controlAffinity: ListTileControlAffinity.leading,
                 onChanged: (value) {
@@ -226,7 +228,7 @@ const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
 const _lBootIcon = Icon(Icons.roller_skating_outlined);
 const _rBootIcon = MiScale(scaleX: -1, child: Icon(Icons.roller_skating_outlined));
 const _shieldIcon = Icon(Icons.shield_outlined);
-const _spacerIcon = SizedBox.square(dimension: 24);
+const _spacerIcon = Icon(null);
 
 const _toggleItems = <_ToggleItem>[
   _ToggleItem(

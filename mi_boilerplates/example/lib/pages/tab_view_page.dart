@@ -23,7 +23,7 @@ const _imageUrls = [
 var _tabIndex = 0;
 
 class TabViewPage extends ConsumerWidget {
-  static const icon = Icon(Icons.tab_outlined);
+  static const icon = Icon(Icons.folder_outlined);
   static const title = Text('Tab view');
 
   static const _tabs = [
