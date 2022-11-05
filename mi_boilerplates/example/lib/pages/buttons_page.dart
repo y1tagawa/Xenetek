@@ -112,7 +112,7 @@ class ButtonsPage extends ConsumerWidget {
 /// Push buttons tab
 ///
 
-final _toggleProvider = StateProvider((ref) => List<bool>.filled(5, false));
+// TODO: https://assets10.lottiefiles.com/datafiles/WgRBwbT0n0IN0Uu/data.json
 
 class _PushButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_PushButtonsTab).toString());
@@ -124,7 +124,6 @@ class _PushButtonsTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
-    final toggle = ref.watch(_toggleProvider);
 
     final theme = Theme.of(context);
 
