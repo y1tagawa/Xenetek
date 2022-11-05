@@ -215,7 +215,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ),
           const Divider(),
           Padding(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(10),
             child: Center(
               child: MiRingingIcon(
                 duration: const Duration(seconds: 2),
