@@ -6,8 +6,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../main.dart';
 import 'ex_app_bar.dart';
 
 enum _Class { fighter, cleric, mage, thief }
@@ -158,7 +160,7 @@ const _toggleItems = <Widget>[
   Text('Straw\nberry'),
   Text('Grape'),
   Text('Milk'),
-  Text('Cocoa'),
+  Text('Cola'),
 ];
 
 const _toggleItemColors = <Color>[
@@ -168,54 +170,110 @@ const _toggleItemColors = <Color>[
   Colors.orange,
   Colors.red,
   Colors.purple,
-  Colors.white,
+  Color(0xFFEEEEEE),
   Colors.brown,
 ];
 
-final _selectdProvider = StateProvider((ref) => 0);
+final _selectedProvider = StateProvider((ref) => 0);
 
 class _ToggleButtonsTab extends ConsumerWidget {
+  static final _logger = Logger((_selectedProvider).toString());
+
   const _ToggleButtonsTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final selected = ref.watch(_selectdProvider);
+    final selected = ref.watch(_selectedProvider);
     final flags = _toggleItems.mapIndexed((index, _) => index == selected).toList();
 
-    return Column(
-      children: [
-        // 0..3
-        ToggleButtons(
-          isSelected: flags.take(4).toList(),
-          fillColor: _toggleItemColors[selected].withAlpha(40),
-          onPressed: enableActions
-              ? (index) {
-                  ref.read(_selectdProvider.state).state = index;
-                }
-              : null,
-          children: _toggleItems.take(4).toList(),
-        ),
-        // 4..7
-        Transform.translate(
-          offset: const Offset(0, -1),
-          child: ToggleButtons(
-            isSelected: flags.skip(4).toList(),
-            fillColor: _toggleItemColors[selected].withAlpha(64),
-            onPressed: enableActions
-                ? (index) {
-                    ref.read(_selectdProvider.state).state = index + 4;
-                  }
-                : null,
-            children: _toggleItems.skip(4).toList(),
-          ),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Text(selected.toString()),
-        ),
-      ],
+    final productName = ref.watch(productNameProvider).when(
+          data: (value) => value,
+          error: (_, __) => null,
+          loading: () => null,
+        );
+
+    return MiDefaultTabController(
+      length: _toggleItems.length,
+      initialIndex: selected,
+      builder: (context) {
+        return Column(
+          children: [
+            // 0..3
+            ToggleButtons(
+              isSelected: flags.take(4).toList(),
+              onPressed: enableActions
+                  ? (index) {
+                      ref.read(_selectedProvider.state).state = index;
+                      DefaultTabController.of(context)?.index = index;
+                    }
+                  : null,
+              children: _toggleItems.take(4).toList(),
+            ),
+            // 4..7
+            Transform.translate(
+              offset: const Offset(0, -1),
+              child: ToggleButtons(
+                isSelected: flags.skip(4).toList(),
+                onPressed: enableActions
+                    ? (index) {
+                        ref.read(_selectedProvider.state).state = index + 4;
+                        DefaultTabController.of(context)?.index = index + 4;
+                      }
+                    : null,
+                children: _toggleItems.skip(4).toList(),
+              ),
+            ),
+            const Divider(),
+            Expanded(
+              child: TabBarView(
+                children: _toggleItemColors.mapIndexed(
+                  (index, color) {
+                    String url;
+                    LottieDelegates? delegates;
+                    switch (index) {
+                      case 6: // Milk
+                        url =
+                            'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
+                        break;
+                      default:
+                        url = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
+                        break;
+                    }
+                    return Container(
+                      color: color,
+                      child: MiAnimationController(
+                        builder: (_, controller, __) {
+                          return Lottie.network(
+                            url,
+                            delegates: delegates,
+                            controller: controller,
+                            repeat: true,
+                            onLoaded: (composition) {
+                              _logger.fine('onLoaded: ${composition.duration}');
+                              if (productName == 'S6-KC') {
+                                controller.duration = composition.duration * 10; // Mi Android One.
+                              } else {
+                                controller.duration = composition.duration;
+                              }
+                              controller.reset();
+                              controller.forward();
+                            },
+                          );
+                        },
+                        onCompleted: (controller) {
+                          controller.reset();
+                          controller.forward();
+                        },
+                      ),
+                    );
+                  },
+                ).toList(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

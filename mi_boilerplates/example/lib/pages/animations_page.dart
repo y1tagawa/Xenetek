@@ -185,13 +185,13 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 
 class _LottieTab extends ConsumerWidget {
-  static final _log = Logger((_LottieTab).toString());
+  static final _logger = Logger((_LottieTab).toString());
 
   const _LottieTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    _log.fine('[i] build');
+    _logger.fine('[i] build');
 
     final productName = ref.watch(productNameProvider).when(
           data: (value) => value,
@@ -199,7 +199,7 @@ class _LottieTab extends ConsumerWidget {
           loading: () => null,
         );
 
-    _log.fine('productName=[$productName]');
+    _logger.fine('productName=[$productName]');
 
     return Center(
       child: MiAnimationController(
@@ -209,7 +209,7 @@ class _LottieTab extends ConsumerWidget {
             controller: controller,
             repeat: false,
             onLoaded: (composition) {
-              _log.fine('onLoaded: ${composition.duration}');
+              _logger.fine('onLoaded: ${composition.duration}');
               if (productName == 'S6-KC') {
                 controller.duration = composition.duration * 10; // Mi Android One.
               } else {
@@ -226,7 +226,7 @@ class _LottieTab extends ConsumerWidget {
         },
       ),
     ).also((_) {
-      _log.fine('[o] build');
+      _logger.fine('[o] build');
     });
   }
 }
