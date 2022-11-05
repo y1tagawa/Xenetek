@@ -183,36 +183,6 @@ class _PushButtonsTab extends ConsumerWidget {
               tooltip: 'IconButton',
             ),
           ),
-          ListTile(
-            leading: ToggleButtons(
-              isSelected: toggle,
-              onPressed: (index) {
-                ref.read(_toggleProvider.state).state = toggle.replaced(index, !toggle[index]);
-              },
-              children: const [
-                MiIcon(
-                  icon: Icon(Icons.flood_outlined),
-                  tooltip: 'Flood',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.tsunami_outlined),
-                  tooltip: 'Tsunami',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.tornado_outlined),
-                  tooltip: 'Tornado',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.landslide_outlined),
-                  tooltip: 'Landslide',
-                ),
-                MiIcon(
-                  icon: Icon(Icons.volcano_outlined),
-                  tooltip: 'Volcano',
-                ),
-              ],
-            ),
-          ),
           const Divider(),
           Padding(
             padding: const EdgeInsets.all(10),

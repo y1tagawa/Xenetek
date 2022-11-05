@@ -76,7 +76,7 @@ class ChecksPage extends ConsumerWidget {
   static const _tabs = <Widget>[
     MiTab(
       tooltip: 'Checkbox',
-      icon: Icon(Icons.check_box_outlined),
+      icon: icon,
     ),
     MiTab(
       tooltip: 'Toggle buttons',
