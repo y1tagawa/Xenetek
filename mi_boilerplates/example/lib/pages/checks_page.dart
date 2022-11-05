@@ -4,20 +4,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-
-const _combinedIcons = <IconData?>[
-  null,
-  Icons.square_outlined, // 1
-  Icons.subject, // 2
-  Icons.article_outlined,
-  Icons.check, // 4
-  Icons.check_box_outlined,
-  Icons.playlist_add_check_outlined,
-  Icons.fact_check_outlined,
-];
 
 //
 // Checkbox examples page.
@@ -28,8 +18,13 @@ const _combinedIcons = <IconData?>[
 
 class _CheckItem {
   final StateProvider<bool> provider;
-  final Widget title;
-  const _CheckItem({required this.provider, required this.title});
+  final Widget icon;
+  final String text;
+  const _CheckItem({
+    required this.provider,
+    required this.icon,
+    required this.text,
+  });
 }
 
 final _boxCheckProvider = StateProvider((ref) => true);
@@ -39,32 +34,100 @@ final _checkCheckProvider = StateProvider((ref) => true);
 final _checkItems = [
   _CheckItem(
     provider: _boxCheckProvider,
-    title: const MiIcon(
-      icon: Icon(Icons.square_outlined),
-      text: Text('Box'),
-    ),
+    icon: const Icon(Icons.square_outlined),
+    text: 'Box',
   ),
   _CheckItem(
     provider: _textCheckProvider,
-    title: const MiIcon(
-      icon: Icon(Icons.subject),
-      text: Text('Text'),
-    ),
+    icon: const Icon(Icons.subject),
+    text: 'Text',
   ),
   _CheckItem(
     provider: _checkCheckProvider,
-    title: const MiIcon(
-      icon: Icon(Icons.check),
-      text: Text('Check'),
-    ),
+    icon: const Icon(Icons.check),
+    text: 'Check',
   ),
 ];
+
+Widget _tallyIcon(WidgetRef ref) {
+  const tallyIcons = <Icon>[
+    Icon(null),
+    Icon(Icons.square_outlined), // 1
+    Icon(Icons.subject), // 2
+    Icon(Icons.article_outlined),
+    Icon(Icons.check), // 4
+    Icon(Icons.check_box_outlined),
+    Icon(Icons.playlist_add_check_outlined),
+    Icon(Icons.fact_check_outlined),
+  ];
+
+  final box = ref.read(_boxCheckProvider);
+  final text = ref.read(_textCheckProvider);
+  final check = ref.read(_checkCheckProvider);
+  return tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
+}
 
 class ChecksPage extends ConsumerWidget {
   static const icon = Icon(Icons.check_box_outlined);
   static const title = Text('Checks');
 
+  static final _logger = Logger((ChecksPage).toString());
+
+  static const _tabs = <Widget>[
+    MiTab(
+      tooltip: 'Checkbox',
+      icon: Icon(Icons.check_box_outlined),
+    ),
+    MiTab(
+      tooltip: 'Toggle buttons',
+      icon: Icon(Icons.more_horiz),
+    ),
+  ];
+
   const ChecksPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(enableActionsProvider);
+
+    return MiDefaultTabController(
+      length: _tabs.length,
+      initialIndex: 0,
+      builder: (context) {
+        return Scaffold(
+          appBar: ExAppBar(
+            prominent: ref.watch(prominentProvider),
+            icon: icon,
+            title: title,
+            bottom: ExTabBar(
+              enabled: enabled,
+              tabs: _tabs,
+            ),
+          ),
+          body: const SafeArea(
+            minimum: EdgeInsets.all(8),
+            child: TabBarView(
+              children: [
+                _CheckboxTab(),
+                _ToggleButtonsTab(),
+              ],
+            ),
+          ),
+          bottomNavigationBar: const ExBottomNavigationBar(),
+        );
+      },
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+// Checkbox tab
+
+class _CheckboxTab extends ConsumerWidget {
+  const _CheckboxTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,7 +136,7 @@ class ChecksPage extends ConsumerWidget {
     final text = ref.watch(_textCheckProvider);
     final check = ref.watch(_checkCheckProvider);
 
-    final combinedIcon = _combinedIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
+    final tallyIcon = _tallyIcon(ref);
 
     void setTally(bool value) {
       ref.read(_boxCheckProvider.state).state = value;
@@ -81,66 +144,106 @@ class ChecksPage extends ConsumerWidget {
       ref.read(_checkCheckProvider.state).state = value;
     }
 
-    return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
-        icon: icon,
-        title: title,
-      ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              MiExpansionTile(
+    return Column(
+      children: [
+        MiExpansionTile(
+          enabled: enableActions,
+          initiallyExpanded: true,
+          // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
+          leading: Checkbox(
+            value: (box && text && check)
+                ? true
+                : (box || text || check)
+                    ? null
+                    : false,
+            tristate: true,
+            onChanged: enableActions
+                ? (value) {
+                    setTally(value != null);
+                  }
+                : null,
+          ),
+          title: MiIcon(
+            icon: tallyIcon,
+            text: const Text('Tally'),
+          ),
+          children: _checkItems.map(
+            (item) {
+              return CheckboxListTile(
                 enabled: enableActions,
-                initiallyExpanded: true,
-                // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
-                leading: Checkbox(
-                  value: (box && text && check)
-                      ? true
-                      : (box || text || check)
-                          ? null
-                          : false,
-                  tristate: true,
-                  onChanged: enableActions
-                      ? (value) {
-                          setTally(value != null);
-                        }
-                      : null,
-                ),
+                value: ref.read(item.provider),
+                contentPadding: const EdgeInsets.only(left: 28),
                 title: MiIcon(
-                  icon: Icon(combinedIcon),
-                  text: const Text('Tally'),
+                  icon: item.icon,
+                  text: Text(item.text),
                 ),
-                children: _checkItems.map(
-                  (item) {
-                    return CheckboxListTile(
-                      enabled: enableActions,
-                      value: ref.read(item.provider),
-                      contentPadding: const EdgeInsets.only(left: 28),
-                      title: item.title,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (value) {
-                        ref.read(item.provider.state).state = value!;
-                      },
-                    );
-                  },
-                ).toList(),
-              ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: Icon(
-                  combinedIcon,
-                  size: 60,
-                  color: Theme.of(context).disabledColor,
-                ),
-              )
-            ],
+                controlAffinity: ListTileControlAffinity.leading,
+                onChanged: (value) {
+                  ref.read(item.provider.state).state = value!;
+                },
+              );
+            },
+          ).toList(),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: IconTheme.merge(
+            data: IconThemeData(
+              size: 60,
+              color: Theme.of(context).disabledColor,
+            ),
+            child: tallyIcon,
           ),
         ),
-      ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      ],
+    );
+  }
+}
+
+// Toggle buttons tab
+
+class _ToggleButtonsTab extends ConsumerWidget {
+  const _ToggleButtonsTab({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enableActions = ref.watch(enableActionsProvider);
+    final selected = <bool>[
+      ref.watch(_boxCheckProvider),
+      ref.watch(_textCheckProvider),
+      ref.watch(_checkCheckProvider),
+    ];
+
+    final tallyIcon = _tallyIcon(ref);
+
+    return Column(
+      children: [
+        ToggleButtons(
+          isSelected: selected,
+          onPressed: (index) {
+            ref.read(_checkItems[index].provider.state).state = !selected[index];
+          },
+          children: _checkItems
+              .map(
+                (item) => MiIcon(
+                  icon: item.icon,
+                  tooltip: item.text,
+                ),
+              )
+              .toList(),
+        ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: IconTheme.merge(
+            data: IconThemeData(
+              size: 60,
+              color: Theme.of(context).disabledColor,
+            ),
+            child: tallyIcon,
+          ),
+        ),
+      ],
     );
   }
 }
