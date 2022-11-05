@@ -50,6 +50,7 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
   * gridを削除？
   * themeをスクロールせず見やすく出来ないか
 * snackbarのサンプル+toastの実験ページ
-* buttonsからembedded tab削除
 * embedded tabのもっとおもしろいやつ
 * ex_appbar整理
+* VTState -> StateNotifier<VTState> -> VT
+  * w, h, style, clear(), put(x, y, ...), scrollPos...

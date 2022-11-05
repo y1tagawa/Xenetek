@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
@@ -70,5 +72,65 @@ class _MiAnimationControllerState extends State<MiAnimationController>
     }
     return child //.also((_) { _logger.fine('[o] build');})
         ;
+  }
+}
+
+class MiRingingIcon extends StatelessWidget {
+  final bool enabled;
+  final bool initiallyRinging;
+  final Widget icon;
+  final Widget? ringingIcon;
+  final VoidCallback? onPressed;
+  final double? maxSwing;
+  final double? maxSwingDegree;
+
+  const MiRingingIcon({
+    super.key,
+    this.enabled = true,
+    this.initiallyRinging = false,
+    this.icon = const Icon(Icons.notifications_outlined),
+    this.ringingIcon = const Icon(Icons.notifications_active_outlined),
+    this.onPressed,
+    this.maxSwing,
+    this.maxSwingDegree,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final maxSwing_ =
+        maxSwing ?? maxSwingDegree?.toRadian() ?? (40.0 * DoubleHelper.degreeToRadian);
+    return MiAnimationController(
+      builder: (context, controller, _) {
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            if (controller.isAnimating) {
+              return Transform.rotate(
+                angle: Curves.easeIn.transform(1.0 - controller.value) *
+                    math.sin(controller.value * 10 * 2 * math.pi) *
+                    maxSwing_,
+                origin: const Offset(0, -8),
+                child: ringingIcon ?? icon,
+              );
+            }
+            return icon;
+          },
+        );
+      },
+      onInitialized: (controller) {
+        if (initiallyRinging) {
+          controller.reset();
+          controller.forward();
+        }
+      },
+      onTap: (controller) {
+        controller.reset();
+        controller.forward();
+        onPressed?.call();
+      },
+      onCompleted: (controller) {
+        controller.reset();
+      },
+    );
   }
 }
