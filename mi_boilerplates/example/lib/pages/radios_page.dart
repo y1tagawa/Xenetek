@@ -230,7 +230,6 @@ class _ToggleButtonsTab extends ConsumerWidget {
                 children: _toggleItemColors.mapIndexed(
                   (index, color) {
                     String url;
-                    LottieDelegates? delegates;
                     switch (index) {
                       case 6: // Milk
                         url =
@@ -241,12 +240,11 @@ class _ToggleButtonsTab extends ConsumerWidget {
                         break;
                     }
                     return Container(
-                      color: color,
+                      color: color.withAlpha(64),
                       child: MiAnimationController(
                         builder: (_, controller, __) {
                           return Lottie.network(
                             url,
-                            delegates: delegates,
                             controller: controller,
                             repeat: true,
                             onLoaded: (composition) {
