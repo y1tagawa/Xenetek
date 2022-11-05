@@ -200,22 +200,76 @@ class _CheckboxTab extends ConsumerWidget {
   }
 }
 
+//
 // Toggle buttons tab
+//
+
+class _ToggleItem {
+  final Widget icon;
+  final String text;
+  const _ToggleItem({
+    required this.icon,
+    required this.text,
+  });
+}
+
+const _helmetIcon = Icon(Icons.balcony_outlined);
+const _armourIcon = MiScale(
+  scale: 1.2,
+  child: MiRotate(
+    angleDegree: 90.0,
+    child: Icon(Icons.bento_outlined),
+  ),
+);
+const _rGauntletIcon = MiScale(scaleX: -1, child: Icon(Icons.thumb_up_outlined));
+const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
+const _lBootIcon = Icon(Icons.roller_skating_outlined);
+const _rBootIcon = MiScale(scaleX: -1, child: Icon(Icons.roller_skating_outlined));
+const _shieldIcon = Icon(Icons.shield_outlined);
+const _spacerIcon = SizedBox.square(dimension: 24);
+
+const _toggleItems = <_ToggleItem>[
+  _ToggleItem(
+    icon: MiRow(
+      spacing: 0,
+      children: [_rBootIcon, _lBootIcon],
+    ),
+    text: 'Boots',
+  ),
+  _ToggleItem(
+    icon: _armourIcon,
+    text: 'Armour',
+  ),
+  _ToggleItem(
+    icon: MiRow(
+      spacing: 0,
+      children: [_rGauntletIcon, _lGauntletIcon],
+    ),
+    text: 'Gauntlets',
+  ),
+  _ToggleItem(
+    icon: _helmetIcon,
+    text: 'Helmet',
+  ),
+  _ToggleItem(
+    icon: _shieldIcon,
+    text: 'Shield',
+  ),
+];
+
+final _selectedProvider =
+    StateProvider<List<bool>>((ref) => List.filled(_toggleItems.length, false));
 
 class _ToggleButtonsTab extends ConsumerWidget {
+  static final _logger = Logger((_ToggleButtonsTab).toString());
+
   const _ToggleButtonsTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-
-    final selected = <bool>[
-      ref.watch(_boxCheckProvider),
-      ref.watch(_textCheckProvider),
-      ref.watch(_checkCheckProvider),
-    ];
-
-    final tallyIcon = _tallyIcon(ref);
+    final selected = ref.watch(_selectedProvider);
+    _logger.fine(selected.length);
 
     return Column(
       children: [
@@ -223,10 +277,11 @@ class _ToggleButtonsTab extends ConsumerWidget {
           isSelected: selected,
           onPressed: enableActions
               ? (index) {
-                  ref.read(_checkItems[index].provider.state).state = !selected[index];
+                  ref.read(_selectedProvider.state).state =
+                      selected.replaced(index, !selected[index]);
                 }
               : null,
-          children: _checkItems
+          children: _toggleItems
               .map(
                 (item) => MiIcon(
                   icon: item.icon,
@@ -240,10 +295,40 @@ class _ToggleButtonsTab extends ConsumerWidget {
           padding: const EdgeInsets.all(10),
           child: IconTheme.merge(
             data: IconThemeData(
-              size: 60,
               color: Theme.of(context).disabledColor,
             ),
-            child: tallyIcon,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (selected[3]) _helmetIcon else _spacerIcon,
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (selected[2])
+                      const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
+                    else
+                      _spacerIcon,
+                    if (selected[1]) _armourIcon else _spacerIcon,
+                    if (selected[4])
+                      const MiTranslate(offset: Offset(-4, 0), child: _shieldIcon)
+                    else if (selected[2])
+                      const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
+                    else
+                      _spacerIcon
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spacerIcon,
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ],
