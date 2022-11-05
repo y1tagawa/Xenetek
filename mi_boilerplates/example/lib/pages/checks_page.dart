@@ -216,12 +216,15 @@ const _armourIcon = MiScale(
     child: Icon(Icons.bento_outlined),
   ),
 );
-const _rGauntletIcon = MiScale(scaleX: -1, child: Icon(Icons.thumb_up_outlined));
 const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
+const _rGauntletIcon = MiScale(scaleX: -1, child: _lGauntletIcon);
 const _lBootIcon = Icon(Icons.roller_skating_outlined);
-const _rBootIcon = MiScale(scaleX: -1, child: Icon(Icons.roller_skating_outlined));
+const _rBootIcon = MiScale(scaleX: -1, child: _lBootIcon);
 const _shieldIcon = Icon(Icons.shield_outlined);
-const _spacerIcon = Icon(null);
+const _faceIcon = Icon(Icons.child_care_outlined);
+const _rHandIcon = MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
+const _lHandIcon = MiScale(scaleX: -1, child: _rHandIcon);
+const _spaceIcon = Icon(null);
 
 const _toggleItems = <_ToggleItem>[
   _ToggleItem(
@@ -266,6 +269,8 @@ class _ToggleButtonsTab extends ConsumerWidget {
     final selected = ref.watch(_selectedProvider);
     _logger.fine(selected.length);
 
+    final myAc = 10 - (selected.where((value) => value).length) * 2;
+
     return Column(
       children: [
         ToggleButtons(
@@ -297,7 +302,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (selected[3]) _helmetIcon else _spacerIcon,
+                    if (selected[3]) _helmetIcon else _faceIcon,
                   ],
                 ),
                 Row(
@@ -306,22 +311,23 @@ class _ToggleButtonsTab extends ConsumerWidget {
                     if (selected[2])
                       const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
                     else
-                      _spacerIcon,
-                    if (selected[1]) _armourIcon else _spacerIcon,
+                      const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
+                    if (selected[1]) _armourIcon else _spaceIcon,
                     if (selected[4])
                       const MiTranslate(offset: Offset(-4, 0), child: _shieldIcon)
                     else if (selected[2])
                       const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
                     else
-                      _spacerIcon
+                      const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spacerIcon,
+                    if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
                   ],
-                )
+                ),
+                if (myAc <= -10) const Text('AC LO') else Text('AC $myAc')
               ],
             ),
           ),

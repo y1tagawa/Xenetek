@@ -12,36 +12,6 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 
-enum _Class { fighter, cleric, mage, thief }
-
-class _RadioItem {
-  final Widget Function(bool checked) iconBuilder;
-  final Widget text;
-  const _RadioItem({required this.iconBuilder, required this.text});
-}
-
-final _radioItems = <_Class, _RadioItem>{
-  _Class.fighter: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.shield_outlined),
-    text: const Text('Fighter'),
-  ),
-  _Class.cleric: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
-    text: const Text('Cleric'),
-  ),
-  _Class.mage: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
-    text: const Text('Mage'),
-  ),
-  _Class.thief: _RadioItem(
-    iconBuilder: (checked) =>
-        checked ? const Icon(Icons.lock_open) : const Icon(Icons.lock_outlined),
-    text: const Text('Thief'),
-  ),
-};
-
-final _classProvider = StateProvider((ref) => _Class.fighter);
-
 class RadiosPage extends ConsumerWidget {
   static const icon = Icon(Icons.radio_button_checked_outlined);
   static const title = Text('Radios');
@@ -102,6 +72,36 @@ class RadiosPage extends ConsumerWidget {
 //
 // Radios tab
 //
+
+enum _Class { fighter, cleric, mage, thief }
+
+class _RadioItem {
+  final Widget Function(bool checked) iconBuilder;
+  final Widget text;
+  const _RadioItem({required this.iconBuilder, required this.text});
+}
+
+final _radioItems = <_Class, _RadioItem>{
+  _Class.fighter: _RadioItem(
+    iconBuilder: (_) => const Icon(Icons.shield_outlined),
+    text: const Text('Fighter'),
+  ),
+  _Class.cleric: _RadioItem(
+    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
+    text: const Text('Cleric'),
+  ),
+  _Class.mage: _RadioItem(
+    iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
+    text: const Text('Mage'),
+  ),
+  _Class.thief: _RadioItem(
+    iconBuilder: (checked) =>
+        checked ? const Icon(Icons.lock_open) : const Icon(Icons.lock_outlined),
+    text: const Text('Thief'),
+  ),
+};
+
+final _classProvider = StateProvider((ref) => _Class.fighter);
 
 class _RadiosTab extends ConsumerWidget {
   static final _logger = Logger((_RadiosTab).toString());
