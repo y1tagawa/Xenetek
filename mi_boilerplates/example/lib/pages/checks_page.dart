@@ -208,6 +208,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
+
     final selected = <bool>[
       ref.watch(_boxCheckProvider),
       ref.watch(_textCheckProvider),
@@ -220,9 +221,11 @@ class _ToggleButtonsTab extends ConsumerWidget {
       children: [
         ToggleButtons(
           isSelected: selected,
-          onPressed: (index) {
-            ref.read(_checkItems[index].provider.state).state = !selected[index];
-          },
+          onPressed: enableActions
+              ? (index) {
+                  ref.read(_checkItems[index].provider.state).state = !selected[index];
+                }
+              : null,
           children: _checkItems
               .map(
                 (item) => MiIcon(
