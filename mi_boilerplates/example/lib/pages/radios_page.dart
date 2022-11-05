@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -13,27 +14,27 @@ enum _Class { fighter, cleric, mage, thief }
 
 class _RadioItem {
   final Widget Function(bool checked) iconBuilder;
-  final String text;
+  final Widget text;
   const _RadioItem({required this.iconBuilder, required this.text});
 }
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
     iconBuilder: (_) => const Icon(Icons.shield_outlined),
-    text: 'Fighter',
+    text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
     iconBuilder: (_) => const Icon(Icons.emergency_outlined),
-    text: 'Cleric',
+    text: const Text('Cleric'),
   ),
   _Class.mage: _RadioItem(
     iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
-    text: 'Mage',
+    text: const Text('Mage'),
   ),
   _Class.thief: _RadioItem(
     iconBuilder: (checked) =>
         checked ? const Icon(Icons.lock_open) : const Icon(Icons.lock_outlined),
-    text: 'Thief',
+    text: const Text('Thief'),
   ),
 };
 
@@ -96,7 +97,9 @@ class RadiosPage extends ConsumerWidget {
   }
 }
 
+//
 // Radios tab
+//
 
 class _RadiosTab extends ConsumerWidget {
   static final _logger = Logger((_RadiosTab).toString());
@@ -119,7 +122,7 @@ class _RadiosTab extends ConsumerWidget {
               groupValue: class_,
               title: MiIcon(
                 icon: item.iconBuilder(key == class_),
-                text: Text(item.text),
+                text: item.text,
               ),
               onChanged: (value) {
                 ref.read(_classProvider.state).state = value!;
@@ -143,7 +146,33 @@ class _RadiosTab extends ConsumerWidget {
   }
 }
 
+//
 // Toggle buttons tab
+//
+
+const _toggleItems = <Widget>[
+  Text('Soda'),
+  Text('Mint'),
+  Text('Lemon'),
+  Text('Orange'),
+  Text('Straw\nberry'),
+  Text('Grape'),
+  Text('Milk'),
+  Text('Cocoa'),
+];
+
+const _toggleItemColors = <Color>[
+  Colors.blue,
+  Colors.green,
+  Colors.yellow,
+  Colors.orange,
+  Colors.red,
+  Colors.purple,
+  Colors.white,
+  Colors.brown,
+];
+
+final _selectdProvider = StateProvider((ref) => 0);
 
 class _ToggleButtonsTab extends ConsumerWidget {
   const _ToggleButtonsTab({super.key});
@@ -151,38 +180,40 @@ class _ToggleButtonsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final class_ = ref.watch(_classProvider);
-
-    final selected = _radioItems.keys.map((key) => key == class_).toList();
+    final selected = ref.watch(_selectdProvider);
+    final flags = _toggleItems.mapIndexed((index, _) => index == selected).toList();
 
     return Column(
       children: [
+        // 0..3
         ToggleButtons(
-          isSelected: selected,
+          isSelected: flags.take(4).toList(),
+          fillColor: _toggleItemColors[selected].withAlpha(40),
           onPressed: enableActions
               ? (index) {
-                  ref.read(_classProvider.state).state = _radioItems.keys.toList()[index];
+                  ref.read(_selectdProvider.state).state = index;
                 }
               : null,
-          children: _radioItems.entries
-              .map(
-                (item) => MiIcon(
-                  icon: item.value.iconBuilder(item.key == class_),
-                  tooltip: item.value.text,
-                ),
-              )
-              .toList(),
+          children: _toggleItems.take(4).toList(),
+        ),
+        // 4..7
+        Transform.translate(
+          offset: const Offset(0, -1),
+          child: ToggleButtons(
+            isSelected: flags.skip(4).toList(),
+            fillColor: _toggleItemColors[selected].withAlpha(64),
+            onPressed: enableActions
+                ? (index) {
+                    ref.read(_selectdProvider.state).state = index + 4;
+                  }
+                : null,
+            children: _toggleItems.skip(4).toList(),
+          ),
         ),
         const Divider(),
         Padding(
           padding: const EdgeInsets.all(10),
-          child: IconTheme(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-              size: 60,
-            ),
-            child: _radioItems[class_]!.iconBuilder(true),
-          ),
+          child: Text(selected.toString()),
         ),
       ],
     );
