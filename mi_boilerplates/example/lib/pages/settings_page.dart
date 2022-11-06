@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:collection/collection.dart';
 import 'package:example/data/jis_common_colors.dart';
 import 'package:flutter/material.dart';
@@ -136,13 +138,14 @@ class SettingsPage extends ConsumerWidget {
             Text('Theme', style: theme.textTheme.headline6),
             // primarySwatch
             ListTile(
+              enabled: preferences != null,
               title: const Text('Primary swatch'),
               trailing: MiIconButton(
                 icon: MiColorChip(
                   color: ref.watch(primarySwatchProvider),
                 ),
                 onPressed: () async {
-                  showColorSelectDialog(
+                  final ok = await showColorSelectDialog(
                     context: context,
                     title: const Text('Primary swatch'),
                     initialColor: ref.watch(primarySwatchProvider),
@@ -150,17 +153,23 @@ class SettingsPage extends ConsumerWidget {
                       ref.read(primarySwatchProvider.state).state = value!.toMaterialColor();
                     },
                   );
+                  if (ok) {
+                    final it = json.encode(ref.read(primarySwatchProvider).toJson());
+                    _logger.fine('setting preferences primary_swatch=$it');
+                    preferences?.setString('primary_swatch', it);
+                  }
                 },
               ),
             ),
             ListTile(
+              enabled: preferences != null,
               title: const Text('Secondary color'),
               trailing: MiIconButton(
                 icon: MiColorChip(
                   color: ref.watch(secondaryColorProvider),
                 ),
                 onPressed: () async {
-                  showColorSelectDialog(
+                  final ok = await showColorSelectDialog(
                     context: context,
                     title: const Text('Secondary color'),
                     initialColor: ref.watch(secondaryColorProvider),
@@ -169,15 +178,30 @@ class SettingsPage extends ConsumerWidget {
                       ref.read(secondaryColorProvider.state).state = value;
                     },
                   );
+                  if (ok) {
+                    final secondaryColor = ref.read(secondaryColorProvider);
+                    // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
+                    if (secondaryColor != null) {
+                      final it = secondaryColor.value.toString();
+                      _logger.fine('setting preferences secondary_color=$it');
+                      preferences?.setString('secondary_color', it);
+                    } else {
+                      _logger.fine('removing preferences secondary_color');
+                      await preferences?.remove('secondary_color');
+                    }
+                  }
                 },
               ),
             ),
             CheckboxListTile(
+              enabled: preferences != null,
               value: ref.watch(brightnessProvider).isDark,
               title: const Text('Dark'),
               onChanged: (value) {
-                ref.read(brightnessProvider.state).state =
-                    value! ? Brightness.dark : Brightness.light;
+                final it = value! ? Brightness.dark : Brightness.light;
+                ref.read(brightnessProvider.state).state = it;
+                _logger.fine('setting preferences brightness=$it');
+                preferences?.setString('brightness', it.toString());
               },
             ),
             CheckboxListTile(
@@ -193,6 +217,18 @@ class SettingsPage extends ConsumerWidget {
               onChanged: (value) {
                 ref.read(themeAdjustmentProvider.state).state = value!;
               },
+            ),
+            ListTile(
+              leading: MiTextButton(
+                enabled: preferences != null,
+                onPressed: () async {
+                  // TODO: yes/no
+                  _logger.fine('clearing preferences.');
+                  await preferences?.clear();
+                  // TODO: reload
+                },
+                child: const Text('Reset preferences'),
+              ),
             ),
             const Divider(),
           ],

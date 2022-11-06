@@ -56,3 +56,21 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 * ex_appbar整理
 * VTState -> StateNotifier<VTState> -> VT
   * w, h, style, clear(), put(x, y, ...), scrollPos...
+
+# 
+
+Node
+  // 親の座標空間中の原点位置（例えば肘なら肩からのオフセット）
+  Point position
+  // 親からの回転（肘の曲げ角）
+  Matrix rotation
+  Map<String, Node> children
+
+  // パスにあるchild nodeを置換・変換
+  // *他のノードも全てコピー
+  // *nodeを丸ごと置換する場会は、position, rotation, childrenはできない
+  // * pathがnullなら自身のプロパティ。nodeはできない。
+  Node copyWith(List<string>? path = null, Node? node, Point? position, rotation, ...)
+  
+
+  

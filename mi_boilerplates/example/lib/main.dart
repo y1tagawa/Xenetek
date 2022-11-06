@@ -4,6 +4,7 @@
 
 // サンプルアプリ メインプログラム
 
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -14,6 +15,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'pages/animations_page.dart';
 import 'pages/buttons_page.dart';
@@ -171,23 +173,53 @@ final _router = GoRouter(
 
 // テーマ設定
 
-final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
-final secondaryColorProvider = StateProvider<Color?>((ref) => null);
-final brightnessProvider = StateProvider((ref) => Brightness.light);
+SharedPreferences? _preferences;
+SharedPreferences? get preferences => _preferences;
+
+MaterialColor _primarySwatch = Colors.indigo;
+Color? _secondaryColor;
+Brightness _brightness = Brightness.light;
+
+final primarySwatchProvider = StateProvider((ref) => _primarySwatch);
+final secondaryColorProvider = StateProvider<Color?>((ref) => _secondaryColor);
+final brightnessProvider = StateProvider((ref) => _brightness);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
 
 // main
 
-void main() {
+void main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
   });
+  final logger = Logger('main');
+
+  _preferences = await SharedPreferences.getInstance().then((it) {
+    it
+        .getString('primary_swatch')
+        .also((it) => logger.fine('loaded preference: primary_swatch=$it'))
+        ?.let((it) => MaterialColorHelper.tryParseJson(json.decode(it)))
+        ?.let((it) => _primarySwatch = it);
+    it
+        .getString('secondary_color')
+        .also((it) => logger.fine('loaded preference: secondary_color=$it'))
+        ?.let((it) => int.tryParse(it))
+        // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
+        .let((it) => _secondaryColor = it != null ? Color(it) : null);
+    it
+        .getString('brightness')
+        .also((it) => logger.fine('loaded preference: brightness=$it'))
+        ?.let((it) => _brightness = it == 'Brightness.dark' ? Brightness.dark : Brightness.light);
+    return it;
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
+  static final _logger = Logger((HomePage).toString());
+
   const MyApp({super.key});
 
   @override
