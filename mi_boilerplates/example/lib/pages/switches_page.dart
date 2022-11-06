@@ -30,12 +30,12 @@ const _switchItems = [
   _SwitchItem(
     checkIcon: Icon(Icons.psychology_outlined),
     uncheckIcon: Icon(Icons.question_mark),
-    title: Text('Memory'),
+    title: Text('Mental'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.directions_run),
     uncheckIcon: Icon(Icons.airline_seat_flat_outlined),
-    title: Text('Health'),
+    title: Text('Physical'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.attach_money_outlined),
@@ -54,7 +54,7 @@ const _switchItems = [
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hourglass_top_outlined),
-    uncheckIcon: Icon(Icons.hourglass_bottom_outlined),
+    uncheckIcon: Icon(Icons.hourglass_empty_outlined),
     title: Text('Life time'),
   ),
 ];

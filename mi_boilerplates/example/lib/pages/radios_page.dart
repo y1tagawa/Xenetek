@@ -112,39 +112,42 @@ class _RadiosTab extends ConsumerWidget {
     final enableActions = ref.watch(enableActionsProvider);
     final class_ = ref.watch(_classProvider);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          ..._radioItems.keys.map(
-            (key) {
-              final item = _radioItems[key]!;
-              return MiRadioListTile<_Class>(
-                enabled: enableActions,
-                value: key,
-                groupValue: class_,
-                title: MiIcon(
-                  icon: item.iconBuilder(key == class_),
-                  text: item.text,
-                ),
-                onChanged: (value) {
-                  ref.read(_classProvider.state).state = value!;
-                },
-              );
-            },
+    return Column(
+      children: [
+        Flexible(
+          child: ListView(
+            shrinkWrap: true,
+            children: _radioItems.keys.map(
+              (key) {
+                final item = _radioItems[key]!;
+                return MiRadioListTile<_Class>(
+                  enabled: enableActions,
+                  value: key,
+                  groupValue: class_,
+                  title: MiIcon(
+                    icon: item.iconBuilder(key == class_),
+                    text: item.text,
+                  ),
+                  onChanged: (value) {
+                    ref.read(_classProvider.state).state = value!;
+                  },
+                );
+              },
+            ).toList(),
           ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: IconTheme(
-              data: IconThemeData(
-                color: Theme.of(context).disabledColor,
-                size: 60,
-              ),
-              child: _radioItems[class_]!.iconBuilder(true),
+        ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: IconTheme(
+            data: IconThemeData(
+              color: Theme.of(context).disabledColor,
+              size: 60,
             ),
+            child: _radioItems[class_]!.iconBuilder(true),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
