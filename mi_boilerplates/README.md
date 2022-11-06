@@ -41,6 +41,8 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 
 * Wikipedia:ウィキペディアを二次利用する  
   https://ja.wikipedia.org/wiki/Wikipedia:%E3%82%A6%E3%82%A3%E3%82%AD%E3%83%9A%E3%83%87%E3%82%A3%E3%82%A2%E3%82%92%E4%BA%8C%E6%AC%A1%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B
+* Android実機でAnimation再生速度が合わないとき  
+  https://github.com/flutter/flutter/issues/60917#issuecomment-654378296
 
 # TODO
 
