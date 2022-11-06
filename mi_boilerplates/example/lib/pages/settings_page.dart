@@ -27,32 +27,36 @@ Future<bool> _showColorSelectDialog({
 
   return await showDialog<bool>(
     context: context,
-    builder: (context) => StatefulBuilder(
-      builder: (context, setState) {
-        return MiOkCancelDialog<bool>(
-          icon: MiColorChip(color: color),
-          title: title,
-          content: MiEmbeddedTabView(
-            tabs: tabs,
-            initialIndex: 0,
-            children: [
-              ...colors.mapIndexed(
-                (tabIndex, colors_) => SingleChildScrollView(
-                  child: MiColorGrid(
-                    colors: colors_,
-                    tooltips: tooltips[tabIndex],
-                    onChanged: (colorIndex) {
-                      setState(() => color = colors_[colorIndex]);
-                      onChanged?.call(tabIndex, colorIndex);
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-          getValue: (ok) => ok,
-        );
-      },
+    builder: (context) => MiOkCancelDialog<bool>(
+      icon: MiColorChip(color: color),
+      title: title,
+      getValue: (ok) => ok,
+      content: SizedBox(
+        width: MediaQuery.of(context).size.height * 0.8,
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            return MiEmbeddedTabView(
+              tabs: tabs,
+              initialIndex: 0,
+              children: colors
+                  .mapIndexed(
+                    (tabIndex, colors_) => SingleChildScrollView(
+                      child: MiColorGrid(
+                        colors: colors_,
+                        tooltips: tooltips[tabIndex],
+                        onChanged: (colorIndex) {
+                          setState(() => color = colors_[colorIndex]);
+                          onChanged?.call(tabIndex, colorIndex);
+                        },
+                      ),
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+        ),
+      ),
     ),
   ).then((value) => value ?? false);
 }
