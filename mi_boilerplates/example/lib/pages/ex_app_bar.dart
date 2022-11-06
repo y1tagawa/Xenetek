@@ -302,7 +302,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
       switch (it) {
         case '/':
           return 0;
-        case '/settings':
+        case '/drawer/settings':
           return 1;
         default:
           return -1;

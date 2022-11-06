@@ -130,7 +130,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: SettingsPage.icon,
     title: SettingsPage.title,
-    path: '/settings',
+    path: '/drawer/settings',
     builder: (_, __) => const SettingsPage(),
   ),
   _PageItem(
