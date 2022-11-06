@@ -323,7 +323,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
             break;
           case 1:
             if (currentIndex != 1) {
-              context.go('/settings');
+              context.go('/drawer/settings');
             }
             break;
           case 2:
