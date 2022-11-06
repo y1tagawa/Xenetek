@@ -113,37 +113,39 @@ class _RadiosTab extends ConsumerWidget {
     final enableActions = ref.watch(enableActionsProvider);
     final class_ = ref.watch(_classProvider);
 
-    return Column(
-      children: [
-        ..._radioItems.keys.map(
-          (key) {
-            final item = _radioItems[key]!;
-            return MiRadioListTile<_Class>(
-              enabled: enableActions,
-              value: key,
-              groupValue: class_,
-              title: MiIcon(
-                icon: item.iconBuilder(key == class_),
-                text: item.text,
-              ),
-              onChanged: (value) {
-                ref.read(_classProvider.state).state = value!;
-              },
-            );
-          },
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-              size: 60,
-            ),
-            child: _radioItems[class_]!.iconBuilder(true),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ..._radioItems.keys.map(
+            (key) {
+              final item = _radioItems[key]!;
+              return MiRadioListTile<_Class>(
+                enabled: enableActions,
+                value: key,
+                groupValue: class_,
+                title: MiIcon(
+                  icon: item.iconBuilder(key == class_),
+                  text: item.text,
+                ),
+                onChanged: (value) {
+                  ref.read(_classProvider.state).state = value!;
+                },
+              );
+            },
           ),
-        ),
-      ],
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme(
+              data: IconThemeData(
+                color: Theme.of(context).disabledColor,
+                size: 60,
+              ),
+              child: _radioItems[class_]!.iconBuilder(true),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -199,31 +201,47 @@ class _ToggleButtonsTab extends ConsumerWidget {
       builder: (context) {
         return Column(
           children: [
-            // 0..3
-            ToggleButtons(
-              isSelected: flags.take(4).toList(),
-              onPressed: enableActions
-                  ? (index) {
-                      ref.read(_selectedProvider.state).state = index;
-                      DefaultTabController.of(context)?.index = index;
-                    }
-                  : null,
-              children: _toggleItems.take(4).toList(),
-            ),
-            // 4..7
-            Transform.translate(
-              offset: const Offset(0, -1),
-              child: ToggleButtons(
-                isSelected: flags.skip(4).toList(),
+            if (MediaQuery.of(context).orientation == Orientation.landscape)
+              ToggleButtons(
+                isSelected: flags,
                 onPressed: enableActions
                     ? (index) {
-                        ref.read(_selectedProvider.state).state = index + 4;
-                        DefaultTabController.of(context)?.index = index + 4;
+                        ref.read(_selectedProvider.state).state = index;
+                        DefaultTabController.of(context)?.index = index;
                       }
                     : null,
-                children: _toggleItems.skip(4).toList(),
+                children: _toggleItems,
+              )
+            else
+              Column(
+                children: [
+                  // 0..3
+                  ToggleButtons(
+                    isSelected: flags.take(4).toList(),
+                    onPressed: enableActions
+                        ? (index) {
+                            ref.read(_selectedProvider.state).state = index;
+                            DefaultTabController.of(context)?.index = index;
+                          }
+                        : null,
+                    children: _toggleItems.take(4).toList(),
+                  ),
+                  // 4..7
+                  Transform.translate(
+                    offset: const Offset(0, -1),
+                    child: ToggleButtons(
+                      isSelected: flags.skip(4).toList(),
+                      onPressed: enableActions
+                          ? (index) {
+                              ref.read(_selectedProvider.state).state = index + 4;
+                              DefaultTabController.of(context)?.index = index + 4;
+                            }
+                          : null,
+                      children: _toggleItems.skip(4).toList(),
+                    ),
+                  ),
+                ],
               ),
-            ),
             const Divider(),
             Expanded(
               child: TabBarView(
