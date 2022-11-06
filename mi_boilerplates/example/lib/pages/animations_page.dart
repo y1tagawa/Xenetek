@@ -9,7 +9,6 @@ import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../main.dart';
 import 'ex_app_bar.dart';
 
 //
@@ -121,17 +120,9 @@ class _AnimatedBuilderTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final productName = ref.watch(productNameProvider).when(
-          data: (value) => value,
-          error: (_, __) => null,
-          loading: () => null,
-        );
-
     return Center(
       child: MiAnimationController(
-        duration: productName == 'S6-KC'
-            ? const Duration(seconds: 80) // Mi Android One.
-            : const Duration(milliseconds: 800),
+        duration: const Duration(milliseconds: 800),
         builder: (_, controller, __) => AnimatedBuilder(
           animation: controller,
           builder: (context, _) {
@@ -193,14 +184,6 @@ class _LottieTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final productName = ref.watch(productNameProvider).when(
-          data: (value) => value,
-          error: (_, __) => null,
-          loading: () => null,
-        );
-
-    _logger.fine('productName=[$productName]');
-
     return Center(
       child: MiAnimationController(
         builder: (_, controller, __) {
@@ -210,11 +193,7 @@ class _LottieTab extends ConsumerWidget {
             repeat: false,
             onLoaded: (composition) {
               _logger.fine('onLoaded: ${composition.duration}');
-              if (productName == 'S6-KC') {
-                controller.duration = composition.duration * 10; // Mi Android One.
-              } else {
-                controller.duration = composition.duration;
-              }
+              controller.duration = composition.duration;
               controller.reset();
               controller.forward();
             },

@@ -9,7 +9,6 @@ import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../main.dart';
 import 'ex_app_bar.dart';
 
 class RadiosPage extends ConsumerWidget {
@@ -189,12 +188,6 @@ class _ToggleButtonsTab extends ConsumerWidget {
     final selected = ref.watch(_selectedProvider);
     final flags = _toggleItems.mapIndexed((index, _) => index == selected).toList();
 
-    final productName = ref.watch(productNameProvider).when(
-          data: (value) => value,
-          error: (_, __) => null,
-          loading: () => null,
-        );
-
     return MiDefaultTabController(
       length: _toggleItems.length,
       initialIndex: selected,
@@ -267,11 +260,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
                             repeat: true,
                             onLoaded: (composition) {
                               _logger.fine('onLoaded: ${composition.duration}');
-                              if (productName == 'S6-KC') {
-                                controller.duration = composition.duration * 10; // Mi Android One.
-                              } else {
-                                controller.duration = composition.duration;
-                              }
+                              controller.duration = composition.duration;
                               controller.reset();
                               controller.forward();
                             },

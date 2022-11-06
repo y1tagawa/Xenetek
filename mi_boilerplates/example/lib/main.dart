@@ -5,7 +5,6 @@
 // サンプルアプリ メインプログラム
 
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -177,14 +176,6 @@ final secondaryColorProvider = StateProvider<Color?>((ref) => null);
 final brightnessProvider = StateProvider((ref) => Brightness.light);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
-
-final productNameProvider = FutureProvider<String?>((ref) async {
-  if (!kIsWeb && Platform.isAndroid) {
-    const methodChannel = MethodChannel('com.xenetek.mi_boilerplates/examples');
-    return await methodChannel.invokeMethod('getAndroidBuildModel');
-  }
-  return null;
-});
 
 // main
 
