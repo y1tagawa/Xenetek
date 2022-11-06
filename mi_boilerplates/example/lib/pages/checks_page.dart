@@ -139,58 +139,60 @@ class _CheckboxTab extends ConsumerWidget {
       ref.read(_checkCheckProvider.state).state = value;
     }
 
-    return Column(
-      children: [
-        MiExpansionTile(
-          enabled: enableActions,
-          initiallyExpanded: true,
-          // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
-          leading: Checkbox(
-            value: (box && text && check)
-                ? true
-                : (box || text || check)
-                    ? null
-                    : false,
-            tristate: true,
-            onChanged: enableActions
-                ? (value) {
-                    setTally(value != null);
-                  }
-                : null,
-          ),
-          title: MiIcon(
-            icon: tallyIcon,
-            text: const Text('Tally'),
-          ),
-          children: _checkItems.map(
-            (item) {
-              return CheckboxListTile(
-                enabled: enableActions,
-                value: ref.read(item.provider),
-                contentPadding: const EdgeInsets.only(left: 28),
-                title: MiIcon(
-                  icon: item.icon,
-                  text: item.text,
-                ),
-                controlAffinity: ListTileControlAffinity.leading,
-                onChanged: (value) {
-                  ref.read(item.provider.state).state = value!;
-                },
-              );
-            },
-          ).toList(),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              size: 60,
-              color: Theme.of(context).disabledColor,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          MiExpansionTile(
+            enabled: enableActions,
+            initiallyExpanded: true,
+            // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
+            leading: Checkbox(
+              value: (box && text && check)
+                  ? true
+                  : (box || text || check)
+                      ? null
+                      : false,
+              tristate: true,
+              onChanged: enableActions
+                  ? (value) {
+                      setTally(value != null);
+                    }
+                  : null,
             ),
-            child: tallyIcon,
+            title: MiIcon(
+              icon: tallyIcon,
+              text: const Text('Tally'),
+            ),
+            children: _checkItems.map(
+              (item) {
+                return CheckboxListTile(
+                  enabled: enableActions,
+                  value: ref.read(item.provider),
+                  contentPadding: const EdgeInsets.only(left: 28),
+                  title: MiIcon(
+                    icon: item.icon,
+                    text: item.text,
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  onChanged: (value) {
+                    ref.read(item.provider.state).state = value!;
+                  },
+                );
+              },
+            ).toList(),
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme.merge(
+              data: IconThemeData(
+                size: 60,
+                color: Theme.of(context).disabledColor,
+              ),
+              child: tallyIcon,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -271,68 +273,70 @@ class _ToggleButtonsTab extends ConsumerWidget {
 
     final myAc = 10 - (selected.where((value) => value).length) * 2;
 
-    return Column(
-      children: [
-        ToggleButtons(
-          isSelected: selected,
-          onPressed: enableActions
-              ? (index) {
-                  ref.read(_selectedProvider.state).state =
-                      selected.replaced(index, !selected[index]);
-                }
-              : null,
-          children: _toggleItems
-              .map(
-                (item) => MiIcon(
-                  icon: item.icon,
-                  tooltip: item.text,
-                ),
-              )
-              .toList(),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (selected[3]) _helmetIcon else _faceIcon,
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (selected[2])
-                      const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
-                    else
-                      const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
-                    if (selected[1]) _armourIcon else _spaceIcon,
-                    if (selected[4])
-                      const MiTranslate(offset: Offset(-4, 0), child: _shieldIcon)
-                    else if (selected[2])
-                      const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
-                    else
-                      const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
-                  ],
-                ),
-                if (myAc <= -10) const Text('AC LO') else Text('AC $myAc')
-              ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ToggleButtons(
+            isSelected: selected,
+            onPressed: enableActions
+                ? (index) {
+                    ref.read(_selectedProvider.state).state =
+                        selected.replaced(index, !selected[index]);
+                  }
+                : null,
+            children: _toggleItems
+                .map(
+                  (item) => MiIcon(
+                    icon: item.icon,
+                    tooltip: item.text,
+                  ),
+                )
+                .toList(),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme.merge(
+              data: IconThemeData(
+                color: Theme.of(context).disabledColor,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (selected[3]) _helmetIcon else _faceIcon,
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (selected[2])
+                        const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
+                      else
+                        const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
+                      if (selected[1]) _armourIcon else _spaceIcon,
+                      if (selected[4])
+                        const MiTranslate(offset: Offset(-4, 0), child: _shieldIcon)
+                      else if (selected[2])
+                        const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
+                      else
+                        const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
+                    ],
+                  ),
+                  if (myAc <= -10) const Text('AC LO') else Text('AC $myAc')
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

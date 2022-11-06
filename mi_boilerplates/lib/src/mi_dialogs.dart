@@ -23,6 +23,7 @@ Future<void> showInfoOkDialog({
   Widget? title,
   Widget? content,
   bool barrierDismissible = true,
+  bool scrollable = false,
   Widget? okText,
 }) async {
   return await showDialog<void>(
@@ -31,6 +32,7 @@ Future<void> showInfoOkDialog({
       icon: icon ?? _infoIcon,
       title: title,
       content: content,
+      scrollable: scrollable,
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -52,6 +54,7 @@ Future<bool> showWarningOkCancelDialog({
   Widget? title,
   Widget? content,
   bool barrierDismissible = true,
+  bool scrollable = false,
   Widget? okText,
   Widget? cancelText,
 }) async {
@@ -61,6 +64,7 @@ Future<bool> showWarningOkCancelDialog({
       icon: icon ?? _warningIcon,
       title: title,
       content: content,
+      scrollable: scrollable,
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
@@ -84,6 +88,7 @@ class MiOkCancelDialog<T> extends StatelessWidget {
   final Widget? icon;
   final Widget? title;
   final Widget? content;
+  final bool scrollable;
   final T Function(bool ok) getValue;
 
   const MiOkCancelDialog({
@@ -91,6 +96,7 @@ class MiOkCancelDialog<T> extends StatelessWidget {
     this.icon,
     this.title,
     this.content,
+    this.scrollable = false,
     required this.getValue,
   });
 
