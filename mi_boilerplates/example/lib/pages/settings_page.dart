@@ -131,11 +131,12 @@ class SettingsPage extends ConsumerWidget {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
           children: <Widget>[
             // テーマ
-            Text('Theme', style: theme.textTheme.headline6),
+            Center(
+              child: Text('Theme', style: theme.textTheme.headline6),
+            ),
             // primarySwatch
             ListTile(
               enabled: preferences.hasValue,
@@ -180,7 +181,6 @@ class SettingsPage extends ConsumerWidget {
                   );
                   if (ok) {
                     final secondaryColor = ref.read(secondaryColorProvider);
-                    // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
                     if (secondaryColor != null) {
                       final it = secondaryColor.value.toString();
                       _logger.fine('setting preferences secondary_color=$it');
@@ -222,11 +222,15 @@ class SettingsPage extends ConsumerWidget {
               leading: MiTextButton(
                 enabled: preferences.hasValue,
                 onPressed: () async {
-                  // TODO: yes/no
-                  _logger.fine('clearing preferences.');
-                  await preferences.value?.clear();
-                  ref.invalidate(preferencesProvider);
-                  // TODO: reload
+                  final ok = await showWarningOkCancelDialog(
+                    context: context,
+                    content: const Text('Are you sure to clear all preferences?'),
+                  );
+                  if (ok) {
+                    _logger.fine('clearing preferences.');
+                    await preferences.value?.clear();
+                    ref.invalidate(preferencesProvider);
+                  }
                 },
                 child: const Text('Reset preferences'),
               ),
