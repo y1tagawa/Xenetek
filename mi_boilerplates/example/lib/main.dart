@@ -266,28 +266,35 @@ class HomePage extends ConsumerWidget {
         title: title,
       ),
       drawer: Drawer(
-        child: ListView(
-          children: [
-            InkWell(
-              onTap: () => Navigator.pop(context),
-              child: const DrawerHeader(
-                child: HomePage.title,
-              ),
+        child: Expanded(
+          // background
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: const DrawerHeader(
+                    child: HomePage.title,
+                  ),
+                ),
+                ..._pages
+                    .skip(1) // Home
+                    .where((item) => item.path.startsWith('/drawer/'))
+                    .map(
+                      (item) => ListTile(
+                        leading: item.icon,
+                        title: item.title,
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push(item.path);
+                        },
+                      ),
+                    ),
+              ],
             ),
-            ...iota(_pages.length - 1, start: 1)
-                .where((index) => _pages[index].path.startsWith('/drawer/'))
-                .map((index) {
-              final item = _pages[index];
-              return ListTile(
-                leading: item.icon,
-                title: item.title,
-                onTap: () {
-                  Navigator.pop(context);
-                  context.push(_pages[index].path);
-                },
-              );
-            }),
-          ],
+          ),
         ),
       ),
       body: SafeArea(
@@ -298,23 +305,22 @@ class HomePage extends ConsumerWidget {
               spacing: 2,
               runSpacing: 8,
               children: [
-                ...iota(_pages.length - 1, start: 1)
-                    .whereNot((index) => _pages[index].path.startsWith('/drawer/'))
+                ..._pages
+                    .skip(1) // Home
+                    .whereNot((item) => item.path.startsWith('/drawer/'))
                     .map(
-                  (index) {
-                    return TextButton(
-                      onPressed: () => context.push(_pages[index].path),
-                      child: Container(
-                        width: 76,
-                        height: 72,
-                        padding: const EdgeInsets.all(2),
-                        child: Column(
-                          children: [_pages[index].icon, _pages[index].title],
+                      (item) => TextButton(
+                        onPressed: () => context.push(item.path),
+                        child: Container(
+                          width: 76,
+                          height: 72,
+                          padding: const EdgeInsets.all(2),
+                          child: Column(
+                            children: [item.icon, item.title],
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
               ],
             ),
           ),
