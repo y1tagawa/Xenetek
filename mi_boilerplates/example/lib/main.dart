@@ -5,9 +5,7 @@
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -185,7 +183,6 @@ void main() async {
   Logger.root.onRecord.listen((record) {
     log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
   });
-  final logger = Logger('main');
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -198,24 +195,36 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final preferences = ref.watch(preferencesProvider);
-
-    // _preferences = await SharedPreferences.getInstance().then((it) {
-    //   it
+    // preferences.whenData((value) async {
+    //   value
     //       .getString('primary_swatch')
-    //       .also((it) => logger.fine('loaded preference: primary_swatch=$it'))
+    //       .also((it) => _logger.fine('loaded preference: primary_swatch=$it'))
     //       ?.let((it) => MaterialColorHelper.tryParseJson(json.decode(it)))
-    //       ?.let((it) => _primarySwatch = it);
-    //   it
+    //       ?.let(
+    //     (it) {
+    //       if (ref.read(primarySwatchProvider).value != it.value) {
+    //         ref.read(primarySwatchProvider.notifier).state = it;
+    //       }
+    //     },
+    //   );
+    //   value
     //       .getString('secondary_color')
-    //       .also((it) => logger.fine('loaded preference: secondary_color=$it'))
+    //       .also((it) => _logger.fine('loaded preference: secondary_color=$it'))
     //       ?.let((it) => int.tryParse(it))
-    //   // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
-    //       .let((it) => _secondaryColor = it != null ? Color(it) : null);
-    //   it
+    //       // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
+    //       .let(
+    //     (it) {
+    //       final color = it != null ? Color(it) : null;
+    //       if (ref.read(secondaryColorProvider) != color) {
+    //         ref.read(secondaryColorProvider.notifier).state = color;
+    //       }
+    //     },
+    //   );
+    //   value
     //       .getString('brightness')
-    //       .also((it) => logger.fine('loaded preference: brightness=$it'))
-    //       ?.let((it) => _brightness = it == 'Brightness.dark' ? Brightness.dark : Brightness.light);
-    //   return it;
+    //       .also((it) => _logger.fine('loaded preference: brightness=$it'))
+    //       ?.let((it) => ref.read(brightnessProvider.notifier).state =
+    //           it == 'Brightness.dark' ? Brightness.dark : Brightness.light);
     // });
 
     final primarySwatch = ref.watch(primarySwatchProvider);
