@@ -129,7 +129,7 @@ class _RadiosTab extends ConsumerWidget {
                     text: item.text,
                   ),
                   onChanged: (value) {
-                    ref.read(_classProvider.state).state = value!;
+                    ref.read(_classProvider.notifier).state = value!;
                   },
                 );
               },
@@ -202,7 +202,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
                 isSelected: flags,
                 onPressed: enableActions
                     ? (index) {
-                        ref.read(_selectedProvider.state).state = index;
+                        ref.read(_selectedProvider.notifier).state = index;
                         DefaultTabController.of(context)?.index = index;
                       }
                     : null,
@@ -216,7 +216,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
                     isSelected: flags.take(4).toList(),
                     onPressed: enableActions
                         ? (index) {
-                            ref.read(_selectedProvider.state).state = index;
+                            ref.read(_selectedProvider.notifier).state = index;
                             DefaultTabController.of(context)?.index = index;
                           }
                         : null,
@@ -229,7 +229,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
                       isSelected: flags.skip(4).toList(),
                       onPressed: enableActions
                           ? (index) {
-                              ref.read(_selectedProvider.state).state = index + 4;
+                              ref.read(_selectedProvider.notifier).state = index + 4;
                               DefaultTabController.of(context)?.index = index + 4;
                             }
                           : null,

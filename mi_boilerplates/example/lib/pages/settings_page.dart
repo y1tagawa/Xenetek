@@ -121,6 +121,8 @@ class SettingsPage extends ConsumerWidget {
     _logger.fine('[i] build');
     assert(x11Colors.length == x11ColorNames.length);
 
+    final preferences = ref.watch(preferencesProvider);
+
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -138,7 +140,7 @@ class SettingsPage extends ConsumerWidget {
             Text('Theme', style: theme.textTheme.headline6),
             // primarySwatch
             ListTile(
-              enabled: preferences != null,
+              enabled: preferences.hasValue,
               title: const Text('Primary swatch'),
               trailing: MiIconButton(
                 icon: MiColorChip(
@@ -150,19 +152,19 @@ class SettingsPage extends ConsumerWidget {
                     title: const Text('Primary swatch'),
                     initialColor: ref.watch(primarySwatchProvider),
                     onChanged: (value) {
-                      ref.read(primarySwatchProvider.state).state = value!.toMaterialColor();
+                      ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
                     },
                   );
                   if (ok) {
                     final it = json.encode(ref.read(primarySwatchProvider).toJson());
                     _logger.fine('setting preferences primary_swatch=$it');
-                    preferences?.setString('primary_swatch', it);
+                    preferences.value?.setString('primary_swatch', it);
                   }
                 },
               ),
             ),
             ListTile(
-              enabled: preferences != null,
+              enabled: preferences.hasValue,
               title: const Text('Secondary color'),
               trailing: MiIconButton(
                 icon: MiColorChip(
@@ -175,7 +177,7 @@ class SettingsPage extends ConsumerWidget {
                     initialColor: ref.watch(secondaryColorProvider),
                     nullable: true,
                     onChanged: (value) {
-                      ref.read(secondaryColorProvider.state).state = value;
+                      ref.read(secondaryColorProvider.notifier).state = value;
                     },
                   );
                   if (ok) {
@@ -184,47 +186,47 @@ class SettingsPage extends ConsumerWidget {
                     if (secondaryColor != null) {
                       final it = secondaryColor.value.toString();
                       _logger.fine('setting preferences secondary_color=$it');
-                      preferences?.setString('secondary_color', it);
+                      preferences.value?.setString('secondary_color', it);
                     } else {
                       _logger.fine('removing preferences secondary_color');
-                      await preferences?.remove('secondary_color');
+                      await preferences.value?.remove('secondary_color');
                     }
                   }
                 },
               ),
             ),
             CheckboxListTile(
-              enabled: preferences != null,
+              enabled: preferences.hasValue,
               value: ref.watch(brightnessProvider).isDark,
               title: const Text('Dark'),
               onChanged: (value) {
                 final it = value! ? Brightness.dark : Brightness.light;
-                ref.read(brightnessProvider.state).state = it;
+                ref.read(brightnessProvider.notifier).state = it;
                 _logger.fine('setting preferences brightness=$it');
-                preferences?.setString('brightness', it.toString());
+                preferences.value?.setString('brightness', it.toString());
               },
             ),
             CheckboxListTile(
               value: ref.watch(useM3Provider),
               title: const Text('Use material 3'),
               onChanged: (value) {
-                ref.read(useM3Provider.state).state = value!;
+                ref.read(useM3Provider.notifier).state = value!;
               },
             ),
             CheckboxListTile(
               value: ref.watch(themeAdjustmentProvider),
               title: const Text('Adjust theme'),
               onChanged: (value) {
-                ref.read(themeAdjustmentProvider.state).state = value!;
+                ref.read(themeAdjustmentProvider.notifier).state = value!;
               },
             ),
             ListTile(
               leading: MiTextButton(
-                enabled: preferences != null,
+                enabled: preferences.hasValue,
                 onPressed: () async {
                   // TODO: yes/no
                   _logger.fine('clearing preferences.');
-                  await preferences?.clear();
+                  await preferences.value?.clear();
                   // TODO: reload
                 },
                 child: const Text('Reset preferences'),

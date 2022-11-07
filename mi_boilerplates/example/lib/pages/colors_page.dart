@@ -101,7 +101,7 @@ class _ColorGridTab extends ConsumerWidget {
                 tooltips: primaryColorNames,
                 onChanged: (index) {
                   final color = Colors.primaries[index];
-                  ref.read(primarySwatchProvider.state).state = color.toMaterialColor();
+                  ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
                 },
               ),
             ),

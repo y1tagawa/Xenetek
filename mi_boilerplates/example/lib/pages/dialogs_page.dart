@@ -15,11 +15,11 @@ import 'ex_app_bar.dart';
 final _pingProvider = StateProvider<String?>((ref) => null);
 
 void _ping(WidgetRef ref, String value) async {
-  ref.read(_pingProvider.state).state = value;
+  ref.read(_pingProvider.notifier).state = value;
   await Future.delayed(
     const Duration(seconds: 2),
     () {
-      ref.read(_pingProvider.state).state = null;
+      ref.read(_pingProvider.notifier).state = null;
     },
   );
 }

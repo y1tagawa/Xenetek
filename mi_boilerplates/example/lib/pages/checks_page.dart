@@ -134,9 +134,9 @@ class _CheckboxTab extends ConsumerWidget {
     final tallyIcon = _tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
 
     void setTally(bool value) {
-      ref.read(_boxCheckProvider.state).state = value;
-      ref.read(_textCheckProvider.state).state = value;
-      ref.read(_checkCheckProvider.state).state = value;
+      ref.read(_boxCheckProvider.notifier).state = value;
+      ref.read(_textCheckProvider.notifier).state = value;
+      ref.read(_checkCheckProvider.notifier).state = value;
     }
 
     return SingleChildScrollView(
@@ -175,7 +175,7 @@ class _CheckboxTab extends ConsumerWidget {
                   ),
                   controlAffinity: ListTileControlAffinity.leading,
                   onChanged: (value) {
-                    ref.read(item.provider.state).state = value!;
+                    ref.read(item.provider.notifier).state = value!;
                   },
                 );
               },
@@ -280,7 +280,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
             isSelected: selected,
             onPressed: enableActions
                 ? (index) {
-                    ref.read(_selectedProvider.state).state =
+                    ref.read(_selectedProvider.notifier).state =
                         selected.replaced(index, !selected[index]);
                   }
                 : null,

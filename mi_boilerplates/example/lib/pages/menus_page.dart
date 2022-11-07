@@ -113,7 +113,7 @@ class _PopupMenuTab extends ConsumerWidget {
           value: selectedKey,
           onChanged: enabled
               ? (key) {
-                  ref.read(_selectedKeyProvider.state).state = key;
+                  ref.read(_selectedKeyProvider.notifier).state = key;
                 }
               : null,
           items: _menuItems.keys.map((key) {
@@ -145,7 +145,7 @@ class _PopupMenuTab extends ConsumerWidget {
             }).toList();
           },
           onSelected: (key) {
-            ref.read(_selectedKeyProvider.state).state = key;
+            ref.read(_selectedKeyProvider.notifier).state = key;
           },
           offset: const Offset(1, 0),
           child: ListTile(
@@ -177,7 +177,7 @@ class _PopupMenuTab extends ConsumerWidget {
             }).toList();
           },
           onSelected: (key) {
-            ref.read(_checkedKeysProvider.state).state =
+            ref.read(_checkedKeysProvider.notifier).state =
                 checkedKeys.contains(key!) ? checkedKeys.removed(key) : checkedKeys.added(key);
           },
           offset: const Offset(1, 0),
@@ -201,7 +201,7 @@ class _PopupMenuTab extends ConsumerWidget {
           isSelected: _menuItems.keys.map((key) => checkedKeys.contains(key)).toList(),
           onPressed: (index) {
             final key = _menuItems.keys.elementAt(index);
-            ref.read(_checkedKeysProvider.state).state =
+            ref.read(_checkedKeysProvider.notifier).state =
                 checkedKeys.contains(key) ? checkedKeys.removed(key) : checkedKeys.added(key);
           },
           constraints: BoxConstraints(maxWidth: width / (_menuItems.length + 1)),

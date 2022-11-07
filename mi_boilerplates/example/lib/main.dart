@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// サンプルアプリ メインプログラム
-
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -173,16 +170,11 @@ final _router = GoRouter(
 
 // テーマ設定
 
-SharedPreferences? _preferences;
-SharedPreferences? get preferences => _preferences;
+final preferencesProvider = FutureProvider((ref) => SharedPreferences.getInstance());
 
-MaterialColor _primarySwatch = Colors.indigo;
-Color? _secondaryColor;
-Brightness _brightness = Brightness.light;
-
-final primarySwatchProvider = StateProvider((ref) => _primarySwatch);
-final secondaryColorProvider = StateProvider<Color?>((ref) => _secondaryColor);
-final brightnessProvider = StateProvider((ref) => _brightness);
+final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
+final secondaryColorProvider = StateProvider<Color?>((ref) => null);
+final brightnessProvider = StateProvider((ref) => Brightness.light);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
 
@@ -195,25 +187,6 @@ void main() async {
   });
   final logger = Logger('main');
 
-  _preferences = await SharedPreferences.getInstance().then((it) {
-    it
-        .getString('primary_swatch')
-        .also((it) => logger.fine('loaded preference: primary_swatch=$it'))
-        ?.let((it) => MaterialColorHelper.tryParseJson(json.decode(it)))
-        ?.let((it) => _primarySwatch = it);
-    it
-        .getString('secondary_color')
-        .also((it) => logger.fine('loaded preference: secondary_color=$it'))
-        ?.let((it) => int.tryParse(it))
-        // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
-        .let((it) => _secondaryColor = it != null ? Color(it) : null);
-    it
-        .getString('brightness')
-        .also((it) => logger.fine('loaded preference: brightness=$it'))
-        ?.let((it) => _brightness = it == 'Brightness.dark' ? Brightness.dark : Brightness.light);
-    return it;
-  });
-
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -224,6 +197,25 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // _preferences = await SharedPreferences.getInstance().then((it) {
+    //   it
+    //       .getString('primary_swatch')
+    //       .also((it) => logger.fine('loaded preference: primary_swatch=$it'))
+    //       ?.let((it) => MaterialColorHelper.tryParseJson(json.decode(it)))
+    //       ?.let((it) => _primarySwatch = it);
+    //   it
+    //       .getString('secondary_color')
+    //       .also((it) => logger.fine('loaded preference: secondary_color=$it'))
+    //       ?.let((it) => int.tryParse(it))
+    //   // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
+    //       .let((it) => _secondaryColor = it != null ? Color(it) : null);
+    //   it
+    //       .getString('brightness')
+    //       .also((it) => logger.fine('loaded preference: brightness=$it'))
+    //       ?.let((it) => _brightness = it == 'Brightness.dark' ? Brightness.dark : Brightness.light);
+    //   return it;
+    // });
+
     final primarySwatch = ref.watch(primarySwatchProvider);
     return Material(
       child: MaterialApp.router(

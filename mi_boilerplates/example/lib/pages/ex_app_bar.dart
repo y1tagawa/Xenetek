@@ -43,7 +43,7 @@ class _ThemeAdjustmentCheckbox extends ConsumerWidget {
       child: Checkbox(
         value: themeAdjustment,
         onChanged:
-            enabled ? (value) => ref.read(themeAdjustmentProvider.state).state = value! : null,
+            enabled ? (value) => ref.read(themeAdjustmentProvider.notifier).state = value! : null,
       ),
     );
   }
@@ -63,7 +63,7 @@ class _OverflowMenu extends ConsumerWidget {
             checked: enabled,
             child: const Text('Enable actions'),
             onChanged: (value) {
-              ref.read(enableActionsProvider.state).state = value;
+              ref.read(enableActionsProvider.notifier).state = value;
             },
           ),
           MiCheckPopupMenuItem(
@@ -71,7 +71,7 @@ class _OverflowMenu extends ConsumerWidget {
             checked: ref.watch(themeAdjustmentProvider),
             child: const Text('Adjust theme'),
             onChanged: (value) {
-              ref.read(themeAdjustmentProvider.state).state = value;
+              ref.read(themeAdjustmentProvider.notifier).state = value;
             },
           ),
           MiCheckPopupMenuItem(
@@ -79,14 +79,14 @@ class _OverflowMenu extends ConsumerWidget {
             checked: ref.watch(useM3Provider),
             child: const Text('Use M3'),
             onChanged: (value) {
-              ref.read(useM3Provider.state).state = value;
+              ref.read(useM3Provider.notifier).state = value;
             },
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(brightnessProvider) == Brightness.dark,
             child: const Text('Dark mode'),
-            onChanged: (value) => ref.read(brightnessProvider.state).state =
+            onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                 value ? Brightness.dark : Brightness.light,
           ),
           MiPopupMenuItem(
@@ -175,7 +175,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         leading: leading,
         title: InkWell(
           onTap: () {
-            ref.read(prominentProvider.state).state = !prominent;
+            ref.read(prominentProvider.notifier).state = !prominent;
           },
           child: title,
         ),
@@ -189,7 +189,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
               enabled: enabled,
               checked: ref.watch(useM3Provider),
               onChanged: (value) {
-                ref.read(useM3Provider.state).state = value;
+                ref.read(useM3Provider.notifier).state = value;
               },
               checkIcon: const Icon(Icons.filter_3_outlined),
               uncheckIcon: const Icon(Icons.filter_2_outlined),
@@ -198,7 +198,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
               enabled: enabled,
               checked: ref.watch(brightnessProvider).isDark,
               onChanged: (value) {
-                ref.read(brightnessProvider.state).state =
+                ref.read(brightnessProvider.notifier).state =
                     value ? Brightness.dark : Brightness.light;
               },
               checkIcon: const Icon(Icons.dark_mode_outlined),
