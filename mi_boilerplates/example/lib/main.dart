@@ -168,13 +168,40 @@ final _router = GoRouter(
 
 // テーマ設定
 
-final preferencesProvider = FutureProvider((ref) => SharedPreferences.getInstance());
-
 final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
 final secondaryColorProvider = StateProvider<Color?>((ref) => null);
 final brightnessProvider = StateProvider((ref) => Brightness.light);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
+
+final preferencesProvider = FutureProvider((ref) async {
+  final logger = Logger('preferenceProvider');
+
+  final value = await SharedPreferences.getInstance();
+
+  Color? colorOrNull(String? data) {
+    return data?.let((it) => int.tryParse(it))?.let((it) => Color(it));
+  }
+
+  value.getString('primary_swatch').let((it) {
+    logger.fine('primary_swatch=$it');
+    ref.watch(primarySwatchProvider.notifier).state =
+        colorOrNull(it)?.toMaterialColor() ?? Colors.indigo;
+  });
+
+  value.getString('secondary_color').let((it) {
+    logger.fine('secondary_color=$it');
+    ref.watch(secondaryColorProvider.notifier).state = colorOrNull(it);
+  });
+
+  value.getString('brightness').let((it) {
+    logger.fine('brightness=$it');
+    ref.watch(brightnessProvider.notifier).state =
+        it == 'Brightness.dark' ? Brightness.dark : Brightness.light;
+  });
+
+  return value;
+});
 
 // main
 
@@ -194,39 +221,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final preferences = ref.watch(preferencesProvider);
-    // preferences.whenData((value) async {
-    //   value
-    //       .getString('primary_swatch')
-    //       .also((it) => _logger.fine('loaded preference: primary_swatch=$it'))
-    //       ?.let((it) => MaterialColorHelper.tryParseJson(json.decode(it)))
-    //       ?.let(
-    //     (it) {
-    //       if (ref.read(primarySwatchProvider).value != it.value) {
-    //         ref.read(primarySwatchProvider.notifier).state = it;
-    //       }
-    //     },
-    //   );
-    //   value
-    //       .getString('secondary_color')
-    //       .also((it) => _logger.fine('loaded preference: secondary_color=$it'))
-    //       ?.let((it) => int.tryParse(it))
-    //       // Dartがnullableをまともに扱えるようになるまで、null値と省略は区別しない事にする。
-    //       .let(
-    //     (it) {
-    //       final color = it != null ? Color(it) : null;
-    //       if (ref.read(secondaryColorProvider) != color) {
-    //         ref.read(secondaryColorProvider.notifier).state = color;
-    //       }
-    //     },
-    //   );
-    //   value
-    //       .getString('brightness')
-    //       .also((it) => _logger.fine('loaded preference: brightness=$it'))
-    //       ?.let((it) => ref.read(brightnessProvider.notifier).state =
-    //           it == 'Brightness.dark' ? Brightness.dark : Brightness.light);
-    // });
-
+    ref.watch(preferencesProvider);
     final primarySwatch = ref.watch(primarySwatchProvider);
     return Material(
       child: MaterialApp.router(

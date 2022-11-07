@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:collection/collection.dart';
 import 'package:example/data/jis_common_colors.dart';
 import 'package:flutter/material.dart';
@@ -156,7 +154,7 @@ class SettingsPage extends ConsumerWidget {
                     },
                   );
                   if (ok) {
-                    final it = json.encode(ref.read(primarySwatchProvider).toJson());
+                    final it = ref.read(primarySwatchProvider).value.toString();
                     _logger.fine('setting preferences primary_swatch=$it');
                     preferences.value?.setString('primary_swatch', it);
                   }
@@ -227,6 +225,7 @@ class SettingsPage extends ConsumerWidget {
                   // TODO: yes/no
                   _logger.fine('clearing preferences.');
                   await preferences.value?.clear();
+                  ref.invalidate(preferencesProvider);
                   // TODO: reload
                 },
                 child: const Text('Reset preferences'),
