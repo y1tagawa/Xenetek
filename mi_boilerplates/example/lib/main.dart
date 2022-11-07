@@ -197,6 +197,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final preferences = ref.watch(preferencesProvider);
+
     // _preferences = await SharedPreferences.getInstance().then((it) {
     //   it
     //       .getString('primary_swatch')

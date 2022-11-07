@@ -19,14 +19,13 @@ final prominentProvider = StateProvider((ref) => false);
 class _EnableActionsSwitch extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(enableActionsProvider.state);
-    final enableActions = state.state;
+    final enableActions = ref.watch(enableActionsProvider);
 
     return Tooltip(
       message: enableActions ? 'Enable actions: ON' : 'Enable actions: OFF',
       child: Switch(
         value: enableActions,
-        onChanged: (value) => state.state = value,
+        onChanged: (value) => ref.read(enableActionsProvider.notifier).state = value,
       ),
     );
   }

@@ -93,15 +93,14 @@ class SwitchesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final switchValueStates = ref.watch(_switchProvider.state);
-    final switchValues = switchValueStates.state;
+    final switches = ref.watch(_switchProvider);
 
     final theme = Theme.of(context);
 
-    final myHp = switchValues.where((value) => value).length;
+    final myHp = switches.where((value) => value).length;
 
     void reset(bool value) {
-      switchValueStates.state = List.filled(_switchItems.length, value);
+      ref.read(_switchProvider.notifier).state = List.filled(_switchItems.length, value);
     }
 
     return Scaffold(
@@ -145,21 +144,22 @@ class SwitchesPage extends ConsumerWidget {
                 shrinkWrap: true,
                 children: _switchItems.mapIndexed(
                   (index, item) {
-                    final switchValue = switchValues[index];
+                    final switchValue = switches[index];
                     return MiSwitchListTile(
-                      enabled: enableActions,
-                      value: switchValue,
-                      title: MiIcon(
-                        icon: _ToggleIcon(
-                          checked: switchValue,
-                          checkIcon: item.checkIcon,
-                          uncheckIcon: item.uncheckIcon,
+                        enabled: enableActions,
+                        value: switchValue,
+                        title: MiIcon(
+                          icon: _ToggleIcon(
+                            checked: switchValue,
+                            checkIcon: item.checkIcon,
+                            uncheckIcon: item.uncheckIcon,
+                          ),
+                          text: item.title,
                         ),
-                        text: item.title,
-                      ),
-                      onChanged: (value) =>
-                          switchValueStates.state = switchValues.replaced(index, value),
-                    );
+                        onChanged: (value) {
+                          ref.read(_switchProvider.notifier).state =
+                              switches.replaced(index, value);
+                        });
                   },
                 ).toList(),
               ),

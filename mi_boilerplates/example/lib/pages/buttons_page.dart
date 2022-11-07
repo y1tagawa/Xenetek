@@ -52,15 +52,14 @@ class ButtonsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    final tabIndexState = ref.watch(_tabIndexProvider.state);
-    final tabIndex = tabIndexState.state;
+    final tabIndex = ref.watch(_tabIndexProvider);
 
     return MiDefaultTabController(
       length: _tabs.length,
       initialIndex: tabIndex,
       onIndexChanged: (value) {
         // タブ切り替えによりFABの状態を変更するため
-        tabIndexState.state = value;
+        ref.read(_tabIndexProvider.notifier).state = value;
       },
       builder: (context) {
         return Scaffold(

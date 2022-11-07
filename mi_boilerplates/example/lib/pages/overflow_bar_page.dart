@@ -47,8 +47,7 @@ class OverflowBarPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final trollHpState = ref.watch(_trollHpProvider.state);
-    final trollHp = trollHpState.state;
+    final trollHp = ref.watch(_trollHpProvider);
 
     return Scaffold(
       appBar: ExAppBar(
@@ -65,7 +64,7 @@ class OverflowBarPage extends ConsumerWidget {
                 children: [
                   MiTextButton(
                     enabled: enableActions,
-                    onPressed: () => ref.refresh(_trollHpProvider),
+                    onPressed: () => ref.invalidate(_trollHpProvider),
                     child: const MiIcon(
                       icon: Icon(Icons.refresh),
                       text: Text('Reset'),
@@ -102,7 +101,7 @@ class OverflowBarPage extends ConsumerWidget {
                 enabled: enableActions,
                 onPressed: () {
                   if (trollHp >= 0) {
-                    trollHpState.state -= 10;
+                    ref.read(_trollHpProvider.notifier).state = trollHp - 10;
                   }
                 },
                 child: item,
