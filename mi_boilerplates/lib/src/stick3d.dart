@@ -99,7 +99,7 @@ class Node {
   const Node({
     required this.position,
     required this.rotation,
-    required this.children,
+    this.children = const <String, Node>{},
   });
 
   @override
@@ -117,10 +117,10 @@ class Node {
   @override
   String toString() {
     return 'Node{' +
-        ' position: $position,' +
-        ' rotation: $rotation,' +
-        ' children: $children,' +
-        '}';
+        ' position: $position,'
+            ' rotation: $rotation,'
+            ' children: $children,'
+            '}';
   }
 
   Node copyWith({
@@ -137,9 +137,9 @@ class Node {
 
   Map<String, dynamic> toMap() {
     return {
-      'position': this.position,
-      'rotation': this.rotation,
-      'children': this.children,
+      'position': position,
+      'rotation': rotation,
+      'children': children,
     };
   }
 
@@ -152,4 +152,42 @@ class Node {
   }
 
 //</editor-fold>
+}
+
+//
+// * 右手座標系とする。X+右、Y+前、Z+上のイメージ
+// * 関節の回転軸は原則として：
+//   * Xを主要な曲げ軸とする。（肘や指の折れ軸、股の前後振り軸、肩の開き軸、椎骨の前後曲げ軸）
+//   * Yを次の曲げ軸とする。（股の左右開閉軸、肩の前後振り軸、椎骨の左右曲げ軸）
+//   * Zを捻り軸、肢の伸びる方向とする。
+//
+
+extension NodeHelper on Node {
+  /// 肢、指等を生成する。
+  /// https://motto-kansetsu.com/finger/index.html
+  /// https://motto-kansetsu.com/finger/index.html
+  // shoulder.added(['elbow': z*0.3, 'hand': z*0.3])
+  // ->
+
+  // Node addedLimb(Iterable<MapEntry<String, Vector3>> descending) {
+  //   if (descending.isEmpty) {
+  //     return this;
+  //   }
+  //   final child = Node(
+  //     position: descending.first.value,
+  //     rotation: Matrix3.identity(),
+  //   );
+  //   if (descending.length > 1) {
+  //     final descending_ = descending.skip(1);
+  //     return child.added(
+  //       path: [],
+  //       key: descending_.first.key,
+  //       child: Node(
+  //         position: descending_.first.value,
+  //         rotation: Matrix3.identity(),
+  //         //children: child.addedLimb(descending_),
+  //       ),
+  //     );
+  //   }
+  // }
 }
