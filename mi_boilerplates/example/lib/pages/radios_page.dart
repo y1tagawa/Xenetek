@@ -82,7 +82,8 @@ class _RadioItem {
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.shield_outlined),
+    iconBuilder: (checked) =>
+        checked ? const Icon(Icons.gpp_good_outlined) : const Icon(Icons.shield_outlined),
     text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
@@ -155,6 +156,12 @@ class _RadiosTab extends ConsumerWidget {
 //
 // Toggle buttons tab
 //
+
+// https://lottiefiles.com/301-search-location
+const _lottie1 =
+    'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
+// https://lottiefiles.com/94-soda-loader
+const _lottie2 = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
 
 const _toggleItems = <Widget>[
   Text('Soda'),
@@ -243,17 +250,8 @@ class _ToggleButtonsTab extends ConsumerWidget {
               child: TabBarView(
                 children: _toggleItemColors.mapIndexed(
                   (index, color) {
-                    String url;
-                    switch (index) {
-                      case 6: // Milk
-                        url =
-                            'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
-                        break;
-                      default:
-                        url = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
-                        break;
-                    }
-                    return Container(
+                    final url = index == 6 ? _lottie1 : _lottie2;
+                    return ColoredBox(
                       color: color.withAlpha(64),
                       child: MiAnimationController(
                         builder: (_, controller, __) {
