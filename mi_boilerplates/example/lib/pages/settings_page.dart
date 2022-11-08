@@ -120,6 +120,8 @@ class SettingsPage extends ConsumerWidget {
     assert(x11Colors.length == x11ColorNames.length);
 
     final preferences = ref.watch(preferencesProvider);
+    final primarySwatch = ref.watch(primarySwatchProvider);
+    final secondaryColor = ref.watch(secondaryColorProvider);
 
     final theme = Theme.of(context);
 
@@ -143,13 +145,13 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Primary swatch'),
               trailing: MiIconButton(
                 icon: MiColorChip(
-                  color: ref.watch(primarySwatchProvider),
+                  color: primarySwatch,
                 ),
                 onPressed: () async {
                   final ok = await showColorSelectDialog(
                     context: context,
                     title: const Text('Primary swatch'),
-                    initialColor: ref.watch(primarySwatchProvider),
+                    initialColor: primarySwatch,
                     onChanged: (value) {
                       ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
                     },
@@ -167,13 +169,13 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Secondary color'),
               trailing: MiIconButton(
                 icon: MiColorChip(
-                  color: ref.watch(secondaryColorProvider),
+                  color: secondaryColor,
                 ),
                 onPressed: () async {
                   final ok = await showColorSelectDialog(
                     context: context,
                     title: const Text('Secondary color'),
-                    initialColor: ref.watch(secondaryColorProvider),
+                    initialColor: secondaryColor,
                     nullable: true,
                     onChanged: (value) {
                       ref.read(secondaryColorProvider.notifier).state = value;

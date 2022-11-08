@@ -185,18 +185,18 @@ final preferencesProvider = FutureProvider((ref) async {
 
   value.getString('primary_swatch').let((it) {
     logger.fine('primary_swatch=$it');
-    ref.watch(primarySwatchProvider.notifier).state =
+    ref.read(primarySwatchProvider.notifier).state =
         colorOrNull(it)?.toMaterialColor() ?? Colors.indigo;
   });
 
   value.getString('secondary_color').let((it) {
     logger.fine('secondary_color=$it');
-    ref.watch(secondaryColorProvider.notifier).state = colorOrNull(it);
+    ref.read(secondaryColorProvider.notifier).state = colorOrNull(it);
   });
 
   value.getString('brightness').let((it) {
     logger.fine('brightness=$it');
-    ref.watch(brightnessProvider.notifier).state =
+    ref.read(brightnessProvider.notifier).state =
         it == 'Brightness.dark' ? Brightness.dark : Brightness.light;
   });
 
@@ -205,7 +205,7 @@ final preferencesProvider = FutureProvider((ref) async {
 
 // main
 
-void main() async {
+void main() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
