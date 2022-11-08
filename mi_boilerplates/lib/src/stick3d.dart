@@ -169,25 +169,40 @@ extension NodeHelper on Node {
   // shoulder.added(['elbow': z*0.3, 'hand': z*0.3])
   // ->
 
-  // Node addedLimb(Iterable<MapEntry<String, Vector3>> descending) {
-  //   if (descending.isEmpty) {
-  //     return this;
-  //   }
-  //   final child = Node(
-  //     position: descending.first.value,
-  //     rotation: Matrix3.identity(),
-  //   );
-  //   if (descending.length > 1) {
-  //     final descending_ = descending.skip(1);
-  //     return child.added(
-  //       path: [],
-  //       key: descending_.first.key,
-  //       child: Node(
-  //         position: descending_.first.value,
-  //         rotation: Matrix3.identity(),
-  //         //children: child.addedLimb(descending_),
-  //       ),
-  //     );
-  //   }
-  // }
+  Node addLimb(
+    Iterable<MapEntry<String, Vector3>> descending,
+  ) {
+    assert(descending.isNotEmpty);
+
+    Node child_(
+      Vector3 position,
+      Iterable<MapEntry<String, Vector3>> descending,
+    ) {
+      if (descending.isEmpty) {
+        return Node(
+          position: position,
+          rotation: Matrix3.identity(),
+          children: {},
+        );
+      }
+
+      final key = descending.first.key;
+      final position_ = descending.first.value;
+      return Node(
+        position: position,
+        rotation: Matrix3.identity(),
+        children: {
+          key: child_(position_, descending.skip(1)),
+        },
+      );
+    }
+
+    final key = descending.first.key;
+    final position = descending.first.value;
+    return added(
+      path: [],
+      key: key,
+      child: child_(position, descending.skip(1)),
+    );
+  }
 }
