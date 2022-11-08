@@ -82,8 +82,11 @@ class _RadioItem {
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
-    iconBuilder: (checked) =>
-        checked ? const Icon(Icons.gpp_good_outlined) : const Icon(Icons.shield_outlined),
+    iconBuilder: (checked) => MiToggleIcon(
+      checked: checked,
+      checkIcon: const Icon(Icons.gpp_good_outlined),
+      uncheckIcon: const Icon(Icons.shield_outlined),
+    ),
     text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
@@ -95,8 +98,11 @@ final _radioItems = <_Class, _RadioItem>{
     text: const Text('Mage'),
   ),
   _Class.thief: _RadioItem(
-    iconBuilder: (checked) =>
-        checked ? const Icon(Icons.lock_open) : const Icon(Icons.lock_outlined),
+    iconBuilder: (checked) => MiToggleIcon(
+      checked: checked,
+      checkIcon: const Icon(Icons.lock_open),
+      uncheckIcon: const Icon(Icons.lock_outlined),
+    ),
     text: const Text('Thief'),
   ),
 };
@@ -158,10 +164,10 @@ class _RadiosTab extends ConsumerWidget {
 //
 
 // https://lottiefiles.com/301-search-location
-const _lottie1 =
+const _rippleLottieUrl =
     'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
 // https://lottiefiles.com/94-soda-loader
-const _lottie2 = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
+const _sodaLottieUrl = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
 
 const _toggleItems = <Widget>[
   Text('Soda'),
@@ -219,7 +225,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
               child: TabBarView(
                 children: _toggleItemColors.mapIndexed(
                   (index, color) {
-                    final url = index == 6 ? _lottie1 : _lottie2;
+                    final url = index == 6 ? _rippleLottieUrl : _sodaLottieUrl;
                     return ColoredBox(
                       color: color.withAlpha(64),
                       child: MiAnimationController(

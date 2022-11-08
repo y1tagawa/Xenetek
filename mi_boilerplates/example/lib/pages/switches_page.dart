@@ -59,29 +59,6 @@ const _switchItems = [
   ),
 ];
 
-class _ToggleIcon extends StatelessWidget {
-  final bool checked;
-  final Widget checkIcon;
-  final Widget uncheckIcon;
-
-  const _ToggleIcon({
-    super.key,
-    required this.checked,
-    required this.checkIcon,
-    required this.uncheckIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      duration: const Duration(milliseconds: 300),
-      crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      firstChild: checkIcon,
-      secondChild: uncheckIcon,
-    );
-  }
-}
-
 final _switchProvider = StateProvider((ref) => List.filled(_switchItems.length, true));
 
 class SwitchesPage extends ConsumerWidget {
@@ -106,7 +83,7 @@ class SwitchesPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        icon: _ToggleIcon(
+        icon: MiToggleIcon(
           checked: enableActions,
           checkIcon: icon,
           uncheckIcon: const Icon(Icons.toggle_off_outlined),
@@ -149,7 +126,7 @@ class SwitchesPage extends ConsumerWidget {
                         enabled: enableActions,
                         value: switchValue,
                         title: MiIcon(
-                          icon: _ToggleIcon(
+                          icon: MiToggleIcon(
                             checked: switchValue,
                             checkIcon: item.checkIcon,
                             uncheckIcon: item.uncheckIcon,

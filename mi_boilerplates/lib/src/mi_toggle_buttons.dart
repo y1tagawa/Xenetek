@@ -1,11 +1,20 @@
+// Copyright 2022 Xenetek. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 
+/// カスタムToggleButtons
+///
+/// * [enabled]
+/// * [split]を指定した場合、[children]その個数ごとに行に分割し、[Column]に格納する。
 class MiToggleButtons extends StatelessWidget {
   final bool enabled;
   final int? split;
   final List<Widget> children;
   final List<bool> isSelected;
   final ValueChanged<int>? onPressed;
+  final bool renderBorder;
 
   const MiToggleButtons({
     super.key,
@@ -14,6 +23,7 @@ class MiToggleButtons extends StatelessWidget {
     required this.children,
     required this.isSelected,
     this.onPressed,
+    this.renderBorder = true,
   })  : assert(children.length == isSelected.length),
         assert(split == null || split >= 2);
 
@@ -23,6 +33,7 @@ class MiToggleButtons extends StatelessWidget {
       return ToggleButtons(
         isSelected: isSelected,
         onPressed: enabled ? onPressed : null,
+        renderBorder: renderBorder,
         children: children,
       );
     }
@@ -35,6 +46,7 @@ class MiToggleButtons extends StatelessWidget {
           ToggleButtons(
             isSelected: isSelected.skip(i).take(n).toList(),
             onPressed: enabled ? (index) => onPressed?.call(index + i) : null,
+            renderBorder: renderBorder,
             children: children.skip(i).take(n).toList(),
           ),
       ],
