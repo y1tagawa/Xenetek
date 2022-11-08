@@ -37,6 +37,11 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 
 * 常にテキストが存在するウィジェット（TextButton等）以外はtooltipを追加する。
 
+* WoWではSnackBarにアイコンを載せているが、IconThemeは未対応である。
+  https://api.flutter.dev/flutter/material/SnackBar-class.html
+  しかしマテリアルデザインでは、アイコンはご法度なのでそのままにしておく。
+  https://m2.material.io/components/snackbars#anatomy
+
 ## Tips
 
 * Wikipedia:ウィキペディアを二次利用する  

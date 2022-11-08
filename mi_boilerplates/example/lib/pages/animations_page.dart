@@ -172,8 +172,13 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 // Lottie tab
 //
-// s.a. https://pub.dev/packages/lottie
+// https://lottiefiles.com/lottiefilez
+// https://pub.dev/packages/lottie
 //
+
+//// https://lottiefiles.com/99-bell
+// https://lottiefiles.com/38597-diwali-peacock-lottiefiles-logo
+const _lottieUrl = 'https://assets8.lottiefiles.com/private_files/lf30_smcmhowt.json';
 
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
@@ -188,7 +193,7 @@ class _LottieTab extends ConsumerWidget {
       child: MiAnimationController(
         builder: (_, controller, __) {
           return Lottie.network(
-            'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/Mobilo/A.json',
+            _lottieUrl,
             controller: controller,
             repeat: false,
             onLoaded: (composition) {
