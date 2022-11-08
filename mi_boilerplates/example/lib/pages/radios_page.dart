@@ -187,6 +187,48 @@ const _toggleItemColors = <Color>[
 
 final _selectedProvider = StateProvider((ref) => 0);
 
+class MiToggleButtons extends StatelessWidget {
+  final bool enabled;
+  final int? split;
+  final List<Widget> children;
+  final List<bool> isSelected;
+  final ValueChanged<int>? onPressed;
+
+  const MiToggleButtons({
+    super.key,
+    this.enabled = true,
+    this.split,
+    required this.children,
+    required this.isSelected,
+    this.onPressed,
+  })  : assert(children.length == isSelected.length),
+        assert(split == null || split >= 2);
+
+  @override
+  Widget build(BuildContext context) {
+    if (split == null) {
+      return ToggleButtons(
+        isSelected: isSelected,
+        onPressed: enabled ? onPressed : null,
+        children: children,
+      );
+    }
+
+    final n = split!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < children.length; i += n)
+          ToggleButtons(
+            isSelected: isSelected.skip(i).take(n).toList(),
+            onPressed: enabled ? (index) => onPressed?.call(index + i) : null,
+            children: children.skip(i).take(n).toList(),
+          ),
+      ],
+    );
+  }
+}
+
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_selectedProvider).toString());
 
@@ -204,47 +246,16 @@ class _ToggleButtonsTab extends ConsumerWidget {
       builder: (context) {
         return Column(
           children: [
-            if (MediaQuery.of(context).orientation == Orientation.landscape)
-              ToggleButtons(
-                isSelected: flags,
-                onPressed: enableActions
-                    ? (index) {
-                        ref.read(_selectedProvider.notifier).state = index;
-                        DefaultTabController.of(context)?.index = index;
-                      }
-                    : null,
-                children: _toggleItems,
-              )
-            else
-              Column(
-                children: [
-                  // 0..3
-                  ToggleButtons(
-                    isSelected: flags.take(4).toList(),
-                    onPressed: enableActions
-                        ? (index) {
-                            ref.read(_selectedProvider.notifier).state = index;
-                            DefaultTabController.of(context)?.index = index;
-                          }
-                        : null,
-                    children: _toggleItems.take(4).toList(),
-                  ),
-                  // 4..7
-                  Transform.translate(
-                    offset: const Offset(0, -1),
-                    child: ToggleButtons(
-                      isSelected: flags.skip(4).toList(),
-                      onPressed: enableActions
-                          ? (index) {
-                              ref.read(_selectedProvider.notifier).state = index + 4;
-                              DefaultTabController.of(context)?.index = index + 4;
-                            }
-                          : null,
-                      children: _toggleItems.skip(4).toList(),
-                    ),
-                  ),
-                ],
-              ),
+            MiToggleButtons(
+              enabled: enableActions,
+              split: MediaQuery.of(context).orientation == Orientation.landscape ? null : 3,
+              isSelected: flags,
+              onPressed: (index) {
+                ref.read(_selectedProvider.notifier).state = index;
+                DefaultTabController.of(context)?.index = index;
+              },
+              children: _toggleItems,
+            ),
             const Divider(),
             Expanded(
               child: TabBarView(
