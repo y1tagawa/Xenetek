@@ -15,5 +15,6 @@ export 'src/mi_menus.dart';
 export 'src/mi_reorderable_list.dart';
 export 'src/mi_tabs.dart';
 export 'src/mi_themes.dart';
+export 'src/mi_toggle_buttons.dart';
 export 'src/mi_transforms.dart';
 export 'src/mi_widgets.dart';
