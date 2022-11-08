@@ -202,7 +202,6 @@ class _ToggleButtonsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
     final selected = ref.watch(_selectedProvider);
-    final flags = _toggleItems.mapIndexed((index, _) => index == selected).toList();
 
     return MiDefaultTabController(
       length: _toggleItems.length,
@@ -210,10 +209,11 @@ class _ToggleButtonsTab extends ConsumerWidget {
       builder: (context) {
         return Column(
           children: [
-            MiToggleButtons(
+            MiRadioToggleButtons(
               enabled: enableActions,
+              initiallySelected: selected,
               split: MediaQuery.of(context).orientation == Orientation.landscape ? null : 3,
-              isSelected: flags,
+              renderBorder: false,
               onPressed: (index) {
                 ref.read(_selectedProvider.notifier).state = index;
                 DefaultTabController.of(context)?.index = index;
@@ -226,26 +226,29 @@ class _ToggleButtonsTab extends ConsumerWidget {
                 children: _toggleItemColors.mapIndexed(
                   (index, color) {
                     final url = index == 6 ? _rippleLottieUrl : _sodaLottieUrl;
-                    return ColoredBox(
-                      color: color.withAlpha(64),
-                      child: MiAnimationController(
-                        builder: (_, controller, __) {
-                          return Lottie.network(
-                            url,
-                            controller: controller,
-                            repeat: true,
-                            onLoaded: (composition) {
-                              _logger.fine('onLoaded: ${composition.duration}');
-                              controller.duration = composition.duration;
-                              controller.reset();
-                              controller.forward();
-                            },
-                          );
-                        },
-                        onCompleted: (controller) {
-                          controller.reset();
-                          controller.forward();
-                        },
+                    return Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: ColoredBox(
+                        color: color.withAlpha(64),
+                        child: MiAnimationController(
+                          builder: (_, controller, __) {
+                            return Lottie.network(
+                              url,
+                              controller: controller,
+                              repeat: true,
+                              onLoaded: (composition) {
+                                _logger.fine('onLoaded: ${composition.duration}');
+                                controller.duration = composition.duration;
+                                controller.reset();
+                                controller.forward();
+                              },
+                            );
+                          },
+                          onCompleted: (controller) {
+                            controller.reset();
+                            controller.forward();
+                          },
+                        ),
                       ),
                     );
                   },

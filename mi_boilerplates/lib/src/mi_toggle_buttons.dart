@@ -4,6 +4,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../mi_boilerplates.dart';
+
 /// カスタムToggleButtons
 ///
 /// * [enabled]
@@ -50,6 +52,39 @@ class MiToggleButtons extends StatelessWidget {
             children: children.skip(i).take(n).toList(),
           ),
       ],
+    );
+  }
+}
+
+class MiRadioToggleButtons extends StatelessWidget {
+  final bool enabled;
+  final int? split;
+  final List<Widget> children;
+  final int? initiallySelected;
+  final ValueChanged<int>? onPressed;
+  final bool renderBorder;
+
+  const MiRadioToggleButtons({
+    super.key,
+    this.enabled = true,
+    this.split,
+    required this.children,
+    this.initiallySelected,
+    this.onPressed,
+    this.renderBorder = true,
+  })  : assert(initiallySelected == null ||
+            (initiallySelected >= 0 && initiallySelected < children.length)),
+        assert(split == null || split >= 2);
+
+  @override
+  Widget build(BuildContext context) {
+    return MiToggleButtons(
+      enabled: enabled,
+      split: split,
+      isSelected: iota(children.length).map((it) => it == initiallySelected).toList(),
+      onPressed: onPressed,
+      renderBorder: renderBorder,
+      children: children,
     );
   }
 }
