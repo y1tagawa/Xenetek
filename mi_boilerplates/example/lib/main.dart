@@ -167,10 +167,11 @@ final _router = GoRouter(
 );
 
 // テーマ設定
-
-final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
-final secondaryColorProvider = StateProvider<Color?>((ref) => null);
-final brightnessProvider = StateProvider((ref) => Brightness.light);
+// ダークテーマの場合、SharedPreferencesから読み込む前に明るい画面が出ないよう、初期値は暗黒にしておく
+final primarySwatchProvider = StateProvider((ref) => Colors.black.toMaterialColor());
+final secondaryColorProvider = StateProvider<Color?>((ref) => Colors.black);
+final _backgroundColorProvider = StateProvider<Color?>((ref) => Colors.black);
+final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
 
@@ -194,6 +195,8 @@ final preferencesProvider = FutureProvider((ref) async {
     ref.read(secondaryColorProvider.notifier).state = colorOrNull(it);
   });
 
+  ref.read(_backgroundColorProvider.notifier).state = null;
+
   value.getString('brightness').let((it) {
     logger.fine('brightness=$it');
     ref.read(brightnessProvider.notifier).state =
@@ -205,7 +208,7 @@ final preferencesProvider = FutureProvider((ref) async {
 
 // main
 
-void main() {
+void main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
@@ -233,6 +236,7 @@ class MyApp extends ConsumerWidget {
           primarySwatch: primarySwatch,
           colorScheme: ColorScheme.fromSwatch(
             primarySwatch: primarySwatch,
+            backgroundColor: ref.watch(_backgroundColorProvider),
             accentColor: ref.watch(secondaryColorProvider),
             brightness: ref.watch(brightnessProvider),
           ),
