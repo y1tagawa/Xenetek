@@ -56,6 +56,7 @@ class MiToggleButtons extends StatelessWidget {
   }
 }
 
+/// ラジオトグルボタン
 class MiRadioToggleButtons extends StatelessWidget {
   final bool enabled;
   final int? split;

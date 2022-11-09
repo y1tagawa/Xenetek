@@ -3,7 +3,7 @@
 
 ## TODO
 * Material designのanatomy的な設定箇所の説明図
+* Menus
 * Sliderテーマ
-* CheckboxのcheckColorのダーク対応
 * M2AppBar上用のデフォルトテーマ
   * 淡色AppBar

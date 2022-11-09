@@ -5,7 +5,11 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
-extension BrightnessExtension on Brightness {
+extension BoolHelper on bool {
+  Brightness get toDark => this ? Brightness.dark : Brightness.light;
+}
+
+extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;
 }
 

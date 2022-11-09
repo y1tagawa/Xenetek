@@ -99,9 +99,10 @@ class _ColorGridTab extends ConsumerWidget {
               child: MiColorGrid(
                 colors: Colors.primaries,
                 tooltips: primaryColorNames,
-                onChanged: (index) {
+                onChanged: (index) async {
                   final color = Colors.primaries[index];
                   ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
+                  await savePreferences(ref);
                 },
               ),
             ),

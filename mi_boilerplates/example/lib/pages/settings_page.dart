@@ -119,7 +119,6 @@ class SettingsPage extends ConsumerWidget {
     _logger.fine('[i] build');
     assert(x11Colors.length == x11ColorNames.length);
 
-    final preferences = ref.watch(preferencesProvider);
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
 
@@ -141,7 +140,6 @@ class SettingsPage extends ConsumerWidget {
             ),
             // primarySwatch
             ListTile(
-              enabled: preferences.hasValue,
               title: const Text('Primary swatch'),
               trailing: MiIconButton(
                 icon: MiColorChip(
@@ -157,15 +155,12 @@ class SettingsPage extends ConsumerWidget {
                     },
                   );
                   if (ok) {
-                    final it = ref.read(primarySwatchProvider).value.toString();
-                    _logger.fine('setting preferences primary_swatch=$it');
-                    preferences.value?.setString('primary_swatch', it);
+                    await savePreferences(ref);
                   }
                 },
               ),
             ),
             ListTile(
-              enabled: preferences.hasValue,
               title: const Text('Secondary color'),
               trailing: MiIconButton(
                 icon: MiColorChip(
@@ -182,28 +177,17 @@ class SettingsPage extends ConsumerWidget {
                     },
                   );
                   if (ok) {
-                    final secondaryColor = ref.read(secondaryColorProvider);
-                    if (secondaryColor != null) {
-                      final it = secondaryColor.value.toString();
-                      _logger.fine('setting preferences secondary_color=$it');
-                      preferences.value?.setString('secondary_color', it);
-                    } else {
-                      _logger.fine('removing preferences secondary_color');
-                      await preferences.value?.remove('secondary_color');
-                    }
+                    await savePreferences(ref);
                   }
                 },
               ),
             ),
             CheckboxListTile(
-              enabled: preferences.hasValue,
               value: ref.watch(brightnessProvider).isDark,
               title: const Text('Dark'),
-              onChanged: (value) {
-                final it = value! ? Brightness.dark : Brightness.light;
-                ref.read(brightnessProvider.notifier).state = it;
-                _logger.fine('setting preferences brightness=$it');
-                preferences.value?.setString('brightness', it.toString());
+              onChanged: (value) async {
+                ref.read(brightnessProvider.notifier).state = value!.toDark;
+                await savePreferences(ref);
               },
             ),
             CheckboxListTile(
@@ -222,16 +206,13 @@ class SettingsPage extends ConsumerWidget {
             ),
             ListTile(
               leading: MiTextButton(
-                enabled: preferences.hasValue,
                 onPressed: () async {
                   final ok = await showWarningOkCancelDialog(
                     context: context,
-                    content: const Text('Are you sure to clear all preferences?'),
+                    content: const Text('Are you sure to reset all preferences?'),
                   );
                   if (ok) {
-                    _logger.fine('clearing preferences.');
-                    await preferences.value?.clear();
-                    ref.invalidate(preferencesProvider);
+                    await clearPreferences(ref);
                   }
                 },
                 child: const Text('Reset preferences'),

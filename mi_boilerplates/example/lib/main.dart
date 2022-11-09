@@ -167,10 +167,11 @@ final _router = GoRouter(
 );
 
 // テーマ設定
-// ダークテーマの場合、SharedPreferencesから読み込む前に明るい画面が出ないよう、初期値は暗黒にしておく
-final primarySwatchProvider = StateProvider((ref) => Colors.black.toMaterialColor());
-final secondaryColorProvider = StateProvider<Color?>((ref) => Colors.black);
-final _backgroundColorProvider = StateProvider<Color?>((ref) => Colors.black);
+// ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
+const _initColor = Color(0xFF404040);
+final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
+final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
+final _backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
 final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
@@ -178,33 +179,63 @@ final themeAdjustmentProvider = StateProvider((ref) => true);
 final preferencesProvider = FutureProvider((ref) async {
   final logger = Logger('preferenceProvider');
 
-  final value = await SharedPreferences.getInstance();
+  final preferences = await SharedPreferences.getInstance();
 
   Color? colorOrNull(String? data) {
     return data?.let((it) => int.tryParse(it))?.let((it) => Color(it));
   }
 
-  value.getString('primary_swatch').let((it) {
-    logger.fine('primary_swatch=$it');
-    ref.read(primarySwatchProvider.notifier).state =
-        colorOrNull(it)?.toMaterialColor() ?? Colors.indigo;
-  });
+  ref.read(primarySwatchProvider.notifier).state = preferences
+      .getString('primary_swatch')
+      .also((it) => logger.fine('primary_swatch=$it'))
+      .let((it) => colorOrNull(it)?.toMaterialColor() ?? Colors.indigo);
 
-  value.getString('secondary_color').let((it) {
-    logger.fine('secondary_color=$it');
-    ref.read(secondaryColorProvider.notifier).state = colorOrNull(it);
-  });
+  ref.read(secondaryColorProvider.notifier).state = preferences
+      .getString('secondary_color')
+      .also((it) => logger.fine('secondary_color=$it'))
+      .let((it) => colorOrNull(it));
 
   ref.read(_backgroundColorProvider.notifier).state = null;
 
-  value.getString('brightness').let((it) {
-    logger.fine('brightness=$it');
-    ref.read(brightnessProvider.notifier).state =
-        it == 'Brightness.dark' ? Brightness.dark : Brightness.light;
-  });
+  ref.read(brightnessProvider.notifier).state = preferences
+      .getString('brightness')
+      .also((it) => logger.fine('brightness=$it'))
+      .let((it) => it == 'dark' ? Brightness.dark : Brightness.light);
 
-  return value;
+  return preferences;
 });
+
+Future<void> savePreferences(WidgetRef ref) async {
+  final logger = Logger('savePreferences');
+
+  final preferences = ref.read(preferencesProvider).value;
+  if (preferences != null) {
+    preferences.setString(
+      'primary_swatch',
+      (ref.read(primarySwatchProvider).value.toString())
+          .also((it) => logger.fine('primary_swatch=$it')),
+    );
+    preferences.setString(
+      'secondary_color',
+      (ref.read(secondaryColorProvider)?.value)
+          .toString()
+          .also((it) => logger.fine('secondary_color=$it')),
+    );
+    preferences.setString(
+      'brightness',
+      (ref.read(brightnessProvider).isDark ? 'dark' : 'light')
+          .also((it) => logger.fine('brightness=$it')),
+    );
+  }
+}
+
+Future<void> clearPreferences(WidgetRef ref) async {
+  final preferences = ref.read(preferencesProvider).value;
+  if (preferences != null) {
+    await preferences.clear();
+    ref.invalidate(preferencesProvider);
+  }
+}
 
 // main
 
