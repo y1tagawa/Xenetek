@@ -171,7 +171,7 @@ final _router = GoRouter(
 const _initColor = Color(0xFF404040);
 final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
 final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
-final _backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
+final backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
 final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
@@ -195,7 +195,10 @@ final preferencesProvider = FutureProvider((ref) async {
       .also((it) => logger.fine('secondary_color=$it'))
       .let((it) => colorOrNull(it));
 
-  ref.read(_backgroundColorProvider.notifier).state = null;
+  ref.read(backgroundColorProvider.notifier).state = preferences
+      .getString('background_color')
+      .also((it) => logger.fine('background_color=$it'))
+      .let((it) => colorOrNull(it));
 
   ref.read(brightnessProvider.notifier).state = preferences
       .getString('brightness')
@@ -220,6 +223,12 @@ Future<void> savePreferences(WidgetRef ref) async {
       (ref.read(secondaryColorProvider)?.value)
           .toString()
           .also((it) => logger.fine('secondary_color=$it')),
+    );
+    preferences.setString(
+      'background_color',
+      (ref.read(backgroundColorProvider)?.value)
+          .toString()
+          .also((it) => logger.fine('background_color=$it')),
     );
     preferences.setString(
       'brightness',
@@ -256,7 +265,12 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(preferencesProvider);
+
     final primarySwatch = ref.watch(primarySwatchProvider);
+    final secondaryColor = ref.watch(secondaryColorProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
+    final brightness = ref.watch(brightnessProvider);
+
     return Material(
       child: MaterialApp.router(
         routeInformationProvider: _router.routeInformationProvider,
@@ -267,10 +281,14 @@ class MyApp extends ConsumerWidget {
           primarySwatch: primarySwatch,
           colorScheme: ColorScheme.fromSwatch(
             primarySwatch: primarySwatch,
-            backgroundColor: ref.watch(_backgroundColorProvider),
-            accentColor: ref.watch(secondaryColorProvider),
-            brightness: ref.watch(brightnessProvider),
+            accentColor: brightness.isDark ? secondaryColor : null,
+            brightness: brightness,
+          ).let(
+            (it) => it.copyWith(
+              onPrimary: brightness.isDark ? null : backgroundColor,
+            ),
           ),
+          scaffoldBackgroundColor: brightness.isDark ? null : backgroundColor, //
           useMaterial3: ref.watch(useM3Provider),
         ).let((it) => ref.watch(themeAdjustmentProvider) ? it.adjust() : it),
       ),

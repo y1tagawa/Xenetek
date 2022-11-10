@@ -121,6 +121,7 @@ class SettingsPage extends ConsumerWidget {
 
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
 
     final theme = Theme.of(context);
 
@@ -174,6 +175,28 @@ class SettingsPage extends ConsumerWidget {
                     nullable: true,
                     onChanged: (value) {
                       ref.read(secondaryColorProvider.notifier).state = value;
+                    },
+                  );
+                  if (ok) {
+                    await savePreferences(ref);
+                  }
+                },
+              ),
+            ),
+            ListTile(
+              title: const Text('Background color'),
+              trailing: MiIconButton(
+                icon: MiColorChip(
+                  color: backgroundColor,
+                ),
+                onPressed: () async {
+                  final ok = await showColorSelectDialog(
+                    context: context,
+                    title: const Text('Background color'),
+                    initialColor: backgroundColor,
+                    nullable: true,
+                    onChanged: (value) {
+                      ref.read(backgroundColorProvider.notifier).state = value;
                     },
                   );
                   if (ok) {
