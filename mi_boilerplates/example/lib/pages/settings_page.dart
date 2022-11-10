@@ -218,68 +218,65 @@ class SettingsPage extends ConsumerWidget {
             // primarySwatch
             ListTile(
               title: const Text('Primary swatch'),
-              trailing: MiIconButton(
-                icon: MiColorChip(
-                  color: primarySwatch,
-                ),
-                onPressed: () async {
-                  final ok = await showColorSelectDialog(
-                    context: context,
-                    title: const Text('Primary swatch'),
-                    initialColor: primarySwatch,
-                    onChanged: (value) {
-                      ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
-                    },
-                  );
-                  if (ok) {
-                    await savePreferences(ref);
-                  }
-                },
+              trailing: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: MiColorChip(color: primarySwatch),
               ),
+              onTap: () async {
+                final ok = await showColorSelectDialog(
+                  context: context,
+                  title: const Text('Primary swatch'),
+                  initialColor: primarySwatch,
+                  onChanged: (value) {
+                    ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
+                  },
+                );
+                if (ok) {
+                  await savePreferences(ref);
+                }
+              },
             ),
             ListTile(
               title: const Text('Secondary color'),
-              trailing: MiIconButton(
-                icon: MiColorChip(
-                  color: secondaryColor,
-                ),
-                onPressed: () async {
-                  final ok = await showColorSelectDialog(
-                    context: context,
-                    title: const Text('Secondary color'),
-                    initialColor: secondaryColor,
-                    nullable: true,
-                    onChanged: (value) {
-                      ref.read(secondaryColorProvider.notifier).state = value;
-                    },
-                  );
-                  if (ok) {
-                    await savePreferences(ref);
-                  }
-                },
+              trailing: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: MiColorChip(color: secondaryColor),
               ),
+              onTap: () async {
+                final ok = await showColorSelectDialog(
+                  context: context,
+                  title: const Text('Secondary color'),
+                  initialColor: secondaryColor,
+                  nullable: true,
+                  onChanged: (value) {
+                    ref.read(secondaryColorProvider.notifier).state = value;
+                  },
+                );
+                if (ok) {
+                  await savePreferences(ref);
+                }
+              },
             ),
             ListTile(
               title: const Text('Background color'),
-              trailing: MiIconButton(
-                icon: MiColorChip(
-                  color: backgroundColor,
-                ),
-                onPressed: () async {
-                  final ok = await showBackgroundColorSelectDialog(
-                    context: context,
-                    title: const Text('Background color'),
-                    initialColor: backgroundColor,
-                    nullable: true,
-                    onChanged: (value) {
-                      ref.read(backgroundColorProvider.notifier).state = value;
-                    },
-                  );
-                  if (ok) {
-                    await savePreferences(ref);
-                  }
-                },
+              trailing: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: MiColorChip(color: backgroundColor),
               ),
+              onTap: () async {
+                final ok = await showBackgroundColorSelectDialog(
+                  context: context,
+                  title: const Text('Background color'),
+                  initialColor: backgroundColor,
+                  nullable: true,
+                  onChanged: (value) {
+                    ref.read(backgroundColorProvider.notifier).state = value;
+                  },
+                );
+                if (ok) {
+                  await savePreferences(ref);
+                }
+              },
             ),
             CheckboxListTile(
               value: ref.watch(brightnessProvider).isDark,
@@ -304,18 +301,16 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: MiTextButton(
-                onPressed: () async {
-                  final ok = await showWarningOkCancelDialog(
-                    context: context,
-                    content: const Text('Are you sure to reset all preferences?'),
-                  );
-                  if (ok) {
-                    await clearPreferences(ref);
-                  }
-                },
-                child: const Text('Reset preferences'),
-              ),
+              title: const Text('Reset preferences'),
+              onTap: () async {
+                final ok = await showWarningOkCancelDialog(
+                  context: context,
+                  content: const Text('Are you sure to reset all preferences?'),
+                );
+                if (ok) {
+                  await clearPreferences(ref);
+                }
+              },
             ),
             const Divider(),
           ],

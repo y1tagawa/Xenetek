@@ -10,8 +10,8 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'ex_app_bar.dart';
 
 class _SwitchItem {
-  final Icon checkIcon;
-  final Icon uncheckIcon;
+  final Widget checkIcon;
+  final Widget uncheckIcon;
   final Widget title;
   const _SwitchItem({required this.checkIcon, required this.uncheckIcon, required this.title});
 }
@@ -19,23 +19,23 @@ class _SwitchItem {
 const _switchItems = [
   _SwitchItem(
     checkIcon: Icon(Icons.visibility_outlined),
-    uncheckIcon: Icon(Icons.visibility_off_outlined),
+    uncheckIcon: Icon(Icons.disabled_visible_outlined),
     title: Text('Vision'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hearing_outlined),
-    uncheckIcon: Icon(Icons.hearing_disabled_outlined),
+    uncheckIcon: MiScale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
     title: Text('Hearing'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.psychology_outlined),
     uncheckIcon: Icon(Icons.question_mark),
-    title: Text('Mental'),
+    title: Text('Mental health'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.directions_run),
     uncheckIcon: Icon(Icons.airline_seat_flat_outlined),
-    title: Text('Physical'),
+    title: Text('Physical health'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.attach_money_outlined),
