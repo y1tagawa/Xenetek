@@ -265,6 +265,7 @@ void main() async {
 }
 
 class MyApp extends ConsumerWidget {
+  // ignore: unused_field
   static final _logger = Logger((HomePage).toString());
 
   const MyApp({super.key});
@@ -272,6 +273,8 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(preferencesProvider);
+
+    final textTheme = Theme.of(context).textTheme;
 
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
@@ -291,10 +294,19 @@ class MyApp extends ConsumerWidget {
             accentColor: brightness.isDark ? secondaryColor : null,
             brightness: brightness,
           ).let(
+            //
             (it) => it.copyWith(
               onPrimary: brightness.isDark ? null : backgroundColor,
+              onSurface: brightness.isDark ? backgroundColor : null,
             ),
           ),
+          //
+          textTheme: brightness.isDark
+              ? textTheme.apply(
+                  bodyColor: backgroundColor,
+                  displayColor: backgroundColor,
+                )
+              : textTheme,
           scaffoldBackgroundColor: brightness.isDark ? null : backgroundColor, //
           useMaterial3: ref.watch(useM3Provider),
         ).let((it) => ref.watch(themeAdjustmentProvider) ? it.adjust() : it),

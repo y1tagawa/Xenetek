@@ -14,7 +14,7 @@ import '../data/x11_colors.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 
-Future<bool> _showColorSelectDialog({
+Future<bool> _showTabbedColorSelectDialog({
   required BuildContext context,
   Widget? title,
   Color? initialColor,
@@ -33,7 +33,7 @@ Future<bool> _showColorSelectDialog({
       getValue: (ok) => ok,
       content: SizedBox(
         width: MediaQuery.of(context).size.height * 0.8,
-        height: MediaQuery.of(context).size.height * 0.6,
+        height: MediaQuery.of(context).size.height * 0.4,
         child: StatefulBuilder(
           builder: (context, setState) {
             return MiEmbeddedTabView(
@@ -53,6 +53,44 @@ Future<bool> _showColorSelectDialog({
                     ),
                   )
                   .toList(),
+            );
+          },
+        ),
+      ),
+    ),
+  ).then((value) => value ?? false);
+}
+
+Future<bool> _showSimpleColorSelectDialog({
+  required BuildContext context,
+  Widget? title,
+  Color? initialColor,
+  required List<Color?> colors,
+  required List<String> tooltips,
+  void Function(int colorIndex)? onChanged,
+}) async {
+  Color? color = initialColor;
+
+  return await showDialog<bool>(
+    context: context,
+    builder: (context) => MiOkCancelDialog<bool>(
+      icon: MiColorChip(color: color),
+      title: title,
+      getValue: (ok) => ok,
+      content: SizedBox(
+        width: MediaQuery.of(context).size.height * 0.8,
+        height: MediaQuery.of(context).size.height * 0.4,
+        child: StatefulBuilder(
+          builder: (context, setState) {
+            return SingleChildScrollView(
+              child: MiColorGrid(
+                colors: colors,
+                tooltips: tooltips,
+                onChanged: (colorIndex) {
+                  setState(() => color = colors[colorIndex]);
+                  onChanged?.call(colorIndex);
+                },
+              ),
             );
           },
         ),
@@ -86,7 +124,7 @@ Future<bool> showColorSelectDialog({
     jisCommonColorNames,
   ];
 
-  final ok = await _showColorSelectDialog(
+  final ok = await _showTabbedColorSelectDialog(
       context: context,
       title: title,
       initialColor: initialColor,
@@ -95,6 +133,44 @@ Future<bool> showColorSelectDialog({
       tooltips: tooltips,
       onChanged: (tabIndex, colorIndex) {
         onChanged?.call(colors[tabIndex][colorIndex]);
+      });
+  if (!ok) {
+    onChanged?.call(initialColor);
+  }
+  return ok;
+}
+
+Future<bool> showBackgroundColorSelectDialog({
+  required BuildContext context,
+  Widget? title,
+  required Color? initialColor,
+  void Function(Color? value)? onChanged,
+  bool nullable = false,
+}) async {
+  final colors = <Color?>[
+    if (nullable) null,
+    Colors.grey[50],
+    ...Colors.primaries.map((it) => it[50]),
+    Colors.grey[100],
+    ...Colors.primaries.map((it) => it[100]),
+  ];
+
+  final tooltips = [
+    if (nullable) 'null',
+    'grey50',
+    ...primaryColorNames.map((it) => '${it}50'),
+    'grey100',
+    ...primaryColorNames.map((it) => '${it}100'),
+  ];
+
+  final ok = await _showSimpleColorSelectDialog(
+      context: context,
+      title: title,
+      initialColor: initialColor,
+      colors: colors,
+      tooltips: tooltips,
+      onChanged: (colorIndex) {
+        onChanged?.call(colors[colorIndex]);
       });
   if (!ok) {
     onChanged?.call(initialColor);
@@ -190,7 +266,7 @@ class SettingsPage extends ConsumerWidget {
                   color: backgroundColor,
                 ),
                 onPressed: () async {
-                  final ok = await showColorSelectDialog(
+                  final ok = await showBackgroundColorSelectDialog(
                     context: context,
                     title: const Text('Background color'),
                     initialColor: backgroundColor,
