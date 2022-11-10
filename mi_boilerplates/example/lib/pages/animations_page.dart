@@ -125,7 +125,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
         duration: const Duration(milliseconds: 800),
         builder: (_, controller, __) => AnimatedBuilder(
           animation: controller,
-          builder: (context, _) {
+          builder: (_, __) {
             final t = controller.value;
             _logger.fine(t);
             return SizedBox.square(

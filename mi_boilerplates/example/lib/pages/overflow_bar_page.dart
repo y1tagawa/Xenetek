@@ -12,6 +12,7 @@ import 'ex_app_bar.dart';
 /// Overflow bar example page.
 ///
 
+// UTF16＝IconDataとは……
 const _goatIconData = IconData(0x1F410);
 
 const _items = [
@@ -31,10 +32,6 @@ const _items = [
     text: Text('GaraGaraGaraDon'),
   ),
 ];
-
-//
-// OverflowBar trial page.
-//
 
 final _trollHpProvider = StateProvider((ref) => 100);
 

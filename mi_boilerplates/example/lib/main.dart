@@ -23,6 +23,7 @@ import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
 import 'pages/overflow_bar_page.dart';
+import 'pages/progress_indicators_page.dart';
 import 'pages/prominent_top_bar_page.dart';
 import 'pages/radios_page.dart';
 import 'pages/settings_page.dart';
@@ -116,6 +117,12 @@ final _pages = <_PageItem>[
     title: ProminentTopBarPage.title,
     path: '/drawer/prominent_top_bar',
     builder: (_, __) => const ProminentTopBarPage(),
+  ),
+  _PageItem(
+    icon: ProgressIndicatorsPage.icon,
+    title: ProgressIndicatorsPage.title,
+    path: '/progress_indicators',
+    builder: (_, __) => const ProgressIndicatorsPage(),
   ),
   _PageItem(
     icon: RadiosPage.icon,
