@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -66,6 +64,10 @@ class ProgressIndicatorsPage extends ConsumerWidget {
   }
 }
 
+// Determinate tab
+
+final valueProvider = StateProvider((ref) => 0.0);
+
 class _DeterminateTab extends ConsumerWidget {
   // ignore: unused_field
   static final _logger = Logger((_DeterminateTab).toString());
@@ -74,6 +76,8 @@ class _DeterminateTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(valueProvider);
+
     final theme = Theme.of(context);
 
     return Padding(
@@ -81,47 +85,44 @@ class _DeterminateTab extends ConsumerWidget {
         horizontal: 40,
         vertical: 8,
       ),
-      child: MiAnimationController(
-        duration: const Duration(seconds: 4),
-        onInitialized: (controller) {
-          controller.forward();
-        },
-        onCompleted: (controller) {
-          controller.reset();
-          controller.forward();
-        },
-        builder: (_, controller, __) => AnimatedBuilder(
-          animation: controller,
-          builder: (_, __) {
-            final t = math.min(controller.value * 2.0, 1.0);
-            return Column(
-              children: [
-                SizedBox(
-                  height: kToolbarHeight,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: t,
-                      backgroundColor: theme.backgroundColor,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 24,
-                  child: Center(
-                    child: LinearProgressIndicator(
-                      value: t,
-                      backgroundColor: theme.backgroundColor,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: kToolbarHeight,
+            child: Center(
+              child: CircularProgressIndicator(
+                value: value,
+                backgroundColor: theme.backgroundColor,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 24,
+            child: Center(
+              child: LinearProgressIndicator(
+                value: value,
+                backgroundColor: theme.backgroundColor,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: kToolbarHeight,
+            child: Center(
+              child: Slider(
+                value: value,
+                onChanged: (value) {
+                  ref.read(valueProvider.notifier).state = value;
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+// Indeterminate tab
 
 class _IndeterminateTab extends ConsumerWidget {
   // ignore: unused_field
