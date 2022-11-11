@@ -188,7 +188,7 @@ class _ColorSchemeTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
-    //final enabled = ref.watch(enableActionsProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
     final themeAdjustment = ref.watch(themeAdjustmentProvider);
 
     final theme = Theme.of(context);
@@ -200,7 +200,11 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.light,
       ),
-    ).let((it) => themeAdjustment ? it.modifyWith() : it);
+    ).let((it) => themeAdjustment
+        ? it.modifyWith(
+            backgroundColor: backgroundColor,
+          )
+        : it);
 
     final darkTheme = ThemeData(
       primarySwatch: primarySwatch,
@@ -209,7 +213,11 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.dark,
       ),
-    ).let((it) => themeAdjustment ? it.modifyWith() : it);
+    ).let((it) => themeAdjustment
+        ? it.modifyWith(
+            backgroundColor: backgroundColor,
+          )
+        : it);
 
     Widget colorRow(String key, String title) {
       final getter = _themeColorItems[key]!;
@@ -217,9 +225,9 @@ class _ColorSchemeTab extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           MiColorChip(color: getter(lightTheme)),
-          const VerticalDivider(width: 8),
+          const VerticalDivider(width: 3),
           MiColorChip(color: getter(darkTheme)),
-          const VerticalDivider(width: 8),
+          const VerticalDivider(width: 3),
           Text(title),
         ],
       );
@@ -236,11 +244,13 @@ class _ColorSchemeTab extends ConsumerWidget {
         initiallyExpanded: false,
         title: DefaultTextStyle.merge(
           style: TextStyle(color: theme.colorScheme.onSurface),
-          child: Column(
-            children: [
-              Text(title),
-              ...titleKeys.map((key) => colorRow(key, key.replaceAll(prefix, '')))
-            ],
+          child: Expanded(
+            child: Column(
+              children: [
+                Text(title),
+                ...titleKeys.map((key) => colorRow(key, key.replaceAll(prefix, '')))
+              ],
+            ),
           ),
         ),
         children: [

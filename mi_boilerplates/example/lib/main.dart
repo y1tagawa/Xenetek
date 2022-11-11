@@ -274,8 +274,6 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(preferencesProvider);
 
-    final textTheme = Theme.of(context).textTheme;
-
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
@@ -293,12 +291,6 @@ class MyApp extends ConsumerWidget {
             primarySwatch: primarySwatch,
             accentColor: brightness.isDark ? secondaryColor : null,
             brightness: brightness,
-          ).let(
-            //
-            (it) => it.copyWith(
-              onPrimary: brightness.isDark ? null : backgroundColor,
-              onSurface: brightness.isDark ? backgroundColor : null,
-            ),
           ),
           useMaterial3: ref.watch(useM3Provider),
         ).let(
