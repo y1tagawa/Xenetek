@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -64,9 +66,11 @@ class ProgressIndicatorsPage extends ConsumerWidget {
   }
 }
 
+//
 // Determinate tab
+//
 
-final valueProvider = StateProvider((ref) => 0.0);
+final valueProvider = StateProvider((ref) => 0.5);
 
 class _DeterminateTab extends ConsumerWidget {
   // ignore: unused_field
@@ -79,6 +83,12 @@ class _DeterminateTab extends ConsumerWidget {
     final value = ref.watch(valueProvider);
 
     final theme = Theme.of(context);
+    final color = Color.alphaBlend(
+      Colors.white.withOpacity(
+        Curves.easeInCubic.transform(math.min(value * 1.2, 1.0)),
+      ),
+      theme.isDark ? theme.colorScheme.secondary : theme.primaryColorDark,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -101,6 +111,7 @@ class _DeterminateTab extends ConsumerWidget {
             child: Center(
               child: LinearProgressIndicator(
                 value: value,
+                color: color,
                 backgroundColor: theme.backgroundColor,
               ),
             ),
@@ -122,7 +133,9 @@ class _DeterminateTab extends ConsumerWidget {
   }
 }
 
+//
 // Indeterminate tab
+//
 
 class _IndeterminateTab extends ConsumerWidget {
   // ignore: unused_field

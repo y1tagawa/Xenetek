@@ -121,7 +121,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: ProgressIndicatorsPage.icon,
     title: ProgressIndicatorsPage.title,
-    path: '/progress_indicators',
+    path: '/drawer/progress_indicators',
     builder: (_, __) => const ProgressIndicatorsPage(),
   ),
   _PageItem(
@@ -300,16 +300,12 @@ class MyApp extends ConsumerWidget {
               onSurface: brightness.isDark ? backgroundColor : null,
             ),
           ),
-          //
-          textTheme: brightness.isDark
-              ? textTheme.apply(
-                  bodyColor: backgroundColor,
-                  displayColor: backgroundColor,
-                )
-              : textTheme,
-          scaffoldBackgroundColor: brightness.isDark ? null : backgroundColor, //
           useMaterial3: ref.watch(useM3Provider),
-        ).let((it) => ref.watch(themeAdjustmentProvider) ? it.adjust() : it),
+        ).let(
+          (it) => ref.watch(themeAdjustmentProvider)
+              ? it.modifyWith(backgroundColor: backgroundColor)
+              : it,
+        ),
       ),
     );
   }

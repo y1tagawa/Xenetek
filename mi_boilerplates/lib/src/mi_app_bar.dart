@@ -92,7 +92,7 @@ class MiAppBar extends StatelessWidget implements PreferredSizeWidget {
       checkColor: MaterialStateProperty.resolveWith(resolveCheckColor),
     );
 
-    final switchTheme = theme.switchTheme.adjustByColor(
+    final switchTheme = theme.switchTheme.modifyWith(
       thumbColor: theme.useMaterial3
           ? theme.colorScheme.onSurface
           : theme.isDark

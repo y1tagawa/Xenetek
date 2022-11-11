@@ -200,7 +200,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.light,
       ),
-    ).let((it) => themeAdjustment ? it.adjust() : it);
+    ).let((it) => themeAdjustment ? it.modifyWith() : it);
 
     final darkTheme = ThemeData(
       primarySwatch: primarySwatch,
@@ -209,7 +209,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         accentColor: secondaryColor,
         brightness: Brightness.dark,
       ),
-    ).let((it) => themeAdjustment ? it.adjust() : it);
+    ).let((it) => themeAdjustment ? it.modifyWith() : it);
 
     Widget colorRow(String key, String title) {
       final getter = _themeColorItems[key]!;
