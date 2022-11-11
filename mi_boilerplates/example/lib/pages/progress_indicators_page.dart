@@ -87,7 +87,7 @@ class _DeterminateTab extends ConsumerWidget {
       Colors.white.withOpacity(
         Curves.easeInCubic.transform(math.min(value * 1.2, 1.0)),
       ),
-      theme.isDark ? theme.colorScheme.secondary : theme.primaryColorDark,
+      theme.foregroundColor,
     );
 
     return Padding(

@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 extension BoolHelper on bool {
   Brightness get toDark => this ? Brightness.dark : Brightness.light;
@@ -125,8 +126,16 @@ extension ThemeDataHelper on ThemeData {
       checkColor: MaterialStateProperty.resolveWith<Color?>(resolveCheckColor()),
     );
 
-    // TODO: Slider.
-    // https://github.com/flutter/flutter/blob/cc2aedd17aee7203a035a8b3f5968ce040bfbe8f/packages/flutter/lib/src/material/slider.dart#L743
+    // Slider
+    // * ダーク時の色をsecondaryに変更
+    // s.a. https://github.com/flutter/flutter/blob/b7b8b759bc3ab7a80d2576d52f7b05bc1e6e23bd/packages/flutter/lib/src/material/theme_data.dart#L500
+    final secondarySwatch = colorScheme.secondary.toMaterialColor();
+    final sliderTheme_ = SliderThemeData.fromPrimaryColors(
+      primaryColor: isDark ? colorScheme.secondary : primaryColor,
+      primaryColorDark: isDark ? secondarySwatch[700]! : primaryColorDark,
+      primaryColorLight: isDark ? secondarySwatch[100]! : primaryColorLight,
+      valueIndicatorTextStyle: sliderTheme.valueIndicatorTextStyle ?? textTheme.bodyMedium!,
+    );
 
     // ToggleButtons
     // * ダーク時の色をsecondaryに変更
@@ -202,6 +211,11 @@ extension ThemeDataHelper on ThemeData {
           )
         : iconTheme;
 
+    // ProgressIndicators
+    final progressIndicatorTheme_ = progressIndicatorTheme.copyWith(
+      color: isDark ? colorScheme.secondary : null,
+    );
+
     return copyWith(
       colorScheme: colorScheme_,
       textButtonTheme: textButtonTheme_,
@@ -210,6 +224,7 @@ extension ThemeDataHelper on ThemeData {
       checkboxTheme: checkboxTheme_,
       // radioTheme: radioTheme_,
       // switchTheme: switchTheme_,
+      sliderTheme: sliderTheme_,
       toggleButtonsTheme: toggleButtonsTheme_,
       listTileTheme: listTileTheme_,
       expansionTileTheme: expansionTileTheme_,
@@ -222,6 +237,7 @@ extension ThemeDataHelper on ThemeData {
       scaffoldBackgroundColor: isDark ? null : backgroundColor,
       textTheme: textTheme_,
       iconTheme: iconTheme_,
+      progressIndicatorTheme: progressIndicatorTheme_,
     );
   }
 }
