@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -63,7 +64,6 @@ class MenusPage extends ConsumerWidget {
             bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: const SafeArea(
@@ -71,7 +71,7 @@ class MenusPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _PopupMenuTab(),
-                _PopupMenuTab(),
+                _DropdownTab(),
               ],
             ),
           ),
@@ -84,9 +84,9 @@ class MenusPage extends ConsumerWidget {
   }
 }
 
-///
-/// Popup menu tab.
-///
+//
+// Popup menu tab
+//
 
 final _checkedKeysProvider = StateProvider<Set<String>>((ref) => {});
 final _selectedKeyProvider = StateProvider<String?>((ref) => null);
@@ -227,6 +227,102 @@ class _PopupMenuTab extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Dropdown tab
+//
+
+final _dropdownHint = Row(children: const [
+  Icon(Icons.dark_mode_outlined),
+  Icon(Icons.hotel_outlined),
+  SizedBox(width: 8),
+  Icon(Icons.more_horiz),
+]);
+
+final _dropdownItems = <Widget>[
+  Row(children: const [
+    Icon(Icons.breakfast_dining_outlined),
+    Icon(Icons.local_cafe_outlined),
+    SizedBox(width: 8),
+    Text('Breakfast'),
+  ]),
+  Row(children: const [
+    Icon(Icons.set_meal_outlined),
+    Icon(Icons.soup_kitchen_outlined),
+    SizedBox(width: 8),
+    Text('Lunch'),
+  ]),
+  Row(children: const [
+    Icon(Icons.bakery_dining_outlined),
+    Icon(Icons.coffee_outlined),
+    SizedBox(width: 8),
+    Text('Snack'),
+  ]),
+  Row(children: const [
+    Icon(Icons.dinner_dining_outlined),
+    Icon(Icons.sports_bar_outlined),
+    SizedBox(width: 8),
+    Text('Supper'),
+  ]),
+];
+
+const _dropdownIcons = <Widget>[
+  Icon(Icons.accessibility_new_outlined),
+  Icon(Icons.directions_run_outlined),
+  MiScale(scaleX: -1, child: Icon(Icons.directions_run_outlined)),
+  Icon(Icons.dark_mode_outlined),
+];
+
+final _dropdownProvider = StateProvider<int?>((ref) => null);
+
+class _DropdownTab extends ConsumerWidget {
+  static final _logger = Logger((_DropdownTab).toString());
+
+  const _DropdownTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    assert(_dropdownItems.length == _dropdownIcons.length);
+
+    _logger.fine('[i] build');
+    final enabled = ref.watch(enableActionsProvider);
+    final dropdown = ref.watch(_dropdownProvider);
+
+    return Column(
+      children: [
+        // Dropdown menu
+        DropdownButton<int?>(
+          value: dropdown,
+          onChanged: enabled
+              ? (index) {
+                  ref.read(_dropdownProvider.notifier).state = index == 3 ? null : index!;
+                }
+              : null,
+          hint: _dropdownHint,
+          items: _dropdownItems.mapIndexed((index, item) {
+            return DropdownMenuItem<int?>(
+              value: index,
+              child: item,
+            );
+          }).toList(),
+        ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: IconTheme.merge(
+            data: IconThemeData(
+              size: 60,
+              color: Theme.of(context).disabledColor,
+            ),
+            child: _dropdownIcons[dropdown ?? 3],
+          ),
         ),
       ],
     ).also((_) {
