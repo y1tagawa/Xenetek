@@ -90,8 +90,15 @@ class MenusPage extends ConsumerWidget {
 // Popup menu tab
 //
 
-final _checkedProvider = StateProvider((ref) => List<bool>.filled(5, false));
-final _selectedKeyProvider = StateProvider<String?>((ref) => null);
+const _shieldItems = <String, Widget?>{
+  'None': null,
+  'Shield': Icon(Icons.shield_outlined),
+  'Shield+1': Icon(Icons.gpp_good_outlined),
+  'Shield of Snake': Icon(Icons.monetization_on_outlined),
+};
+
+final _equippedProvider = StateProvider((ref) => List<bool>.filled(5, false));
+final _shieldProvider = StateProvider<String>((ref) => 'None');
 
 class _PopupMenuTab extends ConsumerWidget {
   static final _logger = Logger((_PopupMenuTab).toString());
@@ -102,44 +109,39 @@ class _PopupMenuTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
-    final checked = ref.watch(_checkedProvider);
-    final selectedKey = ref.watch(_selectedKeyProvider);
+    final equipped = ref.watch(_equippedProvider);
+    final shield = ref.watch(_shieldProvider);
 
     final theme = Theme.of(context);
-    final width = MediaQuery.of(context).size.width;
 
     return Column(
       children: [
         // Radio menu
-        PopupMenuButton<String?>(
+        PopupMenuButton<String>(
           enabled: enabled,
           tooltip: '',
-          initialValue: selectedKey,
+          initialValue: shield,
           itemBuilder: (context) {
-            return _menuItems.keys.map((key) {
-              return MiRadioPopupMenuItem<String?>(
-                value: key,
-                checked: key == selectedKey,
+            return _shieldItems.entries.map((entry) {
+              return MiRadioPopupMenuItem<String>(
+                value: entry.key,
+                checked: entry.key == shield,
                 child: MiIcon(
-                  icon: _menuItems[key]!,
-                  text: Text(key),
+                  icon: entry.value ?? const Icon(Icons.block_outlined),
+                  text: Text(entry.key),
                 ),
               );
             }).toList();
           },
           onSelected: (key) {
-            ref.read(_selectedKeyProvider.notifier).state = key;
+            ref.read(_shieldProvider.notifier).state = key;
+            ref.read(_equippedProvider.notifier).state =
+                equipped.replaced(4, _shieldItems[key] != null);
           },
           offset: const Offset(1, 0),
           child: ListTile(
             enabled: enabled,
             trailing: const Icon(Icons.more_vert),
-            title: selectedKey != null
-                ? DefaultTextStyle.merge(
-                    style: TextStyle(color: theme.disabledColor),
-                    child: _menuItems[selectedKey]!,
-                  )
-                : null,
           ),
         ),
 
@@ -147,18 +149,20 @@ class _PopupMenuTab extends ConsumerWidget {
         PopupMenuButton<int>(
           enabled: enabled,
           tooltip: '',
-          itemBuilder: (context) => KnightIndicator.items.entries
-              .mapIndexed((index, entry) => MiCheckPopupMenuItem<int>(
-                    value: index,
-                    checked: checked[index],
-                    child: MiIcon(
-                      icon: entry.value,
-                      text: Text(entry.key),
-                    ),
-                  ))
-              .toList(),
+          itemBuilder: (context) =>
+              ['Boots', 'Armour', 'Gauntlets', 'Helmet'].mapIndexed((index, key) {
+            final icon = KnightIndicator.items[key];
+            return MiCheckPopupMenuItem<int>(
+              value: index,
+              checked: equipped[index],
+              child: MiIcon(
+                icon: icon ?? const Icon(Icons.block_outlined),
+                text: Text(key),
+              ),
+            );
+          }).toList(),
           onSelected: (index) {
-            ref.read(_checkedProvider.notifier).state = checked.replaced(index, !checked[index]);
+            ref.read(_equippedProvider.notifier).state = equipped.replaced(index, !equipped[index]);
           },
           offset: const Offset(1, 0),
           child: ListTile(
@@ -166,7 +170,10 @@ class _PopupMenuTab extends ConsumerWidget {
             trailing: const Icon(Icons.more_vert),
             title: IconTheme(
               data: IconThemeData(color: theme.disabledColor),
-              child: KnightIndicator(equipped: checked),
+              child: KnightIndicator(
+                equipped: equipped,
+                shieldIcon: _shieldItems[shield],
+              ),
             ),
           ),
         ),
@@ -177,8 +184,8 @@ class _PopupMenuTab extends ConsumerWidget {
             MiTextButton(
               enabled: enabled,
               onPressed: () {
-                ref.refresh(_checkedProvider);
-                ref.refresh(_selectedKeyProvider);
+                ref.refresh(_equippedProvider).also((_) {});
+                ref.refresh(_shieldProvider).also((_) {});
               },
               child: const MiIcon(
                 icon: Icon(Icons.refresh_outlined),
