@@ -232,16 +232,16 @@ Future<void> savePreferences(WidgetRef ref) async {
           .also((it) => logger.fine('primary_swatch=$it')),
     );
     preferences.setString(
-      'text_color',
-      (ref.read(secondaryColorProvider)?.value)
-          .toString()
-          .also((it) => logger.fine('text_color=$it')),
-    );
-    preferences.setString(
       'secondary_color',
       (ref.read(secondaryColorProvider)?.value)
           .toString()
           .also((it) => logger.fine('secondary_color=$it')),
+    );
+    preferences.setString(
+      'text_color',
+      (ref.read(textColorProvider)?.value) //
+          .toString()
+          .also((it) => logger.fine('text_color=$it')),
     );
     preferences.setString(
       'background_color',

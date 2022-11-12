@@ -228,26 +228,30 @@ class _ToggleButtonsTab extends ConsumerWidget {
                     final url = index == 6 ? _rippleLottieUrl : _sodaLottieUrl;
                     return Padding(
                       padding: const EdgeInsets.all(10),
-                      child: ColoredBox(
-                        color: color.withAlpha(64),
-                        child: MiAnimationController(
-                          builder: (_, controller, __) {
-                            return Lottie.network(
-                              url,
-                              controller: controller,
-                              repeat: true,
-                              onLoaded: (composition) {
-                                _logger.fine('onLoaded: ${composition.duration}');
-                                controller.duration = composition.duration;
-                                controller.reset();
-                                controller.forward();
-                              },
-                            );
-                          },
-                          onCompleted: (controller) {
-                            controller.reset();
-                            controller.forward();
-                          },
+                      child: Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.all(1),
+                        child: ColoredBox(
+                          color: color.withAlpha(128),
+                          child: MiAnimationController(
+                            builder: (_, controller, __) {
+                              return Lottie.network(
+                                url,
+                                controller: controller,
+                                repeat: true,
+                                onLoaded: (composition) {
+                                  _logger.fine('onLoaded: ${composition.duration}');
+                                  controller.duration = composition.duration;
+                                  controller.reset();
+                                  controller.forward();
+                                },
+                              );
+                            },
+                            onCompleted: (controller) {
+                              controller.reset();
+                              controller.forward();
+                            },
+                          ),
                         ),
                       ),
                     );
