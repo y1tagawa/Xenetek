@@ -10,8 +10,8 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'ex_app_bar.dart';
 
 class _SwitchItem {
-  final Icon checkIcon;
-  final Icon uncheckIcon;
+  final Widget checkIcon;
+  final Widget uncheckIcon;
   final Widget title;
   const _SwitchItem({required this.checkIcon, required this.uncheckIcon, required this.title});
 }
@@ -19,23 +19,28 @@ class _SwitchItem {
 const _switchItems = [
   _SwitchItem(
     checkIcon: Icon(Icons.visibility_outlined),
-    uncheckIcon: Icon(Icons.visibility_off_outlined),
+    uncheckIcon: Icon(Icons.disabled_visible_outlined),
     title: Text('Vision'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hearing_outlined),
-    uncheckIcon: Icon(Icons.hearing_disabled_outlined),
+    uncheckIcon: MiScale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
     title: Text('Hearing'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.psychology_outlined),
     uncheckIcon: Icon(Icons.question_mark),
-    title: Text('Memory'),
+    title: Text('Mental health'),
+  ),
+  _SwitchItem(
+    checkIcon: Icon(Icons.calendar_view_month_outlined),
+    uncheckIcon: Icon(Icons.widgets_outlined),
+    title: Text('Dental health'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.directions_run),
     uncheckIcon: Icon(Icons.airline_seat_flat_outlined),
-    title: Text('Health'),
+    title: Text('Physical health'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.attach_money_outlined),
@@ -54,33 +59,10 @@ const _switchItems = [
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hourglass_top_outlined),
-    uncheckIcon: Icon(Icons.hourglass_bottom_outlined),
+    uncheckIcon: Icon(Icons.hourglass_empty_outlined),
     title: Text('Life time'),
   ),
 ];
-
-class _ToggleIcon extends StatelessWidget {
-  final bool checked;
-  final Widget checkIcon;
-  final Widget uncheckIcon;
-
-  const _ToggleIcon({
-    super.key,
-    required this.checked,
-    required this.checkIcon,
-    required this.uncheckIcon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      duration: const Duration(milliseconds: 300),
-      crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      firstChild: checkIcon,
-      secondChild: uncheckIcon,
-    );
-  }
-}
 
 final _switchProvider = StateProvider((ref) => List.filled(_switchItems.length, true));
 
@@ -93,21 +75,20 @@ class SwitchesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final switchValueStates = ref.watch(_switchProvider.state);
-    final switchValues = switchValueStates.state;
+    final switches = ref.watch(_switchProvider);
 
     final theme = Theme.of(context);
 
-    final myHp = switchValues.where((value) => value).length;
+    final myHp = switches.where((value) => value).length;
 
     void reset(bool value) {
-      switchValueStates.state = List.filled(_switchItems.length, value);
+      ref.read(_switchProvider.notifier).state = List.filled(_switchItems.length, value);
     }
 
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        icon: _ToggleIcon(
+        icon: MiToggleIcon(
           checked: enableActions,
           checkIcon: icon,
           uncheckIcon: const Icon(Icons.toggle_off_outlined),
@@ -145,21 +126,22 @@ class SwitchesPage extends ConsumerWidget {
                 shrinkWrap: true,
                 children: _switchItems.mapIndexed(
                   (index, item) {
-                    final switchValue = switchValues[index];
+                    final switchValue = switches[index];
                     return MiSwitchListTile(
-                      enabled: enableActions,
-                      value: switchValue,
-                      title: MiIcon(
-                        icon: _ToggleIcon(
-                          checked: switchValue,
-                          checkIcon: item.checkIcon,
-                          uncheckIcon: item.uncheckIcon,
+                        enabled: enableActions,
+                        value: switchValue,
+                        title: MiIcon(
+                          icon: MiToggleIcon(
+                            checked: switchValue,
+                            checkIcon: item.checkIcon,
+                            uncheckIcon: item.uncheckIcon,
+                          ),
+                          text: item.title,
                         ),
-                        text: item.title,
-                      ),
-                      onChanged: (value) =>
-                          switchValueStates.state = switchValues.replaced(index, value),
-                    );
+                        onChanged: (value) {
+                          ref.read(_switchProvider.notifier).state =
+                              switches.replaced(index, value);
+                        });
                   },
                 ).toList(),
               ),

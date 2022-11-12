@@ -4,7 +4,20 @@
 
 import 'package:flutter/material.dart';
 
+int? _tryAsInt(dynamic value) {
+  return value is int ? value : null;
+}
+
 extension ColorHelper on Color {
+  // static final _colorPattern = RegExp(r'^Color\((\w+)\)$');
+  // static Color? fromString(String input) {
+  //   return _colorPattern
+  //       .firstMatch(input)
+  //       ?.group(1)
+  //       ?.let((it) => int.tryParse(it))
+  //       ?.let((it) => Color(it));
+  // }
+
   /// [value]を表す16進数文字列を返す。
   String toHex() => value.toRadixString(16).toUpperCase();
 
@@ -46,5 +59,53 @@ extension ColorHelper on Color {
       }
     }
     return -1;
+  }
+}
+
+extension MaterialColorHelper on MaterialColor {
+  ///
+  static MaterialColor? tryParseJson(Map<String, dynamic> json) {
+    final value = _tryAsInt(json['value']);
+    if (value == null) return null;
+    final shade50 = _tryAsInt(json['50']);
+    final shade100 = _tryAsInt(json['100']);
+    final shade200 = _tryAsInt(json['200']);
+    final shade300 = _tryAsInt(json['300']);
+    final shade400 = _tryAsInt(json['400']);
+    final shade500 = _tryAsInt(json['500']);
+    final shade600 = _tryAsInt(json['600']);
+    final shade700 = _tryAsInt(json['700']);
+    final shade800 = _tryAsInt(json['800']);
+    final shade900 = _tryAsInt(json['900']);
+    final swatch = <int, Color>{
+      if (shade50 != null) 50: Color(shade50),
+      if (shade100 != null) 100: Color(shade100),
+      if (shade200 != null) 200: Color(shade200),
+      if (shade300 != null) 300: Color(shade300),
+      if (shade400 != null) 400: Color(shade400),
+      if (shade500 != null) 500: Color(shade500),
+      if (shade600 != null) 600: Color(shade600),
+      if (shade700 != null) 700: Color(shade700),
+      if (shade800 != null) 800: Color(shade800),
+      if (shade900 != null) 900: Color(shade900),
+    };
+    return MaterialColor(value, swatch);
+  }
+
+  ///
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'value': value,
+      if (this[50] != null) '50': this[50]!.value,
+      if (this[100] != null) '100': this[100]!.value,
+      if (this[200] != null) '200': this[200]!.value,
+      if (this[300] != null) '300': this[300]!.value,
+      if (this[400] != null) '400': this[400]!.value,
+      if (this[500] != null) '500': this[500]!.value,
+      if (this[600] != null) '600': this[600]!.value,
+      if (this[700] != null) '700': this[700]!.value,
+      if (this[800] != null) '800': this[800]!.value,
+      if (this[900] != null) '900': this[900]!.value,
+    };
   }
 }

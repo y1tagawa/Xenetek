@@ -9,7 +9,6 @@ import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../main.dart';
 import 'ex_app_bar.dart';
 
 class RadiosPage extends ConsumerWidget {
@@ -83,7 +82,11 @@ class _RadioItem {
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.shield_outlined),
+    iconBuilder: (checked) => MiToggleIcon(
+      checked: checked,
+      checkIcon: const Icon(Icons.gpp_good_outlined),
+      uncheckIcon: const Icon(Icons.shield_outlined),
+    ),
     text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
@@ -95,8 +98,11 @@ final _radioItems = <_Class, _RadioItem>{
     text: const Text('Mage'),
   ),
   _Class.thief: _RadioItem(
-    iconBuilder: (checked) =>
-        checked ? const Icon(Icons.lock_open) : const Icon(Icons.lock_outlined),
+    iconBuilder: (checked) => MiToggleIcon(
+      checked: checked,
+      checkIcon: const Icon(Icons.lock_open),
+      uncheckIcon: const Icon(Icons.lock_outlined),
+    ),
     text: const Text('Thief'),
   ),
 };
@@ -115,22 +121,27 @@ class _RadiosTab extends ConsumerWidget {
 
     return Column(
       children: [
-        ..._radioItems.keys.map(
-          (key) {
-            final item = _radioItems[key]!;
-            return MiRadioListTile<_Class>(
-              enabled: enableActions,
-              value: key,
-              groupValue: class_,
-              title: MiIcon(
-                icon: item.iconBuilder(key == class_),
-                text: item.text,
-              ),
-              onChanged: (value) {
-                ref.read(_classProvider.state).state = value!;
+        Flexible(
+          child: ListView(
+            shrinkWrap: true,
+            children: _radioItems.keys.map(
+              (key) {
+                final item = _radioItems[key]!;
+                return MiRadioListTile<_Class>(
+                  enabled: enableActions,
+                  value: key,
+                  groupValue: class_,
+                  title: MiIcon(
+                    icon: item.iconBuilder(key == class_),
+                    text: item.text,
+                  ),
+                  onChanged: (value) {
+                    ref.read(_classProvider.notifier).state = value!;
+                  },
+                );
               },
-            );
-          },
+            ).toList(),
+          ),
         ),
         const Divider(),
         Padding(
@@ -151,6 +162,12 @@ class _RadiosTab extends ConsumerWidget {
 //
 // Toggle buttons tab
 //
+
+// https://lottiefiles.com/301-search-location
+const _rippleLottieUrl =
+    'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
+// https://lottiefiles.com/94-soda-loader
+const _sodaLottieUrl = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
 
 const _toggleItems = <Widget>[
   Text('Soda'),
@@ -185,13 +202,6 @@ class _ToggleButtonsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
     final selected = ref.watch(_selectedProvider);
-    final flags = _toggleItems.mapIndexed((index, _) => index == selected).toList();
-
-    final productName = ref.watch(productNameProvider).when(
-          data: (value) => value,
-          error: (_, __) => null,
-          loading: () => null,
-        );
 
     return MiDefaultTabController(
       length: _toggleItems.length,
@@ -199,70 +209,50 @@ class _ToggleButtonsTab extends ConsumerWidget {
       builder: (context) {
         return Column(
           children: [
-            // 0..3
-            ToggleButtons(
-              isSelected: flags.take(4).toList(),
-              onPressed: enableActions
-                  ? (index) {
-                      ref.read(_selectedProvider.state).state = index;
-                      DefaultTabController.of(context)?.index = index;
-                    }
-                  : null,
-              children: _toggleItems.take(4).toList(),
-            ),
-            // 4..7
-            Transform.translate(
-              offset: const Offset(0, -1),
-              child: ToggleButtons(
-                isSelected: flags.skip(4).toList(),
-                onPressed: enableActions
-                    ? (index) {
-                        ref.read(_selectedProvider.state).state = index + 4;
-                        DefaultTabController.of(context)?.index = index + 4;
-                      }
-                    : null,
-                children: _toggleItems.skip(4).toList(),
-              ),
+            MiRadioToggleButtons(
+              enabled: enableActions,
+              initiallySelected: selected,
+              split: MediaQuery.of(context).orientation == Orientation.landscape ? null : 3,
+              renderBorder: false,
+              onPressed: (index) {
+                ref.read(_selectedProvider.notifier).state = index;
+                DefaultTabController.of(context)?.index = index;
+              },
+              children: _toggleItems,
             ),
             const Divider(),
             Expanded(
               child: TabBarView(
                 children: _toggleItemColors.mapIndexed(
                   (index, color) {
-                    String url;
-                    switch (index) {
-                      case 6: // Milk
-                        url =
-                            'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
-                        break;
-                      default:
-                        url = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
-                        break;
-                    }
-                    return Container(
-                      color: color.withAlpha(64),
-                      child: MiAnimationController(
-                        builder: (_, controller, __) {
-                          return Lottie.network(
-                            url,
-                            controller: controller,
-                            repeat: true,
-                            onLoaded: (composition) {
-                              _logger.fine('onLoaded: ${composition.duration}');
-                              if (productName == 'S6-KC') {
-                                controller.duration = composition.duration * 10; // Mi Android One.
-                              } else {
-                                controller.duration = composition.duration;
-                              }
+                    final url = index == 6 ? _rippleLottieUrl : _sodaLottieUrl;
+                    return Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.all(1),
+                        child: ColoredBox(
+                          color: color.withAlpha(128),
+                          child: MiAnimationController(
+                            builder: (_, controller, __) {
+                              return Lottie.network(
+                                url,
+                                controller: controller,
+                                repeat: true,
+                                onLoaded: (composition) {
+                                  _logger.fine('onLoaded: ${composition.duration}');
+                                  controller.duration = composition.duration;
+                                  controller.reset();
+                                  controller.forward();
+                                },
+                              );
+                            },
+                            onCompleted: (controller) {
                               controller.reset();
                               controller.forward();
                             },
-                          );
-                        },
-                        onCompleted: (controller) {
-                          controller.reset();
-                          controller.forward();
-                        },
+                          ),
+                        ),
                       ),
                     );
                   },

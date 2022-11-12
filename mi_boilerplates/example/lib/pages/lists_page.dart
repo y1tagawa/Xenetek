@@ -129,11 +129,11 @@ class _DismissibleListTab extends ConsumerWidget {
       int index,
       StateProvider<List<String>> toProvider,
     ) {
-      final from = ref.read(fromProvider.state);
-      final to = ref.read(toProvider.state);
-      final value = from.state[index];
-      from.state = from.state.removedAt(index);
-      to.state = to.state.added(value);
+      final from = ref.read(fromProvider).toList();
+      final to = ref.read(toProvider).toList();
+      to.add(from.removeAt(index));
+      ref.read(fromProvider.notifier).state = from;
+      ref.read(toProvider.notifier).state = to;
     }
 
     return Column(
@@ -144,8 +144,8 @@ class _DismissibleListTab extends ConsumerWidget {
             MiTextButton(
               enabled: enabled,
               onPressed: () {
-                ref.refresh(_leftListProvider);
-                ref.refresh(_rightListProvider);
+                ref.invalidate(_leftListProvider);
+                ref.invalidate(_rightListProvider);
               },
               child: const MiIcon(
                 icon: Icon(Icons.refresh_outlined),

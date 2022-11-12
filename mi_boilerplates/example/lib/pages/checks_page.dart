@@ -8,6 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'knight_indicator.dart';
 
 //
 // Checkbox examples page.
@@ -134,63 +135,65 @@ class _CheckboxTab extends ConsumerWidget {
     final tallyIcon = _tallyIcons[(box ? 1 : 0) + (text ? 2 : 0) + (check ? 4 : 0)];
 
     void setTally(bool value) {
-      ref.read(_boxCheckProvider.state).state = value;
-      ref.read(_textCheckProvider.state).state = value;
-      ref.read(_checkCheckProvider.state).state = value;
+      ref.read(_boxCheckProvider.notifier).state = value;
+      ref.read(_textCheckProvider.notifier).state = value;
+      ref.read(_checkCheckProvider.notifier).state = value;
     }
 
-    return Column(
-      children: [
-        MiExpansionTile(
-          enabled: enableActions,
-          initiallyExpanded: true,
-          // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
-          leading: Checkbox(
-            value: (box && text && check)
-                ? true
-                : (box || text || check)
-                    ? null
-                    : false,
-            tristate: true,
-            onChanged: enableActions
-                ? (value) {
-                    setTally(value != null);
-                  }
-                : null,
-          ),
-          title: MiIcon(
-            icon: tallyIcon,
-            text: const Text('Tally'),
-          ),
-          children: _checkItems.map(
-            (item) {
-              return CheckboxListTile(
-                enabled: enableActions,
-                value: ref.read(item.provider),
-                contentPadding: const EdgeInsets.only(left: 28),
-                title: MiIcon(
-                  icon: item.icon,
-                  text: item.text,
-                ),
-                controlAffinity: ListTileControlAffinity.leading,
-                onChanged: (value) {
-                  ref.read(item.provider.state).state = value!;
-                },
-              );
-            },
-          ).toList(),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              size: 60,
-              color: Theme.of(context).disabledColor,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          MiExpansionTile(
+            enabled: enableActions,
+            initiallyExpanded: true,
+            // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
+            leading: Checkbox(
+              value: (box && text && check)
+                  ? true
+                  : (box || text || check)
+                      ? null
+                      : false,
+              tristate: true,
+              onChanged: enableActions
+                  ? (value) {
+                      setTally(value != null);
+                    }
+                  : null,
             ),
-            child: tallyIcon,
+            title: MiIcon(
+              icon: tallyIcon,
+              text: const Text('Tally'),
+            ),
+            children: _checkItems.map(
+              (item) {
+                return CheckboxListTile(
+                  enabled: enableActions,
+                  value: ref.read(item.provider),
+                  contentPadding: const EdgeInsets.only(left: 28),
+                  title: MiIcon(
+                    icon: item.icon,
+                    text: item.text,
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  onChanged: (value) {
+                    ref.read(item.provider.notifier).state = value!;
+                  },
+                );
+              },
+            ).toList(),
           ),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme.merge(
+              data: IconThemeData(
+                size: 60,
+                color: Theme.of(context).disabledColor,
+              ),
+              child: tallyIcon,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -199,64 +202,8 @@ class _CheckboxTab extends ConsumerWidget {
 // Toggle buttons tab
 //
 
-class _ToggleItem {
-  final Widget icon;
-  final String text;
-  const _ToggleItem({
-    required this.icon,
-    required this.text,
-  });
-}
-
-const _helmetIcon = Icon(Icons.balcony_outlined);
-const _armourIcon = MiScale(
-  scale: 1.2,
-  child: MiRotate(
-    angleDegree: 90.0,
-    child: Icon(Icons.bento_outlined),
-  ),
-);
-const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
-const _rGauntletIcon = MiScale(scaleX: -1, child: _lGauntletIcon);
-const _lBootIcon = Icon(Icons.roller_skating_outlined);
-const _rBootIcon = MiScale(scaleX: -1, child: _lBootIcon);
-const _shieldIcon = Icon(Icons.shield_outlined);
-const _faceIcon = Icon(Icons.child_care_outlined);
-const _rHandIcon = MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
-const _lHandIcon = MiScale(scaleX: -1, child: _rHandIcon);
-const _spaceIcon = Icon(null);
-
-const _toggleItems = <_ToggleItem>[
-  _ToggleItem(
-    icon: MiRow(
-      spacing: 0,
-      children: [_rBootIcon, _lBootIcon],
-    ),
-    text: 'Boots',
-  ),
-  _ToggleItem(
-    icon: _armourIcon,
-    text: 'Armour',
-  ),
-  _ToggleItem(
-    icon: MiRow(
-      spacing: 0,
-      children: [_rGauntletIcon, _lGauntletIcon],
-    ),
-    text: 'Gauntlets',
-  ),
-  _ToggleItem(
-    icon: _helmetIcon,
-    text: 'Helmet',
-  ),
-  _ToggleItem(
-    icon: _shieldIcon,
-    text: 'Shield',
-  ),
-];
-
-final _selectedProvider =
-    StateProvider<List<bool>>((ref) => List.filled(_toggleItems.length, false));
+final _toggleProvider =
+    StateProvider<List<bool>>((ref) => List.filled(KnightIndicator.items.length, false));
 
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_ToggleButtonsTab).toString());
@@ -266,73 +213,41 @@ class _ToggleButtonsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final selected = ref.watch(_selectedProvider);
-    _logger.fine(selected.length);
+    final toggle = ref.watch(_toggleProvider);
+    _logger.fine(toggle.length);
 
-    final myAc = 10 - (selected.where((value) => value).length) * 2;
-
-    return Column(
-      children: [
-        ToggleButtons(
-          isSelected: selected,
-          onPressed: enableActions
-              ? (index) {
-                  ref.read(_selectedProvider.state).state =
-                      selected.replaced(index, !selected[index]);
-                }
-              : null,
-          children: _toggleItems
-              .map(
-                (item) => MiIcon(
-                  icon: item.icon,
-                  tooltip: item.text,
-                ),
-              )
-              .toList(),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (selected[3]) _helmetIcon else _faceIcon,
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (selected[2])
-                      const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
-                    else
-                      const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
-                    if (selected[1]) _armourIcon else _spaceIcon,
-                    if (selected[4])
-                      const MiTranslate(offset: Offset(-4, 0), child: _shieldIcon)
-                    else if (selected[2])
-                      const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
-                    else
-                      const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
-                  ],
-                ),
-                if (myAc <= -10) const Text('AC LO') else Text('AC $myAc')
-              ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ToggleButtons(
+            isSelected: toggle,
+            onPressed: enableActions
+                ? (index) {
+                    ref.read(_toggleProvider.notifier).state =
+                        toggle.replaced(index, !toggle[index]);
+                  }
+                : null,
+            children: KnightIndicator.items.entries
+                .map(
+                  (entry) => MiIcon(
+                    icon: entry.value,
+                    tooltip: entry.key,
+                  ),
+                )
+                .toList(),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme.merge(
+              data: IconThemeData(
+                color: Theme.of(context).disabledColor,
+              ),
+              child: KnightIndicator(equipped: toggle),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

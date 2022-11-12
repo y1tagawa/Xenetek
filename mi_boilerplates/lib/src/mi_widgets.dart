@@ -71,7 +71,6 @@ extension SetHelper<T> on Set<T> {
 /// ラベル
 ///
 /// [icon]がnullの場合、その部分は空白となる。
-
 class MiIcon extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onTap;
@@ -146,7 +145,6 @@ class MiIcon extends StatelessWidget {
 /// カラーチップ
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
-
 class MiColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
@@ -188,6 +186,32 @@ class MiColorChip extends StatelessWidget {
       spacing: spacing,
       text: text,
       tooltip: tooltip,
+    );
+  }
+}
+
+/// トグルアイコン
+class MiToggleIcon extends StatelessWidget {
+  final bool checked;
+  final Widget checkIcon;
+  final Widget uncheckIcon;
+  final Duration duration;
+
+  const MiToggleIcon({
+    super.key,
+    required this.checked,
+    required this.checkIcon,
+    required this.uncheckIcon,
+    this.duration = const Duration(milliseconds: 300),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedCrossFade(
+      duration: duration,
+      crossFadeState: checked ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      firstChild: checkIcon,
+      secondChild: uncheckIcon,
     );
   }
 }

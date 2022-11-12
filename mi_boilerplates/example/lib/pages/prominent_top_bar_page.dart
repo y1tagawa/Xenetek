@@ -75,21 +75,21 @@ class ProminentTopBarPage extends ConsumerWidget {
             CheckboxListTile(
               value: prominent,
               onChanged: (value) {
-                ref.read(prominentProvider.state).state = value!;
+                ref.read(prominentProvider.notifier).state = value!;
               },
               title: const Text('Prominent'),
             ),
             CheckboxListTile(
               value: tabbed,
               onChanged: (value) {
-                ref.read(_tabbedProvider.state).state = value!;
+                ref.read(_tabbedProvider.notifier).state = value!;
               },
               title: const Text('Tabbed'),
             ),
             CheckboxListTile(
               value: centerTitle,
               onChanged: (value) {
-                ref.read(_centerTitleProvider.state).state = value!;
+                ref.read(_centerTitleProvider.notifier).state = value!;
               },
               title: const Text('Center title'),
             ),
@@ -111,7 +111,7 @@ class ProminentTopBarPage extends ConsumerWidget {
                         )
                       : const Icon(Icons.block_outlined),
                   onChanged: (value) {
-                    ref.read(_imageProvider.state).state = image_;
+                    ref.read(_imageProvider.notifier).state = image_;
                   }),
             ),
           ],

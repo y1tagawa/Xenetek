@@ -9,7 +9,6 @@ import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../main.dart';
 import 'ex_app_bar.dart';
 
 //
@@ -121,20 +120,12 @@ class _AnimatedBuilderTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final productName = ref.watch(productNameProvider).when(
-          data: (value) => value,
-          error: (_, __) => null,
-          loading: () => null,
-        );
-
     return Center(
       child: MiAnimationController(
-        duration: productName == 'S6-KC'
-            ? const Duration(seconds: 80) // Mi Android One.
-            : const Duration(milliseconds: 800),
+        duration: const Duration(milliseconds: 800),
         builder: (_, controller, __) => AnimatedBuilder(
           animation: controller,
-          builder: (context, _) {
+          builder: (_, __) {
             final t = controller.value;
             _logger.fine(t);
             return SizedBox.square(
@@ -181,8 +172,13 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 // Lottie tab
 //
-// s.a. https://pub.dev/packages/lottie
+// https://lottiefiles.com/lottiefilez
+// https://pub.dev/packages/lottie
 //
+
+//// https://lottiefiles.com/99-bell
+// https://lottiefiles.com/11458-empty
+const _lottieUrl = 'https://assets3.lottiefiles.com/packages/lf20_tDw3lP/empty_03.json';
 
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
@@ -193,28 +189,16 @@ class _LottieTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final productName = ref.watch(productNameProvider).when(
-          data: (value) => value,
-          error: (_, __) => null,
-          loading: () => null,
-        );
-
-    _logger.fine('productName=[$productName]');
-
     return Center(
       child: MiAnimationController(
         builder: (_, controller, __) {
           return Lottie.network(
-            'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/Mobilo/A.json',
+            _lottieUrl,
             controller: controller,
             repeat: false,
             onLoaded: (composition) {
               _logger.fine('onLoaded: ${composition.duration}');
-              if (productName == 'S6-KC') {
-                controller.duration = composition.duration * 10; // Mi Android One.
-              } else {
-                controller.duration = composition.duration;
-              }
+              controller.duration = composition.duration;
               controller.reset();
               controller.forward();
             },
@@ -225,91 +209,6 @@ class _LottieTab extends ConsumerWidget {
           controller.forward();
         },
       ),
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
-//
-// Animated icons catalogue tab
-//
-
-const _animatedIcons = <AnimatedIconData>[
-  AnimatedIcons.arrow_menu,
-  AnimatedIcons.close_menu,
-  AnimatedIcons.ellipsis_search,
-  AnimatedIcons.event_add,
-  AnimatedIcons.home_menu,
-  AnimatedIcons.list_view,
-  AnimatedIcons.menu_arrow,
-  AnimatedIcons.menu_close,
-  AnimatedIcons.menu_home,
-  AnimatedIcons.pause_play,
-  AnimatedIcons.play_pause,
-  AnimatedIcons.search_ellipsis,
-  AnimatedIcons.view_list,
-];
-
-const _animatedIconNames = [
-  'arrow_menu',
-  'close_menu',
-  'ellipsis_search',
-  'event_add',
-  'home_menu',
-  'list_view',
-  'menu_arrow',
-  'menu_close',
-  'menu_home',
-  'pause_play',
-  'play_pause',
-  'search_ellipsis',
-  'view_list',
-];
-
-final _animatedIconDirections = List<bool>.generate(_animatedIcons.length, (_) => true);
-
-class _AnimatedIconsTab extends ConsumerWidget {
-  static final _logger = Logger((_AnimatedIconsTab).toString());
-
-  const _AnimatedIconsTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    assert(_animatedIcons.length == _animatedIconNames.length);
-    _logger.fine('[i] build');
-
-    final theme = Theme.of(context);
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ..._animatedIcons.mapIndexed(
-          (index, data) => MiAnimationController(
-            builder: (_, controller, __) {
-              return Tooltip(
-                message: _animatedIconNames[index],
-                child: AnimatedIcon(
-                  icon: data,
-                  progress: controller,
-                  size: 48,
-                  color: theme.colorScheme.background,
-                ),
-              );
-            },
-            onTap: (controller) {
-              final direction = _animatedIconDirections[index];
-              if (direction) {
-                controller.forward(from: controller.value);
-              } else {
-                controller.reverse(from: controller.value);
-              }
-              _animatedIconDirections[index] = !direction;
-            },
-          ),
-        ),
-      ],
     ).also((_) {
       _logger.fine('[o] build');
     });

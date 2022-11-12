@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:async/async.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'knight_indicator.dart';
 
 ///
 /// Menus example page.
@@ -63,7 +66,6 @@ class MenusPage extends ConsumerWidget {
             bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: const SafeArea(
@@ -71,7 +73,7 @@ class MenusPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _PopupMenuTab(),
-                _PopupMenuTab(),
+                _DropdownTab(),
               ],
             ),
           ),
@@ -84,12 +86,19 @@ class MenusPage extends ConsumerWidget {
   }
 }
 
-///
-/// Popup menu tab.
-///
+//
+// Popup menu tab
+//
 
-final _checkedKeysProvider = StateProvider<Set<String>>((ref) => {});
-final _selectedKeyProvider = StateProvider<String?>((ref) => null);
+const _shieldItems = <String, Widget?>{
+  'None': null,
+  'Shield': Icon(Icons.shield_outlined),
+  'Shield+1': Icon(Icons.gpp_good_outlined),
+  'Shield of Snake': Icon(Icons.monetization_on_outlined),
+};
+
+final _equippedProvider = StateProvider((ref) => List<bool>.filled(5, false));
+final _shieldProvider = StateProvider<String>((ref) => 'None');
 
 class _PopupMenuTab extends ConsumerWidget {
   static final _logger = Logger((_PopupMenuTab).toString());
@@ -100,116 +109,84 @@ class _PopupMenuTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
-    final checkedKeys = ref.watch(_checkedKeysProvider);
-    final selectedKey = ref.watch(_selectedKeyProvider);
+    final equipped = ref.watch(_equippedProvider);
+    final shield = ref.watch(_shieldProvider);
 
     final theme = Theme.of(context);
-    final width = MediaQuery.of(context).size.width;
 
     return Column(
       children: [
-        // Dropdown menu
-        DropdownButton<String?>(
-          value: selectedKey,
-          onChanged: enabled
-              ? (key) {
-                  ref.read(_selectedKeyProvider.state).state = key;
-                }
-              : null,
-          items: _menuItems.keys.map((key) {
-            return DropdownMenuItem<String?>(
-              value: key,
-              child: MiIcon(
-                icon: _menuItems[key]!,
-                text: Text(key),
-              ),
-            );
-          }).toList(),
-        ),
-
-        // Radio menu
-        PopupMenuButton<String?>(
-          enabled: enabled,
-          tooltip: '',
-          initialValue: selectedKey,
-          itemBuilder: (context) {
-            return _menuItems.keys.map((key) {
-              return MiRadioPopupMenuItem<String?>(
-                value: key,
-                checked: key == selectedKey,
-                child: MiIcon(
-                  icon: _menuItems[key]!,
-                  text: Text(key),
+        Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: IconTheme(
+                data: IconThemeData(color: theme.disabledColor),
+                child: KnightIndicator(
+                  equipped: equipped,
+                  shieldIcon: _shieldItems[shield],
                 ),
-              );
-            }).toList();
-          },
-          onSelected: (key) {
-            ref.read(_selectedKeyProvider.state).state = key;
-          },
-          offset: const Offset(1, 0),
-          child: ListTile(
-            enabled: enabled,
-            trailing: const Icon(Icons.more_vert),
-            title: selectedKey != null
-                ? DefaultTextStyle.merge(
-                    style: TextStyle(color: theme.disabledColor),
-                    child: _menuItems[selectedKey]!,
-                  )
-                : null,
-          ),
-        ),
-
-        // Check menu
-        PopupMenuButton<String?>(
-          enabled: enabled,
-          tooltip: '',
-          itemBuilder: (context) {
-            return _menuItems.keys.map((key) {
-              return MiCheckPopupMenuItem<String?>(
-                value: key,
-                checked: checkedKeys.contains(key),
-                child: MiIcon(
-                  icon: _menuItems[key]!,
-                  text: Text(key),
-                ),
-              );
-            }).toList();
-          },
-          onSelected: (key) {
-            ref.read(_checkedKeysProvider.state).state =
-                checkedKeys.contains(key!) ? checkedKeys.removed(key) : checkedKeys.added(key);
-          },
-          offset: const Offset(1, 0),
-          child: ListTile(
-            enabled: enabled,
-            trailing: const Icon(Icons.more_vert),
-            title: DefaultTextStyle.merge(
-              style: TextStyle(color: theme.disabledColor),
-              child: Wrap(
-                children: _menuItems.keys
-                    .where((key) => checkedKeys.contains(key))
-                    .map((key) => _menuItems[key]!)
-                    .toList(),
               ),
             ),
-          ),
-        ),
-
-        // Toggle buttons
-        ToggleButtons(
-          isSelected: _menuItems.keys.map((key) => checkedKeys.contains(key)).toList(),
-          onPressed: (index) {
-            final key = _menuItems.keys.elementAt(index);
-            ref.read(_checkedKeysProvider.state).state =
-                checkedKeys.contains(key) ? checkedKeys.removed(key) : checkedKeys.added(key);
-          },
-          constraints: BoxConstraints(maxWidth: width / (_menuItems.length + 1)),
-          children: _menuItems.keys.map(
-            (key) {
-              return _menuItems[key]!;
-            },
-          ).toList(),
+            Column(
+              children: [
+                // Check menu
+                PopupMenuButton<int>(
+                  enabled: enabled,
+                  tooltip: '',
+                  itemBuilder: (context) =>
+                      ['Boots', 'Armour', 'Gauntlets', 'Helmet'].mapIndexed((index, key) {
+                    final icon = KnightIndicator.items[key];
+                    return MiCheckPopupMenuItem<int>(
+                      value: index,
+                      checked: equipped[index],
+                      child: MiIcon(
+                        icon: icon ?? const Icon(Icons.block_outlined),
+                        text: Text(key),
+                      ),
+                    );
+                  }).toList(),
+                  onSelected: (index) {
+                    ref.read(_equippedProvider.notifier).state =
+                        equipped.replaced(index, !equipped[index]);
+                  },
+                  offset: const Offset(1, 0),
+                  child: ListTile(
+                    enabled: enabled,
+                    trailing: const Icon(Icons.more_vert),
+                  ),
+                ),
+                // Radio menu
+                PopupMenuButton<String>(
+                  enabled: enabled,
+                  tooltip: '',
+                  initialValue: shield,
+                  itemBuilder: (context) {
+                    return _shieldItems.entries.map((entry) {
+                      return MiRadioPopupMenuItem<String>(
+                        value: entry.key,
+                        checked: entry.key == shield,
+                        child: MiIcon(
+                          icon: entry.value ?? const Icon(Icons.block_outlined),
+                          text: Text(entry.key),
+                        ),
+                      );
+                    }).toList();
+                  },
+                  onSelected: (key) {
+                    ref.read(_shieldProvider.notifier).state = key;
+                    ref.read(_equippedProvider.notifier).state =
+                        equipped.replaced(4, _shieldItems[key] != null);
+                  },
+                  offset: const Offset(1, 0),
+                  child: ListTile(
+                    enabled: enabled,
+                    trailing: const Icon(Icons.more_vert),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         const Divider(),
         Row(
@@ -218,8 +195,8 @@ class _PopupMenuTab extends ConsumerWidget {
             MiTextButton(
               enabled: enabled,
               onPressed: () {
-                ref.refresh(_checkedKeysProvider);
-                ref.refresh(_selectedKeyProvider);
+                ref.refresh(_equippedProvider).also((_) {});
+                ref.refresh(_shieldProvider).also((_) {});
               },
               child: const MiIcon(
                 icon: Icon(Icons.refresh_outlined),
@@ -227,6 +204,115 @@ class _PopupMenuTab extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Dropdown tab
+//
+
+final _dropdownHint = Row(children: const [
+  Icon(Icons.dark_mode_outlined),
+  Icon(Icons.home_outlined),
+]);
+
+final _dropdownItems = <Widget>[
+  Row(children: const [
+    Icon(Icons.breakfast_dining_outlined),
+    Icon(Icons.local_cafe_outlined),
+    SizedBox(width: 8),
+    Text('Breakfast'),
+  ]),
+  Row(children: const [
+    Icon(Icons.set_meal_outlined),
+    Icon(Icons.soup_kitchen_outlined),
+    SizedBox(width: 8),
+    Text('Lunch'),
+  ]),
+  Row(children: const [
+    Icon(Icons.bakery_dining_outlined),
+    Icon(Icons.coffee_outlined),
+    SizedBox(width: 8),
+    Text('Snack'),
+  ]),
+  Row(children: const [
+    Icon(Icons.dinner_dining_outlined),
+    Icon(Icons.sports_bar_outlined),
+    SizedBox(width: 8),
+    Text('Supper'),
+  ]),
+];
+
+const _dropdownIcons = <int?, Widget>{
+  null: Icon(Icons.hotel_outlined),
+  0: Icon(Icons.accessibility_new_outlined),
+  1: Icon(Icons.directions_run_outlined),
+  2: MiScale(scaleX: -1, child: Icon(Icons.directions_run_outlined)),
+  3: Icon(Icons.self_improvement_outlined),
+};
+
+final _dropdownProvider = StateProvider<int?>((ref) => null);
+
+CancelableOperation<void>? _dropdownCancellableOperation;
+
+class _DropdownTab extends ConsumerWidget {
+  static final _logger = Logger((_DropdownTab).toString());
+
+  const _DropdownTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    final enabled = ref.watch(enableActionsProvider);
+    final dropdown = ref.watch(_dropdownProvider);
+
+    return Column(
+      children: [
+        // Dropdown menu
+        DropdownButton<int?>(
+          value: dropdown,
+          onChanged: enabled
+              ? (index) {
+                  ref.read(_dropdownProvider.notifier).state = index!;
+                  _dropdownCancellableOperation?.cancel();
+                  if (index == 3) {
+                    _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
+                      Future.delayed(const Duration(seconds: 4)),
+                      onCancel: () {
+                        _logger.fine('canceled.');
+                      },
+                    ).then(
+                      (_) {
+                        _logger.fine('completed.');
+                        ref.read(_dropdownProvider.notifier).state = null;
+                      },
+                    );
+                  }
+                }
+              : null,
+          hint: _dropdownHint,
+          items: _dropdownItems.mapIndexed((index, item) {
+            return DropdownMenuItem<int?>(
+              value: index,
+              child: item,
+            );
+          }).toList(),
+        ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: IconTheme.merge(
+            data: IconThemeData(
+              size: 60,
+              color: Theme.of(context).disabledColor,
+            ),
+            child: _dropdownIcons[dropdown]!,
+          ),
         ),
       ],
     ).also((_) {

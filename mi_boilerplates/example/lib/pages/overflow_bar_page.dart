@@ -12,6 +12,7 @@ import 'ex_app_bar.dart';
 /// Overflow bar example page.
 ///
 
+// UTF16＝IconDataとは……
 const _goatIconData = IconData(0x1F410);
 
 const _items = [
@@ -32,10 +33,6 @@ const _items = [
   ),
 ];
 
-//
-// OverflowBar trial page.
-//
-
 final _trollHpProvider = StateProvider((ref) => 100);
 
 class OverflowBarPage extends ConsumerWidget {
@@ -47,8 +44,7 @@ class OverflowBarPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final trollHpState = ref.watch(_trollHpProvider.state);
-    final trollHp = trollHpState.state;
+    final trollHp = ref.watch(_trollHpProvider);
 
     return Scaffold(
       appBar: ExAppBar(
@@ -65,7 +61,7 @@ class OverflowBarPage extends ConsumerWidget {
                 children: [
                   MiTextButton(
                     enabled: enableActions,
-                    onPressed: () => ref.refresh(_trollHpProvider),
+                    onPressed: () => ref.invalidate(_trollHpProvider),
                     child: const MiIcon(
                       icon: Icon(Icons.refresh),
                       text: Text('Reset'),
@@ -102,7 +98,7 @@ class OverflowBarPage extends ConsumerWidget {
                 enabled: enableActions,
                 onPressed: () {
                   if (trollHp >= 0) {
-                    trollHpState.state -= 10;
+                    ref.read(_trollHpProvider.notifier).state = trollHp - 10;
                   }
                 },
                 child: item,

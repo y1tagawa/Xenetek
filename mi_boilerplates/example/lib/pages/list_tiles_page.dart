@@ -61,7 +61,7 @@ class ListTilesPage extends ConsumerWidget {
                 enabled: enableActions,
                 selected: selected == 0,
                 onTap: () {
-                  ref.read(_selectedProvider.state).state = 0;
+                  ref.read(_selectedProvider.notifier).state = 0;
                 },
                 title: const MiIcon(
                   icon: Icon(Icons.person_outline),
@@ -73,8 +73,8 @@ class ListTilesPage extends ConsumerWidget {
                 selected: selected == 1,
                 value: check,
                 onChanged: (value) {
-                  ref.read(_checkProvider.state).state = value!;
-                  ref.read(_selectedProvider.state).state = 1;
+                  ref.read(_checkProvider.notifier).state = value!;
+                  ref.read(_selectedProvider.notifier).state = 1;
                 },
                 title: const MiIcon(
                   icon: Icon(Icons.person_outline),
@@ -88,8 +88,8 @@ class ListTilesPage extends ConsumerWidget {
                 toggleable: true,
                 value: 0,
                 onChanged: (_) {
-                  ref.read(_radioProvider.state).state = radio == 0 ? 1 : 0;
-                  ref.read(_selectedProvider.state).state = 2;
+                  ref.read(_radioProvider.notifier).state = radio == 0 ? 1 : 0;
+                  ref.read(_selectedProvider.notifier).state = 2;
                 },
                 title: const MiIcon(
                   icon: Icon(Icons.person_outline),
@@ -101,8 +101,8 @@ class ListTilesPage extends ConsumerWidget {
                 selected: selected == 3,
                 value: switch_,
                 onChanged: (value) {
-                  ref.read(_switchProvider.state).state = value;
-                  ref.read(_selectedProvider.state).state = 3;
+                  ref.read(_switchProvider.notifier).state = value;
+                  ref.read(_selectedProvider.notifier).state = 3;
                 },
                 title: const MiIcon(
                   icon: Icon(Icons.person_outline),

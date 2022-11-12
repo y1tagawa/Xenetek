@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// サンプルアプリ メインプログラム
-
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'pages/animations_page.dart';
 import 'pages/buttons_page.dart';
@@ -27,6 +23,7 @@ import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
 import 'pages/overflow_bar_page.dart';
+import 'pages/progress_indicators_page.dart';
 import 'pages/prominent_top_bar_page.dart';
 import 'pages/radios_page.dart';
 import 'pages/settings_page.dart';
@@ -122,6 +119,12 @@ final _pages = <_PageItem>[
     builder: (_, __) => const ProminentTopBarPage(),
   ),
   _PageItem(
+    icon: ProgressIndicatorsPage.icon,
+    title: ProgressIndicatorsPage.title,
+    path: '/drawer/progress_indicators',
+    builder: (_, __) => const ProgressIndicatorsPage(),
+  ),
+  _PageItem(
     icon: RadiosPage.icon,
     title: RadiosPage.title,
     path: '/radios',
@@ -130,7 +133,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: SettingsPage.icon,
     title: SettingsPage.title,
-    path: '/settings',
+    path: '/drawer/settings',
     builder: (_, __) => const SettingsPage(),
   ),
   _PageItem(
@@ -171,37 +174,124 @@ final _router = GoRouter(
 );
 
 // テーマ設定
-
-final primarySwatchProvider = StateProvider((ref) => Colors.indigo);
-final secondaryColorProvider = StateProvider<Color?>((ref) => null);
-final brightnessProvider = StateProvider((ref) => Brightness.light);
+// ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
+const _initColor = Color(0xFF404040);
+final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
+final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
+final textColorProvider = StateProvider<Color?>((ref) => _initColor);
+final backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
+final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final themeAdjustmentProvider = StateProvider((ref) => true);
 
-final productNameProvider = FutureProvider<String?>((ref) async {
-  if (!kIsWeb && Platform.isAndroid) {
-    const methodChannel = MethodChannel('com.xenetek.mi_boilerplates/examples');
-    return await methodChannel.invokeMethod('getAndroidBuildModel');
+final preferencesProvider = FutureProvider((ref) async {
+  final logger = Logger('preferenceProvider');
+
+  final preferences = await SharedPreferences.getInstance();
+
+  Color? colorOrNull(String? data) {
+    return data?.let((it) => int.tryParse(it))?.let((it) => Color(it));
   }
-  return null;
+
+  ref.read(primarySwatchProvider.notifier).state = preferences
+      .getString('primary_swatch')
+      .also((it) => logger.fine('primary_swatch=$it'))
+      .let((it) => colorOrNull(it)?.toMaterialColor() ?? Colors.indigo);
+
+  ref.read(secondaryColorProvider.notifier).state = preferences
+      .getString('secondary_color')
+      .also((it) => logger.fine('secondary_color=$it'))
+      .let((it) => colorOrNull(it));
+
+  ref.read(textColorProvider.notifier).state = preferences
+      .getString('text_color')
+      .also((it) => logger.fine('secondary_color=$it'))
+      .let((it) => colorOrNull(it));
+
+  ref.read(backgroundColorProvider.notifier).state = preferences
+      .getString('background_color')
+      .also((it) => logger.fine('background_color=$it'))
+      .let((it) => colorOrNull(it));
+
+  ref.read(brightnessProvider.notifier).state = preferences
+      .getString('brightness')
+      .also((it) => logger.fine('brightness=$it'))
+      .let((it) => it == 'dark' ? Brightness.dark : Brightness.light);
+
+  return preferences;
 });
+
+Future<void> savePreferences(WidgetRef ref) async {
+  final logger = Logger('savePreferences');
+
+  final preferences = ref.read(preferencesProvider).value;
+  if (preferences != null) {
+    preferences.setString(
+      'primary_swatch',
+      (ref.read(primarySwatchProvider).value.toString())
+          .also((it) => logger.fine('primary_swatch=$it')),
+    );
+    preferences.setString(
+      'secondary_color',
+      (ref.read(secondaryColorProvider)?.value)
+          .toString()
+          .also((it) => logger.fine('secondary_color=$it')),
+    );
+    preferences.setString(
+      'text_color',
+      (ref.read(textColorProvider)?.value) //
+          .toString()
+          .also((it) => logger.fine('text_color=$it')),
+    );
+    preferences.setString(
+      'background_color',
+      (ref.read(backgroundColorProvider)?.value)
+          .toString()
+          .also((it) => logger.fine('background_color=$it')),
+    );
+    preferences.setString(
+      'brightness',
+      (ref.read(brightnessProvider).isDark ? 'dark' : 'light')
+          .also((it) => logger.fine('brightness=$it')),
+    );
+  }
+}
+
+Future<void> clearPreferences(WidgetRef ref) async {
+  final preferences = ref.read(preferencesProvider).value;
+  if (preferences != null) {
+    await preferences.clear();
+    ref.invalidate(preferencesProvider);
+  }
+}
 
 // main
 
-void main() {
+void main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     log('${record.level.name}: ${record.time}: ${record.loggerName}: ${record.message}');
   });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
+  // ignore: unused_field
+  static final _logger = Logger((HomePage).toString());
+
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(preferencesProvider);
+
     final primarySwatch = ref.watch(primarySwatchProvider);
+    final secondaryColor = ref.watch(secondaryColorProvider);
+    final textColor = ref.watch(textColorProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
+    final brightness = ref.watch(brightnessProvider);
+
     return Material(
       child: MaterialApp.router(
         routeInformationProvider: _router.routeInformationProvider,
@@ -212,11 +302,18 @@ class MyApp extends ConsumerWidget {
           primarySwatch: primarySwatch,
           colorScheme: ColorScheme.fromSwatch(
             primarySwatch: primarySwatch,
-            accentColor: ref.watch(secondaryColorProvider),
-            brightness: ref.watch(brightnessProvider),
+            accentColor: brightness.isDark ? secondaryColor : null,
+            brightness: brightness,
           ),
           useMaterial3: ref.watch(useM3Provider),
-        ).let((it) => ref.watch(themeAdjustmentProvider) ? it.adjust() : it),
+        ).let(
+          (it) => ref.watch(themeAdjustmentProvider)
+              ? it.modifyWith(
+                  textColor: textColor,
+                  backgroundColor: backgroundColor,
+                )
+              : it,
+        ),
       ),
     );
   }
@@ -243,28 +340,35 @@ class HomePage extends ConsumerWidget {
         title: title,
       ),
       drawer: Drawer(
-        child: ListView(
-          children: [
-            InkWell(
-              onTap: () => Navigator.pop(context),
-              child: const DrawerHeader(
-                child: HomePage.title,
-              ),
+        child: Expanded(
+          // background
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: const DrawerHeader(
+                    child: HomePage.title,
+                  ),
+                ),
+                ..._pages
+                    .skip(1) // Home
+                    .where((item) => item.path.startsWith('/drawer/'))
+                    .map(
+                      (item) => ListTile(
+                        leading: item.icon,
+                        title: item.title,
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push(item.path);
+                        },
+                      ),
+                    ),
+              ],
             ),
-            ...iota(_pages.length - 1, start: 1)
-                .where((index) => _pages[index].path.startsWith('/drawer/'))
-                .map((index) {
-              final item = _pages[index];
-              return ListTile(
-                leading: item.icon,
-                title: item.title,
-                onTap: () {
-                  Navigator.pop(context);
-                  context.push(_pages[index].path);
-                },
-              );
-            }),
-          ],
+          ),
         ),
       ),
       body: SafeArea(
@@ -275,23 +379,22 @@ class HomePage extends ConsumerWidget {
               spacing: 2,
               runSpacing: 8,
               children: [
-                ...iota(_pages.length - 1, start: 1)
-                    .whereNot((index) => _pages[index].path.startsWith('/drawer/'))
+                ..._pages
+                    .skip(1) // Home
+                    .whereNot((item) => item.path.startsWith('/drawer/'))
                     .map(
-                  (index) {
-                    return TextButton(
-                      onPressed: () => context.push(_pages[index].path),
-                      child: Container(
-                        width: 76,
-                        height: 72,
-                        padding: const EdgeInsets.all(2),
-                        child: Column(
-                          children: [_pages[index].icon, _pages[index].title],
+                      (item) => TextButton(
+                        onPressed: () => context.push(item.path),
+                        child: Container(
+                          width: 76,
+                          height: 72,
+                          padding: const EdgeInsets.all(2),
+                          child: Column(
+                            children: [item.icon, item.title],
+                          ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
               ],
             ),
           ),

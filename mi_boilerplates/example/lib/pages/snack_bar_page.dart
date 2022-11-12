@@ -9,9 +9,9 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
 
-///
-/// Snack bar example & toast experiment page.
-///
+//
+// Snack bar example & toast experiment page.
+//
 
 var _tabIndex = 0;
 
@@ -52,7 +52,6 @@ class SnackBarPage extends ConsumerWidget {
             bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: const SafeArea(
@@ -73,9 +72,9 @@ class SnackBarPage extends ConsumerWidget {
   }
 }
 
-///
-/// Snack bar tab
-///
+//
+// Snack bar tab
+//
 
 class _SnackBarTab extends ConsumerWidget {
   static final _logger = Logger((_SnackBarTab).toString());
@@ -85,7 +84,7 @@ class _SnackBarTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    //final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(enableActionsProvider);
 
     final theme = Theme.of(context);
     // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L446
@@ -110,7 +109,7 @@ class _SnackBarTab extends ConsumerWidget {
               style: theme.snackBarTheme.contentTextStyle ??
                   theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.surface) ??
                   TextStyle(color: theme.colorScheme.surface),
-              child: const Text('Snack bar text'),
+              child: const Text('Snack bar emulation'),
             ),
             trailing: DefaultTextStyle(
               style: theme.snackBarTheme.contentTextStyle?.copyWith(color: actionTextColor) ??
@@ -122,6 +121,7 @@ class _SnackBarTab extends ConsumerWidget {
           // SnackBar表示
           ListTile(
             leading: MiTextButton(
+              enabled: enabled,
               child: const MiIcon(
                 icon: Icon(Icons.notifications_outlined),
                 text: Text('Ping'),
