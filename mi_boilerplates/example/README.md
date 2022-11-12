@@ -3,6 +3,6 @@
 
 ## TODO
 * Material designのanatomy的な設定箇所の説明図
-* Menus
+* Colors
 * M2AppBar上用のデフォルトテーマ
   * 淡色AppBar

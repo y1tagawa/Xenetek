@@ -68,6 +68,7 @@ extension ThemeDataHelper on ThemeData {
   /// 現状のmaterial widgetsの実装は、ダークテーマの挙動がまちまちなので、一貫するよう調整
   ///
   ThemeData modifyWith({
+    Color? textColor,
     Color? backgroundColor,
   }) {
     final foregroundColor_ = foregroundColor;
@@ -198,16 +199,17 @@ extension ThemeDataHelper on ThemeData {
 
     // TextTheme, IconTheme
     // * ダーク時の文字色
-    final textTheme_ = backgroundColor != null && isDark
+    final textColor_ = isDark ? backgroundColor : textColor;
+    final textTheme_ = backgroundColor != null
         ? textTheme.apply(
-            bodyColor: backgroundColor,
-            displayColor: backgroundColor,
+            bodyColor: textColor_,
+            displayColor: textColor_,
           )
         : textTheme;
 
-    final iconTheme_ = backgroundColor != null && isDark
+    final iconTheme_ = backgroundColor != null
         ? iconTheme.copyWith(
-            color: backgroundColor,
+            color: textColor_,
           )
         : iconTheme;
 

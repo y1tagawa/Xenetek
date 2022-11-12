@@ -178,6 +178,7 @@ final _router = GoRouter(
 const _initColor = Color(0xFF404040);
 final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
 final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
+final textColorProvider = StateProvider<Color?>((ref) => _initColor);
 final backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
 final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
@@ -199,6 +200,11 @@ final preferencesProvider = FutureProvider((ref) async {
 
   ref.read(secondaryColorProvider.notifier).state = preferences
       .getString('secondary_color')
+      .also((it) => logger.fine('secondary_color=$it'))
+      .let((it) => colorOrNull(it));
+
+  ref.read(textColorProvider.notifier).state = preferences
+      .getString('text_color')
       .also((it) => logger.fine('secondary_color=$it'))
       .let((it) => colorOrNull(it));
 
@@ -224,6 +230,12 @@ Future<void> savePreferences(WidgetRef ref) async {
       'primary_swatch',
       (ref.read(primarySwatchProvider).value.toString())
           .also((it) => logger.fine('primary_swatch=$it')),
+    );
+    preferences.setString(
+      'text_color',
+      (ref.read(secondaryColorProvider)?.value)
+          .toString()
+          .also((it) => logger.fine('text_color=$it')),
     );
     preferences.setString(
       'secondary_color',
@@ -276,6 +288,7 @@ class MyApp extends ConsumerWidget {
 
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
+    final textColor = ref.watch(textColorProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
     final brightness = ref.watch(brightnessProvider);
 
@@ -295,7 +308,10 @@ class MyApp extends ConsumerWidget {
           useMaterial3: ref.watch(useM3Provider),
         ).let(
           (it) => ref.watch(themeAdjustmentProvider)
-              ? it.modifyWith(backgroundColor: backgroundColor)
+              ? it.modifyWith(
+                  textColor: textColor,
+                  backgroundColor: backgroundColor,
+                )
               : it,
         ),
       ),

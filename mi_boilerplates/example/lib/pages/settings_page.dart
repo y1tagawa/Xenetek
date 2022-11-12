@@ -140,6 +140,44 @@ Future<bool> showColorSelectDialog({
   return ok;
 }
 
+Future<bool> showTextColorSelectDialog({
+  required BuildContext context,
+  Widget? title,
+  required Color? initialColor,
+  void Function(Color? value)? onChanged,
+  bool nullable = false,
+}) async {
+  final colors = <Color?>[
+    if (nullable) null,
+    Colors.grey[800],
+    Colors.blueGrey[800],
+    Colors.grey[900],
+    ...Colors.primaries.map((it) => it[900]),
+  ];
+
+  final tooltips = [
+    if (nullable) 'null',
+    'grey800',
+    'blueGray800',
+    'grey900',
+    ...primaryColorNames.map((it) => '${it}900'),
+  ];
+
+  final ok = await _showSimpleColorSelectDialog(
+      context: context,
+      title: title,
+      initialColor: initialColor,
+      colors: colors,
+      tooltips: tooltips,
+      onChanged: (colorIndex) {
+        onChanged?.call(colors[colorIndex]);
+      });
+  if (!ok) {
+    onChanged?.call(initialColor);
+  }
+  return ok;
+}
+
 Future<bool> showBackgroundColorSelectDialog({
   required BuildContext context,
   Widget? title,
@@ -197,6 +235,7 @@ class SettingsPage extends ConsumerWidget {
 
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
+    final textColor = ref.watch(textColorProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
 
     final theme = Theme.of(context);
@@ -258,6 +297,27 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             ListTile(
+              title: const Text('Text color'),
+              trailing: Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: MiColorChip(color: textColor),
+              ),
+              onTap: () async {
+                final ok = await showTextColorSelectDialog(
+                  context: context,
+                  title: const Text('Text color'),
+                  initialColor: textColor,
+                  nullable: true,
+                  onChanged: (value) {
+                    ref.read(textColorProvider.notifier).state = value;
+                  },
+                );
+                if (ok) {
+                  await savePreferences(ref);
+                }
+              },
+            ),
+            ListTile(
               title: const Text('Background color'),
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 5),
@@ -295,11 +355,12 @@ class SettingsPage extends ConsumerWidget {
             ),
             CheckboxListTile(
               value: ref.watch(themeAdjustmentProvider),
-              title: const Text('Adjust theme'),
+              title: const Text('Modify theme'),
               onChanged: (value) {
                 ref.read(themeAdjustmentProvider.notifier).state = value!;
               },
             ),
+            const Divider(),
             ListTile(
               title: const Text('Reset preferences'),
               onTap: () async {
@@ -312,7 +373,6 @@ class SettingsPage extends ConsumerWidget {
                 }
               },
             ),
-            const Divider(),
           ],
         ),
       ),
