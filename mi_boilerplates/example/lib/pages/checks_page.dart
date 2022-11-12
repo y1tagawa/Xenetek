@@ -198,67 +198,90 @@ class _CheckboxTab extends ConsumerWidget {
 }
 
 //
+// Knight indicator
+//
+
+class KnightIndicator extends StatelessWidget {
+  static const helmetIcon = Icon(Icons.balcony_outlined);
+  static const armourIcon = MiScale(
+    scale: 1.2,
+    child: MiRotate(
+      angleDegree: 90.0,
+      child: Icon(Icons.bento_outlined),
+    ),
+  );
+  static const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
+  static const _rGauntletIcon = MiScale(scaleX: -1, child: _lGauntletIcon);
+  static const gauntletsIcon = MiRow(spacing: 0, children: [_rGauntletIcon, _lGauntletIcon]);
+  static const _lBootIcon = Icon(Icons.roller_skating_outlined);
+  static const _rBootIcon = MiScale(scaleX: -1, child: _lBootIcon);
+  static const bootsIcon = MiRow(spacing: 0, children: [_rBootIcon, _lBootIcon]);
+  static const shieldIcon = Icon(Icons.shield_outlined);
+
+  static const _faceIcon = Icon(Icons.child_care_outlined);
+  static const _rHandIcon = MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
+  static const _lHandIcon = MiScale(scaleX: -1, child: _rHandIcon);
+  static const _spaceIcon = Icon(null);
+
+  static const items = <String, Widget>{
+    'Boots': bootsIcon,
+    'Armour': armourIcon,
+    'Gauntlets': gauntletsIcon,
+    'Helmet': helmetIcon,
+    'Shield': shieldIcon,
+  };
+
+  final List<bool> checked;
+
+  const KnightIndicator({
+    super.key,
+    required this.checked,
+  }) : assert(checked.length == items.length);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (checked[3]) helmetIcon else _faceIcon,
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (checked[2])
+              const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
+            else
+              const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
+            if (checked[1]) armourIcon else _spaceIcon,
+            if (checked[4])
+              const MiTranslate(offset: Offset(-4, 0), child: shieldIcon)
+            else if (checked[2])
+              const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
+            else
+              const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (checked[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+//
 // Toggle buttons tab
 //
 
-class _ToggleItem {
-  final Widget icon;
-  final String text;
-  const _ToggleItem({
-    required this.icon,
-    required this.text,
-  });
-}
-
-const _helmetIcon = Icon(Icons.balcony_outlined);
-const _armourIcon = MiScale(
-  scale: 1.2,
-  child: MiRotate(
-    angleDegree: 90.0,
-    child: Icon(Icons.bento_outlined),
-  ),
-);
-const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
-const _rGauntletIcon = MiScale(scaleX: -1, child: _lGauntletIcon);
-const _lBootIcon = Icon(Icons.roller_skating_outlined);
-const _rBootIcon = MiScale(scaleX: -1, child: _lBootIcon);
-const _shieldIcon = Icon(Icons.shield_outlined);
-const _faceIcon = Icon(Icons.child_care_outlined);
-const _rHandIcon = MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
-const _lHandIcon = MiScale(scaleX: -1, child: _rHandIcon);
-const _spaceIcon = Icon(null);
-
-const _toggleItems = <_ToggleItem>[
-  _ToggleItem(
-    icon: MiRow(
-      spacing: 0,
-      children: [_rBootIcon, _lBootIcon],
-    ),
-    text: 'Boots',
-  ),
-  _ToggleItem(
-    icon: _armourIcon,
-    text: 'Armour',
-  ),
-  _ToggleItem(
-    icon: MiRow(
-      spacing: 0,
-      children: [_rGauntletIcon, _lGauntletIcon],
-    ),
-    text: 'Gauntlets',
-  ),
-  _ToggleItem(
-    icon: _helmetIcon,
-    text: 'Helmet',
-  ),
-  _ToggleItem(
-    icon: _shieldIcon,
-    text: 'Shield',
-  ),
-];
-
-final _selectedProvider =
-    StateProvider<List<bool>>((ref) => List.filled(_toggleItems.length, false));
+final _toggleProvider =
+    StateProvider<List<bool>>((ref) => List.filled(KnightIndicator.items.length, false));
 
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_ToggleButtonsTab).toString());
@@ -268,27 +291,25 @@ class _ToggleButtonsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final selected = ref.watch(_selectedProvider);
-    _logger.fine(selected.length);
-
-    final myAc = 10 - (selected.where((value) => value).length) * 2;
+    final toggle = ref.watch(_toggleProvider);
+    _logger.fine(toggle.length);
 
     return SingleChildScrollView(
       child: Column(
         children: [
           ToggleButtons(
-            isSelected: selected,
+            isSelected: toggle,
             onPressed: enableActions
                 ? (index) {
-                    ref.read(_selectedProvider.notifier).state =
-                        selected.replaced(index, !selected[index]);
+                    ref.read(_toggleProvider.notifier).state =
+                        toggle.replaced(index, !toggle[index]);
                   }
                 : null,
-            children: _toggleItems
+            children: KnightIndicator.items.entries
                 .map(
-                  (item) => MiIcon(
-                    icon: item.icon,
-                    tooltip: item.text,
+                  (entry) => MiIcon(
+                    icon: entry.value,
+                    tooltip: entry.key,
                   ),
                 )
                 .toList(),
@@ -300,39 +321,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
               data: IconThemeData(
                 color: Theme.of(context).disabledColor,
               ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (selected[3]) _helmetIcon else _faceIcon,
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (selected[2])
-                        const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
-                      else
-                        const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
-                      if (selected[1]) _armourIcon else _spaceIcon,
-                      if (selected[4])
-                        const MiTranslate(offset: Offset(-4, 0), child: _shieldIcon)
-                      else if (selected[2])
-                        const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
-                      else
-                        const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (selected[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
-                    ],
-                  ),
-                  if (myAc <= -10) const Text('AC LO') else Text('AC $myAc')
-                ],
-              ),
+              child: KnightIndicator(checked: toggle),
             ),
           ),
         ],

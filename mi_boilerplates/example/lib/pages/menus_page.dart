@@ -4,6 +4,7 @@
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
+import 'package:example/pages/checks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -89,7 +90,7 @@ class MenusPage extends ConsumerWidget {
 // Popup menu tab
 //
 
-final _checkedKeysProvider = StateProvider<Set<String>>((ref) => {});
+final _checkedProvider = StateProvider((ref) => List<bool>.filled(5, false));
 final _selectedKeyProvider = StateProvider<String?>((ref) => null);
 
 class _PopupMenuTab extends ConsumerWidget {
@@ -101,7 +102,7 @@ class _PopupMenuTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
-    final checkedKeys = ref.watch(_checkedKeysProvider);
+    final checked = ref.watch(_checkedProvider);
     final selectedKey = ref.watch(_selectedKeyProvider);
 
     final theme = Theme.of(context);
@@ -143,55 +144,31 @@ class _PopupMenuTab extends ConsumerWidget {
         ),
 
         // Check menu
-        PopupMenuButton<String?>(
+        PopupMenuButton<int>(
           enabled: enabled,
           tooltip: '',
-          itemBuilder: (context) {
-            return _menuItems.keys.map((key) {
-              return MiCheckPopupMenuItem<String?>(
-                value: key,
-                checked: checkedKeys.contains(key),
-                child: MiIcon(
-                  icon: _menuItems[key]!,
-                  text: Text(key),
-                ),
-              );
-            }).toList();
-          },
-          onSelected: (key) {
-            ref.read(_checkedKeysProvider.notifier).state =
-                checkedKeys.contains(key!) ? checkedKeys.removed(key) : checkedKeys.added(key);
+          itemBuilder: (context) => KnightIndicator.items.entries
+              .mapIndexed((index, entry) => MiCheckPopupMenuItem<int>(
+                    value: index,
+                    checked: checked[index],
+                    child: MiIcon(
+                      icon: entry.value,
+                      text: Text(entry.key),
+                    ),
+                  ))
+              .toList(),
+          onSelected: (index) {
+            ref.read(_checkedProvider.notifier).state = checked.replaced(index, !checked[index]);
           },
           offset: const Offset(1, 0),
           child: ListTile(
             enabled: enabled,
             trailing: const Icon(Icons.more_vert),
-            title: DefaultTextStyle.merge(
-              style: TextStyle(color: theme.disabledColor),
-              child: Wrap(
-                children: _menuItems.keys
-                    .where((key) => checkedKeys.contains(key))
-                    .map((key) => _menuItems[key]!)
-                    .toList(),
-              ),
+            title: IconTheme(
+              data: IconThemeData(color: theme.disabledColor),
+              child: KnightIndicator(checked: checked),
             ),
           ),
-        ),
-
-        // Toggle buttons
-        ToggleButtons(
-          isSelected: _menuItems.keys.map((key) => checkedKeys.contains(key)).toList(),
-          onPressed: (index) {
-            final key = _menuItems.keys.elementAt(index);
-            ref.read(_checkedKeysProvider.notifier).state =
-                checkedKeys.contains(key) ? checkedKeys.removed(key) : checkedKeys.added(key);
-          },
-          constraints: BoxConstraints(maxWidth: width / (_menuItems.length + 1)),
-          children: _menuItems.keys.map(
-            (key) {
-              return _menuItems[key]!;
-            },
-          ).toList(),
         ),
         const Divider(),
         Row(
@@ -200,7 +177,7 @@ class _PopupMenuTab extends ConsumerWidget {
             MiTextButton(
               enabled: enabled,
               onPressed: () {
-                ref.refresh(_checkedKeysProvider);
+                ref.refresh(_checkedProvider);
                 ref.refresh(_selectedKeyProvider);
               },
               child: const MiIcon(
