@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
+import 'package:example/pages/knight_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -56,6 +57,10 @@ class ListsPage extends ConsumerWidget {
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
     ),
+    MiTab(
+      tooltip: 'Stepper list',
+      icon: Icon(Icons.onetwothree_outlined),
+    ),
   ];
 
   const ListsPage({super.key});
@@ -86,6 +91,7 @@ class ListsPage extends ConsumerWidget {
               children: [
                 _DismissibleListTab(),
                 _ReorderableListTab(),
+                _StepperTab(),
               ],
             ),
           ),
@@ -252,6 +258,135 @@ class _ReorderableListTab extends ConsumerWidget {
             },
           ),
         ),
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+///
+/// Stepper tab.
+///
+
+final _stepIndexProvider = StateProvider((ref) => -1);
+
+class _StepperTab extends ConsumerWidget {
+  static final _logger = Logger((_StepperTab).toString());
+
+  const _StepperTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    final enabled = ref.watch(enableActionsProvider);
+    final index = ref.watch(_stepIndexProvider);
+
+    final theme = Theme.of(context);
+
+    final steps = <Step>[
+      Step(
+        title: const Text('Boots'),
+        content: const MiIcon(
+          icon: Text('Put the boots on.'),
+          text: KnightIndicator.kBootsIcon,
+        ),
+        isActive: enabled,
+      ),
+      Step(
+        title: const Text('Armour'),
+        content: const MiIcon(
+          icon: Text('Put the armour on.'),
+          text: KnightIndicator.kArmourIcon,
+        ),
+        isActive: enabled && index > 0,
+      ),
+      Step(
+        title: const Text('Gauntlets'),
+        content: const MiIcon(
+          icon: Text('Put the gauntlets on.'),
+          text: KnightIndicator.kGauntletsIcon,
+        ),
+        isActive: enabled && index > 1,
+      ),
+      Step(
+        title: const Text('Helmet'),
+        content: const MiIcon(
+          icon: Text('Wear the helmet.'),
+          text: KnightIndicator.kHelmetIcon,
+        ),
+        isActive: enabled && index > 2,
+      ),
+      Step(
+        title: const Text('Shield'),
+        content: const MiIcon(
+          icon: Text('Have the shield.'),
+          text: KnightIndicator.kShieldIcon,
+        ),
+        isActive: enabled && index > 3,
+      ),
+    ];
+
+    return Column(
+      children: [
+        KnightIndicator(
+          equipped: iota(steps.length).map((i) => i < index).toList(),
+        ),
+        const Divider(),
+        if (index < 0)
+          ListTile(
+            title: MiTextButton(
+              enabled: enabled,
+              child: const MiIcon(
+                icon: Icon(Icons.play_arrow_outlined),
+                text: Text('Start'),
+              ),
+              onPressed: () {
+                ref.read(_stepIndexProvider.notifier).state = 0;
+              },
+            ),
+          )
+        else if (index >= 0 && index < steps.length)
+          Expanded(
+            child: SingleChildScrollView(
+              child: Stepper(
+                steps: steps,
+                currentStep: index,
+                onStepContinue: enabled
+                    ? () {
+                        ref.read(_stepIndexProvider.notifier).state = index + 1;
+                      }
+                    : null,
+                onStepCancel: enabled
+                    ? () {
+                        ref.read(_stepIndexProvider.notifier).state = index - 1;
+                      }
+                    : null,
+                onStepTapped: enabled
+                    ? (value) {
+                        if (value < index) {
+                          ref.read(_stepIndexProvider.notifier).state = value;
+                        }
+                      }
+                    : null,
+              ),
+            ),
+          )
+        else
+          ListTile(
+            enabled: enabled,
+            title: const Center(child: Text('OK.')),
+            subtitle: MiTextButton(
+              enabled: enabled,
+              child: const MiIcon(
+                icon: Icon(Icons.refresh_outlined),
+                text: Text('Restart'),
+              ),
+              onPressed: () {
+                ref.read(_stepIndexProvider.notifier).state = 0;
+              },
+            ),
+          ),
       ],
     ).also((_) {
       _logger.fine('[o] build');
