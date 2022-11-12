@@ -33,6 +33,11 @@ const _switchItems = [
     title: Text('Mental health'),
   ),
   _SwitchItem(
+    checkIcon: Icon(Icons.calendar_view_month_outlined),
+    uncheckIcon: Icon(Icons.widgets_outlined),
+    title: Text('Dental health'),
+  ),
+  _SwitchItem(
     checkIcon: Icon(Icons.directions_run),
     uncheckIcon: Icon(Icons.airline_seat_flat_outlined),
     title: Text('Physical health'),
