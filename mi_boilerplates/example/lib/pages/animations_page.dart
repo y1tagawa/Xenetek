@@ -177,8 +177,8 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 //
 
 //// https://lottiefiles.com/99-bell
-// https://lottiefiles.com/38597-diwali-peacock-lottiefiles-logo
-const _lottieUrl = 'https://assets8.lottiefiles.com/private_files/lf30_smcmhowt.json';
+// https://lottiefiles.com/11458-empty
+const _lottieUrl = 'https://assets3.lottiefiles.com/packages/lf20_tDw3lP/empty_03.json';
 
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
