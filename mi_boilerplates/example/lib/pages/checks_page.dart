@@ -8,6 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'knight_indicator.dart';
 
 //
 // Checkbox examples page.
@@ -198,85 +199,6 @@ class _CheckboxTab extends ConsumerWidget {
 }
 
 //
-// Knight indicator
-//
-
-class KnightIndicator extends StatelessWidget {
-  static const helmetIcon = Icon(Icons.balcony_outlined);
-  static const armourIcon = MiScale(
-    scale: 1.2,
-    child: MiRotate(
-      angleDegree: 90.0,
-      child: Icon(Icons.bento_outlined),
-    ),
-  );
-  static const _lGauntletIcon = Icon(Icons.thumb_up_outlined);
-  static const _rGauntletIcon = MiScale(scaleX: -1, child: _lGauntletIcon);
-  static const gauntletsIcon = MiRow(spacing: 0, children: [_rGauntletIcon, _lGauntletIcon]);
-  static const _lBootIcon = Icon(Icons.roller_skating_outlined);
-  static const _rBootIcon = MiScale(scaleX: -1, child: _lBootIcon);
-  static const bootsIcon = MiRow(spacing: 0, children: [_rBootIcon, _lBootIcon]);
-  static const shieldIcon = Icon(Icons.shield_outlined);
-
-  static const _faceIcon = Icon(Icons.child_care_outlined);
-  static const _rHandIcon = MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
-  static const _lHandIcon = MiScale(scaleX: -1, child: _rHandIcon);
-  static const _spaceIcon = Icon(null);
-
-  static const items = <String, Widget>{
-    'Boots': bootsIcon,
-    'Armour': armourIcon,
-    'Gauntlets': gauntletsIcon,
-    'Helmet': helmetIcon,
-    'Shield': shieldIcon,
-  };
-
-  final List<bool> checked;
-
-  const KnightIndicator({
-    super.key,
-    required this.checked,
-  }) : assert(checked.length == items.length);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (checked[3]) helmetIcon else _faceIcon,
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (checked[2])
-              const MiTranslate(offset: Offset(0, -6), child: _rGauntletIcon)
-            else
-              const MiTranslate(offset: Offset(2, -6), child: _rHandIcon),
-            if (checked[1]) armourIcon else _spaceIcon,
-            if (checked[4])
-              const MiTranslate(offset: Offset(-4, 0), child: shieldIcon)
-            else if (checked[2])
-              const MiTranslate(offset: Offset(-1, -6), child: _lGauntletIcon)
-            else
-              const MiTranslate(offset: Offset(-4, -6), child: _lHandIcon),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (checked[0]) ...[_rBootIcon, _lBootIcon] else _spaceIcon,
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-//
 // Toggle buttons tab
 //
 
@@ -321,7 +243,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
               data: IconThemeData(
                 color: Theme.of(context).disabledColor,
               ),
-              child: KnightIndicator(checked: toggle),
+              child: KnightIndicator(equipped: toggle),
             ),
           ),
         ],

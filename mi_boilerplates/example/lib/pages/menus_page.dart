@@ -4,13 +4,13 @@
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
-import 'package:example/pages/checks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'knight_indicator.dart';
 
 ///
 /// Menus example page.
@@ -166,7 +166,7 @@ class _PopupMenuTab extends ConsumerWidget {
             trailing: const Icon(Icons.more_vert),
             title: IconTheme(
               data: IconThemeData(color: theme.disabledColor),
-              child: KnightIndicator(checked: checked),
+              child: KnightIndicator(equipped: checked),
             ),
           ),
         ),
