@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -108,25 +109,6 @@ class _PopupMenuTab extends ConsumerWidget {
 
     return Column(
       children: [
-        // Dropdown menu
-        DropdownButton<String?>(
-          value: selectedKey,
-          onChanged: enabled
-              ? (key) {
-                  ref.read(_selectedKeyProvider.notifier).state = key;
-                }
-              : null,
-          items: _menuItems.keys.map((key) {
-            return DropdownMenuItem<String?>(
-              value: key,
-              child: MiIcon(
-                icon: _menuItems[key]!,
-                text: Text(key),
-              ),
-            );
-          }).toList(),
-        ),
-
         // Radio menu
         PopupMenuButton<String?>(
           enabled: enabled,
@@ -241,7 +223,7 @@ class _PopupMenuTab extends ConsumerWidget {
 
 final _dropdownHint = Row(children: const [
   Icon(Icons.dark_mode_outlined),
-  Icon(Icons.hotel_outlined),
+  Icon(Icons.home_outlined),
   SizedBox(width: 8),
   Icon(Icons.more_horiz),
 ]);
@@ -273,14 +255,17 @@ final _dropdownItems = <Widget>[
   ]),
 ];
 
-const _dropdownIcons = <Widget>[
-  Icon(Icons.accessibility_new_outlined),
-  Icon(Icons.directions_run_outlined),
-  MiScale(scaleX: -1, child: Icon(Icons.directions_run_outlined)),
-  Icon(Icons.dark_mode_outlined),
-];
+const _dropdownIcons = <int?, Widget>{
+  null: Icon(Icons.hotel_outlined),
+  0: Icon(Icons.accessibility_new_outlined),
+  1: Icon(Icons.directions_run_outlined),
+  2: MiScale(scaleX: -1, child: Icon(Icons.directions_run_outlined)),
+  3: Icon(Icons.self_improvement_outlined),
+};
 
 final _dropdownProvider = StateProvider<int?>((ref) => null);
+
+CancelableOperation<void>? _dropdownCancellableOperation;
 
 class _DropdownTab extends ConsumerWidget {
   static final _logger = Logger((_DropdownTab).toString());
@@ -289,8 +274,6 @@ class _DropdownTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    assert(_dropdownItems.length == _dropdownIcons.length);
-
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
     final dropdown = ref.watch(_dropdownProvider);
@@ -302,7 +285,21 @@ class _DropdownTab extends ConsumerWidget {
           value: dropdown,
           onChanged: enabled
               ? (index) {
-                  ref.read(_dropdownProvider.notifier).state = index == 3 ? null : index!;
+                  ref.read(_dropdownProvider.notifier).state = index!;
+                  _dropdownCancellableOperation?.cancel();
+                  if (index == 3) {
+                    _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
+                      Future.delayed(const Duration(seconds: 2)),
+                      onCancel: () {
+                        _logger.fine('canceled.');
+                      },
+                    ).then(
+                      (_) {
+                        _logger.fine('completed.');
+                        ref.read(_dropdownProvider.notifier).state = null;
+                      },
+                    );
+                  }
                 }
               : null,
           hint: _dropdownHint,
@@ -321,7 +318,7 @@ class _DropdownTab extends ConsumerWidget {
               size: 60,
               color: Theme.of(context).disabledColor,
             ),
-            child: _dropdownIcons[dropdown ?? 3],
+            child: _dropdownIcons[dropdown]!,
           ),
         ),
       ],
