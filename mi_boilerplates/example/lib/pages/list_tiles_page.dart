@@ -25,6 +25,7 @@ class ListTilesPage extends ConsumerWidget {
   static const icon = Icon(Icons.dns_outlined);
   static const title = Text('List tiles');
 
+  // ignore: unused_field
   static final _logger = Logger((ListTilesPage).toString());
 
   const ListTilesPage({super.key});

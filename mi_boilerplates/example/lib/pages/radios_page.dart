@@ -110,9 +110,10 @@ final _radioItems = <_Class, _RadioItem>{
 final _classProvider = StateProvider((ref) => _Class.fighter);
 
 class _RadiosTab extends ConsumerWidget {
+  // ignore: unused_field
   static final _logger = Logger((_RadiosTab).toString());
 
-  const _RadiosTab({super.key});
+  const _RadiosTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -196,7 +197,7 @@ final _selectedProvider = StateProvider((ref) => 0);
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_selectedProvider).toString());
 
-  const _ToggleButtonsTab({super.key});
+  const _ToggleButtonsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -115,8 +115,6 @@ class _EmbeddedTabViewTab extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    final theme = Theme.of(context);
-
     return SingleChildScrollView(
       child: MiDefaultTabController(
         length: _embeddedTabs.length,

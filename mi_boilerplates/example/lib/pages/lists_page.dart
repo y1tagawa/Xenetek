@@ -282,8 +282,6 @@ class _StepperTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final index = ref.watch(_stepIndexProvider);
 
-    final theme = Theme.of(context);
-
     final steps = <Step>[
       Step(
         title: const Text('Boots'),

@@ -16,16 +16,16 @@ import 'knight_indicator.dart';
 /// Menus example page.
 ///
 
-const _large = TextStyle(fontSize: 30);
+// const _large = TextStyle(fontSize: 30);
 
-const _menuItems = <String, Widget>{
-  'White King': Text('\u2654', style: _large),
-  'White Queen': Text('\u2655', style: _large),
-  'White Rook': Text('\u2656', style: _large),
-  'White Bishop': Text('\u2657', style: _large),
-  'White Knight': Text('\u2658', style: _large),
-  'White Pawn': Text('\u2659', style: _large),
-};
+// const _menuItems = <String, Widget>{
+//   'White King': Text('\u2654', style: _large),
+//   'White Queen': Text('\u2655', style: _large),
+//   'White Rook': Text('\u2656', style: _large),
+//   'White Bishop': Text('\u2657', style: _large),
+//   'White Knight': Text('\u2658', style: _large),
+//   'White Pawn': Text('\u2659', style: _large),
+// };
 
 var _tabIndex = 0;
 

@@ -276,6 +276,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 ///
 /// TODO: 横画面でNavigationRail
 class ExBottomNavigationBar extends ConsumerWidget {
+  // ignore: unused_field
   static final _logger = Logger((ExBottomNavigationBar).toString());
 
   const ExBottomNavigationBar({super.key});

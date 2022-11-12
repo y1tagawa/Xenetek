@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -241,10 +239,6 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-
-    final enabled = ref.watch(enableActionsProvider);
-
-    final theme = Theme.of(context);
 
     return SingleChildScrollView(
       child: Column(

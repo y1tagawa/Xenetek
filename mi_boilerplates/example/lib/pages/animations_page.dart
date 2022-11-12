@@ -32,8 +32,6 @@ class AnimationsPage extends ConsumerWidget {
 
     final enableActions = ref.watch(enableActionsProvider);
 
-    final theme = Theme.of(context);
-
     final tabs = <Widget>[
       const MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
       MiTab(

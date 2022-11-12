@@ -41,6 +41,7 @@ class MiAnimationController extends StatefulWidget {
 
 class _MiAnimationControllerState extends State<MiAnimationController>
     with SingleTickerProviderStateMixin {
+  // ignore: unused_field
   static final _logger = Logger((_MiAnimationControllerState).toString());
 
   late final AnimationController _controller = AnimationController(

@@ -48,6 +48,7 @@ extension SwitchThemeDataHelper on SwitchThemeData {
 }
 
 extension ThemeDataHelper on ThemeData {
+  // ignore: unused_field
   static final _logger = Logger('ThemeDataExtension');
 
   bool get isDark => brightness.isDark;

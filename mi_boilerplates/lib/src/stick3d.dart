@@ -116,11 +116,11 @@ class Node {
 
   @override
   String toString() {
-    return 'Node{' +
+    return 'Node{'
         ' position: $position,'
-            ' rotation: $rotation,'
-            ' children: $children,'
-            '}';
+        ' rotation: $rotation,'
+        ' children: $children,'
+        '}';
   }
 
   Node copyWith({
