@@ -116,66 +116,77 @@ class _PopupMenuTab extends ConsumerWidget {
 
     return Column(
       children: [
-        // Radio menu
-        PopupMenuButton<String>(
-          enabled: enabled,
-          tooltip: '',
-          initialValue: shield,
-          itemBuilder: (context) {
-            return _shieldItems.entries.map((entry) {
-              return MiRadioPopupMenuItem<String>(
-                value: entry.key,
-                checked: entry.key == shield,
-                child: MiIcon(
-                  icon: entry.value ?? const Icon(Icons.block_outlined),
-                  text: Text(entry.key),
+        Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: IconTheme(
+                data: IconThemeData(color: theme.disabledColor),
+                child: KnightIndicator(
+                  equipped: equipped,
+                  shieldIcon: _shieldItems[shield],
                 ),
-              );
-            }).toList();
-          },
-          onSelected: (key) {
-            ref.read(_shieldProvider.notifier).state = key;
-            ref.read(_equippedProvider.notifier).state =
-                equipped.replaced(4, _shieldItems[key] != null);
-          },
-          offset: const Offset(1, 0),
-          child: ListTile(
-            enabled: enabled,
-            trailing: const Icon(Icons.more_vert),
-          ),
-        ),
-
-        // Check menu
-        PopupMenuButton<int>(
-          enabled: enabled,
-          tooltip: '',
-          itemBuilder: (context) =>
-              ['Boots', 'Armour', 'Gauntlets', 'Helmet'].mapIndexed((index, key) {
-            final icon = KnightIndicator.items[key];
-            return MiCheckPopupMenuItem<int>(
-              value: index,
-              checked: equipped[index],
-              child: MiIcon(
-                icon: icon ?? const Icon(Icons.block_outlined),
-                text: Text(key),
-              ),
-            );
-          }).toList(),
-          onSelected: (index) {
-            ref.read(_equippedProvider.notifier).state = equipped.replaced(index, !equipped[index]);
-          },
-          offset: const Offset(1, 0),
-          child: ListTile(
-            enabled: enabled,
-            trailing: const Icon(Icons.more_vert),
-            title: IconTheme(
-              data: IconThemeData(color: theme.disabledColor),
-              child: KnightIndicator(
-                equipped: equipped,
-                shieldIcon: _shieldItems[shield],
               ),
             ),
-          ),
+            Column(
+              children: [
+                // Check menu
+                PopupMenuButton<int>(
+                  enabled: enabled,
+                  tooltip: '',
+                  itemBuilder: (context) =>
+                      ['Boots', 'Armour', 'Gauntlets', 'Helmet'].mapIndexed((index, key) {
+                    final icon = KnightIndicator.items[key];
+                    return MiCheckPopupMenuItem<int>(
+                      value: index,
+                      checked: equipped[index],
+                      child: MiIcon(
+                        icon: icon ?? const Icon(Icons.block_outlined),
+                        text: Text(key),
+                      ),
+                    );
+                  }).toList(),
+                  onSelected: (index) {
+                    ref.read(_equippedProvider.notifier).state =
+                        equipped.replaced(index, !equipped[index]);
+                  },
+                  offset: const Offset(1, 0),
+                  child: ListTile(
+                    enabled: enabled,
+                    trailing: const Icon(Icons.more_vert),
+                  ),
+                ),
+                // Radio menu
+                PopupMenuButton<String>(
+                  enabled: enabled,
+                  tooltip: '',
+                  initialValue: shield,
+                  itemBuilder: (context) {
+                    return _shieldItems.entries.map((entry) {
+                      return MiRadioPopupMenuItem<String>(
+                        value: entry.key,
+                        checked: entry.key == shield,
+                        child: MiIcon(
+                          icon: entry.value ?? const Icon(Icons.block_outlined),
+                          text: Text(entry.key),
+                        ),
+                      );
+                    }).toList();
+                  },
+                  onSelected: (key) {
+                    ref.read(_shieldProvider.notifier).state = key;
+                    ref.read(_equippedProvider.notifier).state =
+                        equipped.replaced(4, _shieldItems[key] != null);
+                  },
+                  offset: const Offset(1, 0),
+                  child: ListTile(
+                    enabled: enabled,
+                    trailing: const Icon(Icons.more_vert),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
         const Divider(),
         Row(
