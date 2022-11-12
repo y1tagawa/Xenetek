@@ -224,8 +224,6 @@ class _PopupMenuTab extends ConsumerWidget {
 final _dropdownHint = Row(children: const [
   Icon(Icons.dark_mode_outlined),
   Icon(Icons.home_outlined),
-  SizedBox(width: 8),
-  Icon(Icons.more_horiz),
 ]);
 
 final _dropdownItems = <Widget>[
@@ -289,7 +287,7 @@ class _DropdownTab extends ConsumerWidget {
                   _dropdownCancellableOperation?.cancel();
                   if (index == 3) {
                     _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
-                      Future.delayed(const Duration(seconds: 2)),
+                      Future.delayed(const Duration(seconds: 4)),
                       onCancel: () {
                         _logger.fine('canceled.');
                       },
