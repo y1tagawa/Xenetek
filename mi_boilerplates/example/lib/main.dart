@@ -31,6 +31,7 @@ import 'pages/snack_bar_page.dart';
 import 'pages/svg_page.dart';
 import 'pages/switches_page.dart';
 import 'pages/tab_view_page.dart';
+import 'pages/three_page.dart';
 
 class _PageItem {
   final Widget icon;
@@ -159,6 +160,12 @@ final _pages = <_PageItem>[
     title: TabViewPage.title,
     path: '/tab_view',
     builder: (_, __) => const TabViewPage(),
+  ),
+  _PageItem(
+    icon: ThreePage.icon,
+    title: ThreePage.title,
+    path: '/three',
+    builder: (_, __) => const ThreePage(),
   ),
 ];
 
