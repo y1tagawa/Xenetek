@@ -188,8 +188,9 @@ class _ColorSchemeTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final primarySwatch = ref.watch(primarySwatchProvider);
     final secondaryColor = ref.watch(secondaryColorProvider);
+    final textColor = ref.watch(textColorProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
-    final themeAdjustment = ref.watch(themeAdjustmentProvider);
+    final themeAdjustment = ref.watch(modifyThemeProvider);
 
     final theme = Theme.of(context);
 
@@ -202,6 +203,7 @@ class _ColorSchemeTab extends ConsumerWidget {
       ),
     ).let((it) => themeAdjustment
         ? it.modifyWith(
+            textColor: textColor,
             backgroundColor: backgroundColor,
           )
         : it);
@@ -215,6 +217,7 @@ class _ColorSchemeTab extends ConsumerWidget {
       ),
     ).let((it) => themeAdjustment
         ? it.modifyWith(
+            textColor: textColor,
             backgroundColor: backgroundColor,
           )
         : it);

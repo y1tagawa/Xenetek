@@ -354,10 +354,10 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             CheckboxListTile(
-              value: ref.watch(themeAdjustmentProvider),
+              value: ref.watch(modifyThemeProvider),
               title: const Text('Modify theme'),
               onChanged: (value) {
-                ref.read(themeAdjustmentProvider.notifier).state = value!;
+                ref.read(modifyThemeProvider.notifier).state = value!;
               },
             ),
             const Divider(),

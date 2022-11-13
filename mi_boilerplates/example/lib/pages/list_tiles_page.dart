@@ -33,7 +33,7 @@ class ListTilesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final themeAdjustment = ref.watch(themeAdjustmentProvider);
+    final themeAdjustment = ref.watch(modifyThemeProvider);
     final check = ref.watch(_checkProvider);
     final radio = ref.watch(_radioProvider);
     final switch_ = ref.watch(_switchProvider);

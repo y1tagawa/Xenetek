@@ -189,7 +189,7 @@ final textColorProvider = StateProvider<Color?>((ref) => _initColor);
 final backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
 final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
-final themeAdjustmentProvider = StateProvider((ref) => true);
+final modifyThemeProvider = StateProvider((ref) => true);
 
 final preferencesProvider = FutureProvider((ref) async {
   final logger = Logger('preferenceProvider');
@@ -212,13 +212,16 @@ final preferencesProvider = FutureProvider((ref) async {
 
   ref.read(textColorProvider.notifier).state = preferences
       .getString('text_color')
-      .also((it) => logger.fine('secondary_color=$it'))
+      .also((it) => logger.fine('text_color=$it'))
       .let((it) => colorOrNull(it));
 
   ref.read(backgroundColorProvider.notifier).state = preferences
       .getString('background_color')
       .also((it) => logger.fine('background_color=$it'))
       .let((it) => colorOrNull(it));
+
+  ref.read(brightnessProvider.notifier).state =
+      WidgetsBinding.instance.window.platformBrightness.also((it) => logger.fine('brightness=$it'));
 
   return preferences;
 });
@@ -304,7 +307,7 @@ class MyApp extends ConsumerWidget {
           ),
           useMaterial3: ref.watch(useM3Provider),
         ).let(
-          (it) => ref.watch(themeAdjustmentProvider)
+          (it) => ref.watch(modifyThemeProvider)
               ? it.modifyWith(
                   textColor: textColor,
                   backgroundColor: backgroundColor,
