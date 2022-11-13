@@ -7,6 +7,7 @@ import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'ex_app_bar.dart';
 
@@ -91,6 +92,20 @@ class _BunnyTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
+        TextButton(
+          onPressed: () async {
+            final appDocDir = await getApplicationDocumentsDirectory();
+            String appDocPath = appDocDir.path;
+            final appSupDir = await getApplicationSupportDirectory();
+            String appSupPath = appSupDir.path;
+            final tempDir = await getTemporaryDirectory();
+            String tempPath = tempDir.path;
+            _logger.fine('appDocPath=$appDocPath');
+            _logger.fine('appSupPath=$appSupPath');
+            _logger.fine('tempPath=$tempPath');
+          },
+          child: const Text('appDocPath'),
+        ),
         Expanded(
           child: Center(
             child: cube.Cube(

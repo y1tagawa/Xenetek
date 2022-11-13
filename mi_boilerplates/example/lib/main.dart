@@ -19,6 +19,7 @@ import 'pages/colors_page.dart';
 import 'pages/dialogs_page.dart';
 import 'pages/embedded_tab_view_page.dart';
 import 'pages/ex_app_bar.dart';
+import 'pages/files_page.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
@@ -88,6 +89,12 @@ final _pages = <_PageItem>[
     title: EmbeddedTabViewPage.title,
     path: '/drawer/embedded_tab_view',
     builder: (_, __) => const EmbeddedTabViewPage(),
+  ),
+  _PageItem(
+    icon: FilesPage.icon,
+    title: FilesPage.title,
+    path: '/files',
+    builder: (_, __) => const FilesPage(),
   ),
   _PageItem(
     icon: ListsPage.icon,
