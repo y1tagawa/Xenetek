@@ -25,7 +25,7 @@ class ThreePage extends ConsumerWidget {
   static const _tabs = <Widget>[
     MiTab(
       tooltip: 'Cube',
-      icon: icon,
+      icon: Icon(Icons.cruelty_free_outlined),
     ),
     MiTab(
       tooltip: 'TBD',
