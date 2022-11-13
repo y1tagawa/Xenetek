@@ -75,6 +75,11 @@ class SnackBarPage extends ConsumerWidget {
 //
 // Snack bar tab
 //
+// 本来スナックバーにアイコンを載せるのはご法度であるが
+// https://m2.material.io/components/snackbars
+// WotWでは平気で載せている。
+// https://api.flutter.dev/flutter/material/SnackBar-class.html
+// しかし_SnackBarStateの派生が出来ないので、カスタムStatusBarは作成できなかったため、対応しないことにする。
 
 class _SnackBarTab extends ConsumerWidget {
   static final _logger = Logger((_SnackBarTab).toString());
@@ -90,6 +95,20 @@ class _SnackBarTab extends ConsumerWidget {
     // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L446
     final actionTextColor = theme.snackBarTheme.actionTextColor ??
         (theme.isDark ? theme.colorScheme.primary : theme.colorScheme.secondary);
+
+    void showSnackBar() {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Ping'),
+          action: SnackBarAction(
+            label: 'CLOSE',
+            onPressed: () {
+              ScaffoldMessenger.of(context).clearSnackBars();
+            },
+          ),
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.only(top: 8),
@@ -107,39 +126,22 @@ class _SnackBarTab extends ConsumerWidget {
                         theme.colorScheme.onSurface.withOpacity(0.80), theme.colorScheme.surface)),
             leading: DefaultTextStyle(
               style: theme.snackBarTheme.contentTextStyle ??
-                  theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.surface) ??
+                  theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.surface) ??
                   TextStyle(color: theme.colorScheme.surface),
-              child: const Text('Snack bar emulation'),
+              child: IconTheme.merge(
+                data: IconThemeData(color: theme.colorScheme.surface),
+                child: const Text('Ping'),
+              ),
             ),
             trailing: DefaultTextStyle(
               style: theme.snackBarTheme.contentTextStyle?.copyWith(color: actionTextColor) ??
-                  theme.textTheme.titleMedium?.copyWith(color: actionTextColor) ??
+                  theme.textTheme.bodyMedium?.copyWith(color: actionTextColor) ??
                   TextStyle(color: actionTextColor),
               child: const Text('ACTION'),
             ),
-          ),
-          // SnackBar表示
-          ListTile(
-            leading: MiTextButton(
-              enabled: enabled,
-              child: const MiIcon(
-                icon: Icon(Icons.notifications_outlined),
-                text: Text('Ping'),
-              ),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Ping'),
-                    action: SnackBarAction(
-                      label: 'CLOSE',
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).clearSnackBars();
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
+            onTap: () {
+              showSnackBar();
+            },
           ),
         ],
       ),
