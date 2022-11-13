@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart' hide Matrix4;
-import 'package:flutter_gl/flutter_gl.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
-import 'package:three_dart/three_dart.dart' as three;
 
 import 'ex_app_bar.dart';
 
@@ -82,21 +80,6 @@ class _ThreeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    three.WebGLRenderer? renderer;
-    var three3dRender = FlutterGlPlugin();
-    // await three3dRender.initialize(options: {"width": 1024, "height": 1024, "dpr": 1.0});
-    // await three3dRender.prepareContext();
-
-    //example
-    final camera = three.PerspectiveCamera(40, 1, 0.1, 10);
-    camera.position.z = 3;
-    final scene = three.Scene();
-    camera.lookAt(scene.position);
-    final geometryCylinder = three.CylinderGeometry(0.5, 0.5, 1, 32);
-    final materialCylinder = three.MeshPhongMaterial({"color": 0xff0000});
-    final mesh = three.Mesh(geometryCylinder, materialCylinder);
-    scene.add(mesh);
-
     return SingleChildScrollView(
       child: Column(
         children: [

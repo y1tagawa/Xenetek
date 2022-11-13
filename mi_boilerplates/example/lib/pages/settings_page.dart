@@ -342,8 +342,8 @@ class SettingsPage extends ConsumerWidget {
               value: ref.watch(brightnessProvider).isDark,
               title: const Text('Dark'),
               onChanged: (value) async {
-                ref.read(brightnessProvider.notifier).state = value!.toDark;
-                await savePreferences(ref);
+                ref.read(brightnessProvider.notifier).state =
+                    value! ? Brightness.dark : Brightness.light;
               },
             ),
             CheckboxListTile(

@@ -197,8 +197,8 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
               enabled: enabled,
               checked: ref.watch(brightnessProvider).isDark,
               onChanged: (value) async {
-                ref.read(brightnessProvider.notifier).state = value.toDark;
-                await savePreferences(ref);
+                ref.read(brightnessProvider.notifier).state =
+                    value ? Brightness.dark : Brightness.light;
               },
               checkIcon: const Icon(Icons.dark_mode_outlined),
               uncheckIcon: const Icon(Icons.light_mode_outlined),

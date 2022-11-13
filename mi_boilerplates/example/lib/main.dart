@@ -220,11 +220,6 @@ final preferencesProvider = FutureProvider((ref) async {
       .also((it) => logger.fine('background_color=$it'))
       .let((it) => colorOrNull(it));
 
-  ref.read(brightnessProvider.notifier).state = preferences
-      .getString('brightness')
-      .also((it) => logger.fine('brightness=$it'))
-      .let((it) => it == 'dark' ? Brightness.dark : Brightness.light);
-
   return preferences;
 });
 
@@ -255,11 +250,6 @@ Future<void> savePreferences(WidgetRef ref) async {
       (ref.read(backgroundColorProvider)?.value)
           .toString()
           .also((it) => logger.fine('background_color=$it')),
-    );
-    preferences.setString(
-      'brightness',
-      (ref.read(brightnessProvider).isDark ? 'dark' : 'light')
-          .also((it) => logger.fine('brightness=$it')),
     );
   }
 }
