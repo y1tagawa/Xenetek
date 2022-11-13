@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_cube/flutter_cube.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
@@ -76,18 +77,31 @@ class ThreePage extends ConsumerWidget {
 //
 
 class _ThreeTab extends ConsumerWidget {
+  static final _logger = Logger((_ThreeTab).toString());
+
   const _ThreeTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
+    return Column(
+      children: [
+        Expanded(
+          child: Center(
+            child: Cube(
+              onSceneCreated: (Scene scene) {
+                scene.world.add(Object(fileName: 'assets/stanford-bunny.obj'));
+                _logger.fine('fov = ${scene.camera.fov}');
+                _logger.fine('pos = ${scene.camera.position}');
+                scene.camera = Camera(
+                  position: Vector3(0, 0.3, -1),
+                  target: Vector3(0, 0.3, 0),
+                  fov: 35.0,
+                );
+              },
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

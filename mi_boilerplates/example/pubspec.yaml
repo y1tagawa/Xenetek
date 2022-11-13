@@ -33,6 +33,7 @@ dependencies:
     sdk: flutter
   async: ^2.9.0
   collection: ^1.16.0
+  flutter_cube: ^0.1.1
   flutter_svg: ^1.1.4
   go_router: ^5.0.5
   hooks_riverpod: ^2.0.2
@@ -70,6 +71,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/lottie_icon_outlined.png
+    - assets/stanford-bunny.obj
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
