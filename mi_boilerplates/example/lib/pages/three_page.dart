@@ -93,13 +93,14 @@ class _BunnyTab extends ConsumerWidget {
                 final bunny = cube.Object(
                   fileName: 'assets/stanford-bunny.obj',
                   lighting: true,
+                  isAsset: true,
                 );
-                scene.world.add(bunny);
                 bunny.mesh.material.diffuse = cube.Vector3(
                   Colors.brown.shade500.red / 255.0,
                   Colors.brown.shade500.green / 255.0,
                   Colors.brown.shade500.blue / 255.0,
                 );
+                scene.world.add(bunny);
                 scene.camera = cube.Camera(
                   position: cube.Vector3(-0.05, 0.3, 1.5),
                   target: cube.Vector3(-0.05, 0.3, 0),
