@@ -24,7 +24,7 @@ class ThreePage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Cube',
+      tooltip: 'Bunny',
       icon: Icon(Icons.cruelty_free_outlined),
     ),
     MiTab(
@@ -59,8 +59,8 @@ class ThreePage extends ConsumerWidget {
             minimum: EdgeInsets.all(8),
             child: TabBarView(
               children: [
-                _CubeTab(),
-                _CubeTab(),
+                _BunnyTab(),
+                _BunnyTab(),
               ],
             ),
           ),
@@ -74,13 +74,13 @@ class ThreePage extends ConsumerWidget {
 }
 
 //
-// Checkbox tab
+// Bunny tab
 //
 
-class _CubeTab extends ConsumerWidget {
-  static final _logger = Logger((_CubeTab).toString());
+class _BunnyTab extends ConsumerWidget {
+  static final _logger = Logger((_BunnyTab).toString());
 
-  const _CubeTab();
+  const _BunnyTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,8 +94,8 @@ class _CubeTab extends ConsumerWidget {
                 _logger.fine('fov = ${scene.camera.fov}');
                 _logger.fine('pos = ${scene.camera.position}');
                 scene.camera = Camera(
-                  position: Vector3(0, 0.3, -1),
-                  target: Vector3(0, 0.3, 0),
+                  position: Vector3(-0.05, 0.3, 1.5),
+                  target: Vector3(-0.05, 0.3, 0),
                   fov: 35.0,
                 );
               },

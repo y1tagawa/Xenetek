@@ -10,6 +10,7 @@
 #
 ####
 mtllib ./stanford-bunny.obj.mtl
+usemtl white
 
 vn -0.155401 0.902638 0.401367
 v -0.026092 0.124350 0.019928
