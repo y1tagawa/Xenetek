@@ -72,6 +72,7 @@ flutter:
   assets:
     - assets/lottie_icon_outlined.png
     - assets/stanford-bunny.obj
+    - assets/stanford-bunny.mtl
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

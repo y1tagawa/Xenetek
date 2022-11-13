@@ -77,6 +77,11 @@ class ThreePage extends ConsumerWidget {
 // Bunny tab
 //
 
+extension ColorHelper on Color {
+  static const _k = 1.0 / 255.0;
+  cube.Vector3 toVector() => cube.Vector3(red * _k, green * _k, blue * _k);
+}
+
 class _BunnyTab extends ConsumerWidget {
   static final _logger = Logger((_BunnyTab).toString());
 
@@ -93,13 +98,12 @@ class _BunnyTab extends ConsumerWidget {
                 final bunny = cube.Object(
                   fileName: 'assets/stanford-bunny.obj',
                   lighting: true,
-                  isAsset: true,
                 );
-                bunny.mesh.material.diffuse = cube.Vector3(
-                  Colors.brown.shade500.red / 255.0,
-                  Colors.brown.shade500.green / 255.0,
-                  Colors.brown.shade500.blue / 255.0,
-                );
+                _logger.fine('bunny.mesh.colors=${bunny.mesh.colors}');
+                bunny.mesh.colors.add(Colors.red);
+                bunny.mesh.material.ambient = Colors.brown.toVector() * 0.95;
+                bunny.mesh.material.diffuse = Colors.red.toVector() * 0.15;
+                bunny.mesh.material.specular = Colors.white.toVector() * 0.05;
                 scene.world.add(bunny);
                 scene.camera = cube.Camera(
                   position: cube.Vector3(-0.05, 0.3, 1.5),
@@ -111,6 +115,7 @@ class _BunnyTab extends ConsumerWidget {
                 _logger.fine('ambient = ${bunny.mesh.material.ambient}');
                 _logger.fine('diffuse = ${bunny.mesh.material.diffuse}');
                 _logger.fine('specular = ${bunny.mesh.material.specular}');
+                _logger.fine('bunny.mesh.colors=${bunny.mesh.colors}');
               },
             ),
           ),
