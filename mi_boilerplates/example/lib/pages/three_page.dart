@@ -11,23 +11,24 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'ex_app_bar.dart';
 
 //
-// Three_dart examples page.
+// 3D examples page.
 //
+// https://pub.dev/packages/flutter_cube
 // https://pub.dev/packages/three_dart
 
 class ThreePage extends ConsumerWidget {
-  static const icon = MiRotate(angleDegree: 195, child: Icon(Icons.change_history_outlined));
-  static const title = Text('Three dart');
+  static const icon = Icon(Icons.view_in_ar_outlined);
+  static const title = Text('3D');
 
   static final _logger = Logger((ThreePage).toString());
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Checkbox',
+      tooltip: 'Cube',
       icon: icon,
     ),
     MiTab(
-      tooltip: 'Toggle buttons',
+      tooltip: 'TBD',
       icon: Icon(Icons.more_horiz),
     ),
   ];
@@ -58,8 +59,8 @@ class ThreePage extends ConsumerWidget {
             minimum: EdgeInsets.all(8),
             child: TabBarView(
               children: [
-                _ThreeTab(),
-                _ThreeTab(),
+                _CubeTab(),
+                _CubeTab(),
               ],
             ),
           ),
@@ -76,10 +77,10 @@ class ThreePage extends ConsumerWidget {
 // Checkbox tab
 //
 
-class _ThreeTab extends ConsumerWidget {
-  static final _logger = Logger((_ThreeTab).toString());
+class _CubeTab extends ConsumerWidget {
+  static final _logger = Logger((_CubeTab).toString());
 
-  const _ThreeTab();
+  const _CubeTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
