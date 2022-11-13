@@ -206,3 +206,73 @@ extension NodeHelper on Node {
     );
   }
 }
+
+//
+// モデル
+//
+
+class Mesh {
+  final String? materialName;
+  const Mesh({
+    this.materialName,
+  });
+  // TBD
+}
+
+abstract class MeshBuilder {
+  const MeshBuilder();
+
+  List<Mesh> build();
+}
+
+class Model {
+  final String? objectName;
+  final List<MeshBuilder> meshBuilders;
+
+  const Model({
+    this.objectName,
+    this.meshBuilders = const [],
+  });
+
+  List<Mesh> build() {
+    //TODO
+    throw UnimplementedError();
+  }
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Model &&
+          runtimeType == other.runtimeType &&
+          objectName == other.objectName &&
+          meshBuilders == other.meshBuilders);
+
+  @override
+  int get hashCode => objectName.hashCode ^ meshBuilders.hashCode;
+
+  @override
+  String toString() {
+    return 'Model{ objectName: $objectName, meshBuilders: $meshBuilders,}';
+  }
+
+  Model copyWith({
+    String? objectName,
+    List<MeshBuilder>? meshBuilders,
+  }) {
+    return Model(
+      objectName: objectName ?? this.objectName,
+      meshBuilders: meshBuilders ?? this.meshBuilders,
+    );
+  }
+
+  factory Model.fromMap(Map<String, dynamic> map) {
+    return Model(
+      objectName: map['objectName'] as String,
+      meshBuilders: map['meshBuilders'] as List<MeshBuilder>,
+    );
+  }
+
+//</editor-fold>
+}
