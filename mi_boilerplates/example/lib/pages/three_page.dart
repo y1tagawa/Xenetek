@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_cube/flutter_cube.dart';
+import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
@@ -88,16 +88,28 @@ class _BunnyTab extends ConsumerWidget {
       children: [
         Expanded(
           child: Center(
-            child: Cube(
-              onSceneCreated: (Scene scene) {
-                scene.world.add(Object(fileName: 'assets/stanford-bunny.obj'));
-                _logger.fine('fov = ${scene.camera.fov}');
-                _logger.fine('pos = ${scene.camera.position}');
-                scene.camera = Camera(
-                  position: Vector3(-0.05, 0.3, 1.5),
-                  target: Vector3(-0.05, 0.3, 0),
+            child: cube.Cube(
+              onSceneCreated: (cube.Scene scene) {
+                final bunny = cube.Object(
+                  fileName: 'assets/stanford-bunny.obj',
+                  lighting: true,
+                );
+                scene.world.add(bunny);
+                bunny.mesh.material.diffuse = cube.Vector3(
+                  Colors.brown.shade500.red / 255.0,
+                  Colors.brown.shade500.green / 255.0,
+                  Colors.brown.shade500.blue / 255.0,
+                );
+                scene.camera = cube.Camera(
+                  position: cube.Vector3(-0.05, 0.3, 1.5),
+                  target: cube.Vector3(-0.05, 0.3, 0),
                   fov: 35.0,
                 );
+                _logger.fine('fov = ${scene.camera.fov}');
+                _logger.fine('pos = ${scene.camera.position}');
+                _logger.fine('ambient = ${bunny.mesh.material.ambient}');
+                _logger.fine('diffuse = ${bunny.mesh.material.diffuse}');
+                _logger.fine('specular = ${bunny.mesh.material.specular}');
               },
             ),
           ),

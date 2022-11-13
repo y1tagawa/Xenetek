@@ -9,8 +9,7 @@
 # Faces: 1017
 #
 ####
-mtllib ./stanford-bunny.obj.mtl
-usemtl white
+mtllib ./stanford-bunny.mtl
 
 vn -0.155401 0.902638 0.401367
 v -0.026092 0.124350 0.019928
