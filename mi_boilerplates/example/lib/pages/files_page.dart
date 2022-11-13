@@ -104,7 +104,7 @@ class _PathsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final enableActions = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(enableActionsProvider);
 
     final paths = ref.watch(_pathsProvider).value;
 
@@ -116,24 +116,35 @@ class _PathsTab extends ConsumerWidget {
           if (paths != null) ...[
             ListTile(
               title: const Text('Application documents directory'),
-              subtitle: Text(paths.applicationDocumentsDirectory.path),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Text(paths.applicationDocumentsDirectory.path),
+              ),
+              textColor: theme.disabledColor,
             ),
             ListTile(
               title: const Text('Application suppot directory'),
-              subtitle: Text(paths.applicationSupportDirectory.path),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Text(paths.applicationSupportDirectory.path),
+              ),
+              textColor: theme.disabledColor,
             ),
             ListTile(
               title: const Text('Temporary directory'),
-              subtitle: Text(paths.temporaryDirectory.path),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Text(paths.temporaryDirectory.path),
+              ),
+              textColor: theme.disabledColor,
             ),
           ] else
             const CircularProgressIndicator(),
           const Divider(),
           ListTile(
-            leading: DefaultTextStyle.merge(
-              style: TextStyle(color: theme.foregroundColor),
-              child: const Text('pickFiles()'),
-            ),
+            enabled: enabled,
+            title: const Text('pickFiles()'),
+            trailing: const Icon(Icons.navigate_next),
             onTap: () async {
               final result = await FilePicker.platform.pickFiles(
                 dialogTitle: 'Open',

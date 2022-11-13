@@ -4,10 +4,13 @@
 
 import 'package:flutter/material.dart';
 
-/// RadioListTile with [enabled].
+/// カスタム[RadioListTile]
+///
+/// * [enabled]追加
 
 class MiRadioListTile<T> extends RadioListTile<T> {
   const MiRadioListTile({
+//<editor-fold>
     super.key,
     bool enabled = true,
     required super.value,
@@ -30,13 +33,17 @@ class MiRadioListTile<T> extends RadioListTile<T> {
     super.visualDensity,
     super.focusNode,
     super.enableFeedback,
+//</editor-fold>
   }) : super(onChanged: enabled ? onChanged : null);
 }
 
-/// SwitchListTile with [enabled].
+/// カスタム[SwitchListTile]
+///
+/// * [enabled]追加
 
 class MiSwitchListTile extends SwitchListTile {
   const MiSwitchListTile({
+    //<editor-fold>
     super.key,
     bool enabled = true,
     required super.value,
@@ -63,12 +70,16 @@ class MiSwitchListTile extends SwitchListTile {
     super.focusNode,
     super.enableFeedback,
     super.hoverColor,
+//</editor-fold>]
   }) : super(onChanged: enabled ? onChanged : null);
 }
 
-/// ExpansionTile with [enabled].
+/// カスタム[ExpansionTile]
+///
+/// * [enabled]追加、それに合わせ動作もいろいろ変更。
 
 class MiExpansionTile extends StatelessWidget {
+  //<editor-fold>
   final bool enabled;
   final Widget? leading;
   final Widget title;
@@ -90,8 +101,10 @@ class MiExpansionTile extends StatelessWidget {
   final Color? collapsedIconColor;
   final ListTileControlAffinity? controlAffinity;
   final Color? dividerColor;
+//</editor-fold>
 
   const MiExpansionTile({
+    //<editor-fold>
     super.key,
     this.enabled = true,
     this.leading,
@@ -114,6 +127,7 @@ class MiExpansionTile extends StatelessWidget {
     this.collapsedIconColor,
     this.controlAffinity,
     this.dividerColor,
+    //</editor-fold>
   });
 
   @override
@@ -164,3 +178,22 @@ class MiExpansionTile extends StatelessWidget {
     );
   }
 }
+
+// class _TextColor extends StatelessWidget {
+//   final Color? color;
+//   final Widget child;
+//
+//   const _TextColor(this.color, this.child);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     return DefaultTextStyle.merge(
+//       style: TextStyle(color: color),
+//       child: IconTheme.merge(
+//         data: IconThemeData(color: color),
+//         child: child,
+//       ),
+//     );
+//   }
+// }

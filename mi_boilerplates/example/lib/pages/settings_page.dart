@@ -363,6 +363,7 @@ class SettingsPage extends ConsumerWidget {
             const Divider(),
             ListTile(
               title: const Text('Reset preferences'),
+              trailing: const Icon(Icons.navigate_next),
               onTap: () async {
                 final ok = await showWarningOkCancelDialog(
                   context: context,
