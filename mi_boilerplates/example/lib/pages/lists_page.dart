@@ -104,14 +104,14 @@ class ListsPage extends ConsumerWidget {
   }
 }
 
-///
-/// ListView tab.
-/// TODO: AnimatedList
-///
+//
+// ListView tab.
+// TODO: AnimatedList
+//
 
-///
-/// Dismissible list tab.
-///
+//
+// Dismissible list tab.
+//
 
 final _leftListProvider =
     StateProvider((ref) => _listItems.keys.whereIndexed((index, key) => index % 2 == 0).toList());
@@ -202,9 +202,9 @@ class _DismissibleListTab extends ConsumerWidget {
   }
 }
 
-///
-/// Reorderable list tab.
-///
+//
+// Reorderable list tab.
+//
 
 // https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
 const double kMenuItemWidth = 40.0 * 3;
@@ -308,9 +308,9 @@ class _ReorderableListTab extends ConsumerWidget {
   }
 }
 
-///
-/// Stepper tab.
-///
+//
+// Stepper tab.
+//
 
 final _stepIndexProvider = StateProvider((ref) => -1);
 
