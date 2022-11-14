@@ -253,19 +253,21 @@ class _ReorderableListTab extends ConsumerWidget {
                 PopupMenuItem<String>(
                   child: SizedBox(
                     width: kMenuItemWidth,
-                    height: MediaQuery.of(context).size.height * 0.3,
-                    child: Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: order
-                          .map(
-                            (key) => InkWell(
-                                onTap: () => _keys[key]!
-                                    .currentContext
-                                    ?.let((it) => Scrollable.ensureVisible(it)),
-                                child: _listItems[key]!),
-                          )
-                          .toList(),
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: order
+                            .map(
+                              (key) => InkWell(
+                                  onTap: () => _keys[key]!
+                                      .currentContext
+                                      ?.let((it) => Scrollable.ensureVisible(it)),
+                                  child: _listItems[key]!),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
                 ),
@@ -323,6 +325,7 @@ class _StepperTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final index = ref.watch(_stepIndexProvider);
 
+    // TODO: Stepが開いた時にensureVisible
     final steps = <Step>[
       Step(
         title: const Text('Boots'),
