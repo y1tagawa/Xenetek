@@ -233,38 +233,45 @@ class _ReorderableListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        MiRow(
+          flexes: const [1, 1],
           children: [
-            MiTextButton(
+            ListTile(
               enabled: enabled,
-              onPressed: () {
+              leading: const Icon(Icons.refresh_outlined),
+              title: const Text('Reset'),
+              onTap: () {
                 _orderNotifier.value = _initOrder;
               },
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Reset'),
-              ),
             ),
             PopupMenuButton<String>(
-              offset: const Offset(8, 24),
+              offset: const Offset(8, kToolbarHeight),
               tooltip: '',
               itemBuilder: (_) => [
                 PopupMenuItem<String>(
                   child: SizedBox(
                     width: kMenuItemWidth,
-                    height: MediaQuery.of(context).size.height * 0.2,
+                    height: MediaQuery.of(context).size.height * 0.24,
                     child: SingleChildScrollView(
                       child: Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                        spacing: 0,
+                        runSpacing: 0,
                         children: order
                             .map(
-                              (key) => InkWell(
+                              (key) => Tooltip(
+                                message: key,
+                                child: InkWell(
                                   onTap: () => _keys[key]!
                                       .currentContext
                                       ?.let((it) => Scrollable.ensureVisible(it)),
-                                  child: _listItems[key]!),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    alignment: Alignment.center,
+                                    child: _listItems[key]!,
+                                  ),
+                                ),
+                              ),
                             )
                             .toList(),
                       ),
@@ -272,9 +279,10 @@ class _ReorderableListTab extends ConsumerWidget {
                   ),
                 ),
               ],
-              child: const MiIcon(
-                icon: Icon(Icons.more_vert),
-                text: Text('Ensure visible'),
+              child: ListTile(
+                enabled: enabled,
+                trailing: const Icon(Icons.more_vert),
+                title: const Text('Ensure visible'),
               ),
             ),
           ],
