@@ -207,8 +207,7 @@ class _DismissibleListTab extends ConsumerWidget {
 ///
 
 // https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
-const double _kMenuWidthStep = 56.0;
-const double _kMenuMaxWidth = 40.0 * 3;
+const double kMenuItemWidth = 40.0 * 3;
 
 final _initOrder = List<String>.unmodifiable(_listItems.keys);
 final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
@@ -253,7 +252,7 @@ class _ReorderableListTab extends ConsumerWidget {
               itemBuilder: (_) => [
                 PopupMenuItem<String>(
                   child: SizedBox(
-                    width: _kMenuMaxWidth,
+                    width: kMenuItemWidth,
                     height: MediaQuery.of(context).size.height * 0.3,
                     child: Wrap(
                       spacing: 12,
