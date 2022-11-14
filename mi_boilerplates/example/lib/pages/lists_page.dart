@@ -242,6 +242,7 @@ class _ReorderableListTab extends ConsumerWidget {
               ),
             ),
             PopupMenuButton<String>(
+              tooltip: '',
               itemBuilder: (_) => order
                   .map(
                     (key) => PopupMenuItem<String>(
@@ -253,6 +254,10 @@ class _ReorderableListTab extends ConsumerWidget {
               onSelected: (key) {
                 _keys[key]!.currentContext?.let((it) => Scrollable.ensureVisible(it));
               },
+              child: const MiIcon(
+                icon: Icon(Icons.more_vert),
+                text: Text('Ensure visible'),
+              ),
             ),
           ],
         ),
