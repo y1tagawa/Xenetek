@@ -50,12 +50,12 @@ class ListsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Dismissible list',
-      icon: Icon(Icons.segment),
-    ),
-    MiTab(
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
+    ),
+    MiTab(
+      tooltip: 'Dismissible list',
+      icon: Icon(Icons.segment),
     ),
     MiTab(
       tooltip: 'Stepper list',
@@ -89,8 +89,8 @@ class ListsPage extends ConsumerWidget {
             minimum: EdgeInsets.all(8),
             child: TabBarView(
               children: [
-                _DismissibleListTab(),
                 _ReorderableListTab(),
+                _DismissibleListTab(),
                 _StepperTab(),
               ],
             ),
@@ -206,10 +206,15 @@ class _DismissibleListTab extends ConsumerWidget {
 /// Reorderable list tab.
 ///
 
-final _orderNotifier = ValueNotifier<List<String>>(List.unmodifiable(_listItems.keys));
+final _initOrder = List<String>.unmodifiable(_listItems.keys);
+final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
 
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
+
+  static final _keys = <String, GlobalKey>{
+    for (var key in _listItems.keys) key: GlobalKey(),
+  };
 
   const _ReorderableListTab();
 
@@ -217,6 +222,7 @@ class _ReorderableListTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
+    final order = _orderNotifier.value;
 
     final theme = Theme.of(context);
 
@@ -228,12 +234,25 @@ class _ReorderableListTab extends ConsumerWidget {
             MiTextButton(
               enabled: enabled,
               onPressed: () {
-                _orderNotifier.value = List.unmodifiable(_listItems.keys);
+                _orderNotifier.value = _initOrder;
               },
               child: const MiIcon(
                 icon: Icon(Icons.refresh_outlined),
                 text: Text('Reset'),
               ),
+            ),
+            PopupMenuButton<String>(
+              itemBuilder: (_) => order
+                  .map(
+                    (key) => PopupMenuItem<String>(
+                      value: key,
+                      child: _listItems[key]!,
+                    ),
+                  )
+                  .toList(),
+              onSelected: (key) {
+                _keys[key]!.currentContext?.let((it) => Scrollable.ensureVisible(it));
+              },
             ),
           ],
         ),
@@ -245,15 +264,16 @@ class _ReorderableListTab extends ConsumerWidget {
             dragHandleColor: theme.unselectedIconColor,
             itemBuilder: (context, index) {
               // ReorderableListViewの要請により、各widgetにはリスト内でユニークなキーを与える。
-              final key = _orderNotifier.value[index];
+              // (ここではensureVisibleの関係でGlobalKeyだがKeyでも良い)
+              final key = _keys[order[index]]!;
               // widgetをDismissibleにすることで併用も可能。
               return Dismissible(
-                key: Key(key),
+                key: key,
                 onDismissed: (direction) {
-                  _orderNotifier.value = _orderNotifier.value.removedAt(index);
+                  _orderNotifier.value = order.removedAt(index);
                 },
                 background: ColoredBox(color: theme.backgroundColor),
-                child: _ListTile(key),
+                child: _ListTile(_listItems.keys.toList()[index]),
               );
             },
           ),

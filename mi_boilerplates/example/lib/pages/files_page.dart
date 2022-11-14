@@ -123,7 +123,7 @@ class _PathsTab extends ConsumerWidget {
               textColor: theme.disabledColor,
             ),
             ListTile(
-              title: const Text('Application suppot directory'),
+              title: const Text('Application support directory'),
               subtitle: Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(paths.applicationSupportDirectory.path),
