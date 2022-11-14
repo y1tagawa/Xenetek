@@ -206,8 +206,13 @@ class _DismissibleListTab extends ConsumerWidget {
 /// Reorderable list tab.
 ///
 
+// https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
+const double _kMenuWidthStep = 56.0;
+const double _kMenuMaxWidth = 40.0 * 3;
+
 final _initOrder = List<String>.unmodifiable(_listItems.keys);
 final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
+final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
 
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
@@ -222,7 +227,8 @@ class _ReorderableListTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
-    final order = _orderNotifier.value;
+    final order = ref.watch(_orderProvider).value;
+    _logger.fine('order=$order');
 
     final theme = Theme.of(context);
 
@@ -242,18 +248,29 @@ class _ReorderableListTab extends ConsumerWidget {
               ),
             ),
             PopupMenuButton<String>(
+              offset: const Offset(8, 24),
               tooltip: '',
-              itemBuilder: (_) => order
-                  .map(
-                    (key) => PopupMenuItem<String>(
-                      value: key,
-                      child: _listItems[key]!,
+              itemBuilder: (_) => [
+                PopupMenuItem<String>(
+                  child: SizedBox(
+                    width: _kMenuMaxWidth,
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      children: order
+                          .map(
+                            (key) => InkWell(
+                                onTap: () => _keys[key]!
+                                    .currentContext
+                                    ?.let((it) => Scrollable.ensureVisible(it)),
+                                child: _listItems[key]!),
+                          )
+                          .toList(),
                     ),
-                  )
-                  .toList(),
-              onSelected: (key) {
-                _keys[key]!.currentContext?.let((it) => Scrollable.ensureVisible(it));
-              },
+                  ),
+                ),
+              ],
               child: const MiIcon(
                 icon: Icon(Icons.more_vert),
                 text: Text('Ensure visible'),
@@ -269,7 +286,7 @@ class _ReorderableListTab extends ConsumerWidget {
             dragHandleColor: theme.unselectedIconColor,
             itemBuilder: (context, index) {
               // ReorderableListViewの要請により、各widgetにはリスト内でユニークなキーを与える。
-              // (ここではensureVisibleの関係でGlobalKeyだがKeyでも良い)
+              // (ここではensureVisibleのためGlobalKeyだがKeyでも良い)
               final key = _keys[order[index]]!;
               // widgetをDismissibleにすることで併用も可能。
               return Dismissible(
@@ -278,7 +295,7 @@ class _ReorderableListTab extends ConsumerWidget {
                   _orderNotifier.value = order.removedAt(index);
                 },
                 background: ColoredBox(color: theme.backgroundColor),
-                child: _ListTile(_listItems.keys.toList()[index]),
+                child: _ListTile(order[index]),
               );
             },
           ),
