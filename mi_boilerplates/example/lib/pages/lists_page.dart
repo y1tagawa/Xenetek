@@ -249,8 +249,8 @@ class _ReorderableListTab extends ConsumerWidget {
               items: order
                   .mapIndexed(
                     (index, key) => Container(
-                      width: 36,
-                      height: 36,
+                      width: 48,
+                      height: 48,
                       alignment: Alignment.center,
                       child: _listItems[key]!,
                     ),
@@ -272,8 +272,7 @@ class _ReorderableListTab extends ConsumerWidget {
             notifier: _orderNotifier,
             dragHandleColor: theme.unselectedIconColor,
             itemBuilder: (context, index) {
-              // ReorderableListViewの要請により、各widgetにはリスト内でユニークなキーを与える。
-              // (ここではensureVisibleのためGlobalKeyだがKeyでも良い)
+              // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
               final key = _keys[order[index]]!;
               // widgetをDismissibleにすることで併用も可能。
               return Dismissible(

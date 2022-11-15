@@ -110,9 +110,10 @@ class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
 
 /// グリッドポップアップメニューボタン
 ///
+/// 横幅がいまいち決まらない。
 class MiGridPopupMenuButton extends StatelessWidget {
   // https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
-  static const double kMenuItemWidth = 56.0 * 2;
+  static const double kMenuItemWidth = 56.0 * 3;
 
   final double? width;
   final double? height;
@@ -140,14 +141,15 @@ class MiGridPopupMenuButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<int>(
+      onSelected: onSelected,
       offset: offset,
       itemBuilder: (context) {
         return [
           PopupMenuItem<int>(
-            child: SingleChildScrollView(
-              child: SizedBox(
-                width: width ?? kMenuItemWidth,
-                height: height ?? MediaQuery.of(context).size.height * 0.3,
+            child: SizedBox(
+              width: width ?? kMenuItemWidth,
+              height: height ?? MediaQuery.of(context).size.height * 0.3,
+              child: SingleChildScrollView(
                 child: Wrap(
                   spacing: spacing,
                   runSpacing: runSpacing,
@@ -156,8 +158,7 @@ class MiGridPopupMenuButton extends StatelessWidget {
                         (index, item) => InkWell(
                           child: item,
                           onTap: () {
-                            onSelected?.call(index);
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pop(index);
                           },
                         ).let(
                           (it) => tooltips != null
@@ -172,7 +173,7 @@ class MiGridPopupMenuButton extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ];
       },
       child: child,
