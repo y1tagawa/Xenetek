@@ -73,8 +73,9 @@ extension SetHelper<T> on Set<T> {
 /// [icon]がnullの場合、その部分は空白となる。
 class MiIcon extends StatelessWidget {
   final bool enabled;
-  final VoidCallback? onTap;
   final Widget? icon;
+  final VoidCallback? onTap;
+  final ValueChanged<bool>? onHover;
   final double? spacing;
   final Widget? text;
   final String? tooltip;
@@ -84,6 +85,7 @@ class MiIcon extends StatelessWidget {
     this.enabled = true,
     this.icon,
     this.onTap,
+    this.onHover,
     this.spacing,
     this.text,
     this.tooltip,
@@ -94,7 +96,7 @@ class MiIcon extends StatelessWidget {
     final theme = Theme.of(context);
     final textColor = enabled ? null : theme.disabledColor;
 
-    Widget icon_ = icon ?? const SizedBox.square(dimension: 24.0);
+    Widget icon_ = icon ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
     if (icon != null) {
       icon_ = IconTheme.merge(
         data: IconThemeData(color: textColor),
@@ -119,15 +121,16 @@ class MiIcon extends StatelessWidget {
       );
     }
 
-    if (onTap != null) {
+    if (onTap != null || onHover != null) {
       icon_ = InkWell(
         onTap: enabled ? onTap : null,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: IgnorePointer(
-            child: icon_,
-          ),
-        ),
+        onHover: onHover,
+        child: text != null
+            ? Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: IgnorePointer(child: icon_),
+              )
+            : IgnorePointer(child: icon_),
       );
     }
 
@@ -148,6 +151,8 @@ class MiIcon extends StatelessWidget {
 class MiColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
+  final VoidCallback? onTap;
+  final ValueChanged<bool>? onHover;
   final double? size;
   final double margin;
   final double? spacing;
@@ -158,6 +163,8 @@ class MiColorChip extends StatelessWidget {
     super.key,
     this.enabled = true,
     required this.color,
+    this.onTap,
+    this.onHover,
     this.size,
     this.margin = 2,
     this.spacing,
@@ -183,6 +190,8 @@ class MiColorChip extends StatelessWidget {
               height: size_,
               child: ColoredBox(color: enabled ? color! : theme.disabledColor),
             ),
+      onTap: onTap,
+      onHover: onHover,
       spacing: spacing,
       text: text,
       tooltip: tooltip,

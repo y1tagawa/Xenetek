@@ -201,7 +201,7 @@ class _ColorsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      runSpacing: 8,
+      runSpacing: 4,
       children: colors1.mapIndexed(
         (index, color) {
           return colors2 != null
@@ -209,27 +209,23 @@ class _ColorsView extends StatelessWidget {
                   message: tooltips?[index] ?? '',
                   child: Column(
                     children: [
-                      InkWell(
+                      MiColorChip(
+                        color: color,
                         onTap: () => onSelected?.call(color),
-                        child: MiColorChip(
-                          color: color,
-                        ),
                       ),
-                      InkWell(
-                        onTap: () => onSelected?.call(colors2![index]),
-                        child: MiColorChip(
-                          color: colors2![index],
+                      colors2![index].let(
+                        (color2) => MiColorChip(
+                          onTap: () => onSelected?.call(color2),
+                          color: color2,
                         ),
                       ),
                     ],
                   ),
                 )
-              : InkWell(
+              : MiColorChip(
+                  color: color,
                   onTap: () => onSelected?.call(color),
-                  child: MiColorChip(
-                    color: color,
-                    tooltip: tooltips?[index],
-                  ),
+                  tooltip: tooltips?[index],
                 );
         },
       ).toList(),
