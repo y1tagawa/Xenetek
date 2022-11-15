@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:example/data/primary_color_names.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -25,12 +26,12 @@ class ColorsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Color grid',
-      icon: Icon(Icons.grid_on_outlined),
-    ),
-    MiTab(
       tooltip: 'Theme & color scheme',
       icon: Icon(Icons.schema_outlined),
+    ),
+    MiTab(
+      tooltip: 'Color grid',
+      icon: Icon(Icons.grid_on_outlined),
     ),
   ];
 
@@ -61,8 +62,8 @@ class ColorsPage extends ConsumerWidget {
             minimum: EdgeInsets.symmetric(horizontal: 8),
             child: TabBarView(
               children: [
-                _ColorGridTab(),
                 _ColorSchemeTab(),
+                _ColorGridTab(),
               ],
             ),
           ),
@@ -75,9 +76,9 @@ class ColorsPage extends ConsumerWidget {
   }
 }
 
-///
-/// Color grid tab.
-///
+//
+// Color grid tab.
+//
 
 class _ColorGridTab extends ConsumerWidget {
   static final _logger = Logger((_ColorGridTab).toString());
@@ -116,12 +117,11 @@ class _ColorGridTab extends ConsumerWidget {
   }
 }
 
-///
-///　Theme and color scheme tab.
-///
+//
+//　Theme and color scheme tab.
+//
 
-final _themeColorItems = <String, Color Function(ThemeData)>{
-  //
+final _colorSchemeItems1 = <String, Color Function(ThemeData)>{
   'colorScheme.primary': (theme) => theme.colorScheme.primary,
   'colorScheme.onPrimary': (theme) => theme.colorScheme.onPrimary,
   'colorScheme.secondary': (theme) => theme.colorScheme.secondary,
@@ -130,7 +130,9 @@ final _themeColorItems = <String, Color Function(ThemeData)>{
   'colorScheme.onBackground': (theme) => theme.colorScheme.onBackground,
   'colorScheme.surface': (theme) => theme.colorScheme.surface,
   'colorScheme.onSurface': (theme) => theme.colorScheme.onSurface,
-  //
+};
+
+final _colorSchemeItems2 = <String, Color Function(ThemeData)>{
   'colorScheme.error': (theme) => theme.colorScheme.error,
   'colorScheme.onError': (theme) => theme.colorScheme.onError,
   'colorScheme.primaryContainer': (theme) => theme.colorScheme.primaryContainer,
@@ -151,14 +153,18 @@ final _themeColorItems = <String, Color Function(ThemeData)>{
   'colorScheme.onInverseSurface': (theme) => theme.colorScheme.onInverseSurface,
   'colorScheme.inversePrimary': (theme) => theme.colorScheme.inversePrimary,
   'colorScheme.surfaceTint': (theme) => theme.colorScheme.surfaceTint,
-  //
+};
+
+final _themeColorItems1 = <String, Color Function(ThemeData)>{
   'backgroundColor': (theme) => theme.backgroundColor,
   'disabledColor': (theme) => theme.disabledColor,
   'canvasColor': (theme) => theme.canvasColor,
   'cardColor': (theme) => theme.cardColor,
   'selectedRowColor': (theme) => theme.selectedRowColor,
   'unselectedWidgetColor': (theme) => theme.unselectedWidgetColor,
-  //
+};
+
+final _themeColorItems2 = <String, Color Function(ThemeData)>{
   'bottomAppBarColor': (theme) => theme.bottomAppBarColor,
   'dialogBackgroundColor': (theme) => theme.dialogBackgroundColor,
   'dividerColor': (theme) => theme.dividerColor,
@@ -178,6 +184,76 @@ final _themeColorItems = <String, Color Function(ThemeData)>{
   'toggleableActiveColor': (theme) => theme.toggleableActiveColor,
 };
 
+class _ColorsView extends StatelessWidget {
+  final List<Color> colors1;
+  final List<Color>? colors2;
+  final List<String>? tooltips;
+  final ValueChanged<Color>? onSelected;
+
+  const _ColorsView({
+    required this.colors1,
+    required this.colors2,
+    this.tooltips,
+    this.onSelected,
+  })  : assert(tooltips == null || tooltips.length == colors1.length),
+        assert(colors2 == null || colors2.length == colors1.length);
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      runSpacing: 8,
+      children: colors1.mapIndexed(
+        (index, color) {
+          return colors2 != null
+              ? Tooltip(
+                  message: tooltips?[index] ?? '',
+                  child: Column(
+                    children: [
+                      InkWell(
+                        onTap: () => onSelected?.call(color),
+                        child: MiColorChip(
+                          color: color,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () => onSelected?.call(colors2![index]),
+                        child: MiColorChip(
+                          color: colors2![index],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : InkWell(
+                  onTap: () => onSelected?.call(color),
+                  child: MiColorChip(
+                    color: color,
+                    tooltip: tooltips?[index],
+                  ),
+                );
+        },
+      ).toList(),
+    );
+  }
+}
+
+class _SwatchView extends StatelessWidget {
+  final MaterialColor color;
+
+  const _SwatchView({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      children: [900, 800, 700, 600, 500, 400, 300, 200, 100, 50].map((index) {
+        return MiColorChip(color: color[index]!);
+      }).toList(),
+    );
+  }
+}
+
+final _selectedColorProvider = StateProvider<Color?>((ref) => null);
+
 class _ColorSchemeTab extends ConsumerWidget {
   static final _logger = Logger((_ColorSchemeTab).toString());
 
@@ -191,6 +267,8 @@ class _ColorSchemeTab extends ConsumerWidget {
     final textColor = ref.watch(textColorProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
     final themeAdjustment = ref.watch(modifyThemeProvider);
+
+    final selectedColor = ref.watch(_selectedColorProvider);
 
     final theme = Theme.of(context);
 
@@ -222,69 +300,53 @@ class _ColorSchemeTab extends ConsumerWidget {
           )
         : it);
 
-    Widget colorRow(String key, String title) {
-      final getter = _themeColorItems[key]!;
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          MiColorChip(color: getter(lightTheme)),
-          const VerticalDivider(width: 3),
-          MiColorChip(color: getter(darkTheme)),
-          const VerticalDivider(width: 3),
-          Text(title),
-        ],
-      );
-    }
-
-    Widget colorList(
-      String title,
-      Iterable<String> titleKeys,
-      Iterable<String> childKeys,
-    ) {
-      final prefix = RegExp(r'^\w+\.');
-
-      return ExpansionTile(
-        initiallyExpanded: false,
-        title: DefaultTextStyle.merge(
-          style: TextStyle(color: theme.colorScheme.onSurface),
-          child: Expanded(
-            child: Column(
-              children: [
-                Text(title),
-                ...titleKeys.map((key) => colorRow(key, key.replaceAll(prefix, '')))
-              ],
-            ),
-          ),
-        ),
-        children: [
-          Padding(
-            // https://api.flutter.dev/flutter/material/ExpansionTile/tilePadding.html
-            padding:
-                theme.expansionTileTheme.tilePadding ?? const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: childKeys.map((key) => colorRow(key, key.replaceAll(prefix, ''))).toList(),
-            ),
-          ),
-        ],
-      );
-    }
-
     return SingleChildScrollView(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          colorList(
-              'ThemeData',
-              _themeColorItems.keys
-                  .skipWhile((key) => key != 'backgroundColor')
-                  .takeWhile((key) => key != 'bottomAppBarColor'),
-              _themeColorItems.keys.skipWhile((key) => key != 'bottomAppBarColor')),
-          colorList(
-              'ThemeData.colorScheme',
-              _themeColorItems.keys.takeWhile((key) => key != 'colorScheme.error'),
-              _themeColorItems.keys
-                  .skipWhile((key) => key != 'colorScheme.error')
-                  .takeWhile((key) => key != 'backgroundColor')),
+          const Padding(
+            padding: EdgeInsets.all(6),
+            child: Text('Theme colors'),
+          ),
+          _ColorsView(
+            colors1: _themeColorItems1.values.map((it) => it(lightTheme)).toList(),
+            colors2: _themeColorItems1.values.map((it) => it(darkTheme)).toList(),
+            tooltips: _themeColorItems1.keys.toList(),
+            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
+          ),
+          const SizedBox(height: 6),
+          _ColorsView(
+            colors1: _themeColorItems2.values.map((it) => it(lightTheme)).toList(),
+            colors2: _themeColorItems2.values.map((it) => it(darkTheme)).toList(),
+            tooltips: _themeColorItems2.keys.toList(),
+            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(6),
+            child: Text('Color scheme'),
+          ),
+          _ColorsView(
+            colors1: _colorSchemeItems1.values.map((it) => it(lightTheme)).toList(),
+            colors2: _colorSchemeItems1.values.map((it) => it(darkTheme)).toList(),
+            tooltips: _colorSchemeItems1.keys.toList(),
+            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
+          ),
+          const SizedBox(height: 6),
+          _ColorsView(
+            colors1: _colorSchemeItems2.values.map((it) => it(lightTheme)).toList(),
+            colors2: _colorSchemeItems2.values.map((it) => it(darkTheme)).toList(),
+            tooltips: _colorSchemeItems2.keys.toList(),
+            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(6),
+            child: Text('Swatch'),
+          ),
+          if (selectedColor != null)
+            _SwatchView(
+              color: selectedColor!.toMaterialColor(),
+            ),
         ],
       ),
     ).also((_) {
