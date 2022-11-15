@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
 import '../mi_boilerplates.dart';
@@ -105,4 +106,76 @@ class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
 
   @override
   VoidCallback? get onTap => () => onChanged?.call(!checked);
+}
+
+/// グリッドポップアップメニューボタン
+///
+class MiGridPopupMenuButton extends StatelessWidget {
+  // https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
+  static const double kMenuItemWidth = 56.0 * 2;
+
+  final double? width;
+  final double? height;
+  final double spacing;
+  final double runSpacing;
+  final List<Widget> items;
+  final List<String>? tooltips;
+  final ValueChanged<int>? onSelected;
+  final Widget? child;
+  final Offset offset;
+
+  const MiGridPopupMenuButton({
+    super.key,
+    this.width,
+    this.height,
+    this.spacing = 0.0,
+    this.runSpacing = 0.0,
+    required this.items,
+    this.tooltips,
+    this.onSelected,
+    this.child,
+    this.offset = Offset.zero,
+  }) : assert(tooltips == null || tooltips.length == items.length);
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<int>(
+      offset: offset,
+      itemBuilder: (context) {
+        return [
+          PopupMenuItem<int>(
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: width ?? kMenuItemWidth,
+                height: height ?? MediaQuery.of(context).size.height * 0.3,
+                child: Wrap(
+                  spacing: spacing,
+                  runSpacing: runSpacing,
+                  children: items
+                      .mapIndexed(
+                        (index, item) => InkWell(
+                          child: item,
+                          onTap: () {
+                            onSelected?.call(index);
+                            Navigator.of(context).pop();
+                          },
+                        ).let(
+                          (it) => tooltips != null
+                              ? Tooltip(
+                                  message: tooltips![index],
+                                  child: it,
+                                )
+                              : it,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+          )
+        ];
+      },
+      child: child,
+    );
+  }
 }

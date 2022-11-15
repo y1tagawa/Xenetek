@@ -206,9 +206,6 @@ class _DismissibleListTab extends ConsumerWidget {
 // Reorderable list tab.
 //
 
-// https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
-const double kMenuItemWidth = 40.0 * 3;
-
 final _initOrder = List<String>.unmodifiable(_listItems.keys);
 final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
@@ -244,41 +241,22 @@ class _ReorderableListTab extends ConsumerWidget {
                 _orderNotifier.value = _initOrder;
               },
             ),
-            PopupMenuButton<String>(
-              offset: const Offset(8, kToolbarHeight),
-              tooltip: '',
-              itemBuilder: (_) => [
-                PopupMenuItem<String>(
-                  child: SizedBox(
-                    width: kMenuItemWidth,
-                    height: MediaQuery.of(context).size.height * 0.24,
-                    child: SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 0,
-                        runSpacing: 0,
-                        children: order
-                            .map(
-                              (key) => Tooltip(
-                                message: key,
-                                child: InkWell(
-                                  onTap: () => _keys[key]!
-                                      .currentContext
-                                      ?.let((it) => Scrollable.ensureVisible(it)),
-                                  child: Container(
-                                    width: 40,
-                                    height: 40,
-                                    alignment: Alignment.center,
-                                    child: _listItems[key]!,
-                                  ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
+            MiGridPopupMenuButton(
+              offset: const Offset(0, kToolbarHeight),
+              onSelected: (index) {
+                Scrollable.ensureVisible(_keys[order[index]]!.currentContext!);
+              },
+              items: order
+                  .mapIndexed(
+                    (index, key) => Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      child: _listItems[key]!,
                     ),
-                  ),
-                ),
-              ],
+                  )
+                  .toList(),
+              //tooltips: order,
               child: ListTile(
                 enabled: enabled,
                 trailing: const Icon(Icons.more_vert),
