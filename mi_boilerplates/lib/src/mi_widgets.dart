@@ -116,6 +116,7 @@ class MiIcon extends StatelessWidget {
             icon_,
             if (spacing_ > 0.0) SizedBox(width: spacing_),
             text!,
+            if (spacing_ > 0.0) SizedBox(width: spacing_),
           ],
         ),
       );
@@ -125,12 +126,7 @@ class MiIcon extends StatelessWidget {
       icon_ = InkWell(
         onTap: enabled ? onTap : null,
         onHover: onHover,
-        child: text != null
-            ? Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IgnorePointer(child: icon_),
-              )
-            : IgnorePointer(child: icon_),
+        child: IgnorePointer(child: icon_),
       );
     }
 
