@@ -72,7 +72,7 @@ class PageLayoutsPage extends ConsumerWidget {
 // Headered scrollable example tab
 //
 
-/// タブ中の頻出コード
+/// タブまたはScaffold body中の頻出コード
 ///
 /// TODO: childに[ListView]を入れる場合
 class MiScrollViewFrame extends StatelessWidget {
@@ -146,24 +146,20 @@ class _HeaderedListTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return Column(
-      children: [
-        const ListTile(
-          title: Text('Header'),
+    return MiScrollViewFrame(
+      top: const ListTile(
+        title: Text('Header'),
+      ),
+      bottom: const ListTile(
+        title: Text('Bottom'),
+      ),
+      child: ListView.builder(
+        itemCount: 20,
+        itemBuilder: (_, index) => ListTile(
+          trailing: const Icon(Icons.person_outline),
+          title: Text('Item #$index'),
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: 20,
-            itemBuilder: (_, index) => ListTile(
-              trailing: const Icon(Icons.person_outline),
-              title: Text('Item #$index'),
-            ),
-          ),
-        ),
-        const ListTile(
-          title: Text('Bottom'),
-        ),
-      ],
+      ),
     ).also((_) {
       _logger.fine('[o] build');
     });
