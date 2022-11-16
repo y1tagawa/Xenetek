@@ -20,12 +20,12 @@ class PageLayoutsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Headered scrollable',
+      tooltip: 'Headered scroll view',
       icon: icon,
     ),
     MiTab(
-      tooltip: 'TODO',
-      icon: Icon(Icons.engineering_outlined),
+      tooltip: 'Headered list view',
+      icon: Icon(Icons.toc),
     ),
   ];
 
@@ -55,8 +55,8 @@ class PageLayoutsPage extends ConsumerWidget {
             minimum: EdgeInsets.symmetric(horizontal: 8),
             child: TabBarView(
               children: [
-                _HeaderedScrollableTab(),
-                _HeaderedScrollableTab(),
+                _HeaderedScrollTab(),
+                _HeaderedListTab(),
               ],
             ),
           ),
@@ -76,7 +76,7 @@ class PageLayoutsPage extends ConsumerWidget {
 /// タブ中の頻出コード
 ///
 /// TODO: childに[ListView]を入れる場合
-class MiHeaderedScrollableView extends StatelessWidget {
+class MiHeaderedScrollView extends StatelessWidget {
   final Axis scrollDirection;
   final bool reverse;
   final EdgeInsetsGeometry? padding;
@@ -91,7 +91,7 @@ class MiHeaderedScrollableView extends StatelessWidget {
   final Widget? header;
   final Widget? bottom;
 
-  const MiHeaderedScrollableView({
+  const MiHeaderedScrollView({
     super.key,
     this.scrollDirection = Axis.vertical,
     this.reverse = false,
@@ -134,16 +134,16 @@ class MiHeaderedScrollableView extends StatelessWidget {
   }
 }
 
-class _HeaderedScrollableTab extends ConsumerWidget {
-  static final _logger = Logger((_HeaderedScrollableTab).toString());
+class _HeaderedScrollTab extends ConsumerWidget {
+  static final _logger = Logger((_HeaderedScrollTab).toString());
 
-  const _HeaderedScrollableTab();
+  const _HeaderedScrollTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return MiHeaderedScrollableView(
+    return MiHeaderedScrollView(
       header: const ListTile(
         title: Text('Header'),
       ),
@@ -160,13 +160,43 @@ class _HeaderedScrollableTab extends ConsumerWidget {
             )
             .toList(),
       ),
-      // child: ListView.builder(
-      //   itemCount: 100,
-      //   itemBuilder: (context, index) => ListTile(
-      //     leading: const Icon(Icons.person_outline),
-      //     title: Text('Item #$index'),
-      //   ),
-      // ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+//
+//
+
+class _HeaderedListTab extends ConsumerWidget {
+  static final _logger = Logger((_HeaderedListTab).toString());
+
+  const _HeaderedListTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    return Column(
+      children: [
+        const ListTile(
+          title: Text('Header'),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: 20,
+            itemBuilder: (_, index) => ListTile(
+              trailing: const Icon(Icons.person_outline),
+              title: Text('Item #$index'),
+            ),
+          ),
+        ),
+        const ListTile(
+          title: Text('Bottom'),
+        ),
+      ],
     ).also((_) {
       _logger.fine('[o] build');
     });
