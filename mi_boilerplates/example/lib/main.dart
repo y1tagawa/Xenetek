@@ -5,6 +5,7 @@
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
+import 'package:example/pages/page_layouts.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -119,6 +120,12 @@ final _pages = <_PageItem>[
     title: OverflowBarPage.title,
     path: '/overflow_bar',
     builder: (_, __) => const OverflowBarPage(),
+  ),
+  _PageItem(
+    icon: PageLayoutsPage.icon,
+    title: PageLayoutsPage.title,
+    path: '/page_layouts',
+    builder: (_, __) => const PageLayoutsPage(),
   ),
   _PageItem(
     icon: ProminentTopBarPage.icon,

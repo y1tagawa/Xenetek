@@ -12,9 +12,9 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 
-///
-/// Color grid example page.
-///
+//
+// Color grid example page.
+//
 
 var _tabIndex = 0;
 
@@ -55,7 +55,6 @@ class ColorsPage extends ConsumerWidget {
             bottom: ExTabBar(
               enabled: enabled,
               tabs: _tabs,
-              isScrollable: true,
             ),
           ),
           body: const SafeArea(
@@ -248,7 +247,37 @@ class _SwatchView extends StatelessWidget {
   }
 }
 
+class _HeaderedScrollableLayout extends StatelessWidget {
+  final Widget? header;
+  final Widget? content;
+  final Widget? bottom;
+
+  const _HeaderedScrollableLayout({
+    super.key,
+    this.header,
+    this.content,
+    this.bottom,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        if (header != null) header!,
+        if (content != null)
+          Expanded(
+            child: SingleChildScrollView(
+              child: content!,
+            ),
+          ),
+        if (bottom != null) bottom!,
+      ],
+    );
+  }
+}
+
 final _selectedColorProvider = StateProvider<Color?>((ref) => null);
+final _tileTestProvider = StateProvider((ref) => false);
 
 class _ColorSchemeTab extends ConsumerWidget {
   static final _logger = Logger((_ColorSchemeTab).toString());
@@ -296,11 +325,33 @@ class _ColorSchemeTab extends ConsumerWidget {
           )
         : it);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
+    final tileTest = ref.watch(_tileTestProvider);
+    return _HeaderedScrollableLayout(
+      content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          ListTile(
+            dense: true,
+            onTap: () => ref.read(_tileTestProvider.notifier).state = !tileTest,
+            trailing: tileTest ? const Icon(Icons.expand_less) : const Icon(Icons.expand_more),
+            title: tileTest
+                ? Column(
+                    children: [
+                      const Text('Theme colors'),
+                      ..._themeColorItems2.entries.map(
+                        (entry) => Row(
+                          children: [
+                            MiColorChip(
+                              color: entry.value(lightTheme),
+                            ),
+                            Text(entry.key),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                : const Text('Theme colors'),
+          ),
           const Padding(
             padding: EdgeInsets.all(6),
             child: Text('Theme colors'),
@@ -345,6 +396,7 @@ class _ColorSchemeTab extends ConsumerWidget {
             ),
         ],
       ),
+      bottom: const ListTile(title: Text('bottom')),
     ).also((_) {
       _logger.fine('[o] build');
     });
