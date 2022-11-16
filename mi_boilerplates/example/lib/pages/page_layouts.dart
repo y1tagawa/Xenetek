@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -55,7 +54,7 @@ class PageLayoutsPage extends ConsumerWidget {
             minimum: EdgeInsets.symmetric(horizontal: 8),
             child: TabBarView(
               children: [
-                _HeaderedScrollTab(),
+                _FramedScrollTab(),
                 _HeaderedListTab(),
               ],
             ),
@@ -76,35 +75,15 @@ class PageLayoutsPage extends ConsumerWidget {
 /// タブ中の頻出コード
 ///
 /// TODO: childに[ListView]を入れる場合
-class MiHeaderedScrollView extends StatelessWidget {
-  final Axis scrollDirection;
-  final bool reverse;
-  final EdgeInsetsGeometry? padding;
-  final bool? primary;
-  final ScrollPhysics? physics;
-  final ScrollController? controller;
-  final Widget? child;
-  final DragStartBehavior dragStartBehavior;
-  final Clip clipBehavior;
-  final String? restorationId;
-  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
-  final Widget? header;
+class MiScrollViewFrame extends StatelessWidget {
+  final Widget child;
+  final Widget? top;
   final Widget? bottom;
 
-  const MiHeaderedScrollView({
+  const MiScrollViewFrame({
     super.key,
-    this.scrollDirection = Axis.vertical,
-    this.reverse = false,
-    this.padding,
-    this.primary,
-    this.physics,
-    this.controller,
-    this.child,
-    this.dragStartBehavior = DragStartBehavior.start,
-    this.clipBehavior = Clip.hardEdge,
-    this.restorationId,
-    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-    this.header,
+    required this.child,
+    this.top,
     this.bottom,
   });
 
@@ -112,53 +91,41 @@ class MiHeaderedScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        if (header != null) header!,
-        if (child != null)
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: scrollDirection,
-              reverse: reverse,
-              padding: padding,
-              primary: primary,
-              physics: physics,
-              controller: controller,
-              dragStartBehavior: dragStartBehavior,
-              clipBehavior: clipBehavior,
-              restorationId: restorationId,
-              child: child!,
-            ),
-          ),
+        if (top != null) top!,
+        Expanded(child: child),
         if (bottom != null) bottom!,
       ],
     );
   }
 }
 
-class _HeaderedScrollTab extends ConsumerWidget {
-  static final _logger = Logger((_HeaderedScrollTab).toString());
+class _FramedScrollTab extends ConsumerWidget {
+  static final _logger = Logger((_FramedScrollTab).toString());
 
-  const _HeaderedScrollTab();
+  const _FramedScrollTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return MiHeaderedScrollView(
-      header: const ListTile(
+    return MiScrollViewFrame(
+      top: const ListTile(
         title: Text('Header'),
       ),
       bottom: const ListTile(
         title: Text('Bottom'),
       ),
-      child: Column(
-        children: iota(20)
-            .map(
-              (index) => ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: Text('Item #$index'),
-              ),
-            )
-            .toList(),
+      child: SingleChildScrollView(
+        child: Column(
+          children: iota(20)
+              .map(
+                (index) => ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: Text('Item #$index'),
+                ),
+              )
+              .toList(),
+        ),
       ),
     ).also((_) {
       _logger.fine('[o] build');
