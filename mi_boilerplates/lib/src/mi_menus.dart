@@ -151,6 +151,7 @@ class MiGridPopupMenuButton extends StatelessWidget {
               height: height ?? MediaQuery.of(context).size.height * 0.3,
               child: SingleChildScrollView(
                 child: Wrap(
+                  alignment: WrapAlignment.center,
                   spacing: spacing,
                   runSpacing: runSpacing,
                   children: items

@@ -144,6 +144,7 @@ class MiIcon extends StatelessWidget {
 /// カラーチップ
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
+///
 class MiColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
@@ -196,6 +197,7 @@ class MiColorChip extends StatelessWidget {
 }
 
 /// トグルアイコン
+///
 class MiToggleIcon extends StatelessWidget {
   final bool checked;
   final Widget checkIcon;
@@ -222,6 +224,7 @@ class MiToggleIcon extends StatelessWidget {
 }
 
 /// [Image] (PNGとか)をアイコンにする
+///
 class MiImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
@@ -248,7 +251,7 @@ class MiImageIcon extends StatelessWidget {
 /// カスタム[TextButton]
 ///
 /// [enabled]を追加しただけ。
-
+///
 class MiTextButton extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onPressed;
@@ -298,7 +301,7 @@ class MiTextButton extends StatelessWidget {
 ///
 /// [enabled]を追加しただけ。
 /// TODO: StatelessWidgetから派生。
-
+///
 class MiIconButton extends IconButton {
   const MiIconButton({
     super.key,
@@ -410,7 +413,7 @@ class MiIntSlider extends StatelessWidget {
 /// * [crossAxisAlignment]のデフォルト値を[WrapCrossAlignment.center]に変更。
 /// * [flexes]を指定した場合、[children]の個々を[Flexible]でラップする。
 /// * [spacing]を指定した場合、[children]の間に空間を空ける。
-
+///
 class MiRow extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
@@ -508,9 +511,10 @@ class MiRow extends StatelessWidget {
 
 /// タブまたは[Scaffold.body]中の頻出コード
 ///
-/// 頻繁にこのエラーを出してしまうため。
+/// 頻繁に‘Vertical viewport was given unbounded height’エラーを出してしまうため。
 /// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
 /// [ListView]など[height]が不定のウィジェットを[child]に入れる。
+///
 class MiScrollViewFrame extends StatelessWidget {
   final Widget child;
   final Widget? top;
