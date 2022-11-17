@@ -24,7 +24,7 @@ class PageLayoutsPage extends ConsumerWidget {
     ),
     MiTab(
       tooltip: 'Framed list view',
-      icon: Icon(Icons.toc),
+      icon: Icon(Icons.list),
     ),
   ];
 
@@ -54,8 +54,8 @@ class PageLayoutsPage extends ConsumerWidget {
             minimum: EdgeInsets.symmetric(horizontal: 8),
             child: TabBarView(
               children: [
-                _FramedScrollTab(),
-                _HeaderedListTab(),
+                _FramedScrollViewTab(content: (SingleChildScrollView)),
+                _FramedScrollViewTab(content: (ListView)),
               ],
             ),
           ),
@@ -69,44 +69,19 @@ class PageLayoutsPage extends ConsumerWidget {
 }
 
 //
-// Framed single child scroll view tab
+// Framed scroll view tab
 //
-
-/// タブまたはScaffold body中の頻出コード
-///
-/// TODO: childに[ListView]を入れる場合
-class MiScrollViewFrame extends StatelessWidget {
-  final Widget child;
-  final Widget? top;
-  final Widget? bottom;
-
-  const MiScrollViewFrame({
-    super.key,
-    required this.child,
-    this.top,
-    this.bottom,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        if (top != null) top!,
-        Expanded(child: child),
-        if (bottom != null) bottom!,
-      ],
-    );
-  }
-}
 
 final _lengthProvider = StateProvider((ref) => 1);
 
 const _length = [1, 20];
 
-class _FramedScrollTab extends ConsumerWidget {
-  static final _logger = Logger((_FramedScrollTab).toString());
+class _FramedScrollViewTab extends ConsumerWidget {
+  static final _logger = Logger((_FramedScrollViewTab).toString());
 
-  const _FramedScrollTab();
+  final Type content;
+
+  const _FramedScrollViewTab({required this.content});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -115,95 +90,70 @@ class _FramedScrollTab extends ConsumerWidget {
     final lengthIndex = ref.watch(_lengthProvider);
     final length = _length[lengthIndex];
 
-    return MiScrollViewFrame(
-      top: ListTile(
-        title: const Text('Header'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Radio<int>(
-              value: 0,
-              groupValue: lengthIndex,
-              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
-            ),
-            const Text('1'),
-            Radio<int>(
-              value: 1,
-              groupValue: lengthIndex,
-              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
-            ),
-            const Text('20'),
-          ],
-        ),
-      ),
-      bottom: const ListTile(
-        title: Text('Bottom'),
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          children: iota(length)
-              .map(
-                (index) => ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: Text('Item #$index'),
+    final theme = Theme.of(context);
+
+    final content_ = run(() {
+      switch (content) {
+        case (SingleChildScrollView):
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 4, top: 4, right: 24, bottom: 4),
+              child: Container(
+                width: double.infinity,
+                height: kToolbarHeight * length,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: theme.dividerColor,
+                    width: 1,
+                  ),
                 ),
-              )
-              .toList(),
-        ),
-      ),
-    ).also((_) {
-      _logger.fine('[o] build');
+                alignment: Alignment.center,
+                child: const Text('Single child scroll view'),
+              ),
+            ),
+          );
+        default:
+          return ListView.builder(
+            itemCount: length,
+            itemBuilder: (_, index) => ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: Text('List item #$index'),
+            ),
+          );
+      }
     });
-  }
-}
-
-//
-// Framed list view tab
-//
-
-class _HeaderedListTab extends ConsumerWidget {
-  static final _logger = Logger((_HeaderedListTab).toString());
-
-  const _HeaderedListTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-
-    final lengthIndex = ref.watch(_lengthProvider);
-    final length = _length[lengthIndex];
 
     return MiScrollViewFrame(
-      top: ListTile(
-        title: const Text('Header'),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Radio<int>(
-              value: 0,
-              groupValue: lengthIndex,
-              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
-            ),
-            const Text('1'),
-            Radio<int>(
-              value: 1,
-              groupValue: lengthIndex,
-              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
-            ),
-            const Text('20'),
-          ],
+      tops: [
+        ListTile(
+          title: const Text('Header'),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Radio<int>(
+                value: 0,
+                groupValue: lengthIndex,
+                onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
+              ),
+              const Text('1'),
+              Radio<int>(
+                value: 1,
+                groupValue: lengthIndex,
+                onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
+              ),
+              const Text('20'),
+            ],
+          ),
         ),
-      ),
-      bottom: const ListTile(
-        title: Text('Bottom'),
-      ),
-      child: ListView.builder(
-        itemCount: length,
-        itemBuilder: (_, index) => ListTile(
-          trailing: const Icon(Icons.person_outline),
-          title: Text('Item #$index'),
+        const Divider(),
+      ],
+      bottoms: const [
+        Divider(),
+        ListTile(
+          title: Text('Bottom'),
         ),
-      ),
+      ],
+      child: content_,
     ).also((_) {
       _logger.fine('[o] build');
     });

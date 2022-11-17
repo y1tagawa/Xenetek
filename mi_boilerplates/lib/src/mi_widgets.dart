@@ -505,3 +505,39 @@ class MiRow extends StatelessWidget {
     );
   }
 }
+
+/// タブまたは[Scaffold.body]中の頻出コード
+///
+/// 頻繁にこのエラーを出してしまうため。
+/// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
+/// [ListView]など[height]が不定のウィジェットを[child]に入れる。
+class MiScrollViewFrame extends StatelessWidget {
+  final Widget child;
+  final Widget? top;
+  final List<Widget>? tops;
+  final Widget? bottom;
+  final List<Widget>? bottoms;
+
+  const MiScrollViewFrame({
+    super.key,
+    required this.child,
+    this.top,
+    this.tops,
+    this.bottom,
+    this.bottoms,
+  })  : assert(top == null && tops != null || top != null && tops == null),
+        assert(bottom == null && bottoms != null || bottom != null && bottoms == null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        if (top != null) top!,
+        if (tops != null) ...tops!,
+        Expanded(child: child),
+        if (bottom != null) bottom!,
+        if (bottoms != null) ...bottoms!,
+      ],
+    );
+  }
+}
