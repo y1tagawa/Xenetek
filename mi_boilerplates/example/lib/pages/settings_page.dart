@@ -271,7 +271,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -292,7 +292,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -313,7 +313,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -334,7 +334,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -367,10 +367,10 @@ class SettingsPage extends ConsumerWidget {
               onTap: () async {
                 final ok = await showWarningOkCancelDialog(
                   context: context,
-                  content: const Text('Are you sure to reset all preferences?'),
+                  content: const Text('Are you sure to reset theme preferences?'),
                 );
                 if (ok) {
-                  await clearPreferences(ref);
+                  await clearThemePreferences(ref);
                 }
               },
             ),

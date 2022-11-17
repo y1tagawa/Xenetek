@@ -102,7 +102,7 @@ class _ColorGridTab extends ConsumerWidget {
                 onChanged: (index) async {
                   final color = Colors.primaries[index];
                   ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 },
               ),
             ),
