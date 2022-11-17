@@ -125,7 +125,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: PageLayoutsPage.icon,
     title: PageLayoutsPage.title,
-    path: '/page_layouts',
+    path: '/drawer/page_layouts',
     builder: (_, __) => const PageLayoutsPage(),
   ),
   _PageItem(
@@ -336,6 +336,9 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
+    final theme = Theme.of(context);
+    final foregroundColor = theme.foregroundColor;
+
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
@@ -343,34 +346,31 @@ class HomePage extends ConsumerWidget {
         title: title,
       ),
       drawer: Drawer(
-        child: Expanded(
-          // background
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                InkWell(
-                  onTap: () => Navigator.pop(context),
-                  child: const DrawerHeader(
-                    child: HomePage.title,
-                  ),
+        child: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              InkWell(
+                onTap: () => Navigator.pop(context),
+                child: const DrawerHeader(
+                  child: HomePage.title,
                 ),
-                ..._pages
-                    .skip(1) // Home
-                    .where((item) => item.path.startsWith('/drawer/'))
-                    .map(
-                      (item) => ListTile(
-                        leading: item.icon,
-                        title: item.title,
-                        onTap: () {
-                          Navigator.pop(context);
-                          context.push(item.path);
-                        },
-                      ),
+              ),
+              ..._pages
+                  .skip(1) // Home
+                  .where((item) => item.path.startsWith('/drawer/'))
+                  .map(
+                    (item) => ListTile(
+                      leading: item.icon,
+                      title: item.title,
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.push(item.path);
+                      },
                     ),
-              ],
-            ),
+                  ),
+            ],
           ),
         ),
       ),
@@ -393,7 +393,14 @@ class HomePage extends ConsumerWidget {
                           height: 72,
                           padding: const EdgeInsets.all(2),
                           child: Column(
-                            children: [item.icon, item.title],
+                            children: [
+                              item.icon,
+                              DefaultTextStyle(
+                                style: TextStyle(color: foregroundColor),
+                                textAlign: TextAlign.center,
+                                child: item.title,
+                              ),
+                            ],
                           ),
                         ),
                       ),
