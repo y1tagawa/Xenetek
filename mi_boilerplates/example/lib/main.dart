@@ -346,32 +346,29 @@ class HomePage extends ConsumerWidget {
         title: title,
       ),
       drawer: Drawer(
-        child: InkWell(
-          onTap: () => Navigator.pop(context),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              InkWell(
-                onTap: () => Navigator.pop(context),
-                child: const DrawerHeader(
-                  child: HomePage.title,
-                ),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            InkWell(
+              onTap: () => Navigator.pop(context),
+              child: const DrawerHeader(
+                child: HomePage.title,
               ),
-              ..._pages
-                  .skip(1) // Home
-                  .where((item) => item.path.startsWith('/drawer/'))
-                  .map(
-                    (item) => ListTile(
-                      leading: item.icon,
-                      title: item.title,
-                      onTap: () {
-                        Navigator.pop(context);
-                        context.push(item.path);
-                      },
-                    ),
+            ),
+            ..._pages
+                .skip(1) // Home
+                .where((item) => item.path.startsWith('/drawer/'))
+                .map(
+                  (item) => ListTile(
+                    leading: item.icon,
+                    title: item.title,
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(item.path);
+                    },
                   ),
-            ],
-          ),
+                ),
+          ],
         ),
       ),
       body: SafeArea(
