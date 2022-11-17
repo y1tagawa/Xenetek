@@ -19,11 +19,11 @@ class PageLayoutsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Headered scroll view',
+      tooltip: 'Framed single child scroll view',
       icon: icon,
     ),
     MiTab(
-      tooltip: 'Headered list view',
+      tooltip: 'Framed list view',
       icon: Icon(Icons.toc),
     ),
   ];
@@ -69,7 +69,7 @@ class PageLayoutsPage extends ConsumerWidget {
 }
 
 //
-// Headered scrollable example tab
+// Framed single child scroll view tab
 //
 
 /// タブまたはScaffold body中の頻出コード
@@ -99,6 +99,10 @@ class MiScrollViewFrame extends StatelessWidget {
   }
 }
 
+final _lengthProvider = StateProvider((ref) => 1);
+
+const _length = [1, 20];
+
 class _FramedScrollTab extends ConsumerWidget {
   static final _logger = Logger((_FramedScrollTab).toString());
 
@@ -108,16 +112,36 @@ class _FramedScrollTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
+    final lengthIndex = ref.watch(_lengthProvider);
+    final length = _length[lengthIndex];
+
     return MiScrollViewFrame(
-      top: const ListTile(
-        title: Text('Header'),
+      top: ListTile(
+        title: const Text('Header'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Radio<int>(
+              value: 0,
+              groupValue: lengthIndex,
+              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
+            ),
+            const Text('1'),
+            Radio<int>(
+              value: 1,
+              groupValue: lengthIndex,
+              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
+            ),
+            const Text('20'),
+          ],
+        ),
       ),
       bottom: const ListTile(
         title: Text('Bottom'),
       ),
       child: SingleChildScrollView(
         child: Column(
-          children: iota(20)
+          children: iota(length)
               .map(
                 (index) => ListTile(
                   leading: const Icon(Icons.person_outline),
@@ -134,7 +158,7 @@ class _FramedScrollTab extends ConsumerWidget {
 }
 
 //
-//
+// Framed list view tab
 //
 
 class _HeaderedListTab extends ConsumerWidget {
@@ -146,15 +170,35 @@ class _HeaderedListTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
+    final lengthIndex = ref.watch(_lengthProvider);
+    final length = _length[lengthIndex];
+
     return MiScrollViewFrame(
-      top: const ListTile(
-        title: Text('Header'),
+      top: ListTile(
+        title: const Text('Header'),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Radio<int>(
+              value: 0,
+              groupValue: lengthIndex,
+              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
+            ),
+            const Text('1'),
+            Radio<int>(
+              value: 1,
+              groupValue: lengthIndex,
+              onChanged: (value) => ref.read(_lengthProvider.notifier).state = value!,
+            ),
+            const Text('20'),
+          ],
+        ),
       ),
       bottom: const ListTile(
         title: Text('Bottom'),
       ),
       child: ListView.builder(
-        itemCount: 20,
+        itemCount: length,
         itemBuilder: (_, index) => ListTile(
           trailing: const Icon(Icons.person_outline),
           title: Text('Item #$index'),

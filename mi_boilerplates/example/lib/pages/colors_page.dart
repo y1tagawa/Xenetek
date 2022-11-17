@@ -334,23 +334,25 @@ class _ColorSchemeTab extends ConsumerWidget {
             dense: true,
             onTap: () => ref.read(_tileTestProvider.notifier).state = !tileTest,
             trailing: tileTest ? const Icon(Icons.expand_less) : const Icon(Icons.expand_more),
-            title: tileTest
-                ? Column(
-                    children: [
-                      const Text('Theme colors'),
-                      ..._themeColorItems2.entries.map(
-                        (entry) => Row(
-                          children: [
-                            MiColorChip(
-                              color: entry.value(lightTheme),
-                            ),
-                            Text(entry.key),
-                          ],
+            title: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Text('Theme colors'),
+                ),
+                if (tileTest)
+                  ..._themeColorItems2.entries.map(
+                    (entry) => Row(
+                      children: [
+                        MiColorChip(
+                          color: entry.value(lightTheme),
                         ),
-                      ),
-                    ],
-                  )
-                : const Text('Theme colors'),
+                        Text(entry.key),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
           const Padding(
             padding: EdgeInsets.all(6),
