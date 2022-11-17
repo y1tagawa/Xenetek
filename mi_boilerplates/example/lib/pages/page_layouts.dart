@@ -112,12 +112,13 @@ class _FramedScrollViewTab extends ConsumerWidget {
               ),
             ),
           );
+
         default:
           return ListView.builder(
             itemCount: length,
             itemBuilder: (_, index) => ListTile(
               leading: const Icon(Icons.person_outline),
-              title: Text('List item #$index'),
+              title: Text('List item #${index + 1}'),
             ),
           );
       }
@@ -126,7 +127,7 @@ class _FramedScrollViewTab extends ConsumerWidget {
     return MiScrollViewFrame(
       tops: [
         ListTile(
-          title: const Text('Header'),
+          title: const Text('Top'),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
