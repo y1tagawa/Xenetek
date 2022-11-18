@@ -149,7 +149,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: SettingsPage.icon,
     title: SettingsPage.title,
-    path: '/drawer/settings',
+    path: '/settings',
     builder: (_, __) => const SettingsPage(),
   ),
   _PageItem(
@@ -381,7 +381,8 @@ class HomePage extends ConsumerWidget {
               children: [
                 ..._pages
                     .skip(1) // Home
-                    .whereNot((item) => item.path.startsWith('/drawer/'))
+                    .whereNot(
+                        (item) => item.path.startsWith('/drawer/') || item.path == '/settings')
                     .map(
                       (item) => TextButton(
                         onPressed: () => context.push(item.path),
