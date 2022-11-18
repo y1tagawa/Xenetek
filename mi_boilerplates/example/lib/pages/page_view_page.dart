@@ -38,17 +38,6 @@ class PageViewPage extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final pageIndex = ref.watch(_pageIndexProvider);
 
-    final size = MediaQuery.of(context).size; //.let((it) => Size(it.width * 0.8, it.height * 0.4));
-    double? width;
-    double? height;
-    if (size.width > size.height) {
-      width = size.width * 0.4;
-      height = size.height * 0.4;
-    } else {
-      width = size.width * 0.8;
-      height = size.height * 0.4;
-    }
-
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
@@ -73,16 +62,20 @@ class PageViewPage extends ConsumerWidget {
                       ListTile(
                         title: Text(item.key),
                       ),
-                      SizedBox(
-                        width: width,
-                        height: height,
-                        child: FittedBox(
-                          child: Image.network(
-                            item.value,
-                            frameBuilder: (_, child, frame, __) =>
-                                frame == null ? const CircularProgressIndicator() : child,
-                          ),
-                        ),
+                      Expanded(
+                        child: LayoutBuilder(builder: (_, constraints) {
+                          return SizedBox(
+                            width: constraints.maxWidth,
+                            height: constraints.maxHeight,
+                            child: FittedBox(
+                              child: Image.network(
+                                item.value,
+                                frameBuilder: (_, child, frame, __) =>
+                                    frame == null ? const CircularProgressIndicator() : child,
+                              ),
+                            ),
+                          );
+                        }),
                       ),
                     ],
                   );
@@ -91,7 +84,7 @@ class PageViewPage extends ConsumerWidget {
             ),
             ListTile(
               leading: MiIconButton(
-                enabled: pageIndex > 0,
+                enabled: enabled && pageIndex > 0,
                 onPressed: () {
                   _pageController.animateToPage(
                     pageIndex - 1,
@@ -102,7 +95,7 @@ class PageViewPage extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_back),
               ),
               trailing: MiIconButton(
-                enabled: pageIndex < _pageItems.length - 1,
+                enabled: enabled && pageIndex < _pageItems.length - 1,
                 onPressed: () {
                   _pageController.animateToPage(
                     pageIndex + 1,
