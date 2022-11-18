@@ -38,6 +38,14 @@ class PageViewPage extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final pageIndex = ref.watch(_pageIndexProvider);
 
+    Future<void> animateToPage(int index) async {
+      return _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
@@ -46,71 +54,59 @@ class PageViewPage extends ConsumerWidget {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _pageItems.length,
-                onPageChanged: (index) {
-                  ref.read(_pageIndexProvider.notifier).state = index;
-                },
-                itemBuilder: (context, index) {
-                  final item = _pageItems[index];
-                  return Column(
-                    children: [
-                      ListTile(
-                        title: Text(item.key),
-                      ),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (_, constraints) {
-                            return Image.network(
-                              item.value,
-                              width: constraints.maxWidth,
-                              height: constraints.maxHeight,
-                              fit: BoxFit.contain,
-                              frameBuilder: (_, child, frame, __) => frame == null
-                                  ? const Align(
-                                      alignment: Alignment.center,
-                                      child: CircularProgressIndicator(),
-                                    )
-                                  : child,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+        child: MiScrollViewFrame(
+          bottom: ListTile(
+            leading: MiIconButton(
+              enabled: enabled && pageIndex > 0,
+              onPressed: () async {
+                await animateToPage(pageIndex - 1);
+              },
+              icon: const Icon(Icons.arrow_back),
             ),
-            ListTile(
-              leading: MiIconButton(
-                enabled: enabled && pageIndex > 0,
-                onPressed: () {
-                  _pageController.animateToPage(
-                    pageIndex - 1,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                icon: const Icon(Icons.arrow_back),
-              ),
-              trailing: MiIconButton(
-                enabled: enabled && pageIndex < _pageItems.length - 1,
-                onPressed: () {
-                  _pageController.animateToPage(
-                    pageIndex + 1,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
-                },
-                icon: const Icon(Icons.arrow_forward),
-              ),
-              title: const Text('TBD'),
+            trailing: MiIconButton(
+              enabled: enabled && pageIndex < _pageItems.length - 1,
+              onPressed: () async {
+                await animateToPage(pageIndex + 1);
+              },
+              icon: const Icon(Icons.arrow_forward),
             ),
-          ],
+            title: const Text('TBD'),
+          ),
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _pageItems.length,
+            onPageChanged: (index) {
+              ref.read(_pageIndexProvider.notifier).state = index;
+            },
+            itemBuilder: (context, index) {
+              final item = _pageItems[index];
+              return MiScrollViewFrame(
+                top: ListTile(
+                  title: Text(item.key),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: LayoutBuilder(
+                    builder: (_, constraints) {
+                      return Image.network(
+                        item.value,
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight,
+                        alignment: Alignment.topCenter,
+                        fit: BoxFit.contain,
+                        frameBuilder: (_, child, frame, __) => frame == null
+                            ? const Align(
+                                alignment: Alignment.center,
+                                child: CircularProgressIndicator(),
+                              )
+                            : child,
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
       bottomNavigationBar: const ExBottomNavigationBar(),

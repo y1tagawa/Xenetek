@@ -529,8 +529,8 @@ class MiScrollViewFrame extends StatelessWidget {
     this.tops,
     this.bottom,
     this.bottoms,
-  })  : assert(top == null && tops != null || top != null && tops == null),
-        assert(bottom == null && bottoms != null || bottom != null && bottoms == null);
+  })  : assert(top == null || tops == null),
+        assert(bottom == null || bottoms == null);
 
   @override
   Widget build(BuildContext context) {
