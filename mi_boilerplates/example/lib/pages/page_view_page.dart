@@ -18,7 +18,7 @@ final _pageItems = <String, String>{
       'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Adramelech.jpg/531px-Adramelech.jpg',
 }.entries.toList();
 
-// TODO: lock in a stateful widget.
+// TODO: Lock into stateful widget.
 final _pageController = PageController();
 
 final _pageIndexProvider = StateProvider((ref) => 0);
@@ -38,7 +38,16 @@ class PageViewPage extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final pageIndex = ref.watch(_pageIndexProvider);
 
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size; //.let((it) => Size(it.width * 0.8, it.height * 0.4));
+    double? width;
+    double? height;
+    if (size.width > size.height) {
+      width = size.width * 0.4;
+      height = size.height * 0.4;
+    } else {
+      width = size.width * 0.8;
+      height = size.height * 0.4;
+    }
 
     return Scaffold(
       appBar: ExAppBar(
@@ -65,7 +74,8 @@ class PageViewPage extends ConsumerWidget {
                         title: Text(item.key),
                       ),
                       SizedBox(
-                        width: size.width * 0.8,
+                        width: width,
+                        height: height,
                         child: FittedBox(
                           child: Image.network(
                             item.value,
