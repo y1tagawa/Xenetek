@@ -515,14 +515,14 @@ class MiRow extends StatelessWidget {
 /// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
 /// [ListView]など[height]が不定のウィジェットを[child]に入れる。
 ///
-class MiScrollViewFrame extends StatelessWidget {
+class MiVerticalFrame extends StatelessWidget {
   final Widget child;
   final Widget? top;
   final List<Widget>? tops;
   final Widget? bottom;
   final List<Widget>? bottoms;
 
-  const MiScrollViewFrame({
+  const MiVerticalFrame({
     super.key,
     required this.child,
     this.top,

@@ -124,7 +124,7 @@ class _FramedScrollViewTab extends ConsumerWidget {
       }
     });
 
-    return MiScrollViewFrame(
+    return MiVerticalFrame(
       tops: [
         ListTile(
           title: const Text('Top'),

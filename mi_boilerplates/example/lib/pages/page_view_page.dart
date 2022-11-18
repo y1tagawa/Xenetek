@@ -54,7 +54,7 @@ class PageViewPage extends ConsumerWidget {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 8),
-        child: MiScrollViewFrame(
+        child: MiVerticalFrame(
           bottom: ListTile(
             leading: MiIconButton(
               enabled: enabled && pageIndex > 0,
@@ -80,7 +80,7 @@ class PageViewPage extends ConsumerWidget {
             },
             itemBuilder: (context, index) {
               final item = _pageItems[index];
-              return MiScrollViewFrame(
+              return MiVerticalFrame(
                 top: ListTile(
                   title: Text(item.key),
                 ),
@@ -172,7 +172,7 @@ class _FramedScrollViewTab extends ConsumerWidget {
       }
     });
 
-    return MiScrollViewFrame(
+    return MiVerticalFrame(
       tops: [
         ListTile(
           title: const Text('Top'),
