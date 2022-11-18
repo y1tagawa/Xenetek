@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
-import 'package:example/pages/page_layouts.dart';
+import 'package:example/pages/page_layouts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -26,6 +26,7 @@ import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
 import 'pages/overflow_bar_page.dart';
+import 'pages/page_view_page.dart';
 import 'pages/progress_indicators_page.dart';
 import 'pages/prominent_top_bar_page.dart';
 import 'pages/radios_page.dart';
@@ -127,6 +128,12 @@ final _pages = <_PageItem>[
     title: PageLayoutsPage.title,
     path: '/drawer/page_layouts',
     builder: (_, __) => const PageLayoutsPage(),
+  ),
+  _PageItem(
+    icon: PageViewPage.icon,
+    title: PageViewPage.title,
+    path: '/page_view',
+    builder: (_, __) => const PageViewPage(),
   ),
   _PageItem(
     icon: ProminentTopBarPage.icon,
