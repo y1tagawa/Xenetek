@@ -63,19 +63,22 @@ class PageViewPage extends ConsumerWidget {
                         title: Text(item.key),
                       ),
                       Expanded(
-                        child: LayoutBuilder(builder: (_, constraints) {
-                          return SizedBox(
-                            width: constraints.maxWidth,
-                            height: constraints.maxHeight,
-                            child: FittedBox(
-                              child: Image.network(
-                                item.value,
-                                frameBuilder: (_, child, frame, __) =>
-                                    frame == null ? const CircularProgressIndicator() : child,
-                              ),
-                            ),
-                          );
-                        }),
+                        child: LayoutBuilder(
+                          builder: (_, constraints) {
+                            return Image.network(
+                              item.value,
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight,
+                              fit: BoxFit.contain,
+                              frameBuilder: (_, child, frame, __) => frame == null
+                                  ? const Align(
+                                      alignment: Alignment.center,
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : child,
+                            );
+                          },
+                        ),
                       ),
                     ],
                   );
