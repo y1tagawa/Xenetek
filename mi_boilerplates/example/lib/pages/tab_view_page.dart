@@ -68,29 +68,34 @@ class TabViewPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   child: SingleChildScrollView(
-                    child: Column(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ..._tabs.mapIndexed(
-                          (i, tab) {
-                            return MiTextButton(
-                              enabled: i != index,
-                              onPressed: () {
-                                debugPrint('TabViewPage: setting tab index to $i');
-                                tabController.index = i;
+                        Column(
+                          children: [
+                            ..._tabs.mapIndexed(
+                              (i, tab) {
+                                return MiTextButton(
+                                  enabled: i != index,
+                                  onPressed: () {
+                                    debugPrint('TabViewPage: setting tab index to $i');
+                                    tabController.index = i;
+                                  },
+                                  child: Text(tab.text!),
+                                );
                               },
-                              child: Text(tab.text!),
-                            );
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Image.network(
-                            _imageUrls[index],
-                            width: _imageWidth,
-                            height: _imageHeight,
-                            frameBuilder: (_, child, frame, __) =>
-                                frame == null ? const CircularProgressIndicator() : child,
-                          ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Image.network(
+                                _imageUrls[index],
+                                width: _imageWidth,
+                                height: _imageHeight,
+                                frameBuilder: (_, child, frame, __) =>
+                                    frame == null ? const CircularProgressIndicator() : child,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
