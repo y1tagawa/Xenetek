@@ -96,37 +96,30 @@ class MiIcon extends StatelessWidget {
     final theme = Theme.of(context);
     final textColor = enabled ? null : theme.disabledColor;
 
-    Widget icon_ = icon?.let(
-          (it) => DefaultTextStyle.merge(
-            style: TextStyle(color: textColor),
-            child: IconTheme.merge(
-              data: IconThemeData(color: textColor),
-              child: it,
-            ),
-          ),
-        ) ??
-        SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
+    Widget icon_ = icon ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
 
     if (text != null) {
       final spacing_ = spacing ?? 8.0;
-      icon_ = DefaultTextStyle.merge(
-        style: TextStyle(color: textColor),
-        child: IconTheme.merge(
-          data: IconThemeData(color: textColor),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              icon_,
-              if (spacing_ > 0.0) SizedBox(width: spacing_),
-              text!,
-              if (spacing_ > 0.0) SizedBox(width: spacing_),
-            ],
-          ),
-        ),
+      icon_ = Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          icon_,
+          if (spacing_ > 0.0) SizedBox(width: spacing_),
+          text!,
+          if (spacing_ > 0.0) SizedBox(width: spacing_),
+        ],
       );
     }
+
+    icon_ = DefaultTextStyle.merge(
+      style: TextStyle(color: textColor),
+      child: IconTheme.merge(
+        data: IconThemeData(color: textColor),
+        child: icon_,
+      ),
+    );
 
     if (onTap != null || onHover != null) {
       icon_ = InkWell(

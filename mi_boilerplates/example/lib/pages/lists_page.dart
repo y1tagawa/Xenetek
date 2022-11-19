@@ -235,6 +235,7 @@ class _ReorderableListTab extends ConsumerWidget {
           children: [
             ListTile(
               enabled: enabled,
+              selected: true,
               leading: const Icon(Icons.refresh_outlined),
               title: const Text('Reset'),
               onTap: () {
@@ -259,6 +260,7 @@ class _ReorderableListTab extends ConsumerWidget {
               //tooltips: order,
               child: ListTile(
                 enabled: enabled,
+                selected: true,
                 trailing: const Icon(Icons.more_vert),
                 title: const Text('Ensure visible'),
               ),
