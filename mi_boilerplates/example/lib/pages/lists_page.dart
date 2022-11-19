@@ -144,21 +144,19 @@ class _DismissibleListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MiTextButton(
-              enabled: enabled,
-              onPressed: () {
-                ref.invalidate(_leftListProvider);
-                ref.invalidate(_rightListProvider);
-              },
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Reset'),
-              ),
+        ListTile(
+          selected: true,
+          enabled: enabled,
+          title: const Center(
+            child: MiIcon(
+              icon: Icon(Icons.refresh_outlined),
+              text: Text('Reset'),
             ),
-          ],
+          ),
+          onTap: () {
+            ref.invalidate(_leftListProvider);
+            ref.invalidate(_rightListProvider);
+          },
         ),
         const Divider(),
         Expanded(
@@ -236,8 +234,12 @@ class _ReorderableListTab extends ConsumerWidget {
             ListTile(
               enabled: enabled,
               selected: true,
-              leading: const Icon(Icons.refresh_outlined),
-              title: const Text('Reset'),
+              title: const Center(
+                child: MiIcon(
+                  icon: Icon(Icons.refresh_outlined),
+                  text: Text('Reset'),
+                ),
+              ),
               onTap: () {
                 _orderNotifier.value = _initOrder;
               },
@@ -261,8 +263,13 @@ class _ReorderableListTab extends ConsumerWidget {
               child: ListTile(
                 enabled: enabled,
                 selected: true,
-                trailing: const Icon(Icons.more_vert),
-                title: const Text('Ensure visible'),
+                title: const Center(
+                  child: MiIcon(
+                    icon: Icon(Icons.more_vert),
+                    text: Text('Ensure\nvisible'),
+                    iconEnd: true,
+                  ),
+                ),
               ),
             ),
           ],
