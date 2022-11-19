@@ -5,6 +5,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 /// カスタム[PageView]
 ///
@@ -137,6 +138,83 @@ class _MiPageViewState extends State<MiPageView> {
       controller: _pageController,
       itemCount: widget.itemCount ?? widget.items!.length,
       itemBuilder: widget.itemBuilder ?? (_, index) => widget.items![index],
+    );
+  }
+}
+
+/// ページインジケータ
+///
+class MiPageIndicator extends StatelessWidget {
+  final int length;
+  final int index;
+  final ValueChanged<int>? onSelected;
+  final Widget? icon;
+  final Color? iconColor;
+  final double? iconSize;
+  final Color? selectedIconColor;
+  final double? selectedIconSize;
+  final double? spacing;
+  final double? runSpacing;
+  final String? tooltip;
+
+  const MiPageIndicator({
+    super.key,
+    required this.length,
+    required this.index,
+    this.onSelected,
+    this.icon,
+    this.iconColor,
+    this.iconSize,
+    this.selectedIconColor,
+    this.selectedIconSize,
+    this.spacing,
+    this.runSpacing,
+    this.tooltip,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final icon_ = icon ?? const Icon(Icons.circle);
+    final iconColor_ = iconColor ?? theme.unselectedIconColor;
+    final iconSize_ = iconSize ?? 8;
+    final selectedIconColor_ = selectedIconColor ?? theme.foregroundColor;
+    final selectedIconSize_ = selectedIconSize ?? 12;
+
+    return IconTheme.merge(
+      data: IconThemeData(
+        color: iconColor_,
+        size: iconSize_,
+      ),
+      child: Tooltip(
+        message: tooltip ?? 'Page ${index + 1}',
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: spacing ?? 2.0,
+          runSpacing: runSpacing ?? 2.0,
+          children: iota(length).map(
+            (i) {
+              Widget widget = i == index
+                  ? IconTheme.merge(
+                      data: IconThemeData(
+                        color: selectedIconColor_,
+                        size: selectedIconSize_,
+                      ),
+                      child: icon_,
+                    )
+                  : icon_;
+              if (onSelected != null) {
+                widget = InkWell(
+                  onTap: () => onSelected?.call(i),
+                  child: widget,
+                );
+              }
+              return widget;
+            },
+          ).toList(),
+        ),
+      ),
     );
   }
 }
