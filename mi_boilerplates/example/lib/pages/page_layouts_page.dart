@@ -19,11 +19,11 @@ class PageLayoutsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Framed single child scroll view',
+      tooltip: 'Expanded single child scroll view',
       icon: icon,
     ),
     MiTab(
-      tooltip: 'Framed list view',
+      tooltip: 'Expanded list view',
       icon: Icon(Icons.list),
     ),
   ];
@@ -54,8 +54,8 @@ class PageLayoutsPage extends ConsumerWidget {
             minimum: EdgeInsets.symmetric(horizontal: 8),
             child: TabBarView(
               children: [
-                _FramedScrollViewTab(content: (SingleChildScrollView)),
-                _FramedScrollViewTab(content: (ListView)),
+                _ExpandedScrollViewTab(content: (SingleChildScrollView)),
+                _ExpandedScrollViewTab(content: (ListView)),
               ],
             ),
           ),
@@ -76,12 +76,12 @@ final _lengthProvider = StateProvider((ref) => 1);
 
 const _length = [1, 20];
 
-class _FramedScrollViewTab extends ConsumerWidget {
-  static final _logger = Logger((_FramedScrollViewTab).toString());
+class _ExpandedScrollViewTab extends ConsumerWidget {
+  static final _logger = Logger((_ExpandedScrollViewTab).toString());
 
   final Type content;
 
-  const _FramedScrollViewTab({required this.content});
+  const _ExpandedScrollViewTab({required this.content});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
