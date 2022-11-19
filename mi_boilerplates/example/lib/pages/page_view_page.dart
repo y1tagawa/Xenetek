@@ -148,6 +148,7 @@ class PageViewPage extends ConsumerWidget {
           child: MiPageView.builder(
             initialPage: _pageNotifier.value,
             pageNotifier: _pageNotifier,
+            viewportFraction: 0.8,
             itemCount: _pageItems.length,
             itemBuilder: (context, index) {
               final item = _pageItems[index];
