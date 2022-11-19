@@ -80,11 +80,25 @@ class ButtonsPage extends ConsumerWidget {
           ),
           body: SafeArea(
             minimum: const EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              physics: enabled ? null : const NeverScrollableScrollPhysics(),
-              children: const [
-                _PushButtonsTab(),
-                _MonospaceTab(),
+            child: Column(
+              children: [
+                Expanded(
+                  child: TabBarView(
+                    physics: enabled ? null : const NeverScrollableScrollPhysics(),
+                    children: const [
+                      _PushButtonsTab(),
+                      _MonospaceTab(),
+                    ],
+                  ),
+                ),
+                MiPageIndicator(
+                  index: tabIndex,
+                  length: _tabs.length,
+                  onSelected: (index) {
+                    final tabController = DefaultTabController.of(context)!;
+                    tabController.index = index;
+                  },
+                ),
               ],
             ),
           ),
