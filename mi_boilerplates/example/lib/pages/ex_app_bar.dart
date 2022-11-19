@@ -305,7 +305,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
       switch (it) {
         case '/':
           return 0;
-        case '/drawer/settings':
+        case '/settings':
           return 1;
         default:
           return -1;
@@ -326,7 +326,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
             break;
           case 1:
             if (currentIndex != 1) {
-              context.push('/drawer/settings');
+              context.push('/settings');
             }
             break;
           case 2:

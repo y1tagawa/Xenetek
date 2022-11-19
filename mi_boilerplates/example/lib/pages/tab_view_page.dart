@@ -60,36 +60,44 @@ class TabViewPage extends ConsumerWidget {
             bottom: const TabBar(tabs: _tabs),
           ),
           body: TabBarView(
-            children: _tabs.mapIndexed((index, tab) {
-              return Column(
-                children: [
-                  Text(
+            children: _tabs.mapIndexed(
+              (index, tab) {
+                return MiExpandedColumn(
+                  top: Text(
                     '${tab.text!} Tab',
                     style: Theme.of(context).textTheme.headline5,
                   ),
-                  ..._tabs.mapIndexed(
-                    (i, tab) {
-                      return MiTextButton(
-                        enabled: i != index,
-                        onPressed: () {
-                          debugPrint('TabViewPage: setting tab index to $i');
-                          tabController.index = i;
-                        },
-                        child: Text(tab.text!),
-                      );
-                    },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        ..._tabs.mapIndexed(
+                          (i, tab) {
+                            return MiTextButton(
+                              enabled: i != index,
+                              onPressed: () {
+                                debugPrint('TabViewPage: setting tab index to $i');
+                                tabController.index = i;
+                              },
+                              child: Text(tab.text!),
+                            );
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.network(
+                            _imageUrls[index],
+                            width: _imageWidth,
+                            height: _imageHeight,
+                            frameBuilder: (_, child, frame, __) =>
+                                frame == null ? const CircularProgressIndicator() : child,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const Padding(padding: EdgeInsets.all(10)),
-                  Image.network(
-                    _imageUrls[index],
-                    width: _imageWidth,
-                    height: _imageHeight,
-                    frameBuilder: (_, child, frame, __) =>
-                        frame == null ? const CircularProgressIndicator() : child,
-                  ),
-                ],
-              );
-            }).toList(),
+                );
+              },
+            ).toList(),
           ),
           bottomNavigationBar: const ExBottomNavigationBar(),
         );
