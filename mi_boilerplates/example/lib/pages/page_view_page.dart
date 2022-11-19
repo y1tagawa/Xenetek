@@ -145,7 +145,7 @@ class PageViewPage extends ConsumerWidget {
               },
             ),
           ),
-          child: MiPageView(
+          child: MiPageView.builder(
             initialPage: _pageNotifier.value,
             pageNotifier: _pageNotifier,
             itemCount: _pageItems.length,
