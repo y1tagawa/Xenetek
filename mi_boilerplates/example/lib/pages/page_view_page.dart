@@ -94,10 +94,85 @@ class _DotIndicator extends StatelessWidget {
   }
 }
 
-// TODO: Lock into stateful widget.
-final _pageController = PageController();
+// * ValueNotifier<int>にaddListener
+// * 変更されたらanimateTo ただし初回はinitStateでinitialPage設定
+// * onPageChanged
+// https://api.flutter.dev/flutter/widgets/PageController-class.html
+class MiPageView extends StatefulWidget {
+  final int initialPage;
+  final ValueNotifier<int> pageNotifier;
+  final int? itemCount;
+  final IndexedWidgetBuilder itemBuilder;
+  final ValueChanged<int>? onPageChanged;
+  final Duration duration;
+  final Curve curve;
 
-final _pageIndexProvider = StateProvider((ref) => 0);
+  const MiPageView({
+    super.key,
+    this.initialPage = 0,
+    required this.pageNotifier,
+    this.itemCount,
+    required this.itemBuilder,
+    this.onPageChanged,
+    this.duration = const Duration(milliseconds: 300),
+    this.curve = Curves.easeInOut,
+  });
+
+  @override
+  State<MiPageView> createState() => _MiPageViewState();
+}
+
+class _MiPageViewState extends State<MiPageView> {
+  static final _logger = Logger((_MiPageViewState).toString());
+
+  late PageController _pageController;
+
+  void _pageChanged() async {
+    await _pageController.animateToPage(
+      widget.pageNotifier.value,
+      duration: widget.duration,
+      curve: widget.curve,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: widget.initialPage,
+    );
+    widget.pageNotifier.addListener(_pageChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.pageNotifier.removeListener(_pageChanged);
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MiPageView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget != widget) {
+      oldWidget.pageNotifier.removeListener(_pageChanged);
+      widget.pageNotifier.addListener(_pageChanged);
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: widget.itemCount,
+      itemBuilder: widget.itemBuilder,
+    );
+  }
+}
+
+final _pageNotifier = ValueNotifier(0);
+final _pageProvider = ChangeNotifierProvider((ref) => _pageNotifier);
 
 class PageViewPage extends ConsumerWidget {
   static const icon = Icon(Icons.auto_stories_outlined);
@@ -112,15 +187,8 @@ class PageViewPage extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
-    final pageIndex = ref.watch(_pageIndexProvider);
 
-    Future<void> animateToPage(int index) async {
-      return _pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    }
+    final pageIndex = ref.watch(_pageProvider).value;
 
     return Scaffold(
       appBar: ExAppBar(
@@ -134,32 +202,30 @@ class PageViewPage extends ConsumerWidget {
           bottom: ListTile(
             leading: MiIconButton(
               enabled: enabled && pageIndex > 0,
-              onPressed: () async {
-                await animateToPage(pageIndex - 1);
+              onPressed: () {
+                _pageNotifier.value = pageIndex - 1;
               },
               icon: const Icon(Icons.arrow_back),
             ),
             trailing: MiIconButton(
               enabled: enabled && pageIndex < _pageItems.length - 1,
-              onPressed: () async {
-                await animateToPage(pageIndex + 1);
+              onPressed: () {
+                _pageNotifier.value = pageIndex + 1;
               },
               icon: const Icon(Icons.arrow_forward),
             ),
             title: _DotIndicator(
               length: _pageItems.length,
               index: pageIndex,
-              onSelected: (index) async {
-                animateToPage(index);
+              onSelected: (index) {
+                _pageNotifier.value = index;
               },
             ),
           ),
-          child: PageView.builder(
-            controller: _pageController,
+          child: MiPageView(
+            initialPage: _pageNotifier.value,
+            pageNotifier: _pageNotifier,
             itemCount: _pageItems.length,
-            onPageChanged: (index) {
-              ref.read(_pageIndexProvider.notifier).state = index;
-            },
             itemBuilder: (context, index) {
               final item = _pageItems[index];
               return MiExpandedColumn(
