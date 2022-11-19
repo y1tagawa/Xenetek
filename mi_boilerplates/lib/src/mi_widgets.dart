@@ -511,18 +511,19 @@ class MiRow extends StatelessWidget {
 
 /// タブまたは[Scaffold.body]中の頻出コード
 ///
-/// 頻繁に‘Vertical viewport was given unbounded height’エラーを出してしまうため。
+/// [Column]で‘Vertical viewport was given unbounded height’エラーを避けるため。
 /// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
-/// [ListView]など[height]が不定のウィジェットを[child]に入れる。
+/// [child] - [ListView]など[height]が不定のウィジェット。
+/// [top]/[tops], [bottom]/[bottoms] - [child]の上下に積まれる。
 ///
-class MiVerticalFrame extends StatelessWidget {
+class MiExpandedColumn extends StatelessWidget {
   final Widget child;
   final Widget? top;
   final List<Widget>? tops;
   final Widget? bottom;
   final List<Widget>? bottoms;
 
-  const MiVerticalFrame({
+  const MiExpandedColumn({
     super.key,
     required this.child,
     this.top,
