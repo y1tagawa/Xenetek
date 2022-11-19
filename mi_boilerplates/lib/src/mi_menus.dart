@@ -12,7 +12,7 @@ import '../mi_boilerplates.dart';
 /// * AppBar上の[PopupMenuButton]など、[IconTheme]が変更されている場合、
 ///   メニュー上のアイコン色が見づらい場合があるので修正する。
 ///   TODO: PopupMenuThemeData.colorを考慮する
-
+///
 class MiPopupMenuItem<T> extends PopupMenuItem<T> {
   // ウィジェットではStateにプロパティを渡すだけ
   const MiPopupMenuItem({
@@ -110,13 +110,7 @@ class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
 
 /// グリッドポップアップメニューボタン
 ///
-/// 横幅がいまいち決まらない。
 class MiGridPopupMenuButton extends StatelessWidget {
-  // https://github.com/flutter/flutter/blob/f5205b15c8da52fd172b27b03e7b85a068ef3bf4/packages/flutter/lib/src/material/popup_menu.dart#L37
-  static const double kMenuItemWidth = 56.0 * 3;
-
-  final double? width;
-  final double? height;
   final double spacing;
   final double runSpacing;
   final List<Widget> items;
@@ -127,8 +121,6 @@ class MiGridPopupMenuButton extends StatelessWidget {
 
   const MiGridPopupMenuButton({
     super.key,
-    this.width,
-    this.height,
     this.spacing = 0.0,
     this.runSpacing = 0.0,
     required this.items,
@@ -146,33 +138,27 @@ class MiGridPopupMenuButton extends StatelessWidget {
       itemBuilder: (context) {
         return [
           PopupMenuItem<int>(
-            child: SizedBox(
-              width: width ?? kMenuItemWidth,
-              height: height ?? MediaQuery.of(context).size.height * 0.3,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: spacing,
-                  runSpacing: runSpacing,
-                  children: items
-                      .mapIndexed(
-                        (index, item) => InkWell(
-                          child: item,
-                          onTap: () {
-                            Navigator.of(context).pop(index);
-                          },
-                        ).let(
-                          (it) => tooltips != null
-                              ? Tooltip(
-                                  message: tooltips![index],
-                                  child: it,
-                                )
-                              : it,
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              spacing: spacing,
+              runSpacing: runSpacing,
+              children: items
+                  .mapIndexed(
+                    (index, item) => InkWell(
+                      child: item,
+                      onTap: () {
+                        Navigator.of(context).pop(index);
+                      },
+                    ).let(
+                      (it) => tooltips != null
+                          ? Tooltip(
+                              message: tooltips![index],
+                              child: it,
+                            )
+                          : it,
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ];
