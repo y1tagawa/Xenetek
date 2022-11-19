@@ -287,14 +287,17 @@ class ExBottomNavigationBar extends ConsumerWidget {
       const BottomNavigationBarItem(
         icon: Icon(Icons.home_outlined),
         label: 'Home',
+        tooltip: '',
       ),
       const BottomNavigationBarItem(
         icon: Icon(Icons.settings_outlined),
         label: 'Settings',
+        tooltip: '',
       ),
       const BottomNavigationBarItem(
         icon: Icon(Icons.help_outline),
         label: 'About',
+        tooltip: '',
       ),
     ];
 
