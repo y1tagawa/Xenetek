@@ -121,18 +121,24 @@ class PageViewPage extends ConsumerWidget {
                       padding: const EdgeInsets.all(10),
                       child: LayoutBuilder(
                         builder: (_, constraints) {
-                          return Image.network(
-                            item.imageUrl!,
+                          return SizedBox(
                             width: constraints.maxWidth,
                             height: constraints.maxHeight,
-                            alignment: Alignment.center,
-                            fit: BoxFit.contain,
-                            frameBuilder: (_, child, frame, __) => frame == null
-                                ? const Align(
-                                    alignment: Alignment.center,
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : child,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: ColoredBox(
+                                color: Colors.white,
+                                child: Image.network(
+                                  item.imageUrl!,
+                                  frameBuilder: (_, child, frame, __) => frame == null
+                                      ? const Align(
+                                          alignment: Alignment.center,
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : child,
+                                ),
+                              ),
+                            ),
                           );
                         },
                       ),
