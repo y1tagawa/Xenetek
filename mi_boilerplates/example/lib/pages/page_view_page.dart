@@ -4,7 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -118,15 +117,15 @@ class PageViewPage extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return MiExpandedColumn(
-                    top: PopupMenuButton<int>(
-                      itemBuilder: (context) {
-                        return items
-                            .mapIndexed((index, item) => PopupMenuItem<int>(
-                                  value: index,
-                                  child: Text(item.name),
-                                ))
-                            .toList();
-                      },
+                    top: MiGridPopupMenuButton(
+                      items: items
+                          .map(
+                            (item) => Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              child: Text(item.name),
+                            ),
+                          )
+                          .toList(),
                       offset: const Offset(1, 0),
                       onSelected: (index) {
                         ref.read(_pageIndexProvider.notifier).value = index;
