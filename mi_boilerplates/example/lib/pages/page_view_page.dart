@@ -17,13 +17,13 @@ const _noImageAvailableUrl =
 
 class _PageItem {
   final String name;
-  final String? imageUrl;
+  final String imageUrl;
   final String? referenceUrl;
   final String? note;
 
   const _PageItem({
     required this.name,
-    this.imageUrl,
+    required this.imageUrl,
     this.referenceUrl,
     this.note,
   });
@@ -148,7 +148,7 @@ class PageViewPage extends ConsumerWidget {
                               child: ColoredBox(
                                 color: Colors.white,
                                 child: Image.network(
-                                  item.imageUrl!,
+                                  item.imageUrl,
                                   frameBuilder: (_, child, frame, __) => frame == null
                                       ? const Align(
                                           alignment: Alignment.center,
