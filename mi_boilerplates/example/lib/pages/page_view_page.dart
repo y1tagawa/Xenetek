@@ -19,13 +19,13 @@ class _PageItem {
   final String name;
   final String imageUrl;
   final String? referenceUrl;
-  final String? note;
+  final String? description;
 
   const _PageItem({
     required this.name,
     required this.imageUrl,
     this.referenceUrl,
-    this.note,
+    this.description,
   });
 }
 
@@ -47,7 +47,7 @@ final _pageItemsProvider = FutureProvider((ref) async {
           name: name,
           imageUrl: value['imageUrl'] as String? ?? _noImageAvailableUrl,
           referenceUrl: value['referenceUrl'] as String?,
-          note: value['note'] as String?,
+          description: value['description'] as String?,
         ),
       );
     }
@@ -132,7 +132,7 @@ class PageViewPage extends ConsumerWidget {
                       },
                       child: ListTile(
                         title: Text(item.name),
-                        subtitle: item.note?.let((it) => Text(it)),
+                        subtitle: item.description?.let((it) => Text(it)),
                         trailing: const Icon(Icons.more_vert),
                       ),
                     ),
