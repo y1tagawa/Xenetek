@@ -95,8 +95,7 @@ class ButtonsPage extends ConsumerWidget {
                   index: tabIndex,
                   length: _tabs.length,
                   onSelected: (index) {
-                    final tabController = DefaultTabController.of(context)!;
-                    tabController.index = index;
+                    DefaultTabController.of(context)?.index = index;
                   },
                 ),
               ],

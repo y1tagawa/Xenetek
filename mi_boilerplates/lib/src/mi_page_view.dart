@@ -14,8 +14,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 ///   s.a. https://api.flutter.dev/flutter/widgets/PageController-class.html
 ///
 class MiPageView extends StatefulWidget {
-  static const kDuration = Duration(milliseconds: 300);
-
+  final bool enabled;
   final int initialPage;
   final ValueNotifier<int> pageNotifier;
   // items/itemCount, itemBuilderは排他。
@@ -35,11 +34,12 @@ class MiPageView extends StatefulWidget {
   final ScrollBehavior? scrollBehavior;
   final bool padEnds;
   final double viewportFraction;
-  final Duration duration;
+  final Duration? animationDuration;
   final Curve curve;
 
   const MiPageView({
     super.key,
+    this.enabled = true,
     this.initialPage = 0,
     required this.pageNotifier,
     required this.items,
@@ -55,7 +55,7 @@ class MiPageView extends StatefulWidget {
     this.scrollBehavior,
     this.padEnds = true,
     this.viewportFraction = 1.0,
-    this.duration = kDuration,
+    this.animationDuration,
     this.curve = Curves.easeInOut,
   })  : assert(items != null),
         itemCount = null,
@@ -63,6 +63,7 @@ class MiPageView extends StatefulWidget {
 
   const MiPageView.builder({
     super.key,
+    this.enabled = true,
     this.initialPage = 0,
     required this.pageNotifier,
     this.itemCount,
@@ -79,7 +80,7 @@ class MiPageView extends StatefulWidget {
     this.scrollBehavior,
     this.padEnds = true,
     this.viewportFraction = 1.0,
-    this.duration = kDuration,
+    this.animationDuration,
     this.curve = Curves.easeInOut,
   })  : assert(itemCount != null && itemBuilder != null),
         items = null;
@@ -97,7 +98,7 @@ class _MiPageViewState extends State<MiPageView> {
   void _pageChanged() async {
     await _pageController.animateToPage(
       widget.pageNotifier.value,
-      duration: widget.duration,
+      duration: widget.animationDuration ?? kTabScrollDuration,
       curve: widget.curve,
     );
   }
@@ -138,6 +139,17 @@ class _MiPageViewState extends State<MiPageView> {
       controller: _pageController,
       itemCount: widget.itemCount ?? widget.items!.length,
       itemBuilder: widget.itemBuilder ?? (_, index) => widget.items![index],
+      scrollDirection: widget.scrollDirection,
+      reverse: widget.reverse,
+      physics: widget.enabled ? widget.physics : const NeverScrollableScrollPhysics(),
+      pageSnapping: widget.pageSnapping,
+      onPageChanged: widget.onPageChanged,
+      dragStartBehavior: widget.dragStartBehavior,
+      allowImplicitScrolling: widget.allowImplicitScrolling,
+      restorationId: widget.restorationId,
+      clipBehavior: widget.clipBehavior,
+      scrollBehavior: widget.scrollBehavior,
+      padEnds: widget.padEnds,
     );
   }
 }
