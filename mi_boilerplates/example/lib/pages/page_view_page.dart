@@ -2,24 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
 
-final _pageItems = <String, String>{
-  'Aamon': 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Aamon.jpg',
-  'Abigor': 'https://upload.wikimedia.org/wikipedia/commons/4/43/Abigor.jpg',
-  'Abraxas':
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/ABRAXAS_INFERNAL_DICTIONARY.jpg/575px-ABRAXAS_INFERNAL_DICTIONARY.jpg',
-  'Adramelech':
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Adramelech.jpg/531px-Adramelech.jpg',
-}.entries.toList();
+class _PageItem {
+  final String name;
+  final String? imageUrl;
+  final String? referenceUrl;
+  final String? note;
 
-final _pageNotifier = ValueNotifier(0);
-final _pageProvider = ChangeNotifierProvider((ref) => _pageNotifier);
+  const _PageItem({
+    required this.name,
+    this.imageUrl,
+    this.referenceUrl,
+    this.note,
+  });
+}
+
+final _pageItemsProvider = FutureProvider((ref) async {
+  // ignore: unused_local_variable
+  final logger = Logger('_pageItemsProvider');
+
+  final data = json.decode(
+    await rootBundle.loadString('assets/pandemonium.json'),
+  ) as Map<String, Object?>;
+
+  final list = <_PageItem>[];
+  for (final item in data.entries) {
+    final name = item.key;
+    if (name.isNotEmpty) {
+      final value = item.value as Map<String, Object?>;
+      list.add(
+        _PageItem(
+          name: name,
+          imageUrl: value['imageUrl'] as String?,
+          referenceUrl: value['referenceUrl'] as String?,
+          note: value['note'] as String?,
+        ),
+      );
+    }
+  }
+  return list;
+});
+
+final _pageIndexNotifier = ValueNotifier(0);
+final _pageIndexProvider = ChangeNotifierProvider((ref) => _pageIndexNotifier);
 
 class PageViewPage extends ConsumerWidget {
   static const icon = Icon(Icons.auto_stories_outlined);
@@ -34,7 +68,8 @@ class PageViewPage extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
-    final pageIndex = ref.watch(_pageProvider).value;
+    final pageItems = ref.watch(_pageItemsProvider);
+    final pageIndex = ref.watch(_pageIndexProvider).value;
 
     return Scaffold(
       appBar: ExAppBar(
@@ -44,63 +79,72 @@ class PageViewPage extends ConsumerWidget {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 8),
-        child: MiExpandedColumn(
-          bottom: ListTile(
-            leading: MiIconButton(
-              enabled: enabled && pageIndex > 0,
-              onPressed: () {
-                _pageNotifier.value = pageIndex - 1;
-              },
-              icon: const Icon(Icons.arrow_back),
-            ),
-            trailing: MiIconButton(
-              enabled: enabled && pageIndex < _pageItems.length - 1,
-              onPressed: () {
-                _pageNotifier.value = pageIndex + 1;
-              },
-              icon: const Icon(Icons.arrow_forward),
-            ),
-            title: MiPageIndicator(
-              length: _pageItems.length,
-              index: pageIndex,
-              onSelected: (index) {
-                _pageNotifier.value = index;
-              },
-            ),
-          ),
-          child: MiPageView.builder(
-            enabled: enabled,
-            initialPage: _pageNotifier.value,
-            pageNotifier: _pageNotifier,
-            itemCount: _pageItems.length,
-            itemBuilder: (context, index) {
-              final item = _pageItems[index];
-              return MiExpandedColumn(
-                top: ListTile(
-                  title: Text(item.key),
+        child: pageItems.when(
+          data: (items) {
+            return MiExpandedColumn(
+              bottom: ListTile(
+                leading: MiIconButton(
+                  enabled: enabled && pageIndex > 0,
+                  onPressed: () {
+                    _pageIndexNotifier.value = pageIndex - 1;
+                  },
+                  icon: const Icon(Icons.arrow_back),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: LayoutBuilder(
-                    builder: (_, constraints) {
-                      return Image.network(
-                        item.value,
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                        alignment: Alignment.topCenter,
-                        fit: BoxFit.contain,
-                        frameBuilder: (_, child, frame, __) => frame == null
-                            ? const Align(
-                                alignment: Alignment.center,
-                                child: CircularProgressIndicator(),
-                              )
-                            : child,
-                      );
-                    },
-                  ),
+                trailing: MiIconButton(
+                  enabled: enabled && pageIndex < items.length - 1,
+                  onPressed: () {
+                    _pageIndexNotifier.value = pageIndex + 1;
+                  },
+                  icon: const Icon(Icons.arrow_forward),
                 ),
-              );
-            },
+                title: MiPageIndicator(
+                  length: items.length,
+                  index: pageIndex,
+                  onSelected: (index) {
+                    _pageIndexNotifier.value = index;
+                  },
+                ),
+              ),
+              child: MiPageView.builder(
+                enabled: enabled,
+                initialPage: pageIndex,
+                pageNotifier: _pageIndexNotifier,
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return MiExpandedColumn(
+                    top: ListTile(
+                      title: Text(item.name),
+                      subtitle: item.note?.let((it) => Text(it)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: LayoutBuilder(
+                        builder: (_, constraints) {
+                          return Image.network(
+                            item.imageUrl!,
+                            width: constraints.maxWidth,
+                            height: constraints.maxHeight,
+                            alignment: Alignment.topCenter,
+                            fit: BoxFit.contain,
+                            frameBuilder: (_, child, frame, __) => frame == null
+                                ? const Align(
+                                    alignment: Alignment.center,
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : child,
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+          error: (message, stackTrace) => Text(message.toString()),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
           ),
         ),
       ),
