@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -52,6 +53,7 @@ final _pageItemsProvider = FutureProvider((ref) async {
       );
     }
   }
+  list.sort((a, b) => a.name.compareTo(b.name));
   return list;
 });
 
@@ -116,9 +118,24 @@ class PageViewPage extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final item = items[index];
                   return MiExpandedColumn(
-                    top: ListTile(
-                      title: Text(item.name),
-                      subtitle: item.note?.let((it) => Text(it)),
+                    top: PopupMenuButton<int>(
+                      itemBuilder: (context) {
+                        return items
+                            .mapIndexed((index, item) => PopupMenuItem<int>(
+                                  value: index,
+                                  child: Text(item.name),
+                                ))
+                            .toList();
+                      },
+                      offset: const Offset(1, 0),
+                      onSelected: (index) {
+                        ref.read(_pageIndexProvider.notifier).value = index;
+                      },
+                      child: ListTile(
+                        title: Text(item.name),
+                        subtitle: item.note?.let((it) => Text(it)),
+                        trailing: const Icon(Icons.more_vert),
+                      ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10),
