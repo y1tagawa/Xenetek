@@ -125,7 +125,7 @@ class PageViewPage extends ConsumerWidget {
                             item.imageUrl!,
                             width: constraints.maxWidth,
                             height: constraints.maxHeight,
-                            alignment: Alignment.topCenter,
+                            alignment: Alignment.center,
                             fit: BoxFit.contain,
                             frameBuilder: (_, child, frame, __) => frame == null
                                 ? const Align(
