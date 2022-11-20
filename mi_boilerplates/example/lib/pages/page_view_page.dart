@@ -12,6 +12,9 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
 
+const _noImageAvailableUrl =
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/240px-No_image_available.svg.png';
+
 class _PageItem {
   final String name;
   final String? imageUrl;
@@ -42,7 +45,7 @@ final _pageItemsProvider = FutureProvider((ref) async {
       list.add(
         _PageItem(
           name: name,
-          imageUrl: value['imageUrl'] as String?,
+          imageUrl: value['imageUrl'] as String? ?? _noImageAvailableUrl,
           referenceUrl: value['referenceUrl'] as String?,
           note: value['note'] as String?,
         ),
