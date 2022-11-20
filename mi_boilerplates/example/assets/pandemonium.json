@@ -2,12 +2,12 @@
   "Abaddon": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Christianandapollyon.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Abaddon",
-    "note": "A.k.a. Apollyon"
+    "description": "A.k.a. Apollyon"
   },
   "Abigor": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Abigor_%28DI%29.png/413px-Abigor_%28DI%29.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Eligos",
-    "note": "Great Duke, a.k.a. Eligos."
+    "description": "Great Duke, a.k.a. Eligos."
   },
   "Abraxas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Abraxas.png/403px-Abraxas.png",
@@ -32,7 +32,7 @@
   "Alloces": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Alocer_01.png/418px-Alocer_01.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/Alloces",
-    "note": "A.k.a. Allocer"
+    "description": "A.k.a. Allocer"
   },
   "Amduscias": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Amduscias_%28Dictionnaire_infernal%29.png/419px-Amduscias_%28Dictionnaire_infernal%29.png",
@@ -79,13 +79,13 @@
     "referenceUrl": "https://en.wikipedia.org/wiki/Barbatos"
   },
   "Behemoth": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Behemoth3.jpg",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/William_Blake_-_Behemoth_and_Leviathan_-_Google_Art_Project.jpg/358px-William_Blake_-_Behemoth_and_Leviathan_-_Google_Art_Project.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Behemoth"
   },
   "Beleth": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Byleth.png/300px-Byleth.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/Beleth",
-    "note": "A.k.a. Byleth"
+    "description": "A.k.a. Byleth"
   },
   "Belphegor": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Flipart-Oudry-La_Fontaine-Belph%C3%A9gor_1.jpg/345px-Flipart-Oudry-La_Fontaine-Belph%C3%A9gor_1.jpg",
@@ -95,7 +95,7 @@
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Beelzebub_and_them_with_him.jpg",
     "imageUrl2": "https://commons.wikimedia.org/wiki/File:Beelzebub.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/Beelzebub",
-    "note": "A.k.a. Belzebuth"
+    "description": "A.k.a. Belzebuth"
   },
   "Baal Berith": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Berith.png/439px-Berith.png",
@@ -112,17 +112,28 @@
   "Caacrinolaas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Caacrinolaas.png/416px-Caacrinolaas.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Glasya-Labolas",
-    "note": "A.k.a Glasya-Labolas"
+    "description": "A.k.a Glasya-Labolas"
   },
   "Caim": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/13/Caim_in_bird_form.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/8/84/Caim_in_human_form.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Caim",
-    "note": "A.k.a. Caym"
+    "description": "A.k.a. Caym"
   },
   "Decarabia": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Pentagram_and_human_body_%28Agrippa%29.jpg/473px-Pentagram_and_human_body_%28Agrippa%29.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Decarabia"
+  },
+  "Demiurge": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Musei_Vaticani_Leontocephaline11042017_B.jpg/218px-Musei_Vaticani_Leontocephaline11042017_B.jpg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Demiurge",
+    "note": "Image is referencing to 'https://commons.wikimedia.org/wiki/Category:Leontocephaline'."
+  },
+  "Demogorgon": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Phanes.jpg/324px-Phanes.jpg",
+    "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Engraving_of_a_marble_relief_of_Phanes.jpg/314px-Engraving_of_a_marble_relief_of_Phanes.jpg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Demogorgon",
+    "note": "Images are referencing to 'https://commons.wikimedia.org/wiki/Category:Phanes_(deity)'.",
   },
   "Eurynome": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Ill_dict_infernal_p0270-254_eurynome_demon.jpg/418px-Ill_dict_infernal_p0270-254_eurynome_demon.jpg",
@@ -135,7 +146,7 @@
   "Foras": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Ill_dict_infernal_p0296-280_forcas_demon.jpg/426px-Ill_dict_infernal_p0296-280_forcas_demon.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Foras",
-    "note": "A.k.a Forcas"
+    "description": "A.k.a Forcas"
   },
   "Furfur": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Ill_dict_infernal_p0306-290_furfur_demon.jpg/418px-Ill_dict_infernal_p0306-290_furfur_demon.jpg",
@@ -156,6 +167,11 @@
   "Leonard": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ill_dict_infernal_p0420_leonard.jpg/412px-Ill_dict_infernal_p0420_leonard.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Leonard_(demon)"
+  },
+  "Leviathan": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Leviathan_by_Thomas_Hobbes.jpg/301px-Leviathan_by_Thomas_Hobbes.jpg",
+    "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Destruction_of_Leviathan.png/380px-Destruction_of_Leviathan.png",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Leviathan"
   },
   "Lucifer": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Lucifer_%28the_morning_star%29._Engraving_by_G.H._Frezza%2C_1704%2C_Wellcome_V0035916.jpg/586px-Lucifer_%28the_morning_star%29._Engraving_by_G.H._Frezza%2C_1704%2C_Wellcome_V0035916.jpg",
@@ -195,7 +211,7 @@
   "Pruflas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Ill_dict_infernal_p0578_pruflas.jpg/423px-Ill_dict_infernal_p0578_pruflas.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Pseudomonarchia_Daemonum#Pruflas",
-    "note": "Prince/Duke"
+    "description": "Prince/Duke"
   },
   "Shax": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ill_dict_infernal_p0617_scox.jpg/423px-Ill_dict_infernal_p0617_scox.jpg",
@@ -212,5 +228,9 @@
   "Zaebos": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Zaebos.png/413px-Zaebos.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/Zaebos"
+  },
+  "": {
+    "imageUrl": "",
+    "referenceUrl": ""
   }
 }
