@@ -69,7 +69,7 @@ class PageLayoutsPage extends ConsumerWidget {
 }
 
 //
-// Framed scroll view tab
+// Expanded scroll view tab
 //
 
 final _lengthProvider = StateProvider((ref) => 1);
