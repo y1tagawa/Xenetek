@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 /// カスタム[RadioListTile]
 ///
 /// * [enabled]追加
-
+///
 class MiRadioListTile<T> extends RadioListTile<T> {
   const MiRadioListTile({
-//<editor-fold>
+    //<editor-fold>
     super.key,
     bool enabled = true,
     required super.value,
@@ -40,7 +41,7 @@ class MiRadioListTile<T> extends RadioListTile<T> {
 /// カスタム[SwitchListTile]
 ///
 /// * [enabled]追加
-
+///
 class MiSwitchListTile extends SwitchListTile {
   const MiSwitchListTile({
     //<editor-fold>
@@ -77,7 +78,7 @@ class MiSwitchListTile extends SwitchListTile {
 /// カスタム[ExpansionTile]
 ///
 /// * [enabled]追加、それに合わせ動作もいろいろ変更。
-
+///
 class MiExpansionTile extends StatelessWidget {
   //<editor-fold>
   final bool enabled;
@@ -179,21 +180,66 @@ class MiExpansionTile extends StatelessWidget {
   }
 }
 
-// class _TextColor extends StatelessWidget {
-//   final Color? color;
-//   final Widget child;
-//
-//   const _TextColor(this.color, this.child);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-//     return DefaultTextStyle.merge(
-//       style: TextStyle(color: color),
-//       child: IconTheme.merge(
-//         data: IconThemeData(color: color),
-//         child: child,
-//       ),
-//     );
-//   }
-// }
+/// [ListTile]のテキストボタン的用法
+///
+/// * 頻出コード
+///
+class MiButtonListTile extends StatelessWidget {
+  //<editor-fold>
+  final bool enabled;
+  final bool selected;
+  final Widget? icon;
+  final Widget text;
+  final Widget? title;
+  final MiIconPosition iconPosition;
+  final VoidCallback? onPressed;
+  //</editor-fold>
+
+  const MiButtonListTile({
+    //<editor-fold>
+    super.key,
+    this.enabled = true,
+    this.selected = false,
+    this.icon,
+    required this.text,
+    this.title,
+    this.iconPosition = MiIconPosition.start,
+    this.onPressed,
+    //</editor-fold>
+    // TODO: 他のプロパティ
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    Widget? subtitle_;
+    Widget title_ = Center(
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: theme.foregroundColor),
+        child: IconTheme.merge(
+          data: IconThemeData(color: theme.foregroundColor),
+          child: icon != null
+              ? MiIcon(
+                  icon: icon,
+                  text: text,
+                  iconPosition: iconPosition,
+                )
+              : text,
+        ),
+      ),
+    );
+
+    if (title != null) {
+      subtitle_ = title_;
+      title_ = Center(child: title!);
+    }
+
+    return ListTile(
+      enabled: enabled,
+      title: title_,
+      subtitle: subtitle_,
+      onTap: onPressed,
+    );
+  }
+}

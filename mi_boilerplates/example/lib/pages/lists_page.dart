@@ -144,16 +144,11 @@ class _DismissibleListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        ListTile(
-          selected: true,
+        MiButtonListTile(
           enabled: enabled,
-          title: const Center(
-            child: MiIcon(
-              icon: Icon(Icons.refresh_outlined),
-              text: Text('Reset'),
-            ),
-          ),
-          onTap: () {
+          icon: const Icon(Icons.refresh_outlined),
+          text: const Text('Reset'),
+          onPressed: () {
             ref.invalidate(_leftListProvider);
             ref.invalidate(_rightListProvider);
           },
@@ -231,16 +226,11 @@ class _ReorderableListTab extends ConsumerWidget {
         MiRow(
           flexes: const [1, 1],
           children: [
-            ListTile(
+            MiButtonListTile(
               enabled: enabled,
-              selected: true,
-              title: const Center(
-                child: MiIcon(
-                  icon: Icon(Icons.refresh_outlined),
-                  text: Text('Reset'),
-                ),
-              ),
-              onTap: () {
+              icon: const Icon(Icons.refresh_outlined),
+              text: const Text('Reset'),
+              onPressed: () {
                 _orderNotifier.value = _initOrder;
               },
             ),
@@ -260,16 +250,11 @@ class _ReorderableListTab extends ConsumerWidget {
                   )
                   .toList(),
               //tooltips: order,
-              child: ListTile(
+              child: MiButtonListTile(
                 enabled: enabled,
-                selected: true,
-                title: const Center(
-                  child: MiIcon(
-                    icon: Icon(Icons.more_vert),
-                    text: Text('Ensure\nvisible'),
-                    iconEnd: true,
-                  ),
-                ),
+                icon: const Icon(Icons.more_vert),
+                text: const Text('Ensure\nvisible'),
+                iconPosition: MiIconPosition.end,
               ),
             ),
           ],
@@ -370,17 +355,13 @@ class _StepperTab extends ConsumerWidget {
         ),
         const Divider(),
         if (index < 0)
-          ListTile(
-            title: MiTextButton(
-              enabled: enabled,
-              child: const MiIcon(
-                icon: Icon(Icons.play_arrow_outlined),
-                text: Text('Start'),
-              ),
-              onPressed: () {
-                ref.read(_stepIndexProvider.notifier).state = 0;
-              },
-            ),
+          MiButtonListTile(
+            enabled: enabled,
+            icon: const Icon(Icons.play_arrow_outlined),
+            text: const Text('Start'),
+            onPressed: () {
+              ref.read(_stepIndexProvider.notifier).state = 0;
+            },
           )
         else if (index >= 0 && index < steps.length)
           Expanded(
@@ -408,21 +389,17 @@ class _StepperTab extends ConsumerWidget {
               ),
             ),
           )
-        else
-          ListTile(
+        else ...[
+          MiButtonListTile(
             enabled: enabled,
-            title: const Center(child: Text('OK.')),
-            subtitle: MiTextButton(
-              enabled: enabled,
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Restart'),
-              ),
-              onPressed: () {
-                ref.read(_stepIndexProvider.notifier).state = 0;
-              },
-            ),
+            title: const Text('OK.'),
+            icon: const Icon(Icons.refresh_outlined),
+            text: const Text('Restart'),
+            onPressed: () {
+              ref.read(_stepIndexProvider.notifier).state = 0;
+            },
           ),
+        ]
       ],
     ).also((_) {
       _logger.fine('[o] build');

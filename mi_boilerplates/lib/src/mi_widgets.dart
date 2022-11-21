@@ -68,13 +68,17 @@ extension SetHelper<T> on Set<T> {
   }
 }
 
+///
+enum MiIconPosition { start, end }
+
 /// ラベル
 ///
-/// [icon]がnullの場合、その部分は空白となる。
+/// * [icon]がnullの場合、空白を表示する。
+///
 class MiIcon extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
-  final bool iconEnd;
+  final MiIconPosition iconPosition;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onHover;
   final double? spacing;
@@ -85,7 +89,7 @@ class MiIcon extends StatelessWidget {
     super.key,
     this.enabled = true,
     this.icon,
-    this.iconEnd = false,
+    this.iconPosition = MiIconPosition.start,
     this.onTap,
     this.onHover,
     this.spacing,
@@ -103,12 +107,11 @@ class MiIcon extends StatelessWidget {
     if (text != null) {
       final spacing_ = spacing ?? 8.0;
       final spacer = spacing_ > 0.0 ? SizedBox(width: spacing_) : null;
-      final iconEnd_ = Directionality.of(context) == TextDirection.rtl ? !iconEnd : iconEnd;
       icon_ = Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: iconEnd_
+        children: iconPosition == MiIconPosition.end
             ? [
                 if (spacer != null) spacer,
                 text!,
@@ -260,7 +263,7 @@ class MiImageIcon extends StatelessWidget {
 
 /// カスタム[TextButton]
 ///
-/// * [enabled]追加。
+/// * [enabled]追加
 ///
 class MiTextButton extends StatelessWidget {
   final bool enabled;
@@ -309,7 +312,7 @@ class MiTextButton extends StatelessWidget {
 
 /// カスタム[IconButton]
 ///
-/// * [enabled]追加。
+/// * [enabled]追加
 /// TODO: StatelessWidgetから派生。
 ///
 class MiIconButton extends IconButton {

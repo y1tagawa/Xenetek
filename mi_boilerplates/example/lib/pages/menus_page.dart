@@ -189,21 +189,14 @@ class _PopupMenuTab extends ConsumerWidget {
           ],
         ),
         const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MiTextButton(
-              enabled: enabled,
-              onPressed: () {
-                ref.refresh(_equippedProvider).also((_) {});
-                ref.refresh(_shieldProvider).also((_) {});
-              },
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Reset'),
-              ),
-            ),
-          ],
+        MiButtonListTile(
+          enabled: enabled,
+          icon: const Icon(Icons.refresh_outlined),
+          text: const Text('Reset'),
+          onPressed: () {
+            ref.refresh(_equippedProvider).also((_) {});
+            ref.refresh(_shieldProvider).also((_) {});
+          },
         ),
       ],
     ).also((_) {
