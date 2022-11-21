@@ -237,6 +237,7 @@ class MiButtonListTile extends StatelessWidget {
 
     return ListTile(
       enabled: enabled,
+      selected: selected,
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,
