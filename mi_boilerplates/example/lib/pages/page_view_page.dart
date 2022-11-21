@@ -156,20 +156,18 @@ class PageViewPage extends ConsumerWidget {
                           return SizedBox(
                             width: constraints.maxWidth,
                             height: constraints.maxHeight,
-                            child: FittedBox(
+                            child: Image.network(
+                              item.imageUrl,
                               fit: BoxFit.contain,
-                              child: ColoredBox(
-                                color: Colors.white,
-                                child: Image.network(
-                                  item.imageUrl,
-                                  frameBuilder: (_, child, frame, __) => frame == null
-                                      ? const Align(
-                                          alignment: Alignment.center,
-                                          child: CircularProgressIndicator(),
-                                        )
-                                      : child,
-                                ),
-                              ),
+                              frameBuilder: (_, child, frame, __) => frame == null
+                                  ? const Align(
+                                      alignment: Alignment.center,
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : ColoredBox(
+                                      color: Colors.white,
+                                      child: child,
+                                    ),
                             ),
                           );
                         },
@@ -181,9 +179,7 @@ class PageViewPage extends ConsumerWidget {
             );
           },
           error: (message, stackTrace) => Text(message.toString()),
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const CircularProgressIndicator(),
         ),
       ),
       bottomNavigationBar: const ExBottomNavigationBar(),
