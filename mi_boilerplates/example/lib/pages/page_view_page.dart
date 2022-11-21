@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:path/path.dart' as p;
 
 import 'ex_app_bar.dart';
 
@@ -151,10 +152,14 @@ class PageViewPage extends ConsumerWidget {
                                       alignment: Alignment.center,
                                       child: CircularProgressIndicator(),
                                     )
-                                  : ColoredBox(
-                                      color: Colors.white,
-                                      child: child,
-                                    ),
+                                  : p
+                                          .extension(item.imageUrl)
+                                          .let((it) => it == '.jpg' || it == '.jpeg')
+                                      ? child
+                                      : ColoredBox(
+                                          color: Colors.white,
+                                          child: child,
+                                        ),
                             ),
                           );
                         },
