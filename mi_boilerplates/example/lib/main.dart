@@ -288,7 +288,7 @@ void main() async {
 
 class MyApp extends ConsumerWidget {
   // ignore: unused_field
-  static final _logger = Logger((HomePage).toString());
+  static final _logger = Logger((MyApp).toString());
 
   const MyApp({super.key});
 

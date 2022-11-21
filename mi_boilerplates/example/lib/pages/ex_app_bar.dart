@@ -54,6 +54,7 @@ class _OverflowMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
+    final brightness = ref.watch(brightnessProvider);
 
     return PopupMenuButton(
       itemBuilder: (context) {
@@ -83,7 +84,7 @@ class _OverflowMenu extends ConsumerWidget {
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
-            checked: ref.watch(brightnessProvider) == Brightness.dark,
+            checked: brightness.isDark,
             child: const Text('Dark mode'),
             onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                 value ? Brightness.dark : Brightness.light,
@@ -104,7 +105,7 @@ class _OverflowMenu extends ConsumerWidget {
         if (ref.read(enableActionsProvider)) 'Enabled',
         if (ref.read(modifyThemeProvider)) 'Adjusted',
         ref.read(useM3Provider) ? 'M3' : 'M2',
-        if (ref.read(brightnessProvider) == Brightness.dark) 'Dark',
+        if (ref.read(brightnessProvider).isDark) 'Dark',
       ].join(', '),
       //icon: const Icon(Icons.square),
     );
@@ -150,6 +151,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
+    final brightness = ref.watch(brightnessProvider);
     final theme = Theme.of(context);
 
     final flexibleSpace_ = flexibleSpace ??
@@ -195,7 +197,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
             MiCheckIconButton(
               enabled: enabled,
-              checked: ref.watch(brightnessProvider).isDark,
+              checked: brightness.isDark,
               onChanged: (value) async {
                 ref.read(brightnessProvider.notifier).state =
                     value ? Brightness.dark : Brightness.light;
