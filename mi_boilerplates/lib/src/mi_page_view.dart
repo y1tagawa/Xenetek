@@ -151,7 +151,11 @@ class _MiPageViewState extends State<MiPageView> {
       reverse: widget.reverse,
       physics: widget.enabled ? widget.physics : const NeverScrollableScrollPhysics(),
       pageSnapping: widget.pageSnapping,
-      onPageChanged: widget.onPageChanged,
+      onPageChanged: (index) {
+        //_logger.fine('onPageChanged $index ${_pageController.page} ${widget.pageNotifier.value}');
+        widget.pageNotifier.value = index;
+        widget.onPageChanged?.call(index);
+      },
       dragStartBehavior: widget.dragStartBehavior,
       allowImplicitScrolling: widget.allowImplicitScrolling,
       restorationId: widget.restorationId,
