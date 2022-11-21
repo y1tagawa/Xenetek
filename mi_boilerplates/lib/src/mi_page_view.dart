@@ -94,13 +94,20 @@ class _MiPageViewState extends State<MiPageView> {
   static final _logger = Logger((_MiPageViewState).toString());
 
   late PageController _pageController;
+  late int _lastPage;
 
   void _pageChanged() async {
-    await _pageController.animateToPage(
-      widget.pageNotifier.value,
-      duration: widget.animationDuration ?? kTabScrollDuration,
-      curve: widget.curve,
-    );
+    final page = widget.pageNotifier.value;
+    if (page == _lastPage - 1 || page == _lastPage + 1) {
+      await _pageController.animateToPage(
+        page,
+        duration: widget.animationDuration ?? kTabScrollDuration,
+        curve: widget.curve,
+      );
+    } else {
+      _pageController.jumpToPage(page);
+    }
+    _lastPage = widget.pageNotifier.value;
   }
 
   @override
@@ -110,6 +117,7 @@ class _MiPageViewState extends State<MiPageView> {
       initialPage: widget.initialPage,
       viewportFraction: widget.viewportFraction,
     );
+    _lastPage = widget.initialPage;
     widget.pageNotifier.addListener(_pageChanged);
   }
 

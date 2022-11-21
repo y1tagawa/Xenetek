@@ -4,6 +4,7 @@
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../mi_boilerplates.dart';
 
@@ -201,6 +202,51 @@ class MiGridPopupMenuButton extends StatelessWidget {
         ];
       },
       child: child,
+    );
+  }
+}
+
+/// グリッドアイテム
+///
+/// [GridView]や[Wrap]のアイテムとして、一定サイズの中でアライメントしたら結構大変だったのでウィジェットとする。
+///
+class MiGridItem extends StatelessWidget {
+  final Widget? child;
+  final BoxConstraints? constraints;
+  final EdgeInsetsGeometry? margin;
+  final MainAxisAlignment? mainAxisAlignment;
+  final MainAxisSize? mainAxisSize;
+  final CrossAxisAlignment? crossAxisAlignment;
+
+  const MiGridItem({
+    super.key,
+    this.child,
+    this.constraints,
+    this.margin,
+    this.mainAxisAlignment,
+    this.mainAxisSize,
+    this.crossAxisAlignment,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: constraints ??
+          const BoxConstraints(
+            minWidth: kToolbarHeight,
+            minHeight: kToolbarHeight,
+          ),
+      child: Row(
+        mainAxisAlignment: mainAxisAlignment ?? MainAxisAlignment.start,
+        mainAxisSize: mainAxisSize ?? MainAxisSize.min,
+        crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: margin ?? const EdgeInsets.symmetric(horizontal: 8),
+            child: child,
+          ),
+        ],
+      ),
     );
   }
 }

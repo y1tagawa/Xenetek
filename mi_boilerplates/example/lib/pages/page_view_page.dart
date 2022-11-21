@@ -101,13 +101,14 @@ class PageViewPage extends ConsumerWidget {
                   },
                   icon: const Icon(Icons.arrow_forward),
                 ),
-                title: MiPageIndicator(
-                  length: items.length,
-                  index: pageIndex,
-                  onSelected: (index) {
-                    _pageIndexNotifier.value = index;
-                  },
-                ),
+                title: Center(child: Text('$pageIndex / ${items.length}')),
+                // title: MiPageIndicator(
+                //   length: items.length,
+                //   index: pageIndex,
+                //   onSelected: (index) {
+                //     _pageIndexNotifier.value = index;
+                //   },
+                // ),
               ),
               child: MiPageView.builder(
                 enabled: enabled,
@@ -120,22 +121,8 @@ class PageViewPage extends ConsumerWidget {
                     top: MiGridPopupMenuButton(
                       items: items
                           .map(
-                            (item) => ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                minHeight: kToolbarHeight,
-                                minWidth: kToolbarHeight,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                    child: Text(item.name),
-                                  ),
-                                ],
-                              ),
+                            (item) => MiGridItem(
+                              child: Text(item.name),
                             ),
                           )
                           .toList(),
