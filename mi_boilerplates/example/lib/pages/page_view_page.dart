@@ -120,13 +120,26 @@ class PageViewPage extends ConsumerWidget {
                     top: MiGridPopupMenuButton(
                       items: items
                           .map(
-                            (item) => Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              child: Text(item.name),
+                            (item) => ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                minHeight: kToolbarHeight,
+                                minWidth: kToolbarHeight,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    child: Text(item.name),
+                                  ),
+                                ],
+                              ),
                             ),
                           )
                           .toList(),
-                      offset: const Offset(1, 0),
+                      offset: const Offset(1, kToolbarHeight),
                       onSelected: (index) {
                         ref.read(_pageIndexProvider.notifier).value = index;
                       },
