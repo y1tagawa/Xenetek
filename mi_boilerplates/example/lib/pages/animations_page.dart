@@ -87,7 +87,7 @@ class AnimationsPage extends ConsumerWidget {
               children: [
                 _AnimatedBuilderTab(),
                 _LottieTab(),
-                _ImageGifTab(),
+                _AnimationGifTab(),
                 _AnimatedIconsTab(),
               ],
             ),
@@ -219,10 +219,10 @@ class _LottieTab extends ConsumerWidget {
 const _imageGifUrl =
     'https://upload.wikimedia.org/wikipedia/commons/d/dd/Muybridge_race_horse_animated.gif';
 
-class _ImageGifTab extends ConsumerWidget {
-  static final _logger = Logger((_ImageGifTab).toString());
+class _AnimationGifTab extends ConsumerWidget {
+  static final _logger = Logger((_AnimationGifTab).toString());
 
-  const _ImageGifTab();
+  const _AnimationGifTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
