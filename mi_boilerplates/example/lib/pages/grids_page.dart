@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'ex_app_bar.dart';
@@ -27,6 +28,8 @@ const _imageUrls = <String>[
   'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/MILTON_%281695%29_p362_PL_12.jpg/296px-MILTON_%281695%29_p362_PL_12.jpg',
 ];
 
+int _pageIndex = 0;
+
 class GridsPage extends ConsumerWidget {
   static const icon = Icon(Icons.grid_view);
   static const title = Text('Grids');
@@ -35,7 +38,7 @@ class GridsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    //final enableActions = ref.watch(enableActionsProvider);
 
     return Scaffold(
       appBar: ExAppBar(
@@ -58,11 +61,14 @@ class GridsPage extends ConsumerWidget {
                   itemCount: _imageUrls.length,
                   itemBuilder: (context, index) {
                     return Tooltip(
-                      message: 'Page #${index + 1}',
+                      message: 'PL. ${index + 1}',
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          _pageIndex = index;
+                          context.push('/grids/detail');
+                        },
                         child: Hero(
-                          tag: 'tile$index',
+                          tag: 'plate${index + 1}',
                           child: Image.network(
                             _imageUrls[index],
                             fit: BoxFit.fill,
@@ -75,7 +81,52 @@ class GridsPage extends ConsumerWidget {
                     );
                   }),
             ),
-            const ListTile(),
+            const ListTile(
+              title: Text('From \'The Poetical Works of John Milton\' (1695).'),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: const ExBottomNavigationBar(),
+    );
+  }
+}
+
+//
+// Detail page.
+//
+
+class GridDetailPage extends ConsumerWidget {
+  const GridDetailPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: ExAppBar(
+        prominent: ref.watch(prominentProvider),
+        icon: GridsPage.icon,
+        title: Text('PL. ${_pageIndex + 1}'),
+      ),
+      body: SafeArea(
+        minimum: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () {
+                  context.pop();
+                },
+                child: Hero(
+                  tag: 'plate${_pageIndex + 1}',
+                  child: Image.network(
+                    _imageUrls[_pageIndex],
+                    fit: BoxFit.contain,
+                    frameBuilder: (_, child, frame, __) =>
+                        frame == null ? const Center(child: CircularProgressIndicator()) : child,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

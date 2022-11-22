@@ -107,6 +107,12 @@ final _pages = <_PageItem>[
     builder: (_, __) => const GridsPage(),
   ),
   _PageItem(
+    icon: GridsPage.icon,
+    title: GridsPage.title,
+    path: '/grids/detail',
+    builder: (_, __) => const GridDetailPage(),
+  ),
+  _PageItem(
     icon: ListsPage.icon,
     title: ListsPage.title,
     path: '/lists',
@@ -395,8 +401,10 @@ class HomePage extends ConsumerWidget {
               children: [
                 ..._pages
                     .skip(1) // Home
-                    .whereNot(
-                        (item) => item.path.startsWith('/drawer/') || item.path == '/settings')
+                    .whereNot((item) =>
+                        item.path.startsWith('/drawer/') ||
+                        item.path.startsWith('/grids/') ||
+                        item.path == '/settings')
                     .map(
                       (item) => TextButton(
                         onPressed: () => context.push(item.path),
