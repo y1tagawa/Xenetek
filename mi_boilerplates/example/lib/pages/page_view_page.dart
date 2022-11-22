@@ -102,7 +102,7 @@ class PageViewPage extends ConsumerWidget {
                   },
                   icon: const Icon(Icons.arrow_forward),
                 ),
-                title: Center(child: Text('$pageIndex / ${items.length}')),
+                title: Center(child: Text('${pageIndex + 1} / ${items.length}')),
                 // title: MiPageIndicator(
                 //   length: items.length,
                 //   index: pageIndex,
