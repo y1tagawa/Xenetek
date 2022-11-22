@@ -22,6 +22,7 @@ import 'pages/dialogs_page.dart';
 import 'pages/embedded_tab_view_page.dart';
 import 'pages/ex_app_bar.dart';
 import 'pages/files_page.dart';
+import 'pages/grids_page.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
@@ -98,6 +99,12 @@ final _pages = <_PageItem>[
     title: FilesPage.title,
     path: '/files',
     builder: (_, __) => const FilesPage(),
+  ),
+  _PageItem(
+    icon: GridsPage.icon,
+    title: GridsPage.title,
+    path: '/grids',
+    builder: (_, __) => const GridsPage(),
   ),
   _PageItem(
     icon: ListsPage.icon,

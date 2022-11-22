@@ -169,14 +169,16 @@ class _MiPageViewState extends State<MiPageView> {
 /// ページインジケータ
 ///
 class MiPageIndicator extends StatelessWidget {
+  static const Widget kDefaultSelectedIcon = Icon(Icons.circle, size: 12);
+  static const Widget kDefaultUnselectedIcon = Icon(Icons.fiber_manual_record, size: 12);
+
   final int length;
   final int index;
   final ValueChanged<int>? onSelected;
-  final Widget? icon;
-  final Color? iconColor;
-  final double? iconSize;
+  final Widget? selectedIcon;
   final Color? selectedIconColor;
-  final double? selectedIconSize;
+  final Widget? unselectedIcon;
+  final Color? unselectedIconColor;
   final double? spacing;
   final double? runSpacing;
   final String? tooltip;
@@ -186,11 +188,10 @@ class MiPageIndicator extends StatelessWidget {
     required this.length,
     required this.index,
     this.onSelected,
-    this.icon,
-    this.iconColor,
-    this.iconSize,
+    this.selectedIcon,
     this.selectedIconColor,
-    this.selectedIconSize,
+    this.unselectedIcon,
+    this.unselectedIconColor,
     this.spacing,
     this.runSpacing,
     this.tooltip,
@@ -199,16 +200,14 @@ class MiPageIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final icon_ = icon ?? const Icon(Icons.circle);
-    final iconColor_ = iconColor ?? theme.unselectedIconColor;
-    final iconSize_ = iconSize ?? 8;
+    final selectedIcon_ = selectedIcon ?? kDefaultSelectedIcon;
+    final unselectedIcon_ = unselectedIcon ?? kDefaultUnselectedIcon;
     final selectedIconColor_ = selectedIconColor ?? theme.foregroundColor;
-    final selectedIconSize_ = selectedIconSize ?? 12;
+    final unselectedIconColor_ = unselectedIconColor ?? theme.unselectedIconColor;
 
     return IconTheme.merge(
       data: IconThemeData(
-        color: iconColor_,
-        size: iconSize_,
+        color: unselectedIconColor_,
       ),
       child: Tooltip(
         message: tooltip ?? 'Page ${index + 1}',
@@ -223,11 +222,10 @@ class MiPageIndicator extends StatelessWidget {
                   ? IconTheme.merge(
                       data: IconThemeData(
                         color: selectedIconColor_,
-                        size: selectedIconSize_,
                       ),
-                      child: icon_,
+                      child: selectedIcon_,
                     )
-                  : icon_;
+                  : unselectedIcon_;
               if (onSelected != null) {
                 widget = InkWell(
                   onTap: () => onSelected?.call(i),
