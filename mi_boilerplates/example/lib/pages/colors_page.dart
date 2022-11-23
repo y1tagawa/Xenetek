@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:example/data/primary_color_names.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -120,52 +119,44 @@ class _ColorGridTab extends ConsumerWidget {
 //　Theme and color scheme tab.
 //
 
-final _colorSchemeItems1 = <String, Color Function(ThemeData)>{
-  'colorScheme.primary': (theme) => theme.colorScheme.primary,
-  'colorScheme.onPrimary': (theme) => theme.colorScheme.onPrimary,
-  'colorScheme.secondary': (theme) => theme.colorScheme.secondary,
-  'colorScheme.onSecondary': (theme) => theme.colorScheme.onSecondary,
-  'colorScheme.background': (theme) => theme.colorScheme.background,
-  'colorScheme.onBackground': (theme) => theme.colorScheme.onBackground,
-  'colorScheme.surface': (theme) => theme.colorScheme.surface,
-  'colorScheme.onSurface': (theme) => theme.colorScheme.onSurface,
+final _colorSchemeItems = <String, Color Function(ThemeData)>{
+  'primary': (theme) => theme.colorScheme.primary,
+  'onPrimary': (theme) => theme.colorScheme.onPrimary,
+  'primaryContainer': (theme) => theme.colorScheme.primaryContainer,
+  'onPrimaryContainer': (theme) => theme.colorScheme.onPrimaryContainer,
+  'secondary': (theme) => theme.colorScheme.secondary,
+  'onSecondary': (theme) => theme.colorScheme.onSecondary,
+  'secondaryContainer': (theme) => theme.colorScheme.secondaryContainer,
+  'onSecondaryContainer': (theme) => theme.colorScheme.onSecondaryContainer,
+  'tertiary': (theme) => theme.colorScheme.tertiary,
+  'onTertiary': (theme) => theme.colorScheme.onTertiary,
+  'tertiaryContainer': (theme) => theme.colorScheme.tertiaryContainer,
+  'onTertiaryContainer': (theme) => theme.colorScheme.onTertiaryContainer,
+  'error': (theme) => theme.colorScheme.error,
+  'onError': (theme) => theme.colorScheme.onError,
+  'errorContainer': (theme) => theme.colorScheme.errorContainer,
+  'onErrorContainer': (theme) => theme.colorScheme.onErrorContainer,
+  'background': (theme) => theme.colorScheme.background,
+  'onBackground': (theme) => theme.colorScheme.onBackground,
+  'surface': (theme) => theme.colorScheme.surface,
+  'onSurface': (theme) => theme.colorScheme.onSurface,
+  'surfaceVariant': (theme) => theme.colorScheme.surfaceVariant,
+  'onSurfaceVariant': (theme) => theme.colorScheme.onSurfaceVariant,
+  'outline': (theme) => theme.colorScheme.outline,
+  'shadow': (theme) => theme.colorScheme.shadow,
+  'inverseSurface': (theme) => theme.colorScheme.inverseSurface,
+  'onInverseSurface': (theme) => theme.colorScheme.onInverseSurface,
+  'inversePrimary': (theme) => theme.colorScheme.inversePrimary,
+  'surfaceTint': (theme) => theme.colorScheme.surfaceTint,
 };
 
-final _colorSchemeItems2 = <String, Color Function(ThemeData)>{
-  'colorScheme.error': (theme) => theme.colorScheme.error,
-  'colorScheme.onError': (theme) => theme.colorScheme.onError,
-  'colorScheme.primaryContainer': (theme) => theme.colorScheme.primaryContainer,
-  'colorScheme.onPrimaryContainer': (theme) => theme.colorScheme.onPrimaryContainer,
-  'colorScheme.secondaryContainer': (theme) => theme.colorScheme.secondaryContainer,
-  'colorScheme.onSecondaryContainer': (theme) => theme.colorScheme.onSecondaryContainer,
-  'colorScheme.tertiary': (theme) => theme.colorScheme.tertiary,
-  'colorScheme.onTertiary': (theme) => theme.colorScheme.onTertiary,
-  'colorScheme.tertiaryContainer': (theme) => theme.colorScheme.tertiaryContainer,
-  'colorScheme.onTertiaryContainer': (theme) => theme.colorScheme.onTertiaryContainer,
-  'colorScheme.errorContainer': (theme) => theme.colorScheme.errorContainer,
-  'colorScheme.onErrorContainer': (theme) => theme.colorScheme.onErrorContainer,
-  'colorScheme.surfaceVariant': (theme) => theme.colorScheme.surfaceVariant,
-  'colorScheme.onSurfaceVariant': (theme) => theme.colorScheme.onSurfaceVariant,
-  'colorScheme.outline': (theme) => theme.colorScheme.outline,
-  'colorScheme.shadow': (theme) => theme.colorScheme.shadow,
-  'colorScheme.inverseSurface': (theme) => theme.colorScheme.inverseSurface,
-  'colorScheme.onInverseSurface': (theme) => theme.colorScheme.onInverseSurface,
-  'colorScheme.inversePrimary': (theme) => theme.colorScheme.inversePrimary,
-  'colorScheme.surfaceTint': (theme) => theme.colorScheme.surfaceTint,
-};
-
-final _themeColorItems1 = <String, Color Function(ThemeData)>{
+final _themeColorItems = <String, Color Function(ThemeData)>{
   'backgroundColor': (theme) => theme.backgroundColor,
-  'disabledColor': (theme) => theme.disabledColor,
+  'bottomAppBarColor': (theme) => theme.bottomAppBarColor,
   'canvasColor': (theme) => theme.canvasColor,
   'cardColor': (theme) => theme.cardColor,
-  'selectedRowColor': (theme) => theme.selectedRowColor,
-  'unselectedWidgetColor': (theme) => theme.unselectedWidgetColor,
-};
-
-final _themeColorItems2 = <String, Color Function(ThemeData)>{
-  'bottomAppBarColor': (theme) => theme.bottomAppBarColor,
   'dialogBackgroundColor': (theme) => theme.dialogBackgroundColor,
+  'disabledColor': (theme) => theme.disabledColor,
   'dividerColor': (theme) => theme.dividerColor,
   'errorColor': (theme) => theme.errorColor,
   'focusColor': (theme) => theme.focusColor,
@@ -178,56 +169,43 @@ final _themeColorItems2 = <String, Color Function(ThemeData)>{
   'primaryColorLight': (theme) => theme.primaryColorLight,
   'scaffoldBackgroundColor': (theme) => theme.scaffoldBackgroundColor,
   'secondaryHeaderColor': (theme) => theme.secondaryHeaderColor,
+  'selectedRowColor': (theme) => theme.selectedRowColor,
   'shadowColor': (theme) => theme.shadowColor,
   'splashColor': (theme) => theme.splashColor,
   'toggleableActiveColor': (theme) => theme.toggleableActiveColor,
+  'unselectedWidgetColor': (theme) => theme.unselectedWidgetColor,
 };
 
-class _ColorsView extends StatelessWidget {
-  final List<Color> colors1;
-  final List<Color>? colors2;
-  final List<String>? tooltips;
-  final ValueChanged<Color>? onSelected;
+class _ColorsListTile extends StatelessWidget {
+  final Widget title;
+  final ThemeData theme1;
+  final ThemeData theme2;
+  final Map<String, Color Function(ThemeData)> items;
+  final bool initiallyExpanded;
 
-  const _ColorsView({
-    required this.colors1,
-    required this.colors2,
-    this.tooltips,
-    this.onSelected,
-  })  : assert(tooltips == null || tooltips.length == colors1.length),
-        assert(colors2 == null || colors2.length == colors1.length);
+  const _ColorsListTile({
+    required this.title,
+    required this.theme1,
+    required this.theme2,
+    required this.items,
+    this.initiallyExpanded = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      runSpacing: 4,
-      children: colors1.mapIndexed(
-        (index, color) {
-          return colors2 != null
-              ? Tooltip(
-                  message: tooltips?[index] ?? '',
-                  child: Column(
-                    children: [
-                      MiColorChip(
-                        color: color,
-                        onTap: () => onSelected?.call(color),
-                      ),
-                      colors2![index].let(
-                        (color2) => MiColorChip(
-                          onTap: () => onSelected?.call(color2),
-                          color: color2,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : MiColorChip(
-                  color: color,
-                  onTap: () => onSelected?.call(color),
-                  tooltip: tooltips?[index],
-                );
-        },
-      ).toList(),
+    return MiExpansionTile(
+      title: title,
+      initiallyExpanded: initiallyExpanded,
+      children: items.keys.map((key) {
+        return MiRow(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            MiColorChip(color: items[key]!.call(theme1)),
+            MiColorChip(color: items[key]!.call(theme2)),
+            Text(key),
+          ],
+        );
+      }).toList(),
     );
   }
 }
@@ -243,35 +221,6 @@ class _SwatchView extends StatelessWidget {
       children: [900, 800, 700, 600, 500, 400, 300, 200, 100, 50].map((index) {
         return MiColorChip(color: color[index]!);
       }).toList(),
-    );
-  }
-}
-
-class _HeaderedScrollableLayout extends StatelessWidget {
-  final Widget? header;
-  final Widget? content;
-  final Widget? bottom;
-
-  const _HeaderedScrollableLayout({
-    super.key,
-    this.header,
-    this.content,
-    this.bottom,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        if (header != null) header!,
-        if (content != null)
-          Expanded(
-            child: SingleChildScrollView(
-              child: content!,
-            ),
-          ),
-        if (bottom != null) bottom!,
-      ],
     );
   }
 }
@@ -326,79 +275,22 @@ class _ColorSchemeTab extends ConsumerWidget {
         : it);
 
     final tileTest = ref.watch(_tileTestProvider);
-    return _HeaderedScrollableLayout(
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            dense: true,
-            onTap: () => ref.read(_tileTestProvider.notifier).state = !tileTest,
-            trailing: tileTest ? const Icon(Icons.expand_less) : const Icon(Icons.expand_more),
-            title: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(6),
-                  child: Text('Theme colors'),
-                ),
-                if (tileTest)
-                  ..._themeColorItems2.entries.map(
-                    (entry) => Row(
-                      children: [
-                        MiColorChip(
-                          color: entry.value(lightTheme),
-                        ),
-                        Text(entry.key),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(6),
-            child: Text('Theme colors'),
-          ),
-          _ColorsView(
-            colors1: _themeColorItems1.values.map((it) => it(lightTheme)).toList(),
-            colors2: _themeColorItems1.values.map((it) => it(darkTheme)).toList(),
-            tooltips: _themeColorItems1.keys.toList(),
-            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
-          ),
-          const SizedBox(height: 6),
-          _ColorsView(
-            colors1: _themeColorItems2.values.map((it) => it(lightTheme)).toList(),
-            colors2: _themeColorItems2.values.map((it) => it(darkTheme)).toList(),
-            tooltips: _themeColorItems2.keys.toList(),
-            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
-          ),
-          const Padding(
-            padding: EdgeInsets.all(6),
-            child: Text('Color scheme'),
-          ),
-          _ColorsView(
-            colors1: _colorSchemeItems1.values.map((it) => it(lightTheme)).toList(),
-            colors2: _colorSchemeItems1.values.map((it) => it(darkTheme)).toList(),
-            tooltips: _colorSchemeItems1.keys.toList(),
-            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
-          ),
-          const SizedBox(height: 6),
-          _ColorsView(
-            colors1: _colorSchemeItems2.values.map((it) => it(lightTheme)).toList(),
-            colors2: _colorSchemeItems2.values.map((it) => it(darkTheme)).toList(),
-            tooltips: _colorSchemeItems2.keys.toList(),
-            onSelected: (color) => ref.read(_selectedColorProvider.notifier).state = color,
-          ),
-          const Padding(
-            padding: EdgeInsets.all(6),
-            child: Text('Swatch'),
-          ),
-          if (selectedColor != null)
-            _SwatchView(
-              color: selectedColor!.toMaterialColor(),
-            ),
-        ],
-      ),
-      bottom: const ListTile(title: Text('bottom')),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ColorsListTile(
+          title: const Text('Theme colors'),
+          theme1: lightTheme,
+          theme2: darkTheme,
+          items: _themeColorItems,
+        ),
+        _ColorsListTile(
+          title: const Text('Color scheme colors'),
+          theme1: lightTheme,
+          theme2: darkTheme,
+          items: _colorSchemeItems,
+        ),
+      ],
     ).also((_) {
       _logger.fine('[o] build');
     });
