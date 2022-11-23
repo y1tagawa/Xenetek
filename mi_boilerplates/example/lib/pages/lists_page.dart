@@ -30,18 +30,6 @@ const _listItems = <String, Icon>{
   'Chaos magic': Icon(Icons.android),
 };
 
-class _ListTile extends ConsumerWidget {
-  final String _key;
-  const _ListTile(this._key);
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: _listItems[_key],
-      title: Text(_key),
-    );
-  }
-}
-
 class ListsPage extends ConsumerWidget {
   static const icon = Icon(Icons.list);
   static const title = Text('Lists');
@@ -167,7 +155,10 @@ class _DismissibleListTab extends ConsumerWidget {
                       move(_leftListProvider, index, _rightListProvider);
                     },
                     background: ColoredBox(color: theme.backgroundColor),
-                    child: _ListTile(key),
+                    child: ListTile(
+                      leading: _listItems[key],
+                      title: Text(key),
+                    ),
                   );
                 }).toList(),
               ),
@@ -181,7 +172,10 @@ class _DismissibleListTab extends ConsumerWidget {
                       move(_rightListProvider, index, _leftListProvider);
                     },
                     background: ColoredBox(color: theme.backgroundColor),
-                    child: _ListTile(key),
+                    child: ListTile(
+                      leading: _listItems[key],
+                      title: Text(key),
+                    ),
                   );
                 }).toList(),
               ),
