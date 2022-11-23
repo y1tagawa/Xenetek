@@ -176,18 +176,20 @@ final _themeColorItems = <String, Color Function(ThemeData)>{
   'unselectedWidgetColor': (theme) => theme.unselectedWidgetColor,
 };
 
-class _ColorsListTile extends StatelessWidget {
+class _ColorsView extends StatelessWidget {
   final Widget title;
   final ThemeData theme1;
   final ThemeData theme2;
   final Map<String, Color Function(ThemeData)> items;
+  final ValueChanged<Color?>? onColorSelected;
   final bool initiallyExpanded;
 
-  const _ColorsListTile({
+  const _ColorsView({
     required this.title,
     required this.theme1,
     required this.theme2,
     required this.items,
+    this.onColorSelected,
     this.initiallyExpanded = false,
   });
 
@@ -200,8 +202,14 @@ class _ColorsListTile extends StatelessWidget {
         return MiRow(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            MiColorChip(color: items[key]!.call(theme1)),
-            MiColorChip(color: items[key]!.call(theme2)),
+            items[key]!.call(theme1).let((color) => MiColorChip(
+                  color: color,
+                  onTap: () => onColorSelected?.call(color),
+                )),
+            items[key]!.call(theme2).let((color) => MiColorChip(
+                  color: color,
+                  onTap: () => onColorSelected?.call(color),
+                )),
             Text(key),
           ],
         );
@@ -226,7 +234,6 @@ class _SwatchView extends StatelessWidget {
 }
 
 final _selectedColorProvider = StateProvider<Color?>((ref) => null);
-final _tileTestProvider = StateProvider((ref) => false);
 
 class _ColorSchemeTab extends ConsumerWidget {
   static final _logger = Logger((_ColorSchemeTab).toString());
@@ -274,22 +281,40 @@ class _ColorSchemeTab extends ConsumerWidget {
           )
         : it);
 
-    final tileTest = ref.watch(_tileTestProvider);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _ColorsListTile(
-          title: const Text('Theme colors'),
-          theme1: lightTheme,
-          theme2: darkTheme,
-          items: _themeColorItems,
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ColorsView(
+                  title: const Text('Theme colors'),
+                  theme1: lightTheme,
+                  theme2: darkTheme,
+                  items: _themeColorItems,
+                  onColorSelected: (color) {
+                    ref.read(_selectedColorProvider.notifier).state = color;
+                  },
+                ),
+                _ColorsView(
+                  title: const Text('Color scheme colors'),
+                  theme1: lightTheme,
+                  theme2: darkTheme,
+                  items: _colorSchemeItems,
+                  onColorSelected: (color) {
+                    ref.read(_selectedColorProvider.notifier).state = color;
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
-        _ColorsListTile(
-          title: const Text('Color scheme colors'),
-          theme1: lightTheme,
-          theme2: darkTheme,
-          items: _colorSchemeItems,
-        ),
+        if (selectedColor != null)
+          ListTile(
+            title: const Text('Color swatch'),
+            subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
+          )
       ],
     ).also((_) {
       _logger.fine('[o] build');
