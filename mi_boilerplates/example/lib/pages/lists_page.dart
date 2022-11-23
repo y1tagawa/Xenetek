@@ -200,12 +200,10 @@ final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
 final _selectedProvider = StateProvider<String?>((ref) => null);
 
+final _scrollController = ScrollController();
+
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
-
-  static final _keys = <String, GlobalKey>{
-    for (var key in _listItems.keys) key: GlobalKey(),
-  };
 
   const _ReorderableListTab();
 
@@ -237,7 +235,14 @@ class _ReorderableListTab extends ConsumerWidget {
               offset: const Offset(0, kToolbarHeight),
               onSelected: (index) {
                 final key = order[index];
-                Scrollable.ensureVisible(_keys[key]!.currentContext!);
+                // ensureVisibleは当てにならない事があるようだ。そこでScrollControllerを使ってみる。
+                // https://stackoverflow.com/questions/49153087/flutter-scrolling-to-a-widget-in-listview
+                // TODO: リストビュー中央に寄せる・より確実に
+                _scrollController.animateTo(
+                  index * kToolbarHeight - kToolbarHeight * 0.5,
+                  duration: kTabScrollDuration,
+                  curve: Curves.easeInOut,
+                );
                 ref.read(_selectedProvider.notifier).state = key;
               },
               items: order
@@ -250,7 +255,6 @@ class _ReorderableListTab extends ConsumerWidget {
                     ),
                   )
                   .toList(),
-              //tooltips: order,
               child: MiButtonListTile(
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
@@ -264,30 +268,31 @@ class _ReorderableListTab extends ConsumerWidget {
         Expanded(
           child: MiReorderableListView(
             enabled: enabled,
-            notifier: _orderNotifier,
+            scrollController: _scrollController,
+            orderNotifier: _orderNotifier,
             dragHandleColor: theme.unselectedIconColor,
-            itemBuilder: (context, index) {
-              // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
-              final key = _keys[order[index]]!;
-              // widgetをDismissibleにすることで併用も可能。
-              return Dismissible(
-                key: key,
-                onDismissed: (direction) {
-                  _orderNotifier.value = order.removedAt(index);
-                },
-                background: ColoredBox(color: theme.backgroundColor),
-                child: order[index].let((key) {
-                  return ListTile(
+            children: order.mapIndexed(
+              (index, key) {
+                // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
+                final key_ = Key(key);
+                // widgetをDismissibleにすることで併用も可能なことが分かった。
+                return Dismissible(
+                  key: key_,
+                  onDismissed: (direction) {
+                    _orderNotifier.value = order.removedAt(index);
+                  },
+                  background: ColoredBox(color: theme.backgroundColor),
+                  child: ListTile(
                     leading: _listItems[key]!,
                     title: Text(key),
                     selected: selected == key,
                     onTap: () {
                       ref.read(_selectedProvider.notifier).state = key;
                     },
-                  );
-                }),
-              );
-            },
+                  ),
+                );
+              },
+            ).toList(),
           ),
         ),
       ],
