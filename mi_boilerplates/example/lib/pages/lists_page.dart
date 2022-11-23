@@ -202,6 +202,7 @@ class _DismissibleListTab extends ConsumerWidget {
 final _initOrder = List<String>.unmodifiable(_listItems.keys);
 final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
+final _selectedProvider = StateProvider<String?>((ref) => null);
 
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
@@ -217,6 +218,7 @@ class _ReorderableListTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
     final order = ref.watch(_orderProvider).value;
+    final selected = ref.watch(_selectedProvider);
     _logger.fine('order=$order');
 
     final theme = Theme.of(context);
@@ -237,13 +239,15 @@ class _ReorderableListTab extends ConsumerWidget {
             MiGridPopupMenuButton(
               offset: const Offset(0, kToolbarHeight),
               onSelected: (index) {
-                Scrollable.ensureVisible(_keys[order[index]]!.currentContext!);
+                final key = order[index];
+                Scrollable.ensureVisible(_keys[key]!.currentContext!);
+                ref.read(_selectedProvider.notifier).state = key;
               },
               items: order
                   .mapIndexed(
                     (index, key) => Container(
-                      width: 48,
-                      height: 48,
+                      width: kToolbarHeight,
+                      height: kToolbarHeight,
                       alignment: Alignment.center,
                       child: _listItems[key]!,
                     ),
@@ -275,7 +279,16 @@ class _ReorderableListTab extends ConsumerWidget {
                   _orderNotifier.value = order.removedAt(index);
                 },
                 background: ColoredBox(color: theme.backgroundColor),
-                child: _ListTile(order[index]),
+                child: order[index].let((key) {
+                  return ListTile(
+                    leading: _listItems[key]!,
+                    title: Text(key),
+                    selected: selected == key,
+                    onTap: () {
+                      ref.read(_selectedProvider.notifier).state = key;
+                    },
+                  );
+                }),
               );
             },
           ),
