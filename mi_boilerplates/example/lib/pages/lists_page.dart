@@ -20,11 +20,13 @@ const _listItems = <String, Icon>{
   'Moon': Icon(Icons.dark_mode_outlined),
   'Earth': Icon(Icons.landscape_outlined),
   'Water': Icon(Icons.water_drop_outlined),
-  'Fire': Icon(Icons.local_fire_department_outlined),
+  'Phlogiston': Icon(Icons.local_fire_department_outlined),
   'Air': Icon(Icons.air),
   'Thunder': Icon(Icons.trending_down_outlined),
   'Cold': Icon(Icons.ac_unit_outlined),
+  'Caloric': Icon(Icons.hot_tub_outlined),
   'Alchemy': Icon(Icons.science_outlined),
+  'Weak force': Icon(Icons.filter_vintage_outlined),
   'Sorcery': Icon(Icons.all_inclusive_outlined),
   'Rune magic': Icon(Icons.bluetooth),
   'Chaos magic': Icon(Icons.android),
@@ -228,6 +230,7 @@ class _ReorderableListTab extends ConsumerWidget {
               text: const Text('Reset'),
               onPressed: () {
                 _orderNotifier.value = _initOrder;
+                ref.read(_selectedProvider.notifier).state = null;
               },
             ),
             MiGridPopupMenuButton(
