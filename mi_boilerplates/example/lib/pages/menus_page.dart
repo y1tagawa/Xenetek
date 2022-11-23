@@ -153,6 +153,7 @@ class _PopupMenuTab extends ConsumerWidget {
                   offset: const Offset(1, 0),
                   child: ListTile(
                     enabled: enabled,
+                    title: const Text('Check items\nto put on.'),
                     trailing: const Icon(Icons.more_vert),
                   ),
                 ),
@@ -181,6 +182,7 @@ class _PopupMenuTab extends ConsumerWidget {
                   offset: const Offset(1, 0),
                   child: ListTile(
                     enabled: enabled,
+                    title: const Text('Choose a\nshield to have.'),
                     trailing: const Icon(Icons.more_vert),
                   ),
                 ),
@@ -266,6 +268,7 @@ class _DropdownTab extends ConsumerWidget {
 
     return Column(
       children: [
+        const Text('Have a meal, and action!'),
         // Dropdown menu
         DropdownButton<int?>(
           value: dropdown,

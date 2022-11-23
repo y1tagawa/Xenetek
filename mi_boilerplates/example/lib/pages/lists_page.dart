@@ -258,7 +258,7 @@ class _ReorderableListTab extends ConsumerWidget {
               child: MiButtonListTile(
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
-                text: const Text('Ensure\nvisible'),
+                text: const Text('Scroll to'),
                 iconPosition: MiIconPosition.end,
               ),
             ),
