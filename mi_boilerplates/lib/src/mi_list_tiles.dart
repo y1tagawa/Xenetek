@@ -212,13 +212,14 @@ class MiButtonListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textColor = enabled ? theme.foregroundColor : null;
 
     Widget? subtitle_;
     Widget title_ = Center(
       child: DefaultTextStyle.merge(
-        style: TextStyle(color: theme.foregroundColor),
+        style: TextStyle(color: textColor),
         child: IconTheme.merge(
-          data: IconThemeData(color: theme.foregroundColor),
+          data: IconThemeData(color: textColor),
           child: icon != null
               ? MiIcon(
                   icon: icon,
