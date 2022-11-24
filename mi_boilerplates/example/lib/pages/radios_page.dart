@@ -90,7 +90,12 @@ final _radioItems = <_Class, _RadioItem>{
     text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
+    iconBuilder: (checked) => MiToggleIcon(
+      checked: checked,
+      checkIcon: const Icon(Icons.settings_outlined),
+      uncheckIcon: const Icon(Icons.emergency_outlined),
+    ),
+//    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
     text: const Text('Cleric'),
   ),
   _Class.mage: _RadioItem(
@@ -152,7 +157,7 @@ class _RadiosTab extends ConsumerWidget {
               color: Theme.of(context).disabledColor,
               size: 60,
             ),
-            child: _radioItems[class_]!.iconBuilder(true),
+            child: _radioItems[class_]!.iconBuilder(false),
           ),
         ),
       ],
