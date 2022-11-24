@@ -319,7 +319,7 @@ class _DropdownTab extends ConsumerWidget {
                 DefaultTextStyle.merge(
                   style: TextStyle(
                     fontSize: 30,
-                    //fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w700,
                     color: theme.disabledColor,
                   ),
                   child: Transform.translate(
