@@ -153,7 +153,6 @@ class _PopupMenuTab extends ConsumerWidget {
                   offset: const Offset(1, 0),
                   child: ListTile(
                     enabled: enabled,
-                    title: const Text('Check items\nto put on.'),
                     trailing: const Icon(Icons.more_vert),
                   ),
                 ),
@@ -182,7 +181,6 @@ class _PopupMenuTab extends ConsumerWidget {
                   offset: const Offset(1, 0),
                   child: ListTile(
                     enabled: enabled,
-                    title: const Text('Choose a\nshield to have.'),
                     trailing: const Icon(Icons.more_vert),
                   ),
                 ),
@@ -211,45 +209,36 @@ class _PopupMenuTab extends ConsumerWidget {
 // Dropdown tab
 //
 
-final _dropdownHint = Row(children: const [
-  Icon(Icons.dark_mode_outlined),
-  Icon(Icons.home_outlined),
-]);
-
-final _dropdownItems = <Widget>[
-  Row(children: const [
-    Icon(Icons.breakfast_dining_outlined),
-    Icon(Icons.local_cafe_outlined),
-    SizedBox(width: 8),
-    Text('Breakfast'),
-  ]),
-  Row(children: const [
-    Icon(Icons.set_meal_outlined),
-    Icon(Icons.soup_kitchen_outlined),
-    SizedBox(width: 8),
-    Text('Lunch'),
-  ]),
-  Row(children: const [
-    Icon(Icons.bakery_dining_outlined),
-    Icon(Icons.coffee_outlined),
-    SizedBox(width: 8),
-    Text('Snack'),
-  ]),
-  Row(children: const [
-    Icon(Icons.dinner_dining_outlined),
-    Icon(Icons.sports_bar_outlined),
-    SizedBox(width: 8),
-    Text('Supper'),
-  ]),
+const _dropdownItems = <Widget>[
+  MiRow(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(Icons.breakfast_dining_outlined),
+      Icon(Icons.local_cafe_outlined),
+    ],
+  ),
+  MiRow(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(Icons.set_meal_outlined),
+      Icon(Icons.soup_kitchen_outlined),
+    ],
+  ),
+  MiRow(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(Icons.bakery_dining_outlined),
+      Icon(Icons.coffee_outlined),
+    ],
+  ),
+  MiRow(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(Icons.dinner_dining_outlined),
+      Icon(Icons.sports_bar_outlined),
+    ],
+  ),
 ];
-
-const _dropdownIcons = <int?, Widget>{
-  null: Icon(Icons.hotel_outlined),
-  0: Icon(Icons.accessibility_new_outlined),
-  1: Icon(Icons.directions_run_outlined),
-  2: MiScale(scaleX: -1, child: Icon(Icons.directions_run_outlined)),
-  3: Icon(Icons.self_improvement_outlined),
-};
 
 final _dropdownProvider = StateProvider<int?>((ref) => null);
 
@@ -266,50 +255,56 @@ class _DropdownTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final dropdown = ref.watch(_dropdownProvider);
 
+    final theme = Theme.of(context);
+
     return Column(
       children: [
-        const Text('Have a meal, and action!'),
-        // Dropdown menu
         DropdownButton<int?>(
           value: dropdown,
           onChanged: enabled
               ? (index) {
                   ref.read(_dropdownProvider.notifier).state = index!;
                   _dropdownCancellableOperation?.cancel();
-                  if (index == 3) {
-                    _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
-                      Future.delayed(const Duration(seconds: 4)),
-                      onCancel: () {
-                        _logger.fine('canceled.');
-                      },
-                    ).then(
-                      (_) {
-                        _logger.fine('completed.');
-                        ref.read(_dropdownProvider.notifier).state = null;
-                      },
-                    );
-                  }
+                  _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
+                    Future.delayed(const Duration(seconds: 4)),
+                    onCancel: () {
+                      _logger.fine('canceled.');
+                    },
+                  ).then(
+                    (_) {
+                      _logger.fine('completed.');
+                      ref.read(_dropdownProvider.notifier).state = null;
+                    },
+                  );
                 }
               : null,
-          hint: _dropdownHint,
-          items: _dropdownItems.mapIndexed((index, item) {
-            return DropdownMenuItem<int?>(
-              value: index,
-              child: item,
-            );
-          }).toList(),
+          hint: Container(
+            width: 80,
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.restaurant,
+              color: theme.unselectedIconColor,
+            ),
+          ),
+          items: const [
+            DropdownMenuItem<int?>(value: 0, child: Text('Breakfast')),
+            DropdownMenuItem<int?>(value: 1, child: Text('Lunch')),
+            DropdownMenuItem<int?>(value: 2, child: Text('Snack')),
+            DropdownMenuItem<int?>(value: 3, child: Text('Supper')),
+          ],
         ),
         const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              size: 60,
-              color: Theme.of(context).disabledColor,
+        if (dropdown != null)
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme.merge(
+              data: IconThemeData(
+                size: 60,
+                color: theme.disabledColor,
+              ),
+              child: _dropdownItems[dropdown!],
             ),
-            child: _dropdownIcons[dropdown]!,
           ),
-        ),
       ],
     ).also((_) {
       _logger.fine('[o] build');
