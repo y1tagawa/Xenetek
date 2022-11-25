@@ -36,12 +36,7 @@ class CustomPaintsPage extends ConsumerWidget {
 
     final tabs = <Widget>[
       const MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const MiTab(
-          icon: MiRotate(
-            angleDegree: 180,
-            child: Icon(Icons.filter_list),
-          ),
-          tooltip: 'Under construction'),
+      const MiTab(icon: UnderConstructionTab.icon, tooltip: UnderConstructionTab.text),
     ];
 
     return MiDefaultTabController(
@@ -64,7 +59,7 @@ class CustomPaintsPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _ClockTab(),
-                _ClockTab(),
+                UnderConstructionTab(),
               ],
             ),
           ),
@@ -89,18 +84,26 @@ class _Clock extends StatefulWidget {
   final Color? hourColor;
   final Color? minuteColor;
   final Color? secondColor;
-  final Color? tenthSecondColor;
+  final Color? pivotColor;
 
   const _Clock({
+    // ignore: unused_element
     super.key,
     required this.size,
+    // ignore: unused_element
     this.onInterval = DateTime.now,
+    // ignore: unused_element
     this.faceColor,
+    // ignore: unused_element
     this.tickColor,
+    // ignore: unused_element
     this.hourColor,
+    // ignore: unused_element
     this.minuteColor,
+    // ignore: unused_element
     this.secondColor,
-    this.tenthSecondColor,
+    // ignore: unused_element
+    this.pivotColor,
   });
 
   @override
@@ -108,6 +111,7 @@ class _Clock extends StatefulWidget {
 }
 
 class _FacePainter extends CustomPainter {
+  // ignore: unused_field
   static final _logger = Logger((_FacePainter).toString());
 
   final _ClockState state;
@@ -139,13 +143,14 @@ class _FacePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     if (oldDelegate is _FacePainter) {
-      return oldDelegate.state != state || oldDelegate.dateTime != dateTime;
+      return oldDelegate.state != state;
     }
     return false;
   }
 }
 
 class _FeaturePainter extends CustomPainter {
+  // ignore: unused_field
   static final _logger = Logger((_FeaturePainter).toString());
 
   final _ClockState state;
@@ -168,44 +173,37 @@ class _FeaturePainter extends CustomPainter {
       final radius = math.min(size.width, size.height) * 0.5;
       final paint_ = Paint();
       // ticks
+      paint_.style = PaintingStyle.fill;
       paint_.color = state.tickColor;
-      paint_.style = PaintingStyle.stroke;
-      paint_.strokeCap = StrokeCap.round;
-      paint_.strokeWidth = 3.0;
-      for (int i = 0; i < 60; ++i) {
-        final p = _hand(i * _kPi2 / 60.0, 1.0);
-        canvas.drawLine(Offset.zero, p * 0.95, paint_);
+      for (int i = 0; i < 12; ++i) {
+        final p = _hand(i * (_kPi2 / 12.0), radius);
+        canvas.drawCircle(p * 0.9, 4.0, paint_);
       }
       // hour hand
+      paint_.style = PaintingStyle.stroke;
+      paint_.strokeCap = StrokeCap.round;
       paint_.color = state.hourColor;
       paint_.strokeWidth = 8.0;
-      canvas.drawLine(
-          Offset.zero,
-          _hand(
-            dateTime.hour * _kPi2 / 12.0,
-            radius * 0.5,
-          ),
-          paint_);
+      final hour = (dateTime.hour * 60 + dateTime.minute) / 60.0;
+      final h = _hand(hour * (_kPi2 / 12.0), radius);
+      canvas.drawLine(h * -0.05, h * 0.5, paint_);
       // minute hand
       paint_.color = state.minuteColor;
       paint_.strokeWidth = 6.0;
-      canvas.drawLine(
-          Offset.zero,
-          _hand(
-            dateTime.minute * _kPi2 / 60.0,
-            radius * 0.8,
-          ),
-          paint_);
-      // minute hand
+      final minute = (dateTime.minute * 60 + dateTime.second) / 60.0;
+      final m = _hand(minute * (_kPi2 / 60.0), radius);
+      canvas.drawLine(m * -0.05, m * 0.75, paint_);
+      // second hand
       paint_.strokeWidth = 3.0;
       paint_.color = state.secondColor;
-      canvas.drawLine(
-          Offset.zero,
-          _hand(
-            dateTime.second * _kPi2 / 60.0,
-            radius * 0.75,
-          ),
-          paint_);
+      final s = _hand(dateTime.second * (_kPi2 / 60.0), radius);
+      canvas.drawLine(s * -0.15, s * 0.65, paint_);
+      // pivot
+      paint_.style = PaintingStyle.fill;
+      paint_.color = state.secondColor;
+      canvas.drawCircle(Offset.zero, 3.5, paint_);
+      paint_.color = state.pivotColor;
+      canvas.drawCircle(Offset.zero, 2.0, paint_);
     } finally {
       canvas.restore();
     }
@@ -215,7 +213,10 @@ class _FeaturePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     if (oldDelegate is _FeaturePainter) {
-      return oldDelegate.state != state || oldDelegate.dateTime != dateTime;
+      return oldDelegate.state != state ||
+          oldDelegate.dateTime.second != dateTime.second ||
+          oldDelegate.dateTime.minute != dateTime.minute ||
+          oldDelegate.dateTime.hour != dateTime.hour;
     }
     return false;
   }
@@ -231,14 +232,14 @@ class _ClockState extends State<_Clock> {
   late Color hourColor;
   late Color minuteColor;
   late Color secondColor;
-  late Color tenthSecondColor;
+  late Color pivotColor;
 
   @override
   void initState() {
     super.initState();
     _logger.fine('timer start');
     _timer = Timer.periodic(
-      const Duration(milliseconds: 100),
+      const Duration(milliseconds: 200),
       (timer) {
         setState(() {});
       },
@@ -266,15 +267,14 @@ class _ClockState extends State<_Clock> {
 
     final theme = Theme.of(context);
     final isDark = theme.isDark;
-    final color1 = isDark ? theme.colorScheme.secondary : theme.primaryColorDark;
-    final color2 = isDark ? theme.colorScheme.secondary : theme.primaryColorLight;
+    final color = isDark ? theme.colorScheme.secondary : theme.primaryColor;
 
     faceColor = widget.faceColor ?? theme.colorScheme.surface;
-    tickColor = widget.tickColor ?? theme.colorScheme.onSurface;
-    hourColor = widget.hourColor ?? color1;
-    minuteColor = widget.minuteColor ?? color2;
-    secondColor = widget.secondColor ?? color1;
-    tenthSecondColor = widget.tenthSecondColor ?? color2;
+    tickColor = widget.tickColor ?? color.withOpacity(0.5);
+    hourColor = widget.hourColor ?? color;
+    minuteColor = widget.minuteColor ?? tickColor;
+    secondColor = widget.secondColor ?? color.withOpacity(0.75);
+    pivotColor = widget.pivotColor ?? faceColor;
 
     return SizedBox(
       width: widget.size.width,
@@ -304,13 +304,65 @@ class _ClockTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return Column(
-      children: const [
-        _Clock(
-          size: Size(200, 200),
+      children: [
+        const Expanded(
+          child: _Clock(
+            size: Size(200, 200),
+          ),
+        ),
+        ListTile(
+          title: Text('TODO'),
         ),
       ],
     ).also((_) {
       _logger.fine('[o] build');
     });
+  }
+}
+
+//
+// Under construction
+//
+
+class UnderConstructionTab extends StatelessWidget {
+  static const icon = MiRotate(
+    angleDegree: 180,
+    child: Icon(Icons.filter_list),
+  );
+  static const text = 'Under construction';
+
+  const UnderConstructionTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = math.min(constraints.maxWidth, constraints.maxHeight) * 0.5;
+        return Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              MiScale(
+                scaleX: 0.5,
+                child: MiRotate(
+                  angleDegree: 180,
+                  child: Icon(
+                    Icons.filter_list,
+                    color: theme.isDark ? Colors.deepOrange[900] : Colors.deepOrange,
+                    size: size,
+                  ),
+                ),
+              ),
+              Text(
+                text,
+                style: TextStyle(color: theme.disabledColor),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
