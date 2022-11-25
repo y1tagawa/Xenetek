@@ -253,9 +253,12 @@ class MiImageIcon extends StatelessWidget {
     final theme = IconTheme.of(context);
     return SizedBox.square(
       dimension: size ?? theme.size,
-      child: Image(
-        image: image.image,
-        color: theme.color,
+      child: Align(
+        alignment: Alignment.center,
+        child: Image(
+          image: image.image,
+          color: theme.color,
+        ),
       ),
     );
   }

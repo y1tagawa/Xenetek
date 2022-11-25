@@ -18,6 +18,7 @@ import 'pages/animations_page.dart';
 import 'pages/buttons_page.dart';
 import 'pages/checks_page.dart';
 import 'pages/colors_page.dart';
+import 'pages/custom_paints_page.dart';
 import 'pages/dialogs_page.dart';
 import 'pages/embedded_tab_view_page.dart';
 import 'pages/ex_app_bar.dart';
@@ -81,6 +82,12 @@ final _pages = <_PageItem>[
     title: ColorsPage.title,
     path: '/colors',
     builder: (_, __) => const ColorsPage(),
+  ),
+  _PageItem(
+    icon: CustomPaintsPage.icon,
+    title: CustomPaintsPage.title,
+    path: '/custom_paints',
+    builder: (_, __) => const CustomPaintsPage(),
   ),
   _PageItem(
     icon: DialogsPage.icon,

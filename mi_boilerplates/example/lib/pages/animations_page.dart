@@ -41,7 +41,7 @@ class AnimationsPage extends ConsumerWidget {
         ),
         tooltip: 'Lottie',
       ),
-      const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Image GIF'),
+      const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
       const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
 
