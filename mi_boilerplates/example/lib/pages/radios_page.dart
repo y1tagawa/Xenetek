@@ -84,19 +84,11 @@ class _RadioItem {
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
-    iconBuilder: (checked) => MiToggleIcon(
-      checked: checked,
-      checkIcon: const Icon(Icons.gpp_good_outlined),
-      uncheckIcon: const Icon(Icons.shield_outlined),
-    ),
+    iconBuilder: (checked) => const Icon(Icons.shield_outlined),
     text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
-    iconBuilder: (checked) => MiToggleIcon(
-      checked: checked,
-      checkIcon: const Icon(Icons.settings_outlined),
-      uncheckIcon: const Icon(Icons.emergency_outlined),
-    ),
+    iconBuilder: (checked) => const Icon(Icons.emergency_outlined),
     text: const Text('Cleric'),
   ),
   _Class.mage: _RadioItem(
