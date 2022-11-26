@@ -74,7 +74,7 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/lottie_icon_outlined.png
+    - assets/lottie_icon.png
     - assets/more_grid.png
     - assets/pandemonium.json
     - assets/stanford-bunny.obj

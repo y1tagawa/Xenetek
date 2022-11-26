@@ -8,9 +8,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="156"
+   height="156"
+   viewBox="0 0 41.275 41.275"
    version="1.1"
    id="svg8"
    sodipodi:docname="lottie_icon.svg"
@@ -27,18 +27,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.7931728"
-     inkscape:cx="131.14744"
-     inkscape:cy="1026.0808"
+     inkscape:zoom="2.4166667"
+     inkscape:cx="78"
+     inkscape:cy="101.26447"
      inkscape:document-units="mm"
-     inkscape:current-layer="g857"
+     inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="974"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     units="px">
     <inkscape:grid
        type="xygrid"
        id="grid833" />
@@ -51,7 +52,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -67,42 +68,18 @@
        preserveAspectRatio="none"
        xlink:href="data:image/png;base64,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 "
        id="image845"
-       x="-0.26458487"
-       y="255.05833" />
-  </g>
-  <g
-     inkscape:label="レイヤー 1 コピー"
-     inkscape:groupmode="layer"
-     id="g851"
-     style="display:none"
-     sodipodi:insensitive="true">
-    <path
-       id="path853"
-       style="fill:#000000;fill-opacity:1;stroke-width:0.999999"
-       d="m 60.894531,965.67773 c -17.336669,0.0253 -27.15779,0.31448 -29.867187,0.87696 -10.351922,2.14904 -20.591872,9.50421 -25.9550784,18.64258 -5.1240298,8.73082 -5.4628906,12.35098 -5.4628906,58.34183 0,45.5181 0.39019349458,49.8712 5.1914062,57.9414 5.2848188,8.883 14.3508778,15.8818 23.9921878,18.5195 4.345137,1.1889 13.623334,1.4162 50.816406,1.2461 45.041105,-0.2059 45.557395,-0.2321 51.246095,-2.5293 6.69051,-2.7018 15.47055,-10.3147 19.16406,-16.6172 5.26463,-8.9834 5.58984,-12.3798 5.58985,-58.5605 0,-46.18084 -0.32523,-49.57917 -5.58985,-58.56254 -3.6937,-6.30285 -12.47355,-13.91575 -19.16406,-16.61718 -5.66641,-2.28779 -6.36582,-2.32434 -50.103517,-2.61915 -7.463763,-0.0503 -14.078532,-0.0709 -19.857422,-0.0625 z M 45,985 h 65 c 13.84998,0 25,11.15 25,25 v 65 c 0,13.85 -11.15002,25 -25,25 H 45 c -13.84998,0 -25,-11.15 -25,-25 v -65 c 0,-13.85 11.15002,-25 25,-25 z"
-       transform="scale(0.26458333)"
-       inkscape:export-xdpi="95.384613"
-       inkscape:export-ydpi="95.384613" />
-    <path
-       id="path934"
-       style="fill:#000000;fill-opacity:1;stroke-width:0.264583"
-       d="m 31.078207,263.48417 c -1.181225,0.0388 -2.36578,0.18942 -3.491085,0.56275 -1.797684,0.57073 -3.508033,1.52032 -4.793165,2.91917 -1.232232,1.32411 -2.13794,2.90523 -3.038825,4.46235 -1.394178,2.42184 -2.616867,4.94449 -4.146573,7.28695 -0.725216,1.07989 -1.548166,2.18792 -2.758259,2.75349 -1.054691,0.51059 -2.246948,0.53401 -3.367158,0.81052 -0.7475508,0.18476 -1.5496746,0.52158 -1.9190329,1.24474 -0.293261,0.58671 -0.3164462,1.28267 -0.1831645,1.91579 0.1795516,0.72469 0.7920866,1.24357 1.4217798,1.58689 0.7312565,0.35357 1.5670096,0.20799 2.3459486,0.1665 1.516364,-0.11816 2.99135,-0.59025 4.3279,-1.30915 1.220751,-0.61339 2.316559,-1.47334 3.181301,-2.53278 1.212661,-1.47159 2.153443,-3.14023 3.088857,-4.79494 0.961698,-1.71683 1.867035,-3.46514 2.864686,-5.16178 0.522013,-0.87315 1.08322,-1.78575 1.747164,-2.58458 0.638044,-0.78791 1.470005,-1.43748 2.444849,-1.74594 0.37428,-0.12803 0.75959,-0.22045 1.146162,-0.30278 0.138226,-0.0264 0.367366,-0.0731 0.540793,-0.10219 0.83603,-0.16346 1.721741,-0.28096 2.449205,-0.75771 0.543079,-0.35203 0.800627,-1.00306 0.815904,-1.63108 0.07743,-0.76171 -0.208309,-1.54442 -0.765329,-2.07085 -0.369313,-0.38604 -0.855429,-0.68735 -1.402456,-0.70476 -0.169367,-0.017 -0.339605,-0.011 -0.509502,-0.0106 z" />
+       x="-7.6293946e-07"
+       y="-7.6293946e-07" />
   </g>
   <g
      inkscape:label="レイヤー 1 コピー コピー"
      inkscape:groupmode="layer"
      id="g857"
-     style="display:inline;opacity:1;mix-blend-mode:normal">
+     style="display:inline;opacity:1;mix-blend-mode:normal"
+     sodipodi:insensitive="true">
     <path
-       id="path853-7"
-       style="display:inline;fill:#ce0000;fill-opacity:1;stroke-width:0.264583"
-       d="m 16.111678,255.50222 c -4.586994,0.007 -7.1854986,0.0832 -7.9023599,0.23203 -2.7389461,0.5686 -5.4482662,2.51465 -6.8672812,4.93252 -1.35573284,2.31002 -1.44538976,3.26786 -1.44538976,15.43627 0,12.04333 0.10323868542,13.19509 1.37355956,15.33033 1.3982749,2.35029 3.797003,4.20206 6.347933,4.89995 1.1496508,0.31456 3.6045073,0.3747 13.4451743,0.3297 11.917127,-0.0545 12.053728,-0.0614 13.558861,-0.66921 1.770197,-0.71485 4.09325,-2.7291 5.070491,-4.39664 1.392936,-2.37686 1.478981,-3.27549 1.478984,-15.49413 0,-12.21868 -0.08605,-13.11782 -1.478984,-15.49467 -0.977292,-1.66763 -3.300291,-3.68188 -5.070491,-4.39663 -1.499238,-0.60531 -1.68429,-0.61498 -13.256554,-0.69298 -1.974788,-0.0133 -3.724945,-0.0188 -5.253943,-0.0165 z m -4.205428,5.11235 h 17.197918 c 3.664474,0 6.614581,2.95011 6.614581,6.61458 v 17.19792 c 0,3.66448 -2.950107,6.61458 -6.614581,6.61458 H 11.90625 c -3.6644739,0 -6.6145834,-2.9501 -6.6145834,-6.61458 v -17.19792 c 0,-3.66447 2.9501095,-6.61458 6.6145834,-6.61458 z"
-       inkscape:export-xdpi="95.384613"
-       inkscape:export-ydpi="95.384613"
-       inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Xenetek\mi_boilerplates\example\assets\lottie_icon_outlined.png" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 5.5714819,288.66204 C 20.971711,288.33373 20.044976,262.83032 35.30349,262.3828"
+       style="fill:none;stroke:#000000;stroke-width:4.675;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 8.0013965,31.806177 C 21.091591,31.527113 20.303866,9.849215 33.273603,9.468823"
        id="path845"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="C:\Users\ytagawa\Documents\GitHub\Xenetek\mi_boilerplates\example\assets\lottie_icon_outlined.png"

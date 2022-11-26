@@ -36,8 +36,7 @@ class AnimationsPage extends ConsumerWidget {
       const MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
       MiTab(
         icon: MiImageIcon(
-          image: Image.asset('assets/lottie_icon_outlined.png'),
-          size: 20,
+          image: Image.asset('assets/lottie_icon.png'),
         ),
         tooltip: 'Lottie',
       ),
