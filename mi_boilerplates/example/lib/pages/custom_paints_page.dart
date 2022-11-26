@@ -7,6 +7,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
@@ -353,6 +354,42 @@ class _TimerControllerState extends State<_TimerController> {
 }
 
 final _dateTimeNotifier = ValueNotifier(DateTime.now());
+final _dateTimeProvider = ChangeNotifierProvider((ref) => _dateTimeNotifier);
+
+class _DigitalClock extends ConsumerWidget {
+  static const _weekday = <String>['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+  static final _logger = Logger((_DigitalClock).toString());
+
+  const _DigitalClock();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final theme = Theme.of(context);
+    final style = TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      fontFamily: 'Courier New',
+      color: theme.disabledColor,
+    );
+
+    final dateTime = ref.watch(_dateTimeProvider).value;
+    return ListTile(
+      title: Text(
+        '${DateFormat.yMd().format(dateTime)}(${_weekday[dateTime.weekday - 1]})',
+        style: style,
+      ),
+      subtitle: Text(
+        DateFormat.Hms().format(dateTime),
+        style: style,
+      ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
 
 class _ClockTab extends ConsumerWidget {
   static final _logger = Logger((_ClockTab).toString());
@@ -375,7 +412,7 @@ class _ClockTab extends ConsumerWidget {
             now.month != value.month ||
             now.year != value.year) {
           _dateTimeNotifier.value = now;
-          _logger.fine('update');
+          //_logger.fine('update');
         }
       },
       child: Column(
@@ -386,9 +423,7 @@ class _ClockTab extends ConsumerWidget {
               dateTimeNotifier: _dateTimeNotifier,
             ),
           ),
-          const ListTile(
-            title: Text('TODO'),
-          ),
+          const _DigitalClock(),
         ],
       ),
     ).also((_) {
