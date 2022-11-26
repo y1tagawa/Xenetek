@@ -43,17 +43,19 @@ bool FlutterWindow::OnCreate() {
   channel.SetMethodCallHandler(
       [](const flutter::MethodCall<>& call,
           std::unique_ptr<flutter::MethodResult<>> result) {
-              if (call.method_name() == "playSound") {
-                  const auto* arguments = std::get_if<int>(call.arguments());
-                  if (arguments) {
-                      const auto id = *arguments;
-                      if (playSound(id)) {
-                          result->Success(true);
-                      }
-                      else {
-                          result->Error("ERROR", "playSound failed.");
-                      }
+              if (call.method_name() == "playSoundAsync") {
+                  OutputDebugString(L"[i] playSoundAsync"); // TODO: Log出力方法
+                  // TODO: デフォルトではみんな同じなのでtypeは無視する。
+                  //const auto* arguments = std::get_if<int>(call.arguments());
+                  //if (arguments) {
+                  //    const auto type = *arguments;
+                  if (playSound(0)) {
+                      result->Success(true);
                   }
+                  else {
+                      result->Error("ERROR", "playSound failed.");
+                  }
+                  OutputDebugString(L"[o] playSoundAsync");
               }
               else {
                   result->NotImplemented();
@@ -65,16 +67,9 @@ bool FlutterWindow::OnCreate() {
   return true;
 }
 
-static bool playSound(int id) {
-    switch (id) {
-    case 0:
-        PlaySound((LPCWSTR)SND_ALIAS_SYSTEMASTERISK, NULL, SND_ALIAS_ID | SND_ASYNC);
-        return true;
-    case 1:
-        PlaySound((LPCWSTR)SND_ALIAS_SYSTEMEXCLAMATION, NULL, SND_ALIAS_ID | SND_ASYNC);
-        return true;
-    }
-    return false;
+static bool playSound(int /*id*/) {
+    PlaySound((LPCWSTR)SND_ALIAS_SYSTEMASTERISK, NULL, SND_ALIAS_ID | SND_ASYNC);
+    return true;
 }
 
 void FlutterWindow::OnDestroy() {

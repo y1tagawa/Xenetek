@@ -185,27 +185,25 @@ class MiExpansionTile extends StatelessWidget {
 /// * 頻出コード
 ///
 class MiButtonListTile extends StatelessWidget {
-  //<editor-fold>
   final bool enabled;
   final bool selected;
   final Widget? icon;
   final Widget text;
   final Widget? title;
+  final MainAxisAlignment alignment;
   final MiIconPosition iconPosition;
   final VoidCallback? onPressed;
-  //</editor-fold>
 
   const MiButtonListTile({
-    //<editor-fold>
     super.key,
     this.enabled = true,
     this.selected = false,
     this.icon,
     required this.text,
     this.title,
+    this.alignment = MainAxisAlignment.center,
     this.iconPosition = MiIconPosition.start,
     this.onPressed,
-    //</editor-fold>
     // TODO: 他のプロパティ
   });
 
@@ -215,20 +213,23 @@ class MiButtonListTile extends StatelessWidget {
     final textColor = enabled ? theme.foregroundColor : null;
 
     Widget? subtitle_;
-    Widget title_ = Center(
-      child: DefaultTextStyle.merge(
-        style: TextStyle(color: textColor),
-        child: IconTheme.merge(
-          data: IconThemeData(color: textColor),
-          child: icon != null
-              ? MiIcon(
-                  icon: icon,
-                  text: text,
-                  iconPosition: iconPosition,
-                )
-              : text,
+    Widget title_ = Row(
+      mainAxisAlignment: alignment,
+      children: [
+        DefaultTextStyle.merge(
+          style: TextStyle(color: textColor),
+          child: IconTheme.merge(
+            data: IconThemeData(color: textColor),
+            child: icon != null
+                ? MiIcon(
+                    icon: icon,
+                    text: text,
+                    iconPosition: iconPosition,
+                  )
+                : text,
+          ),
         ),
-      ),
+      ],
     );
 
     if (title != null) {

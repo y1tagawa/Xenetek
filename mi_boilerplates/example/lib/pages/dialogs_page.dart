@@ -74,43 +74,30 @@ class DialogsPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ListTile(
-                leading: MiTextButton(
-                  enabled: enableActions,
-                  onPressed: () {
-                    showInfoOk(context);
-                  },
-                  child: const Text('Show OK dialog'),
-                ),
-              ),
-              ListTile(
-                leading: MiTextButton(
-                  enabled: enableActions,
-                  onPressed: () {
-                    showWarningOkCancel(context);
-                  },
-                  child: const Text('Show OK/Cancel dialog'),
-                ),
-              ),
               MiButtonListTile(
-                icon: const Icon(Icons.help_outline),
-                text: const Text('Question sound Icon'),
-                onPressed: () async {
-                  try {
-                    final result = await methodChannel.invokeMethod('playSound', 0);
-                    _logger.fine(result);
-                  } on PlatformException catch (e) {
-                    _logger.fine(e.message);
-                  }
+                enabled: enableActions,
+                alignment: MainAxisAlignment.start,
+                text: const Text('Show OK dialog'),
+                onPressed: () {
+                  showInfoOk(context);
                 },
               ),
               MiButtonListTile(
-                icon: const Icon(Icons.report_problem_outlined),
-                text: const Text('Alarm sound Icon'),
+                enabled: enableActions,
+                alignment: MainAxisAlignment.start,
+                text: const Text('Show OK/Cancel dialog'),
+                onPressed: () {
+                  showWarningOkCancel(context);
+                },
+              ),
+              MiButtonListTile(
+                enabled: enableActions,
+                alignment: MainAxisAlignment.start,
+                icon: const Icon(Icons.volume_up_outlined),
+                text: const Text('Notification sound Icon'),
                 onPressed: () async {
                   try {
-                    final result = await methodChannel.invokeMethod('playSound', 1);
-                    _logger.fine(result);
+                    await methodChannel.invokeMethod('playSoundAsync', 0);
                   } on PlatformException catch (e) {
                     _logger.fine(e.message);
                   }
