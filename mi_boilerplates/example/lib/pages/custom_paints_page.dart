@@ -222,6 +222,7 @@ class _FeaturePainter extends CustomPainter {
 }
 
 class _ClockState extends State<_Clock> {
+  // ignore: unused_field
   static final _logger = Logger((_ClockState).toString());
 
   late Color faceColor;
@@ -238,13 +239,11 @@ class _ClockState extends State<_Clock> {
   @override
   void initState() {
     super.initState();
-    _logger.fine('timer start');
     widget.dateTimeNotifier.addListener(_onUpdate);
   }
 
   @override
   void dispose() {
-    _logger.fine('timer.cancel');
     widget.dateTimeNotifier.removeListener(_onUpdate);
     super.dispose();
   }
@@ -376,6 +375,7 @@ class _ClockTab extends ConsumerWidget {
             now.month != value.month ||
             now.year != value.year) {
           _dateTimeNotifier.value = now;
+          _logger.fine('update');
         }
       },
       child: Column(
