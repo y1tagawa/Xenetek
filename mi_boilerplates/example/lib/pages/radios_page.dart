@@ -97,11 +97,13 @@ final _radioItems = <_Class, _RadioItem>{
       checkIcon: const Icon(Icons.settings_outlined),
       uncheckIcon: const Icon(Icons.emergency_outlined),
     ),
-//    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
     text: const Text('Cleric'),
   ),
   _Class.mage: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
+    //iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
+    iconBuilder: (_) => MiImageIcon(
+      image: Image.asset('assets/mage_hat.png'),
+    ),
     text: const Text('Mage'),
   ),
   _Class.thief: _RadioItem(
