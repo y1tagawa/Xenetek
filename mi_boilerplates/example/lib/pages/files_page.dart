@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:example/pages/under_construction.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,8 +30,8 @@ class FilesPage extends ConsumerWidget {
       icon: icon,
     ),
     MiTab(
-      tooltip: 'TBD',
-      icon: Icon(Icons.more_horiz),
+      tooltip: UnderConstruction.text,
+      icon: UnderConstruction.icon,
     ),
   ];
 
@@ -61,7 +62,7 @@ class FilesPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _PathsTab(),
-                _PathsTab(),
+                UnderConstruction(),
               ],
             ),
           ),

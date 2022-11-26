@@ -104,7 +104,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: FilesPage.icon,
     title: FilesPage.title,
-    path: '/files',
+    path: '/drawer/files',
     builder: (_, __) => const FilesPage(),
   ),
   _PageItem(

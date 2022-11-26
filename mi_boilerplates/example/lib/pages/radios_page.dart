@@ -17,14 +17,16 @@ class RadiosPage extends ConsumerWidget {
 
   static final _logger = Logger((RadiosPage).toString());
 
-  static const _tabs = <Widget>[
-    MiTab(
+  static final _tabs = <Widget>[
+    const MiTab(
       tooltip: 'Radios',
       icon: icon,
     ),
     MiTab(
       tooltip: 'Toggle buttons',
-      icon: Icon(Icons.more_horiz),
+      icon: MiImageIcon(
+        image: Image.asset('assets/more_grid.png'),
+      ),
     ),
   ];
 
