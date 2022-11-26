@@ -12,6 +12,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'under_construction.dart';
 
 //
 // Custom paints trial page.
@@ -37,7 +38,7 @@ class CustomPaintsPage extends ConsumerWidget {
 
     final tabs = <Widget>[
       const MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const MiTab(icon: UnderConstructionTab.icon, tooltip: UnderConstructionTab.text),
+      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.text),
     ];
 
     return MiDefaultTabController(
@@ -60,7 +61,7 @@ class CustomPaintsPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _ClockTab(),
-                UnderConstructionTab(),
+                UnderConstruction(),
               ],
             ),
           ),
@@ -429,52 +430,5 @@ class _ClockTab extends ConsumerWidget {
     ).also((_) {
       _logger.fine('[o] build');
     });
-  }
-}
-
-//
-// Under construction
-//
-
-class UnderConstructionTab extends StatelessWidget {
-  static const icon = MiRotate(
-    angleDegree: 180,
-    child: Icon(Icons.filter_list),
-  );
-  static const text = 'Under construction';
-
-  const UnderConstructionTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = math.min(constraints.maxWidth, constraints.maxHeight) * 0.5;
-        return Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              MiScale(
-                scaleX: 0.5,
-                child: MiRotate(
-                  angleDegree: 180,
-                  child: Icon(
-                    Icons.filter_list,
-                    color: theme.isDark ? Colors.deepOrange[900] : Colors.deepOrange,
-                    size: size,
-                  ),
-                ),
-              ),
-              Text(
-                text,
-                style: TextStyle(color: theme.disabledColor),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 }
