@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 void addLicenses() {
   LicenseRegistry.addLicense(() {
     return Stream<LicenseEntry>.fromIterable(<LicenseEntry>[
-      const LicenseEntryWithLineBreaks(<String>['OpenMoji'], '''
+      const LicenseEntryWithLineBreaks(<String>['open_moji_svgs'], '''
 CC BY-SA 4.0 license\n
 https://creativecommons.org/licenses/by-sa/4.0/
     '''),
@@ -22,6 +22,10 @@ You are free:\n
 Under the following terms:\n
 * attribution – there is no author or author waived their right, no attribution\n
 * share alike – If you remix, transform, or build upon the material, you can distribute your work under any license.\n
+    '''),
+      const LicenseEntryWithLineBreaks(<String>['jis_common_colors', 'x11_colors'], '''
+CC BY-SA 3.0 license\n
+https://creativecommons.org/licenses/by-sa/3.0/
     '''),
     ]);
   });

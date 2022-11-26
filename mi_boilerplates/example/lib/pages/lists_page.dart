@@ -9,27 +9,32 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../data/open_moji_svgs.dart';
 import 'ex_app_bar.dart';
 
 ///
 /// Lists example page.
 ///
 
-const _listItems = <String, Icon>{
-  'Sun': Icon(Icons.light_mode_outlined),
-  'Moon': Icon(Icons.dark_mode_outlined),
-  'Earth': Icon(Icons.landscape_outlined),
-  'Water': Icon(Icons.water_drop_outlined),
-  'Phlogiston': Icon(Icons.local_fire_department_outlined),
-  'Air': Icon(Icons.air),
-  'Thunder': Icon(Icons.trending_down_outlined),
-  'Cold': Icon(Icons.ac_unit_outlined),
-  'Caloric': Icon(Icons.hot_tub_outlined),
-  'Alchemy': Icon(Icons.science_outlined),
-  'Weak force': Icon(Icons.filter_vintage_outlined),
-  'Sorcery': Icon(Icons.all_inclusive_outlined),
-  'Rune magic': Icon(Icons.bluetooth),
-  'Chaos magic': Icon(Icons.android),
+final _listItems = <String, Widget>{
+  'Lion': SizedBox.square(dimension: 24, child: openMojiSvg1f981),
+  'Tiger': openMojiSvg1f42f,
+  'Dragon': openMojiSvg1f409,
+  'Unicorn': openMojiSvg1f984,
+  'Sun': const Icon(Icons.light_mode_outlined),
+  'Moon': const Icon(Icons.dark_mode_outlined),
+  'Earth': const Icon(Icons.landscape_outlined),
+  'Water': const Icon(Icons.water_drop_outlined),
+  'Phlogiston': const Icon(Icons.local_fire_department_outlined),
+  'Air': const Icon(Icons.air),
+  'Thunder': const Icon(Icons.trending_down_outlined),
+  'Cold': const Icon(Icons.ac_unit_outlined),
+  'Caloric': const Icon(Icons.hot_tub_outlined),
+  'Alchemy': const Icon(Icons.science_outlined),
+  'Weak force': const Icon(Icons.filter_vintage_outlined),
+  'Sorcery': const Icon(Icons.all_inclusive_outlined),
+  'Rune magic': const Icon(Icons.bluetooth),
+  'Chaos magic': const Icon(Icons.android),
 };
 
 class ListsPage extends ConsumerWidget {
