@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,17 +14,6 @@ import 'knight_indicator.dart';
 ///
 /// Menus example page.
 ///
-
-// const _large = TextStyle(fontSize: 30);
-
-// const _menuItems = <String, Widget>{
-//   'White King': Text('\u2654', style: _large),
-//   'White Queen': Text('\u2655', style: _large),
-//   'White Rook': Text('\u2656', style: _large),
-//   'White Bishop': Text('\u2657', style: _large),
-//   'White Knight': Text('\u2658', style: _large),
-//   'White Pawn': Text('\u2659', style: _large),
-// };
 
 var _tabIndex = 0;
 
@@ -251,8 +239,6 @@ const _dropdownItems = <String, Widget>{
 // ];
 
 final _dropdownProvider = StateProvider<String?>((ref) => null);
-
-CancelableOperation<void>? _dropdownCancellableOperation;
 
 class _DropdownTab extends ConsumerWidget {
   static final _logger = Logger((_DropdownTab).toString());
