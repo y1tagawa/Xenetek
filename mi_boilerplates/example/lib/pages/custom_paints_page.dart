@@ -78,7 +78,7 @@ class CustomPaintsPage extends ConsumerWidget {
 
 class _Clock extends StatefulWidget {
   final Size size;
-  final DateTime Function() onInterval;
+  final ValueNotifier<DateTime> dateTimeNotifier;
   final Color? faceColor;
   final Color? tickColor;
   final Color? hourColor;
@@ -90,8 +90,7 @@ class _Clock extends StatefulWidget {
     // ignore: unused_element
     super.key,
     required this.size,
-    // ignore: unused_element
-    this.onInterval = DateTime.now,
+    required this.dateTimeNotifier,
     // ignore: unused_element
     this.faceColor,
     // ignore: unused_element
@@ -225,8 +224,6 @@ class _FeaturePainter extends CustomPainter {
 class _ClockState extends State<_Clock> {
   static final _logger = Logger((_ClockState).toString());
 
-  late Timer _timer;
-
   late Color faceColor;
   late Color tickColor;
   late Color hourColor;
@@ -234,22 +231,21 @@ class _ClockState extends State<_Clock> {
   late Color secondColor;
   late Color pivotColor;
 
+  void _onUpdate() {
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _logger.fine('timer start');
-    _timer = Timer.periodic(
-      const Duration(milliseconds: 200),
-      (timer) {
-        setState(() {});
-      },
-    );
+    widget.dateTimeNotifier.addListener(_onUpdate);
   }
 
   @override
   void dispose() {
     _logger.fine('timer.cancel');
-    _timer.cancel();
+    widget.dateTimeNotifier.removeListener(_onUpdate);
     super.dispose();
   }
 
@@ -257,13 +253,15 @@ class _ClockState extends State<_Clock> {
   void didUpdateWidget(covariant _Clock oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget != widget) {
+      oldWidget.dateTimeNotifier.removeListener(_onUpdate);
+      widget.dateTimeNotifier.addListener(_onUpdate);
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateTime = widget.onInterval();
+    final dateTime = widget.dateTimeNotifier.value;
 
     final theme = Theme.of(context);
     final isDark = theme.isDark;
@@ -294,6 +292,9 @@ class _ClockState extends State<_Clock> {
   }
 }
 
+Timer? _timer;
+final _dateTimeNotifier = ValueNotifier(DateTime.now());
+
 class _ClockTab extends ConsumerWidget {
   static final _logger = Logger((_ClockTab).toString());
 
@@ -303,14 +304,23 @@ class _ClockTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
+    // TODO: destroy
+    _timer ??= Timer.periodic(
+      const Duration(milliseconds: 200),
+      (timer) {
+        _dateTimeNotifier.value = DateTime.now();
+      },
+    );
+
     return Column(
       children: [
-        const Expanded(
+        Expanded(
           child: _Clock(
-            size: Size(200, 200),
+            size: const Size(200, 200),
+            dateTimeNotifier: _dateTimeNotifier,
           ),
         ),
-        ListTile(
+        const ListTile(
           title: Text('TODO'),
         ),
       ],
