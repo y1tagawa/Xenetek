@@ -79,6 +79,7 @@ flutter:
     - assets/stanford-bunny.obj
     - assets/stanford-bunny.mtl
     - assets/under_construction.png
+    - assets/under_construction2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

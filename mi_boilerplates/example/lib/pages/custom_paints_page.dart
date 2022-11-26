@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -273,7 +272,7 @@ class _ClockState extends State<_Clock> {
     hourColor = widget.hourColor ?? color;
     minuteColor = widget.minuteColor ?? tickColor;
     secondColor = widget.secondColor ?? color.withOpacity(0.75);
-    pivotColor = widget.pivotColor ?? faceColor;
+    pivotColor = widget.pivotColor ?? (isDark ? Colors.white70 : faceColor);
 
     return SizedBox(
       width: widget.size.width,
@@ -287,70 +286,10 @@ class _ClockState extends State<_Clock> {
           state: this,
           dateTime: dateTime,
         ),
-        //child: Icon(Icons.closed_caption),
+        child: Image.asset(
+            theme.isDark ? 'assets/under_construction.png' : 'assets/under_construction2.png'),
       ),
     );
-  }
-}
-
-class _TimerController extends StatefulWidget {
-  // ignore: unused_field
-  static final _logger = Logger((_TimerController).toString());
-
-  final Duration duration;
-  final VoidCallback? onTimer;
-  final ValueChanged<Timer>? onPeriodic;
-  final Widget child;
-
-  const _TimerController({
-    // ignore: unused_element
-    super.key,
-    required this.duration,
-    // ignore: unused_element
-    required this.onTimer,
-    required this.child,
-  }) : onPeriodic = null;
-
-  const _TimerController.periodic({
-    // ignore: unused_element
-    super.key,
-    required this.duration,
-    // ignore: unused_element
-    required this.onPeriodic,
-    required this.child,
-  }) : onTimer = null;
-
-  @override
-  State<_TimerController> createState() => _TimerControllerState();
-}
-
-class _TimerControllerState extends State<_TimerController> {
-  late Timer _timer;
-
-  @override
-  void initState() {
-    assert(widget.onTimer != null || widget.onPeriodic != null);
-    super.initState();
-    if (widget.onTimer != null) {
-      _timer = Timer(widget.duration, () {
-        widget.onTimer!.call();
-      });
-    } else {
-      _timer = Timer.periodic(widget.duration, (timer) {
-        widget.onPeriodic!.call(_timer);
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.child;
   }
 }
 
@@ -401,7 +340,7 @@ class _ClockTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return _TimerController.periodic(
+    return MiTimerController.periodic(
       duration: const Duration(milliseconds: 200),
       onPeriodic: (_) {
         final now = DateTime.now();
