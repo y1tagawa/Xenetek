@@ -292,7 +292,67 @@ class _ClockState extends State<_Clock> {
   }
 }
 
-Timer? _timer;
+class _TimerController extends StatefulWidget {
+  // ignore: unused_field
+  static final _logger = Logger((_TimerController).toString());
+
+  final Duration duration;
+  final VoidCallback? onTimer;
+  final ValueChanged<Timer>? onPeriodic;
+  final Widget child;
+
+  const _TimerController({
+    // ignore: unused_element
+    super.key,
+    required this.duration,
+    // ignore: unused_element
+    required this.onTimer,
+    required this.child,
+  }) : onPeriodic = null;
+
+  const _TimerController.periodic({
+    // ignore: unused_element
+    super.key,
+    required this.duration,
+    // ignore: unused_element
+    required this.onPeriodic,
+    required this.child,
+  }) : onTimer = null;
+
+  @override
+  State<_TimerController> createState() => _TimerControllerState();
+}
+
+class _TimerControllerState extends State<_TimerController> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    assert(widget.onTimer != null || widget.onPeriodic != null);
+    super.initState();
+    if (widget.onTimer != null) {
+      _timer = Timer(widget.duration, () {
+        widget.onTimer!.call();
+      });
+    } else {
+      _timer = Timer.periodic(widget.duration, (timer) {
+        widget.onPeriodic!.call(_timer);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
 final _dateTimeNotifier = ValueNotifier(DateTime.now());
 
 class _ClockTab extends ConsumerWidget {
@@ -304,26 +364,33 @@ class _ClockTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    // TODO: destroy
-    _timer ??= Timer.periodic(
-      const Duration(milliseconds: 200),
-      (timer) {
-        _dateTimeNotifier.value = DateTime.now();
+    return _TimerController.periodic(
+      duration: const Duration(milliseconds: 200),
+      onPeriodic: (_) {
+        final now = DateTime.now();
+        final value = _dateTimeNotifier.value;
+        if (now.second != value.second ||
+            now.minute != value.minute ||
+            now.hour != value.hour ||
+            now.day != value.day ||
+            now.month != value.month ||
+            now.year != value.year) {
+          _dateTimeNotifier.value = now;
+        }
       },
-    );
-
-    return Column(
-      children: [
-        Expanded(
-          child: _Clock(
-            size: const Size(200, 200),
-            dateTimeNotifier: _dateTimeNotifier,
+      child: Column(
+        children: [
+          Expanded(
+            child: _Clock(
+              size: const Size(200, 200),
+              dateTimeNotifier: _dateTimeNotifier,
+            ),
           ),
-        ),
-        const ListTile(
-          title: Text('TODO'),
-        ),
-      ],
+          const ListTile(
+            title: Text('TODO'),
+          ),
+        ],
+      ),
     ).also((_) {
       _logger.fine('[o] build');
     });
