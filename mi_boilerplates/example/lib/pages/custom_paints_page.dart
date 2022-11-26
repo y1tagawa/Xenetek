@@ -77,6 +77,7 @@ class CustomPaintsPage extends ConsumerWidget {
 // Clock tab
 //
 
+// アナログ時計風カスタム描画ウィジェット
 class _Clock extends StatefulWidget {
   final Size size;
   final ValueNotifier<DateTime> dateTimeNotifier;
@@ -86,6 +87,7 @@ class _Clock extends StatefulWidget {
   final Color? minuteColor;
   final Color? secondColor;
   final Color? pivotColor;
+  final Widget? child;
 
   const _Clock({
     // ignore: unused_element
@@ -104,20 +106,22 @@ class _Clock extends StatefulWidget {
     this.secondColor,
     // ignore: unused_element
     this.pivotColor,
+    // ignore: unused_element
+    this.child,
   });
 
   @override
   State<_Clock> createState() => _ClockState();
 }
 
-class _FacePainter extends CustomPainter {
+class _ClockFacePainter extends CustomPainter {
   // ignore: unused_field
-  static final _logger = Logger((_FacePainter).toString());
+  static final _logger = Logger((_ClockFacePainter).toString());
 
   final _ClockState state;
   final DateTime dateTime;
 
-  const _FacePainter({
+  const _ClockFacePainter({
     required this.state,
     required this.dateTime,
   });
@@ -142,21 +146,21 @@ class _FacePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    if (oldDelegate is _FacePainter) {
+    if (oldDelegate is _ClockFacePainter) {
       return oldDelegate.state != state;
     }
     return false;
   }
 }
 
-class _FeaturePainter extends CustomPainter {
+class _ClockHandsPainter extends CustomPainter {
   // ignore: unused_field
-  static final _logger = Logger((_FeaturePainter).toString());
+  static final _logger = Logger((_ClockHandsPainter).toString());
 
   final _ClockState state;
   final DateTime dateTime;
 
-  const _FeaturePainter({
+  const _ClockHandsPainter({
     required this.state,
     required this.dateTime,
   });
@@ -212,7 +216,7 @@ class _FeaturePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    if (oldDelegate is _FeaturePainter) {
+    if (oldDelegate is _ClockHandsPainter) {
       return oldDelegate.state != state ||
           oldDelegate.dateTime.second != dateTime.second ||
           oldDelegate.dateTime.minute != dateTime.minute ||
@@ -278,24 +282,22 @@ class _ClockState extends State<_Clock> {
       width: widget.size.width,
       height: widget.size.height,
       child: CustomPaint(
-        painter: _FacePainter(
+        painter: _ClockFacePainter(
           state: this,
           dateTime: dateTime,
         ),
-        foregroundPainter: _FeaturePainter(
+        foregroundPainter: _ClockHandsPainter(
           state: this,
           dateTime: dateTime,
         ),
-        child: Image.asset(
-            theme.isDark ? 'assets/under_construction.png' : 'assets/under_construction2.png'),
+        child: widget.child,
       ),
     );
   }
 }
 
-final _dateTimeNotifier = ValueNotifier(DateTime.now());
-final _dateTimeProvider = ChangeNotifierProvider((ref) => _dateTimeNotifier);
-
+// デジタル時計風ウィジェット
+// 全体のリビルドを避けるため別クラスとする。
 class _DigitalClock extends ConsumerWidget {
   static const _weekday = <String>['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
@@ -331,6 +333,9 @@ class _DigitalClock extends ConsumerWidget {
   }
 }
 
+final _dateTimeNotifier = ValueNotifier(DateTime.now());
+final _dateTimeProvider = ChangeNotifierProvider((ref) => _dateTimeNotifier);
+
 class _ClockTab extends ConsumerWidget {
   static final _logger = Logger((_ClockTab).toString());
 
@@ -339,6 +344,8 @@ class _ClockTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
+
+    final theme = Theme.of(context);
 
     return MiTimerController.periodic(
       duration: const Duration(milliseconds: 200),
@@ -361,6 +368,9 @@ class _ClockTab extends ConsumerWidget {
             child: _Clock(
               size: const Size(200, 200),
               dateTimeNotifier: _dateTimeNotifier,
+              child: Image.asset(
+                theme.isDark ? 'assets/under_construction.png' : 'assets/under_construction2.png',
+              ),
             ),
           ),
           const _DigitalClock(),
