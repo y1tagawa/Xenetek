@@ -182,7 +182,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: SnackBarPage.icon,
     title: SnackBarPage.title,
-    path: '/snack_bar',
+    path: '/drawer/snack_bar',
     builder: (_, __) => const SnackBarPage(),
   ),
   _PageItem(

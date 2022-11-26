@@ -197,7 +197,6 @@ class _PushButtonsTab extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             child: Center(
               child: MiRingingIcon(
-                duration: const Duration(seconds: 2),
                 icon: Icon(
                   Icons.notifications_outlined,
                   size: 48,

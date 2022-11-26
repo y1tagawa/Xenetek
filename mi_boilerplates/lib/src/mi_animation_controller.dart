@@ -103,7 +103,7 @@ class MiRingingIcon extends StatelessWidget {
   const MiRingingIcon({
     super.key,
     this.enabled = true,
-    this.duration = const Duration(milliseconds: 1000),
+    this.duration = const Duration(milliseconds: 2000),
     this.frequency = 10,
     this.icon = const Icon(Icons.notifications_outlined),
     this.ringingIcon = const Icon(Icons.notifications_active_outlined),

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:example/pages/under_construction.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -59,7 +60,7 @@ class SnackBarPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _SnackBarTab(),
-                _SnackBarTab(),
+                UnderConstruction(),
               ],
             ),
           ),
@@ -79,7 +80,7 @@ class SnackBarPage extends ConsumerWidget {
 // https://m2.material.io/components/snackbars
 // WotWでは平気で載せている。
 // https://api.flutter.dev/flutter/material/SnackBar-class.html
-// しかし_SnackBarStateの派生が出来ないので、カスタムStatusBarは作成できなかったため、対応しないことにする。
+// しかし_SnackBarStateの派生が出来ないので、カスタムStatusBarは作成できなかったため、個別対応する。
 
 class _SnackBarTab extends ConsumerWidget {
   static final _logger = Logger((_SnackBarTab).toString());
@@ -99,7 +100,20 @@ class _SnackBarTab extends ConsumerWidget {
     void showSnackBar() {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Ping'),
+          content: MiRow(
+            children: [
+              const Text('Ping'),
+              IconTheme.merge(
+                data: IconThemeData(color: theme.colorScheme.surface),
+                child: MiRingingIcon(
+                  origin: const Offset(0, -10),
+                  onInitialized: (controller) {
+                    controller.forward();
+                  },
+                ),
+              ),
+            ],
+          ),
           action: SnackBarAction(
             label: 'CLOSE',
             onPressed: () {
@@ -124,14 +138,20 @@ class _SnackBarTab extends ConsumerWidget {
                     ? theme.colorScheme.onSurface
                     : Color.alphaBlend(
                         theme.colorScheme.onSurface.withOpacity(0.80), theme.colorScheme.surface)),
-            leading: DefaultTextStyle(
-              style: theme.snackBarTheme.contentTextStyle ??
-                  theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.surface) ??
-                  TextStyle(color: theme.colorScheme.surface),
-              child: IconTheme.merge(
-                data: IconThemeData(color: theme.colorScheme.surface),
-                child: const Text('Ping'),
-              ),
+            leading: MiRow(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DefaultTextStyle(
+                  style: theme.snackBarTheme.contentTextStyle ??
+                      theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.surface) ??
+                      TextStyle(color: theme.colorScheme.surface),
+                  child: const Text('Ping'),
+                ),
+                IconTheme.merge(
+                  data: IconThemeData(color: theme.colorScheme.surface),
+                  child: const Icon(Icons.notifications_outlined),
+                ),
+              ],
             ),
             trailing: DefaultTextStyle(
               style: theme.snackBarTheme.contentTextStyle?.copyWith(color: actionTextColor) ??
@@ -143,6 +163,7 @@ class _SnackBarTab extends ConsumerWidget {
               showSnackBar();
             },
           ),
+          const Text('Note: Material Design demands not to use icons in snackbars.'),
         ],
       ),
     ).also((_) {
