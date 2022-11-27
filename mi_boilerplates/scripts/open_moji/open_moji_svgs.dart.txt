@@ -300,5 +300,5 @@ final openMojiSvgPorpoise = SvgPicture.asset('assets/open_moji/E008.svg');
 final openMojiSvgPigeon = SvgPicture.asset('assets/open_moji/E009.svg');
 // macaw extra-openmoji
 final openMojiSvgMacaw = SvgPicture.asset('assets/open_moji/E010.svg');
-// microbe extra-openmoji
+// microbe2 extra-openmoji
 final openMojiSvgMicrobe2 = SvgPicture.asset('assets/open_moji/E011.svg');
