@@ -64,7 +64,7 @@ def main():
             item = data[str(index)]
             fileName = item['code'].upper() + '.svg'
             name = 'openMojiSvg' + \
-                item['name'].replace('&amp;', '&').replace('&gt;', '>').replace('&lt;', '<') \
+                item['name'].replace('&amp;', 'And') \
                     .title().replace(' ', '').replace('-', '') 
             f.write('// ' + item['name'] + ' ' + item['keywords'] + '\n')
             f.write('final ' + name + ' = SvgPicture.asset(\'assets/open_moji/' + fileName + '\');\n')
