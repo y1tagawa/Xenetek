@@ -1,8 +1,5 @@
 // Copyright 2022 Xenetek. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// This program uses material from the Wikipedia article "Web colors",
+// This program is generated from the Wikipedia article "Web colors",
 // Creative Commons Attribution-Share-Alike License 3.0.
 
 import 'package:flutter/material.dart';
