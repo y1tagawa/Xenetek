@@ -9,7 +9,7 @@
 import json
 
 def main():
-    f = open('table.json', 'r', encoding="utf-8")
+    f = open('table.json', 'r', encoding='utf-8')
     data = json.load(f)
 
     # target index list.
@@ -36,8 +36,15 @@ def main():
         650, 651, 652, 653, 654, 655, 656, 657,
                        773, 774, 775, 776, 777,
     ]
+
+    # generate downloader
+
+    of = open('download.sh', 'w', encoding='utf-8', newline='\n')
+    of.write('#!/bin/sh\n')
     for index in indices:
-        print(data[str(index)])
+        item = data[str(index)]
+        fileName = item['code'].upper() + '.svg'
+        of.write('wget -nc -O assets/' + fileName + ' https://openmoji.org/data/color/svg/' + fileName + ' 2>>download.log\n')
 
 # end of main.
 
