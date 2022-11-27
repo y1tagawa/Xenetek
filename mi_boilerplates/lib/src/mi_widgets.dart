@@ -68,13 +68,19 @@ extension SetHelper<T> on Set<T> {
   }
 }
 
+///
+enum MiIconPosition { start, end }
+
 /// ラベル
 ///
-/// [icon]がnullの場合、その部分は空白となる。
+/// * [icon]がnullの場合、空白を表示する。
+///
 class MiIcon extends StatelessWidget {
   final bool enabled;
-  final VoidCallback? onTap;
   final Widget? icon;
+  final MiIconPosition iconPosition;
+  final VoidCallback? onTap;
+  final ValueChanged<bool>? onHover;
   final double? spacing;
   final Widget? text;
   final String? tooltip;
@@ -83,7 +89,9 @@ class MiIcon extends StatelessWidget {
     super.key,
     this.enabled = true,
     this.icon,
+    this.iconPosition = MiIconPosition.start,
     this.onTap,
+    this.onHover,
     this.spacing,
     this.text,
     this.tooltip,
@@ -94,40 +102,44 @@ class MiIcon extends StatelessWidget {
     final theme = Theme.of(context);
     final textColor = enabled ? null : theme.disabledColor;
 
-    Widget icon_ = icon ?? const SizedBox.square(dimension: 24.0);
-    if (icon != null) {
-      icon_ = IconTheme.merge(
-        data: IconThemeData(color: textColor),
-        child: icon_,
-      );
-    }
+    Widget icon_ = icon ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
 
     if (text != null) {
       final spacing_ = spacing ?? 8.0;
-      icon_ = DefaultTextStyle.merge(
-        style: TextStyle(color: textColor),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            icon_,
-            if (spacing_ > 0.0) SizedBox(width: spacing_),
-            text!,
-          ],
-        ),
+      final spacer = spacing_ > 0.0 ? SizedBox(width: spacing_) : null;
+      icon_ = Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: iconPosition == MiIconPosition.end
+            ? [
+                if (spacer != null) spacer,
+                text!,
+                if (spacer != null) spacer,
+                icon_,
+              ]
+            : [
+                icon_,
+                if (spacer != null) spacer,
+                text!,
+                if (spacer != null) spacer,
+              ],
       );
     }
 
-    if (onTap != null) {
+    icon_ = DefaultTextStyle.merge(
+      style: TextStyle(color: textColor),
+      child: IconTheme.merge(
+        data: IconThemeData(color: textColor),
+        child: icon_,
+      ),
+    );
+
+    if (onTap != null || onHover != null) {
       icon_ = InkWell(
         onTap: enabled ? onTap : null,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: IgnorePointer(
-            child: icon_,
-          ),
-        ),
+        onHover: onHover,
+        child: IgnorePointer(child: icon_),
       );
     }
 
@@ -145,9 +157,12 @@ class MiIcon extends StatelessWidget {
 /// カラーチップ
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
+///
 class MiColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
+  final VoidCallback? onTap;
+  final ValueChanged<bool>? onHover;
   final double? size;
   final double margin;
   final double? spacing;
@@ -158,6 +173,8 @@ class MiColorChip extends StatelessWidget {
     super.key,
     this.enabled = true,
     required this.color,
+    this.onTap,
+    this.onHover,
     this.size,
     this.margin = 2,
     this.spacing,
@@ -183,6 +200,8 @@ class MiColorChip extends StatelessWidget {
               height: size_,
               child: ColoredBox(color: enabled ? color! : theme.disabledColor),
             ),
+      onTap: onTap,
+      onHover: onHover,
       spacing: spacing,
       text: text,
       tooltip: tooltip,
@@ -191,6 +210,7 @@ class MiColorChip extends StatelessWidget {
 }
 
 /// トグルアイコン
+///
 class MiToggleIcon extends StatelessWidget {
   final bool checked;
   final Widget checkIcon;
@@ -217,6 +237,7 @@ class MiToggleIcon extends StatelessWidget {
 }
 
 /// [Image] (PNGとか)をアイコンにする
+///
 class MiImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
@@ -232,9 +253,12 @@ class MiImageIcon extends StatelessWidget {
     final theme = IconTheme.of(context);
     return SizedBox.square(
       dimension: size ?? theme.size,
-      child: Image(
-        image: image.image,
-        color: theme.color,
+      child: Align(
+        alignment: Alignment.center,
+        child: Image(
+          image: image.image,
+          color: theme.color,
+        ),
       ),
     );
   }
@@ -242,8 +266,8 @@ class MiImageIcon extends StatelessWidget {
 
 /// カスタム[TextButton]
 ///
-/// [enabled]を追加しただけ。
-
+/// * [enabled]追加
+///
 class MiTextButton extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onPressed;
@@ -291,9 +315,9 @@ class MiTextButton extends StatelessWidget {
 
 /// カスタム[IconButton]
 ///
-/// [enabled]を追加しただけ。
+/// * [enabled]追加
 /// TODO: StatelessWidgetから派生。
-
+///
 class MiIconButton extends IconButton {
   const MiIconButton({
     super.key,
@@ -405,7 +429,7 @@ class MiIntSlider extends StatelessWidget {
 /// * [crossAxisAlignment]のデフォルト値を[WrapCrossAlignment.center]に変更。
 /// * [flexes]を指定した場合、[children]の個々を[Flexible]でラップする。
 /// * [spacing]を指定した場合、[children]の間に空間を空ける。
-
+///
 class MiRow extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
@@ -497,6 +521,44 @@ class MiRow extends StatelessWidget {
           }
         }
       }),
+    );
+  }
+}
+
+/// タブまたは[Scaffold.body]中の頻出コード
+///
+/// [Column]で‘Vertical viewport was given unbounded height’エラーを避けるため。
+/// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
+/// [child] - [ListView]など[height]が不定のウィジェット。
+/// [top]/[tops], [bottom]/[bottoms] - [child]の上下に積まれる。
+///
+class MiExpandedColumn extends StatelessWidget {
+  final Widget child;
+  final Widget? top;
+  final List<Widget>? tops;
+  final Widget? bottom;
+  final List<Widget>? bottoms;
+
+  const MiExpandedColumn({
+    super.key,
+    required this.child,
+    this.top,
+    this.tops,
+    this.bottom,
+    this.bottoms,
+  })  : assert(top == null || tops == null),
+        assert(bottom == null || bottoms == null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        if (top != null) top!,
+        if (tops != null) ...tops!,
+        Expanded(child: child),
+        if (bottom != null) bottom!,
+        if (bottoms != null) ...bottoms!,
+      ],
     );
   }
 }

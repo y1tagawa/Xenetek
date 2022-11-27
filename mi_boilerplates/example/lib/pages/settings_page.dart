@@ -271,7 +271,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -292,7 +292,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -313,7 +313,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -334,7 +334,7 @@ class SettingsPage extends ConsumerWidget {
                   },
                 );
                 if (ok) {
-                  await savePreferences(ref);
+                  await saveThemePreferences(ref);
                 }
               },
             ),
@@ -342,8 +342,8 @@ class SettingsPage extends ConsumerWidget {
               value: ref.watch(brightnessProvider).isDark,
               title: const Text('Dark'),
               onChanged: (value) async {
-                ref.read(brightnessProvider.notifier).state = value!.toDark;
-                await savePreferences(ref);
+                ref.read(brightnessProvider.notifier).state =
+                    value! ? Brightness.dark : Brightness.light;
               },
             ),
             CheckboxListTile(
@@ -354,22 +354,23 @@ class SettingsPage extends ConsumerWidget {
               },
             ),
             CheckboxListTile(
-              value: ref.watch(themeAdjustmentProvider),
+              value: ref.watch(modifyThemeProvider),
               title: const Text('Modify theme'),
               onChanged: (value) {
-                ref.read(themeAdjustmentProvider.notifier).state = value!;
+                ref.read(modifyThemeProvider.notifier).state = value!;
               },
             ),
             const Divider(),
             ListTile(
               title: const Text('Reset preferences'),
+              trailing: const Icon(Icons.navigate_next),
               onTap: () async {
                 final ok = await showWarningOkCancelDialog(
                   context: context,
-                  content: const Text('Are you sure to reset all preferences?'),
+                  content: const Text('Are you sure to reset theme preferences?'),
                 );
                 if (ok) {
-                  await clearPreferences(ref);
+                  await clearThemePreferences(ref);
                 }
               },
             ),

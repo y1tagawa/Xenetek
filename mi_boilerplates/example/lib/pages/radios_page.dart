@@ -17,14 +17,16 @@ class RadiosPage extends ConsumerWidget {
 
   static final _logger = Logger((RadiosPage).toString());
 
-  static const _tabs = <Widget>[
-    MiTab(
+  static final _tabs = <Widget>[
+    const MiTab(
       tooltip: 'Radios',
       icon: icon,
     ),
     MiTab(
       tooltip: 'Toggle buttons',
-      icon: Icon(Icons.more_horiz),
+      icon: MiImageIcon(
+        image: Image.asset('assets/more_grid.png'),
+      ),
     ),
   ];
 
@@ -82,19 +84,18 @@ class _RadioItem {
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
-    iconBuilder: (checked) => MiToggleIcon(
-      checked: checked,
-      checkIcon: const Icon(Icons.gpp_good_outlined),
-      uncheckIcon: const Icon(Icons.shield_outlined),
-    ),
+    iconBuilder: (checked) => const Icon(Icons.shield_outlined),
     text: const Text('Fighter'),
   ),
   _Class.cleric: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
+    iconBuilder: (checked) => const Icon(Icons.emergency_outlined),
     text: const Text('Cleric'),
   ),
   _Class.mage: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
+    //iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
+    iconBuilder: (_) => MiImageIcon(
+      image: Image.asset('assets/mage_hat.png'),
+    ),
     text: const Text('Mage'),
   ),
   _Class.thief: _RadioItem(
@@ -110,9 +111,10 @@ final _radioItems = <_Class, _RadioItem>{
 final _classProvider = StateProvider((ref) => _Class.fighter);
 
 class _RadiosTab extends ConsumerWidget {
+  // ignore: unused_field
   static final _logger = Logger((_RadiosTab).toString());
 
-  const _RadiosTab({super.key});
+  const _RadiosTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -151,7 +153,7 @@ class _RadiosTab extends ConsumerWidget {
               color: Theme.of(context).disabledColor,
               size: 60,
             ),
-            child: _radioItems[class_]!.iconBuilder(true),
+            child: _radioItems[class_]!.iconBuilder(false),
           ),
         ),
       ],
@@ -196,7 +198,7 @@ final _selectedProvider = StateProvider((ref) => 0);
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_selectedProvider).toString());
 
-  const _ToggleButtonsTab({super.key});
+  const _ToggleButtonsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

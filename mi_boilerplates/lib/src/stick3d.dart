@@ -116,11 +116,11 @@ class Node {
 
   @override
   String toString() {
-    return 'Node{' +
+    return 'Node{'
         ' position: $position,'
-            ' rotation: $rotation,'
-            ' children: $children,'
-            '}';
+        ' rotation: $rotation,'
+        ' children: $children,'
+        '}';
   }
 
   Node copyWith({
@@ -155,7 +155,7 @@ class Node {
 }
 
 //
-// * 右手座標系とする。X+右、Y+前、Z+上のイメージ
+// * 右手座標系とする。X+右、Y+上、Z+手前のイメージ
 // * 関節の回転軸は原則として：
 //   * Xを主要な曲げ軸とする。（肘や指の折れ軸、股の前後振り軸、肩の開き軸、椎骨の前後曲げ軸）
 //   * Yを次の曲げ軸とする。（股の左右開閉軸、肩の前後振り軸、椎骨の左右曲げ軸）
@@ -205,4 +205,74 @@ extension NodeHelper on Node {
       child: child_(position, descending.skip(1)),
     );
   }
+}
+
+//
+// モデル
+//
+
+class Mesh {
+  final String? materialName;
+  const Mesh({
+    this.materialName,
+  });
+  // TBD
+}
+
+abstract class MeshBuilder {
+  const MeshBuilder();
+
+  List<Mesh> build();
+}
+
+class Model {
+  final String? objectName;
+  final List<MeshBuilder> meshBuilders;
+
+  const Model({
+    this.objectName,
+    this.meshBuilders = const [],
+  });
+
+  List<Mesh> build() {
+    //TODO
+    throw UnimplementedError();
+  }
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Model &&
+          runtimeType == other.runtimeType &&
+          objectName == other.objectName &&
+          meshBuilders == other.meshBuilders);
+
+  @override
+  int get hashCode => objectName.hashCode ^ meshBuilders.hashCode;
+
+  @override
+  String toString() {
+    return 'Model{ objectName: $objectName, meshBuilders: $meshBuilders,}';
+  }
+
+  Model copyWith({
+    String? objectName,
+    List<MeshBuilder>? meshBuilders,
+  }) {
+    return Model(
+      objectName: objectName ?? this.objectName,
+      meshBuilders: meshBuilders ?? this.meshBuilders,
+    );
+  }
+
+  factory Model.fromMap(Map<String, dynamic> map) {
+    return Model(
+      objectName: map['objectName'] as String,
+      meshBuilders: map['meshBuilders'] as List<MeshBuilder>,
+    );
+  }
+
+//</editor-fold>
 }

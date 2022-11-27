@@ -35,14 +35,14 @@ class _ThemeAdjustmentCheckbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
-    final themeAdjustment = ref.watch(themeAdjustmentProvider);
+    final themeAdjustment = ref.watch(modifyThemeProvider);
 
     return Tooltip(
       message: themeAdjustment ? 'Theme adjustment: ON' : 'Theme adjustment: OFF',
       child: Checkbox(
         value: themeAdjustment,
         onChanged:
-            enabled ? (value) => ref.read(themeAdjustmentProvider.notifier).state = value! : null,
+            enabled ? (value) => ref.read(modifyThemeProvider.notifier).state = value! : null,
       ),
     );
   }
@@ -54,6 +54,7 @@ class _OverflowMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
+    final brightness = ref.watch(brightnessProvider);
 
     return PopupMenuButton(
       itemBuilder: (context) {
@@ -67,10 +68,10 @@ class _OverflowMenu extends ConsumerWidget {
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
-            checked: ref.watch(themeAdjustmentProvider),
+            checked: ref.watch(modifyThemeProvider),
             child: const Text('Adjust theme'),
             onChanged: (value) {
-              ref.read(themeAdjustmentProvider.notifier).state = value;
+              ref.read(modifyThemeProvider.notifier).state = value;
             },
           ),
           MiCheckPopupMenuItem(
@@ -83,7 +84,7 @@ class _OverflowMenu extends ConsumerWidget {
           ),
           MiCheckPopupMenuItem(
             enabled: enabled,
-            checked: ref.watch(brightnessProvider) == Brightness.dark,
+            checked: brightness.isDark,
             child: const Text('Dark mode'),
             onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                 value ? Brightness.dark : Brightness.light,
@@ -102,9 +103,9 @@ class _OverflowMenu extends ConsumerWidget {
       offset: const Offset(0, 40),
       tooltip: <String>[
         if (ref.read(enableActionsProvider)) 'Enabled',
-        if (ref.read(themeAdjustmentProvider)) 'Adjusted',
+        if (ref.read(modifyThemeProvider)) 'Adjusted',
         ref.read(useM3Provider) ? 'M3' : 'M2',
-        if (ref.read(brightnessProvider) == Brightness.dark) 'Dark',
+        if (ref.read(brightnessProvider).isDark) 'Dark',
       ].join(', '),
       //icon: const Icon(Icons.square),
     );
@@ -150,6 +151,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
+    final brightness = ref.watch(brightnessProvider);
     final theme = Theme.of(context);
 
     final flexibleSpace_ = flexibleSpace ??
@@ -168,7 +170,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
           );
         });
 
-    if (ref.watch(themeAdjustmentProvider)) {
+    if (ref.watch(modifyThemeProvider)) {
       return MiAppBar(
         prominent: prominent,
         leading: leading,
@@ -195,10 +197,10 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
             MiCheckIconButton(
               enabled: enabled,
-              checked: ref.watch(brightnessProvider).isDark,
+              checked: brightness.isDark,
               onChanged: (value) async {
-                ref.read(brightnessProvider.notifier).state = value.toDark;
-                await savePreferences(ref);
+                ref.read(brightnessProvider.notifier).state =
+                    value ? Brightness.dark : Brightness.light;
               },
               checkIcon: const Icon(Icons.dark_mode_outlined),
               uncheckIcon: const Icon(Icons.light_mode_outlined),
@@ -258,7 +260,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(themeAdjustmentProvider)
+    return ref.watch(modifyThemeProvider)
         ? MiTabBar(
             enabled: enabled,
             tabs: tabs,
@@ -276,6 +278,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 ///
 /// TODO: 横画面でNavigationRail
 class ExBottomNavigationBar extends ConsumerWidget {
+  // ignore: unused_field
   static final _logger = Logger((ExBottomNavigationBar).toString());
 
   const ExBottomNavigationBar({super.key});
@@ -286,14 +289,17 @@ class ExBottomNavigationBar extends ConsumerWidget {
       const BottomNavigationBarItem(
         icon: Icon(Icons.home_outlined),
         label: 'Home',
+        tooltip: '',
       ),
       const BottomNavigationBarItem(
         icon: Icon(Icons.settings_outlined),
         label: 'Settings',
+        tooltip: '',
       ),
       const BottomNavigationBarItem(
         icon: Icon(Icons.help_outline),
         label: 'About',
+        tooltip: '',
       ),
     ];
 
@@ -301,7 +307,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
       switch (it) {
         case '/':
           return 0;
-        case '/drawer/settings':
+        case '/settings':
           return 1;
         default:
           return -1;
@@ -322,7 +328,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
             break;
           case 1:
             if (currentIndex != 1) {
-              context.push('/drawer/settings');
+              context.push('/settings');
             }
             break;
           case 2:

@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-/// RadioListTile with [enabled].
-
+/// カスタム[RadioListTile]
+///
+/// * [enabled]追加
+///
 class MiRadioListTile<T> extends RadioListTile<T> {
   const MiRadioListTile({
+    //<editor-fold>
     super.key,
     bool enabled = true,
     required super.value,
@@ -30,13 +34,17 @@ class MiRadioListTile<T> extends RadioListTile<T> {
     super.visualDensity,
     super.focusNode,
     super.enableFeedback,
+//</editor-fold>
   }) : super(onChanged: enabled ? onChanged : null);
 }
 
-/// SwitchListTile with [enabled].
-
+/// カスタム[SwitchListTile]
+///
+/// * [enabled]追加
+///
 class MiSwitchListTile extends SwitchListTile {
   const MiSwitchListTile({
+    //<editor-fold>
     super.key,
     bool enabled = true,
     required super.value,
@@ -63,12 +71,16 @@ class MiSwitchListTile extends SwitchListTile {
     super.focusNode,
     super.enableFeedback,
     super.hoverColor,
+//</editor-fold>]
   }) : super(onChanged: enabled ? onChanged : null);
 }
 
-/// ExpansionTile with [enabled].
-
+/// カスタム[ExpansionTile]
+///
+/// * [enabled]追加、それに合わせ動作もいろいろ変更。
+///
 class MiExpansionTile extends StatelessWidget {
+  //<editor-fold>
   final bool enabled;
   final Widget? leading;
   final Widget title;
@@ -90,8 +102,10 @@ class MiExpansionTile extends StatelessWidget {
   final Color? collapsedIconColor;
   final ListTileControlAffinity? controlAffinity;
   final Color? dividerColor;
+//</editor-fold>
 
   const MiExpansionTile({
+    //<editor-fold>
     super.key,
     this.enabled = true,
     this.leading,
@@ -114,6 +128,7 @@ class MiExpansionTile extends StatelessWidget {
     this.collapsedIconColor,
     this.controlAffinity,
     this.dividerColor,
+    //</editor-fold>
   });
 
   @override
@@ -161,6 +176,73 @@ class MiExpansionTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// [ListTile]のテキストボタン的用法
+///
+/// * 頻出コード
+///
+class MiButtonListTile extends StatelessWidget {
+  final bool enabled;
+  final bool selected;
+  final Widget? icon;
+  final Widget text;
+  final Widget? title;
+  final MainAxisAlignment alignment;
+  final MiIconPosition iconPosition;
+  final VoidCallback? onPressed;
+
+  const MiButtonListTile({
+    super.key,
+    this.enabled = true,
+    this.selected = false,
+    this.icon,
+    required this.text,
+    this.title,
+    this.alignment = MainAxisAlignment.center,
+    this.iconPosition = MiIconPosition.start,
+    this.onPressed,
+    // TODO: 他のプロパティ
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textColor = enabled ? theme.foregroundColor : null;
+
+    Widget? subtitle_;
+    Widget title_ = Row(
+      mainAxisAlignment: alignment,
+      children: [
+        DefaultTextStyle.merge(
+          style: TextStyle(color: textColor),
+          child: IconTheme.merge(
+            data: IconThemeData(color: textColor),
+            child: icon != null
+                ? MiIcon(
+                    icon: icon,
+                    text: text,
+                    iconPosition: iconPosition,
+                  )
+                : text,
+          ),
+        ),
+      ],
+    );
+
+    if (title != null) {
+      subtitle_ = title_;
+      title_ = Center(child: title!);
+    }
+
+    return ListTile(
+      enabled: enabled,
+      selected: selected,
+      title: title_,
+      subtitle: subtitle_,
+      onTap: onPressed,
     );
   }
 }

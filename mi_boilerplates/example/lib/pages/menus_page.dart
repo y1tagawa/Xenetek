@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,17 +14,6 @@ import 'knight_indicator.dart';
 ///
 /// Menus example page.
 ///
-
-const _large = TextStyle(fontSize: 30);
-
-const _menuItems = <String, Widget>{
-  'White King': Text('\u2654', style: _large),
-  'White Queen': Text('\u2655', style: _large),
-  'White Rook': Text('\u2656', style: _large),
-  'White Bishop': Text('\u2657', style: _large),
-  'White Knight': Text('\u2658', style: _large),
-  'White Pawn': Text('\u2659', style: _large),
-};
 
 var _tabIndex = 0;
 
@@ -97,7 +85,7 @@ const _shieldItems = <String, Widget?>{
   'Shield of Snake': Icon(Icons.monetization_on_outlined),
 };
 
-final _equippedProvider = StateProvider((ref) => List<bool>.filled(5, false));
+final _armourProvider = StateProvider((ref) => List<bool>.filled(5, false));
 final _shieldProvider = StateProvider<String>((ref) => 'None');
 
 class _PopupMenuTab extends ConsumerWidget {
@@ -109,7 +97,7 @@ class _PopupMenuTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
-    final equipped = ref.watch(_equippedProvider);
+    final armour = ref.watch(_armourProvider);
     final shield = ref.watch(_shieldProvider);
 
     final theme = Theme.of(context);
@@ -123,7 +111,7 @@ class _PopupMenuTab extends ConsumerWidget {
               child: IconTheme(
                 data: IconThemeData(color: theme.disabledColor),
                 child: KnightIndicator(
-                  equipped: equipped,
+                  equipped: armour,
                   shieldIcon: _shieldItems[shield],
                 ),
               ),
@@ -139,7 +127,7 @@ class _PopupMenuTab extends ConsumerWidget {
                     final icon = KnightIndicator.items[key];
                     return MiCheckPopupMenuItem<int>(
                       value: index,
-                      checked: equipped[index],
+                      checked: armour[index],
                       child: MiIcon(
                         icon: icon ?? const Icon(Icons.block_outlined),
                         text: Text(key),
@@ -147,8 +135,8 @@ class _PopupMenuTab extends ConsumerWidget {
                     );
                   }).toList(),
                   onSelected: (index) {
-                    ref.read(_equippedProvider.notifier).state =
-                        equipped.replaced(index, !equipped[index]);
+                    ref.read(_armourProvider.notifier).state =
+                        armour.replaced(index, !armour[index]);
                   },
                   offset: const Offset(1, 0),
                   child: ListTile(
@@ -175,8 +163,8 @@ class _PopupMenuTab extends ConsumerWidget {
                   },
                   onSelected: (key) {
                     ref.read(_shieldProvider.notifier).state = key;
-                    ref.read(_equippedProvider.notifier).state =
-                        equipped.replaced(4, _shieldItems[key] != null);
+                    ref.read(_armourProvider.notifier).state =
+                        armour.replaced(4, _shieldItems[key] != null);
                   },
                   offset: const Offset(1, 0),
                   child: ListTile(
@@ -189,22 +177,16 @@ class _PopupMenuTab extends ConsumerWidget {
           ],
         ),
         const Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MiTextButton(
-              enabled: enabled,
-              onPressed: () {
-                ref.refresh(_equippedProvider).also((_) {});
-                ref.refresh(_shieldProvider).also((_) {});
-              },
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Reset'),
-              ),
-            ),
-          ],
-        ),
+        if (armour.every((it) => it) && shield != 'None')
+          MiButtonListTile(
+            enabled: enabled,
+            icon: const Icon(Icons.refresh_outlined),
+            text: const Text('Reset'),
+            onPressed: () {
+              ref.refresh(_armourProvider).also((_) {});
+              ref.refresh(_shieldProvider).also((_) {});
+            },
+          ),
       ],
     ).also((_) {
       _logger.fine('[o] build');
@@ -216,49 +198,47 @@ class _PopupMenuTab extends ConsumerWidget {
 // Dropdown tab
 //
 
-final _dropdownHint = Row(children: const [
-  Icon(Icons.dark_mode_outlined),
-  Icon(Icons.home_outlined),
-]);
-
-final _dropdownItems = <Widget>[
-  Row(children: const [
-    Icon(Icons.breakfast_dining_outlined),
-    Icon(Icons.local_cafe_outlined),
-    SizedBox(width: 8),
-    Text('Breakfast'),
-  ]),
-  Row(children: const [
-    Icon(Icons.set_meal_outlined),
-    Icon(Icons.soup_kitchen_outlined),
-    SizedBox(width: 8),
-    Text('Lunch'),
-  ]),
-  Row(children: const [
-    Icon(Icons.bakery_dining_outlined),
-    Icon(Icons.coffee_outlined),
-    SizedBox(width: 8),
-    Text('Snack'),
-  ]),
-  Row(children: const [
-    Icon(Icons.dinner_dining_outlined),
-    Icon(Icons.sports_bar_outlined),
-    SizedBox(width: 8),
-    Text('Supper'),
-  ]),
-];
-
-const _dropdownIcons = <int?, Widget>{
-  null: Icon(Icons.hotel_outlined),
-  0: Icon(Icons.accessibility_new_outlined),
-  1: Icon(Icons.directions_run_outlined),
-  2: MiScale(scaleX: -1, child: Icon(Icons.directions_run_outlined)),
-  3: Icon(Icons.self_improvement_outlined),
+const _dropdownItems = <String, Widget>{
+  'White King': Text('\u2654'),
+  'White Queen': Text('\u2655'),
+  'White Rook': Text('\u2656'),
+  'White Bishop': Text('\u2657'),
+  'White Knight': Text('\u2658'),
+  'White Pawn': Text('\u2659'),
 };
 
-final _dropdownProvider = StateProvider<int?>((ref) => null);
+// const _dropdownItems = <Widget>[
+//   MiRow(
+//     mainAxisAlignment: MainAxisAlignment.center,
+//     children: [
+//       Icon(Icons.breakfast_dining_outlined),
+//       Icon(Icons.local_cafe_outlined),
+//     ],
+//   ),
+//   MiRow(
+//     mainAxisAlignment: MainAxisAlignment.center,
+//     children: [
+//       Icon(Icons.set_meal_outlined),
+//       Icon(Icons.soup_kitchen_outlined),
+//     ],
+//   ),
+//   MiRow(
+//     mainAxisAlignment: MainAxisAlignment.center,
+//     children: [
+//       Icon(Icons.bakery_dining_outlined),
+//       Icon(Icons.coffee_outlined),
+//     ],
+//   ),
+//   MiRow(
+//     mainAxisAlignment: MainAxisAlignment.center,
+//     children: [
+//       Icon(Icons.dinner_dining_outlined),
+//       Icon(Icons.sports_bar_outlined),
+//     ],
+//   ),
+// ];
 
-CancelableOperation<void>? _dropdownCancellableOperation;
+final _dropdownProvider = StateProvider<String?>((ref) => null);
 
 class _DropdownTab extends ConsumerWidget {
   static final _logger = Logger((_DropdownTab).toString());
@@ -271,49 +251,80 @@ class _DropdownTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final dropdown = ref.watch(_dropdownProvider);
 
+    final theme = Theme.of(context);
+
     return Column(
       children: [
-        // Dropdown menu
-        DropdownButton<int?>(
+        DropdownButton<String?>(
           value: dropdown,
           onChanged: enabled
-              ? (index) {
-                  ref.read(_dropdownProvider.notifier).state = index!;
-                  _dropdownCancellableOperation?.cancel();
-                  if (index == 3) {
-                    _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
-                      Future.delayed(const Duration(seconds: 4)),
-                      onCancel: () {
-                        _logger.fine('canceled.');
-                      },
-                    ).then(
-                      (_) {
-                        _logger.fine('completed.');
-                        ref.read(_dropdownProvider.notifier).state = null;
-                      },
-                    );
-                  }
+              ? (key) {
+                  ref.read(_dropdownProvider.notifier).state = key!;
+                  // _dropdownCancellableOperation?.cancel();
+                  // _dropdownCancellableOperation = CancelableOperation<void>.fromFuture(
+                  //   Future.delayed(const Duration(seconds: 4)),
+                  //   onCancel: () {
+                  //     _logger.fine('canceled.');
+                  //   },
+                  // ).then(
+                  //   (_) {
+                  //     _logger.fine('completed.');
+                  //     ref.read(_dropdownProvider.notifier).state = null;
+                  //   },
+                  // );
                 }
               : null,
-          hint: _dropdownHint,
-          items: _dropdownItems.mapIndexed((index, item) {
-            return DropdownMenuItem<int?>(
-              value: index,
-              child: item,
-            );
-          }).toList(),
+          items: _dropdownItems.entries
+              .map(
+                (item) => DropdownMenuItem<String?>(
+                  value: item.key,
+                  child: MiIcon(
+                    icon: DefaultTextStyle.merge(
+                      style: const TextStyle(fontSize: 27),
+                      child: item.value,
+                    ),
+                    text: Text(item.key),
+                  ),
+                ),
+              )
+              .toList(),
         ),
         const Divider(),
         Padding(
           padding: const EdgeInsets.all(10),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              size: 60,
-              color: Theme.of(context).disabledColor,
-            ),
-            child: _dropdownIcons[dropdown]!,
+          child: Stack(
+            children: [
+              Center(
+                child: Icon(
+                  Icons.shield_outlined,
+                  size: 60,
+                  color: theme.disabledColor,
+                ),
+              ),
+              if (dropdown != null)
+                DefaultTextStyle.merge(
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                    color: theme.disabledColor,
+                  ),
+                  child: Transform.translate(
+                    offset: const Offset(0, 6),
+                    child: Center(child: _dropdownItems[dropdown]!),
+                  ),
+                ),
+            ],
           ),
         ),
+        if (dropdown != null)
+          MiButtonListTile(
+            enabled: enabled,
+            icon: const Icon(Icons.refresh_outlined),
+            text: const Text('Reset'),
+            onPressed: () {
+              ref.refresh(_dropdownProvider).also((_) {});
+            },
+          ),
       ],
     ).also((_) {
       _logger.fine('[o] build');

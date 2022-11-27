@@ -57,17 +57,11 @@ class OverflowBarPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Wrap(
-                children: [
-                  MiTextButton(
-                    enabled: enableActions,
-                    onPressed: () => ref.invalidate(_trollHpProvider),
-                    child: const MiIcon(
-                      icon: Icon(Icons.refresh),
-                      text: Text('Reset'),
-                    ),
-                  ),
-                ],
+              MiButtonListTile(
+                enabled: enableActions,
+                onPressed: () => ref.invalidate(_trollHpProvider),
+                icon: const Icon(Icons.refresh),
+                text: const Text('Reset'),
               ),
               const Divider(),
               Center(

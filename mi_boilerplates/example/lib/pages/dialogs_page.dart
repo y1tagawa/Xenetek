@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
@@ -27,6 +29,10 @@ void _ping(WidgetRef ref, String value) async {
 class DialogsPage extends ConsumerWidget {
   static const icon = Icon(Icons.library_add_check_outlined);
   static const title = Text('Dialogs');
+
+  static const methodChannel = MethodChannel('com.xenetek.mi_boilerplates/examples');
+
+  static final _logger = Logger((DialogsPage).toString());
 
   const DialogsPage({super.key});
 
@@ -68,23 +74,34 @@ class DialogsPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ListTile(
-                leading: MiTextButton(
-                  enabled: enableActions,
-                  onPressed: () {
-                    showInfoOk(context);
-                  },
-                  child: const Text('Show OK dialog'),
-                ),
+              MiButtonListTile(
+                enabled: enableActions,
+                alignment: MainAxisAlignment.start,
+                text: const Text('Show OK dialog'),
+                onPressed: () {
+                  showInfoOk(context);
+                },
               ),
-              ListTile(
-                leading: MiTextButton(
-                  enabled: enableActions,
-                  onPressed: () {
-                    showWarningOkCancel(context);
-                  },
-                  child: const Text('Show OK/Cancel dialog'),
-                ),
+              MiButtonListTile(
+                enabled: enableActions,
+                alignment: MainAxisAlignment.start,
+                text: const Text('Show OK/Cancel dialog'),
+                onPressed: () {
+                  showWarningOkCancel(context);
+                },
+              ),
+              MiButtonListTile(
+                enabled: enableActions,
+                alignment: MainAxisAlignment.start,
+                icon: const Icon(Icons.volume_up_outlined),
+                text: const Text('Notification sound Icon'),
+                onPressed: () async {
+                  try {
+                    await methodChannel.invokeMethod('playSoundAsync', 0);
+                  } on PlatformException catch (e) {
+                    _logger.fine(e.message);
+                  }
+                },
               ),
               const Divider(),
               if (ping != null)

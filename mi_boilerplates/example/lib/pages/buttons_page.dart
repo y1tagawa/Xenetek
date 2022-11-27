@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -82,11 +80,24 @@ class ButtonsPage extends ConsumerWidget {
           ),
           body: SafeArea(
             minimum: const EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              physics: enabled ? null : const NeverScrollableScrollPhysics(),
-              children: const [
-                _PushButtonsTab(),
-                _MonospaceTab(),
+            child: Column(
+              children: [
+                Expanded(
+                  child: TabBarView(
+                    physics: enabled ? null : const NeverScrollableScrollPhysics(),
+                    children: const [
+                      _PushButtonsTab(),
+                      _MonospaceTab(),
+                    ],
+                  ),
+                ),
+                MiPageIndicator(
+                  index: tabIndex,
+                  length: _tabs.length,
+                  onSelected: (index) {
+                    DefaultTabController.of(context)?.index = index;
+                  },
+                ),
               ],
             ),
           ),
@@ -186,7 +197,6 @@ class _PushButtonsTab extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             child: Center(
               child: MiRingingIcon(
-                duration: const Duration(seconds: 2),
                 icon: Icon(
                   Icons.notifications_outlined,
                   size: 48,
@@ -241,10 +251,6 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-
-    final enabled = ref.watch(enableActionsProvider);
-
-    final theme = Theme.of(context);
 
     return SingleChildScrollView(
       child: Column(

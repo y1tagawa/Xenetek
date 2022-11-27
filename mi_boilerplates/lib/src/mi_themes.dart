@@ -6,10 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-extension BoolHelper on bool {
-  Brightness get toDark => this ? Brightness.dark : Brightness.light;
-}
-
 extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;
 }
@@ -48,6 +44,7 @@ extension SwitchThemeDataHelper on SwitchThemeData {
 }
 
 extension ThemeDataHelper on ThemeData {
+  // ignore: unused_field
   static final _logger = Logger('ThemeDataExtension');
 
   bool get isDark => brightness.isDark;

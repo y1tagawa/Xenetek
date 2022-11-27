@@ -10,6 +10,7 @@ import 'package:logging/logging.dart';
 /// [currentIndex]が負またはitems範囲外の場合、見た目だけ、どのアイテムも選択されていないように表示する。
 
 class MiBottomNavigationBar extends StatelessWidget {
+  // ignore: unused_field
   static final _logger = Logger((MiBottomNavigationBar).toString());
 
   final bool enabled;

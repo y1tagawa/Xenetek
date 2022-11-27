@@ -17,23 +17,37 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 ///
 /// [T] リスト要素の型
 /// [enabled]
-/// [notifier] リストを保持する[ValueNotifier]。
+/// [orderNotifier] リストを保持する[ValueNotifier]。
 /// [itemBuilder] リストのウィジェットを生成するメソッド。それぞれユニークな[key]を与える必要がある。
 
 class MiReorderableListView<T> extends StatefulWidget {
   final bool enabled;
-  final ValueNotifier<List<T>> notifier;
-  final IndexedWidgetBuilder itemBuilder;
+  final ScrollController? scrollController;
+  final ValueNotifier<List<T>> orderNotifier;
+  final List<Widget>? children;
+  final IndexedWidgetBuilder? itemBuilder;
   final Color? dragHandleColor;
   // TODO: 必要に応じて他のプロパティも
 
   const MiReorderableListView({
     super.key,
     this.enabled = true,
-    required this.notifier,
+    this.scrollController,
+    required this.orderNotifier,
+    required this.children,
+    this.dragHandleColor,
+  })  : assert(children != null),
+        itemBuilder = null;
+
+  const MiReorderableListView.builder({
+    super.key,
+    this.enabled = true,
+    this.scrollController,
+    required this.orderNotifier,
     required this.itemBuilder,
     this.dragHandleColor,
-  });
+  })  : assert(itemBuilder != null),
+        children = null;
 
   @override
   State<MiReorderableListView> createState() => _MiReorderableListViewState();
@@ -46,24 +60,40 @@ class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
     setState(() {});
   }
 
+  void _scrolled() {
+    _logger.fine('scroll ${widget.scrollController?.offset}');
+  }
+
   @override
   void initState() {
     super.initState();
-    widget.notifier.addListener(_valueChanged);
+    widget.orderNotifier.addListener(_valueChanged);
+    if (widget.scrollController != null) {
+      widget.scrollController!.addListener(_scrolled);
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
-    widget.notifier.removeListener(_valueChanged);
+    widget.orderNotifier.removeListener(_valueChanged);
+    if (widget.scrollController != null) {
+      widget.scrollController!.removeListener(_scrolled);
+    }
   }
 
   @override
   void didUpdateWidget(covariant MiReorderableListView<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget != widget) {
-      oldWidget.notifier.removeListener(_valueChanged);
-      widget.notifier.addListener(_valueChanged);
+      oldWidget.orderNotifier.removeListener(_valueChanged);
+      if (oldWidget.scrollController != null) {
+        oldWidget.scrollController!.removeListener(_scrolled);
+      }
+      widget.orderNotifier.addListener(_valueChanged);
+      if (widget.scrollController != null) {
+        widget.scrollController!.addListener(_scrolled);
+      }
       // widgetのプロパティ変更に追従するため。Stateもリビルドする。
       setState(() {});
     }
@@ -71,9 +101,22 @@ class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.children != null) {
+      assert(widget.itemBuilder == null);
+      assert(widget.children!.length == widget.orderNotifier.value.length);
+    } else {
+      assert(widget.itemBuilder != null);
+    }
+
     _logger.fine('[i] build');
 
     final theme = Theme.of(context);
+
+    void onReorder(int oldIndex, int newIndex) {
+      setState(() {
+        widget.orderNotifier.value = widget.orderNotifier.value.moved(oldIndex, newIndex);
+      });
+    }
 
     return IgnorePointer(
       ignoring: !widget.enabled,
@@ -81,17 +124,20 @@ class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
         data: IconThemeData(
           color: widget.enabled ? widget.dragHandleColor : theme.disabledColor,
         ),
-        child: ReorderableListView.builder(
-          itemCount: widget.notifier.value.length,
-          itemBuilder: (context, index) {
-            return widget.itemBuilder(context, index);
-          },
-          onReorder: (oldIndex, newIndex) {
-            setState(() {
-              widget.notifier.value = widget.notifier.value.moved(oldIndex, newIndex);
-            });
-          },
-        ),
+        child: widget.children != null
+            ? ReorderableListView(
+                scrollController: widget.scrollController,
+                onReorder: onReorder,
+                children: widget.children!,
+              )
+            : ReorderableListView.builder(
+                scrollController: widget.scrollController,
+                onReorder: onReorder,
+                itemCount: widget.orderNotifier.value.length,
+                itemBuilder: (context, index) {
+                  return widget.itemBuilder!.call(context, index);
+                },
+              ),
       ),
     ).also((_) {
       _logger.fine('[o] build');

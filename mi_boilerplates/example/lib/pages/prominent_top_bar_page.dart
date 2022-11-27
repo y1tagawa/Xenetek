@@ -36,6 +36,7 @@ class ProminentTopBarPage extends ConsumerWidget {
   );
   static const title = Text('Prominent top bar');
 
+  // ignore: unused_field
   static final _logger = Logger((ProminentTopBarPage).toString());
 
   static const _tabs = <Widget>[
@@ -47,7 +48,7 @@ class ProminentTopBarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    //final enableActions = ref.watch(enableActionsProvider);
     final prominent = ref.watch(prominentProvider);
     final tabbed = ref.watch(_tabbedProvider);
     final centerTitle = ref.watch(_centerTitleProvider);

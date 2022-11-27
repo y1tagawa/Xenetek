@@ -1,8 +1,18 @@
 #include "flutter_window.h"
 
+#include <flutter/event_channel.h>
+#include <flutter/event_sink.h>
+#include <flutter/event_stream_handler_functions.h>
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
+#include <windows.h>
+
+#include <memory>
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+
+static bool playSound(int id);
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -25,8 +35,41 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+
+  // here
+  flutter::MethodChannel<> channel(
+      flutter_controller_->engine()->messenger(), "com.xenetek.mi_boilerplates/examples",
+      &flutter::StandardMethodCodec::GetInstance());
+  channel.SetMethodCallHandler(
+      [](const flutter::MethodCall<>& call,
+          std::unique_ptr<flutter::MethodResult<>> result) {
+              if (call.method_name() == "playSoundAsync") {
+                  OutputDebugString(L"[i] playSoundAsync"); // TODO: Log出力方法
+                  // TODO: デフォルトではみんな同じなのでtypeは無視する。
+                  //const auto* arguments = std::get_if<int>(call.arguments());
+                  //if (arguments) {
+                  //    const auto type = *arguments;
+                  if (playSound(0)) {
+                      result->Success(true);
+                  }
+                  else {
+                      result->Error("ERROR", "playSound failed.");
+                  }
+                  OutputDebugString(L"[o] playSoundAsync");
+              }
+              else {
+                  result->NotImplemented();
+              }
+      });
+  // /here
+
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
   return true;
+}
+
+static bool playSound(int /*id*/) {
+    PlaySound((LPCWSTR)SND_ALIAS_SYSTEMASTERISK, NULL, SND_ALIAS_ID | SND_ASYNC);
+    return true;
 }
 
 void FlutterWindow::OnDestroy() {

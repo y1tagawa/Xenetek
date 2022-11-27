@@ -32,21 +32,16 @@ class AnimationsPage extends ConsumerWidget {
 
     final enableActions = ref.watch(enableActionsProvider);
 
-    final theme = Theme.of(context);
-
     final tabs = <Widget>[
       const MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
       MiTab(
         icon: MiImageIcon(
-          image: Image.asset('assets/lottie_icon_outlined.png'),
-          size: 17,
+          image: Image.asset('assets/lottie_icon.png'),
         ),
         tooltip: 'Lottie',
       ),
-      const MiTab(
-        icon: Icon(Icons.play_arrow),
-        tooltip: 'Animated icons',
-      ),
+      const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
+      const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
 
     return MiDefaultTabController(
@@ -91,6 +86,7 @@ class AnimationsPage extends ConsumerWidget {
               children: [
                 _AnimatedBuilderTab(),
                 _LottieTab(),
+                _AnimationGifTab(),
                 _AnimatedIconsTab(),
               ],
             ),
@@ -209,6 +205,33 @@ class _LottieTab extends ConsumerWidget {
           controller.forward();
         },
       ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Image GIF tab
+//
+
+const _imageGifUrl =
+    'https://upload.wikimedia.org/wikipedia/commons/d/dd/Muybridge_race_horse_animated.gif';
+
+class _AnimationGifTab extends ConsumerWidget {
+  static final _logger = Logger((_AnimationGifTab).toString());
+
+  const _AnimationGifTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    return Image.network(
+      _imageGifUrl,
+      fit: BoxFit.contain,
+      frameBuilder: (_, child, frame, __) =>
+          frame == null ? const Center(child: CircularProgressIndicator()) : child,
     ).also((_) {
       _logger.fine('[o] build');
     });

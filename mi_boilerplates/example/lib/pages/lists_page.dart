@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
+import 'package:example/data/open_moji_svgs.dart';
+import 'package:example/pages/knight_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -14,32 +16,36 @@ import 'ex_app_bar.dart';
 /// Lists example page.
 ///
 
-const _listItems = <String, Icon>{
-  'Sun': Icon(Icons.light_mode_outlined),
-  'Moon': Icon(Icons.dark_mode_outlined),
-  'Earth': Icon(Icons.landscape_outlined),
-  'Water': Icon(Icons.water_drop_outlined),
-  'Fire': Icon(Icons.local_fire_department_outlined),
-  'Air': Icon(Icons.air),
-  'Thunder': Icon(Icons.trending_down_outlined),
-  'Cold': Icon(Icons.ac_unit_outlined),
-  'Alchemy': Icon(Icons.science_outlined),
-  'Sorcery': Icon(Icons.all_inclusive_outlined),
-  'Rune magic': Icon(Icons.bluetooth),
-  'Chaos magic': Icon(Icons.android),
-};
+final _listItems = <String, Widget>{
+  'Rat': openMojiSvgRat,
+  'Cow': openMojiSvgOx,
+  'Tiger': openMojiSvgTiger,
+  'Rabbit': openMojiSvgRabbit,
+  'Dragon': openMojiSvgDragon,
+  'Snake': openMojiSvgSnake,
+  'Horse': openMojiSvgHorse,
+  'Sheep': openMojiSvgRam,
+  'Monkey': openMojiSvgMonkey,
+  'Chicken': openMojiSvgRooster,
+  'Dog': openMojiSvgDog,
+  'Boar': openMojiSvgBoar,
+  'Cat': openMojiSvgCat,
 
-class _ListTile extends ConsumerWidget {
-  final String _key;
-  const _ListTile(this._key);
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      leading: _listItems[_key],
-      title: Text(_key),
-    );
-  }
-}
+  // 'Sun': const Icon(Icons.light_mode_outlined),
+  // 'Moon': const Icon(Icons.dark_mode_outlined),
+  // 'Earth': const Icon(Icons.landscape_outlined),
+  // 'Water': const Icon(Icons.water_drop_outlined),
+  // 'Phlogiston': const Icon(Icons.local_fire_department_outlined),
+  // 'Air': const Icon(Icons.air),
+  // 'Thunder': const Icon(Icons.trending_down_outlined),
+  // 'Cold': const Icon(Icons.ac_unit_outlined),
+  // 'Caloric': const Icon(Icons.hot_tub_outlined),
+  // 'Alchemy': const Icon(Icons.science_outlined),
+  // 'Weak force': const Icon(Icons.filter_vintage_outlined),
+  // 'Sorcery': const Icon(Icons.all_inclusive_outlined),
+  // 'Rune magic': const Icon(Icons.bluetooth),
+  // 'Chaos magic': const Icon(Icons.android),
+};
 
 class ListsPage extends ConsumerWidget {
   static const icon = Icon(Icons.list);
@@ -49,12 +55,16 @@ class ListsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Dismissible list',
-      icon: Icon(Icons.segment),
-    ),
-    MiTab(
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
+    ),
+    // MiTab(
+    //   tooltip: 'Dismissible list',
+    //   icon: Icon(Icons.segment),
+    // ),
+    MiTab(
+      tooltip: 'Stepper list',
+      icon: Icon(Icons.onetwothree_outlined),
     ),
   ];
 
@@ -84,8 +94,9 @@ class ListsPage extends ConsumerWidget {
             minimum: EdgeInsets.all(8),
             child: TabBarView(
               children: [
-                _DismissibleListTab(),
                 _ReorderableListTab(),
+                //_DismissibleListTab(),
+                _StepperTab(),
               ],
             ),
           ),
@@ -98,14 +109,14 @@ class ListsPage extends ConsumerWidget {
   }
 }
 
-///
-/// ListView tab.
-/// TODO: AnimatedList
-///
+//
+// ListView tab.
+// TODO: AnimatedList
+//
 
-///
-/// Dismissible list tab.
-///
+//
+// Dismissible list tab.
+//
 
 final _leftListProvider =
     StateProvider((ref) => _listItems.keys.whereIndexed((index, key) => index % 2 == 0).toList());
@@ -138,21 +149,14 @@ class _DismissibleListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            MiTextButton(
-              enabled: enabled,
-              onPressed: () {
-                ref.invalidate(_leftListProvider);
-                ref.invalidate(_rightListProvider);
-              },
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Reset'),
-              ),
-            ),
-          ],
+        MiButtonListTile(
+          enabled: enabled,
+          icon: const Icon(Icons.refresh_outlined),
+          text: const Text('Reset'),
+          onPressed: () {
+            ref.invalidate(_leftListProvider);
+            ref.invalidate(_rightListProvider);
+          },
         ),
         const Divider(),
         Expanded(
@@ -168,7 +172,10 @@ class _DismissibleListTab extends ConsumerWidget {
                       move(_leftListProvider, index, _rightListProvider);
                     },
                     background: ColoredBox(color: theme.backgroundColor),
-                    child: _ListTile(key),
+                    child: ListTile(
+                      leading: _listItems[key],
+                      title: Text(key),
+                    ),
                   );
                 }).toList(),
               ),
@@ -182,7 +189,10 @@ class _DismissibleListTab extends ConsumerWidget {
                       move(_rightListProvider, index, _leftListProvider);
                     },
                     background: ColoredBox(color: theme.backgroundColor),
-                    child: _ListTile(key),
+                    child: ListTile(
+                      leading: _listItems[key],
+                      title: Text(key),
+                    ),
                   );
                 }).toList(),
               ),
@@ -196,11 +206,16 @@ class _DismissibleListTab extends ConsumerWidget {
   }
 }
 
-///
-/// Reorderable list tab.
-///
+//
+// Reorderable list tab.
+//
 
-final _orderNotifier = ValueNotifier<List<String>>(List.unmodifiable(_listItems.keys));
+final _initOrder = List<String>.unmodifiable(_listItems.keys);
+final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
+final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
+final _selectedProvider = StateProvider<String?>((ref) => null);
+
+final _scrollController = ScrollController();
 
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
@@ -211,22 +226,55 @@ class _ReorderableListTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
+    final order = ref.watch(_orderProvider).value;
+    final selected = ref.watch(_selectedProvider);
+    _logger.fine('order=$order');
 
     final theme = Theme.of(context);
 
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        MiRow(
+          flexes: const [1, 1],
           children: [
-            MiTextButton(
+            MiButtonListTile(
               enabled: enabled,
+              icon: const Icon(Icons.refresh_outlined),
+              text: const Text('Reset'),
               onPressed: () {
-                _orderNotifier.value = List.unmodifiable(_listItems.keys);
+                _orderNotifier.value = _initOrder;
+                ref.read(_selectedProvider.notifier).state = null;
               },
-              child: const MiIcon(
-                icon: Icon(Icons.refresh_outlined),
-                text: Text('Reset'),
+            ),
+            MiGridPopupMenuButton(
+              offset: const Offset(0, kToolbarHeight),
+              onSelected: (index) {
+                final key = order[index];
+                // ensureVisibleは当てにならない事があるようだ。そこでScrollControllerを使ってみる。
+                // https://stackoverflow.com/questions/49153087/flutter-scrolling-to-a-widget-in-listview
+                // TODO: リストビュー中央に寄せる・より確実に
+                _scrollController.animateTo(
+                  index * kToolbarHeight - kToolbarHeight * 0.5,
+                  duration: kTabScrollDuration,
+                  curve: Curves.easeInOut,
+                );
+                ref.read(_selectedProvider.notifier).state = key;
+              },
+              items: order
+                  .mapIndexed(
+                    (index, key) => Container(
+                      width: kToolbarHeight,
+                      height: kToolbarHeight,
+                      alignment: Alignment.center,
+                      child: _listItems[key]!,
+                    ),
+                  )
+                  .toList(),
+              child: MiButtonListTile(
+                enabled: enabled,
+                icon: const Icon(Icons.more_vert),
+                text: const Text('Scroll to'),
+                iconPosition: MiIconPosition.end,
               ),
             ),
           ],
@@ -235,23 +283,153 @@ class _ReorderableListTab extends ConsumerWidget {
         Expanded(
           child: MiReorderableListView(
             enabled: enabled,
-            notifier: _orderNotifier,
+            scrollController: _scrollController,
+            orderNotifier: _orderNotifier,
             dragHandleColor: theme.unselectedIconColor,
-            itemBuilder: (context, index) {
-              // ReorderableListViewの要請により、各widgetにはリスト内でユニークなキーを与える。
-              final key = _orderNotifier.value[index];
-              // widgetをDismissibleにすることで併用も可能。
-              return Dismissible(
-                key: Key(key),
-                onDismissed: (direction) {
-                  _orderNotifier.value = _orderNotifier.value.removedAt(index);
-                },
-                background: ColoredBox(color: theme.backgroundColor),
-                child: _ListTile(key),
-              );
-            },
+            children: order.mapIndexed(
+              (index, key) {
+                // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
+                final key_ = Key(key);
+                // widgetをDismissibleにすることで併用も可能なことが分かった。
+                return Dismissible(
+                  key: key_,
+                  onDismissed: (direction) {
+                    _orderNotifier.value = order.removedAt(index);
+                  },
+                  background: ColoredBox(color: theme.backgroundColor),
+                  child: ListTile(
+                    leading: _listItems[key]!,
+                    title: Text(key),
+                    selected: selected == key,
+                    onTap: () {
+                      ref.read(_selectedProvider.notifier).state = key;
+                    },
+                  ),
+                );
+              },
+            ).toList(),
           ),
         ),
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Stepper tab.
+//
+
+final _stepIndexProvider = StateProvider((ref) => -1);
+
+class _StepperTab extends ConsumerWidget {
+  static final _logger = Logger((_StepperTab).toString());
+
+  const _StepperTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    final enabled = ref.watch(enableActionsProvider);
+    final index = ref.watch(_stepIndexProvider);
+
+    // TODO: Stepが開いた時にensureVisible
+    final steps = <Step>[
+      Step(
+        title: const Text('Boots'),
+        content: const MiIcon(
+          icon: Text('Put the boots on.'),
+          text: KnightIndicator.kBootsIcon,
+        ),
+        isActive: enabled,
+      ),
+      Step(
+        title: const Text('Armour'),
+        content: const MiIcon(
+          icon: Text('Put the armour on.'),
+          text: KnightIndicator.kArmourIcon,
+        ),
+        isActive: enabled && index > 0,
+      ),
+      Step(
+        title: const Text('Gauntlets'),
+        content: const MiIcon(
+          icon: Text('Put the gauntlets on.'),
+          text: KnightIndicator.kGauntletsIcon,
+        ),
+        isActive: enabled && index > 1,
+      ),
+      Step(
+        title: const Text('Helmet'),
+        content: const MiIcon(
+          icon: Text('Wear the helmet.'),
+          text: KnightIndicator.kHelmetIcon,
+        ),
+        isActive: enabled && index > 2,
+      ),
+      Step(
+        title: const Text('Shield'),
+        content: const MiIcon(
+          icon: Text('Have the shield.'),
+          text: KnightIndicator.kShieldIcon,
+        ),
+        isActive: enabled && index > 3,
+      ),
+    ];
+
+    return Column(
+      children: [
+        KnightIndicator(
+          equipped: iota(steps.length).map((i) => i < index).toList(),
+        ),
+        const Divider(),
+        if (index < 0)
+          MiButtonListTile(
+            enabled: enabled,
+            icon: const Icon(Icons.play_arrow_outlined),
+            text: const Text('Start'),
+            onPressed: () {
+              ref.read(_stepIndexProvider.notifier).state = 0;
+            },
+          )
+        else if (index >= 0 && index < steps.length)
+          Expanded(
+            child: SingleChildScrollView(
+              child: Stepper(
+                steps: steps,
+                currentStep: index,
+                onStepContinue: enabled
+                    ? () {
+                        ref.read(_stepIndexProvider.notifier).state = index + 1;
+                      }
+                    : null,
+                onStepCancel: enabled
+                    ? () {
+                        ref.read(_stepIndexProvider.notifier).state = index - 1;
+                      }
+                    : null,
+                onStepTapped: enabled
+                    ? (value) {
+                        if (value < index) {
+                          ref.read(_stepIndexProvider.notifier).state = value;
+                        }
+                      }
+                    : null,
+              ),
+            ),
+          )
+        else ...[
+          MiButtonListTile(
+            enabled: enabled,
+            title: const Text('OK.'),
+            icon: const Icon(Icons.refresh_outlined),
+            text: const Text('Restart'),
+            onPressed: () {
+              ref.read(_stepIndexProvider.notifier).state = 0;
+            },
+          ),
+        ]
       ],
     ).also((_) {
       _logger.fine('[o] build');

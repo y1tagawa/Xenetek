@@ -28,3 +28,11 @@ migrate_working_dir/
 .dart_tool/
 .packages
 build/
+
+# Project
+scripts/open_moji/Table
+scripts/open_moji/download.sh
+scripts/open_moji/*.log
+scripts/open_moji/assets/open_moji/*.*
+scripts/open_moji/fragment.yaml
+scripts/open_moji/open_moji_svgs.dart

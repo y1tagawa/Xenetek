@@ -123,7 +123,7 @@ const _tallyIcons = <Icon>[
 ];
 
 class _CheckboxTab extends ConsumerWidget {
-  const _CheckboxTab({super.key});
+  const _CheckboxTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -208,7 +208,7 @@ final _toggleProvider =
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_ToggleButtonsTab).toString());
 
-  const _ToggleButtonsTab({super.key});
+  const _ToggleButtonsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -52,7 +52,7 @@ int _tabIndex = 0;
 final _embeddedTabIndices = List<int>.generate(_tabs.length, (index) => 0);
 
 class EmbeddedTabViewPage extends ConsumerWidget {
-  static const icon = Icon(Icons.tab_unselected);
+  static const icon = Icon(Icons.folder_copy_outlined);
   static const title = Text('Embedded tab view');
 
   static final _logger = Logger((EmbeddedTabViewPage).toString());
@@ -114,8 +114,6 @@ class _EmbeddedTabViewTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
-
-    final theme = Theme.of(context);
 
     return SingleChildScrollView(
       child: MiDefaultTabController(
