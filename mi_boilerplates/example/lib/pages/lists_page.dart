@@ -9,7 +9,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../data/open_moji_svgs.dart';
 import 'ex_app_bar.dart';
 
 ///
@@ -17,10 +16,10 @@ import 'ex_app_bar.dart';
 ///
 
 final _listItems = <String, Widget>{
-  'Lion': SizedBox.square(dimension: 24, child: openMojiSvg1f981),
-  'Tiger': openMojiSvg1f42f,
-  'Dragon': openMojiSvg1f409,
-  'Unicorn': openMojiSvg1f984,
+  // 'Lion': SizedBox.square(dimension: 24, child: openMojiSvg1f981),
+  // 'Tiger': openMojiSvg1f42f,
+  // 'Dragon': openMojiSvg1f409,
+  // 'Unicorn': openMojiSvg1f984,
   'Sun': const Icon(Icons.light_mode_outlined),
   'Moon': const Icon(Icons.dark_mode_outlined),
   'Earth': const Icon(Icons.landscape_outlined),

@@ -9,8 +9,8 @@
 import json
 
 def main():
-    f = open('table.json', 'r', encoding='utf-8')
-    data = json.load(f)
+    with open('table.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
 
     # target index list.
     indices = [
@@ -37,14 +37,37 @@ def main():
                        773, 774, 775, 776, 777,
     ]
 
-    # generate downloader
+    # generate downloader.
 
-    of = open('download.sh', 'w', encoding='utf-8', newline='\n')
-    of.write('#!/bin/sh\n')
-    for index in indices:
-        item = data[str(index)]
-        fileName = item['code'].upper() + '.svg'
-        of.write('wget -nc -O assets/' + fileName + ' https://openmoji.org/data/color/svg/' + fileName + ' 2>>download.log\n')
+    with open('download.sh', 'w', encoding='utf-8', newline='\n') as f:
+        f.write('#!/bin/sh\n')
+        f.write('mkdir -p assets/open_moji\n')
+        for index in indices:
+            item = data[str(index)]
+            fileName = item['code'].upper() + '.svg'
+            f.write('wget -nc -O assets/open_moji/' + fileName + ' https://openmoji.org/data/color/svg/' +
+             fileName + ' 2>>download.log\n')
+
+    # generate .yaml fragment,
+
+    with open('fragment.yaml', 'w', encoding='utf-8', newline='\n') as f:
+        for index in indices:
+            item = data[str(index)]
+            fileName = item['code'].upper() + '.svg'
+            f.write('  - assets/open_moji/' + fileName + '\n')
+
+    # generate importer.
+
+    with open('open_moji_svgs.dart.txt', 'w', encoding='utf-8', newline='\n') as f:
+        f.write('import \'package:flutter_svg/flutter_svg.dart\';\n\n')
+        for index in indices:
+            item = data[str(index)]
+            fileName = item['code'].upper() + '.svg'
+            name = 'openMojiSvg' + \
+                item['name'].replace('&amp;', '&').replace('&gt;', '>').replace('&lt;', '<') \
+                    .title().replace(' ', '').replace('-', '') 
+            f.write('// ' + item['name'] + ' ' + item['keywords'] + '\n')
+            f.write('final ' + name + ' = SvgPicture.asset(\'assets/open_moji/' + fileName + '\');\n')
 
 # end of main.
 

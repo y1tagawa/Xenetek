@@ -77,10 +77,7 @@ flutter:
     - assets/lottie_icon.png
     - assets/mage_hat.png
     - assets/more_grid.png
-    - assets/open_moji/1f409.svg
-    - assets/open_moji/1f42f.svg
-    - assets/open_moji/1f981.svg
-    - assets/open_moji/1f984.svg
+    - assets/open_moji/
     - assets/pandemonium.json
     - assets/stanford-bunny.obj
     - assets/stanford-bunny.mtl
