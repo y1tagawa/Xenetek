@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
+import 'package:example/data/open_moji_svgs.dart';
 import 'package:example/pages/knight_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,24 +17,34 @@ import 'ex_app_bar.dart';
 ///
 
 final _listItems = <String, Widget>{
-  // 'Lion': SizedBox.square(dimension: 24, child: openMojiSvg1f981),
-  // 'Tiger': openMojiSvg1f42f,
-  // 'Dragon': openMojiSvg1f409,
-  // 'Unicorn': openMojiSvg1f984,
-  'Sun': const Icon(Icons.light_mode_outlined),
-  'Moon': const Icon(Icons.dark_mode_outlined),
-  'Earth': const Icon(Icons.landscape_outlined),
-  'Water': const Icon(Icons.water_drop_outlined),
-  'Phlogiston': const Icon(Icons.local_fire_department_outlined),
-  'Air': const Icon(Icons.air),
-  'Thunder': const Icon(Icons.trending_down_outlined),
-  'Cold': const Icon(Icons.ac_unit_outlined),
-  'Caloric': const Icon(Icons.hot_tub_outlined),
-  'Alchemy': const Icon(Icons.science_outlined),
-  'Weak force': const Icon(Icons.filter_vintage_outlined),
-  'Sorcery': const Icon(Icons.all_inclusive_outlined),
-  'Rune magic': const Icon(Icons.bluetooth),
-  'Chaos magic': const Icon(Icons.android),
+  'Rat': openMojiSvgRat,
+  'Cow': openMojiSvgOx,
+  'Tiger': openMojiSvgTiger,
+  'Rabbit': openMojiSvgRabbit,
+  'Dragon': openMojiSvgDragon,
+  'Snake': openMojiSvgSnake,
+  'Horse': openMojiSvgHorse,
+  'Sheep': openMojiSvgRam,
+  'Monkey': openMojiSvgMonkey,
+  'Chicken': openMojiSvgRooster,
+  'Dog': openMojiSvgDog,
+  'Boar': openMojiSvgBoar,
+  'Cat': openMojiSvgCat,
+
+  // 'Sun': const Icon(Icons.light_mode_outlined),
+  // 'Moon': const Icon(Icons.dark_mode_outlined),
+  // 'Earth': const Icon(Icons.landscape_outlined),
+  // 'Water': const Icon(Icons.water_drop_outlined),
+  // 'Phlogiston': const Icon(Icons.local_fire_department_outlined),
+  // 'Air': const Icon(Icons.air),
+  // 'Thunder': const Icon(Icons.trending_down_outlined),
+  // 'Cold': const Icon(Icons.ac_unit_outlined),
+  // 'Caloric': const Icon(Icons.hot_tub_outlined),
+  // 'Alchemy': const Icon(Icons.science_outlined),
+  // 'Weak force': const Icon(Icons.filter_vintage_outlined),
+  // 'Sorcery': const Icon(Icons.all_inclusive_outlined),
+  // 'Rune magic': const Icon(Icons.bluetooth),
+  // 'Chaos magic': const Icon(Icons.android),
 };
 
 class ListsPage extends ConsumerWidget {
@@ -47,10 +58,10 @@ class ListsPage extends ConsumerWidget {
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
     ),
-    MiTab(
-      tooltip: 'Dismissible list',
-      icon: Icon(Icons.segment),
-    ),
+    // MiTab(
+    //   tooltip: 'Dismissible list',
+    //   icon: Icon(Icons.segment),
+    // ),
     MiTab(
       tooltip: 'Stepper list',
       icon: Icon(Icons.onetwothree_outlined),
@@ -84,7 +95,7 @@ class ListsPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _ReorderableListTab(),
-                _DismissibleListTab(),
+                //_DismissibleListTab(),
                 _StepperTab(),
               ],
             ),
