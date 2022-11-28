@@ -42,9 +42,11 @@ final _listItems = <String, Widget>{
   // 'Caloric': const Icon(Icons.hot_tub_outlined),
   // 'Alchemy': const Icon(Icons.science_outlined),
   // 'Weak force': const Icon(Icons.filter_vintage_outlined),
+  // 'Gravity': const Icon(Icons.cloud_download_outlined),
   // 'Sorcery': const Icon(Icons.all_inclusive_outlined),
   // 'Rune magic': const Icon(Icons.bluetooth),
   // 'Chaos magic': const Icon(Icons.android),
+  // 'Weak force': const Icon(Icons.filter_vintage_outlined),
 };
 
 class ListsPage extends ConsumerWidget {

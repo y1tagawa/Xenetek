@@ -1,6 +1,8 @@
 
 # Flutterマテリアルウィジェット拡張サンプルアプリ
 
+All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
+
 ## open_moji_svgs作成手順
 
 絵文字テーブル https://commons.wikimedia.org/wiki/Emoji/Table を参照し、
@@ -23,25 +25,9 @@ OpenMojiがアップデートされた場合、scripts/open_moji/assets/open_moj
 
 ## TODO
 * Material designのanatomy的な設定箇所の説明図
-* Colors
-  * Reorderable, dismissive
 * M2AppBar上用のデフォルトテーマ
   * 淡色AppBar
 * https://pub.dev/packages/scrollable_positioned_list
-
-* 絵文字テーブル https://commons.wikimedia.org/wiki/Emoji/Table をDL、コードと名前をピックして 
-  * dartを生成
-  * OpenMojiからDL
-    wget https://commons.wikimedia.org/wiki/Emoji/Table
-    grep -e '^<td><code>\|^<td style="text-align: initial">\|^<th>[0-9]' Table >table2
-    sed -e 's/<\/code> <br \/> <code>/-/g' -e 's/<\/code>/":/g' -e 's/<td><code>/{"/g' table2
-
-  * sed -e 's/<th>\([0-9]*\)$/{"\1":/g' table2 |
-    sed -e 's/<\/code> <br \/> <code>/-/g' -e 's/<\/code>/",/g' -e 's/<td><code>/{"code":/g' |
-    sed -e 's/<br \/><small>/","keywords": "/g' -e 's/<\/small>/"}},/g' -e 's/<td style="text-align: initial">/"name":"/g'
-
-sed -e 's/<th>\([0-9]*\)/{"\1":/g' Documents/emoji_dl/table2 |   sed -e 's/<\/code> <br \/> <code>/-/g' -e 's/<\/code>/",/g' -e 's/<td><code>/{"code":/g' |   sed -e ' s/<br \/><small>/","keywords": "/g' -e 's/<\/small>/"}},/g' -e 's/<td style="text-align: initial">/"name":"/g'
-
 
 ## Tips
 

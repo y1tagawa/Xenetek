@@ -75,6 +75,7 @@ def main():
 
     # generate importer.
     with open('open_moji_svgs.dart.txt', 'w', encoding='utf-8', newline='\n') as f:
+        f.write('All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0\n')
         f.write('import \'package:flutter_svg/flutter_svg.dart\';\n\n')
         for item in items:
             fileName = item['code'].upper() + '.svg'
