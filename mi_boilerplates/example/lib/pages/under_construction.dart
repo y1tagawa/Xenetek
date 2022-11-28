@@ -32,22 +32,11 @@ class UnderConstruction extends StatelessWidget {
           child: Column(
             children: [
               Image.asset(
-                'assets/under_construction.png',
+                'assets/okcat2.png',
                 width: size,
                 height: size,
                 color: theme.disabledColor.withOpacity(0.1),
               ),
-              // MiScale(
-              //   scaleX: 0.5,
-              //   child: MiRotate(
-              //     angleDegree: 180,
-              //     child: Icon(
-              //       Icons.filter_list,
-              //       color: theme.isDark ? Colors.deepOrange[900] : Colors.deepOrange,
-              //       size: size,
-              //     ),
-              //   ),
-              // ),
               Text(
                 text,
                 style: TextStyle(color: theme.disabledColor),

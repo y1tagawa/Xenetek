@@ -78,11 +78,11 @@ flutter:
     - assets/mage_hat.png
     - assets/more_grid.png
     - assets/open_moji/
+    - assets/okcat1.png
+    - assets/okcat2.png
     - assets/pandemonium.json
     - assets/stanford-bunny.obj
     - assets/stanford-bunny.mtl
-    - assets/under_construction.png
-    - assets/under_construction2.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
