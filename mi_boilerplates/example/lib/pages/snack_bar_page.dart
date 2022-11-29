@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:example/pages/under_construction.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -60,7 +59,7 @@ class SnackBarPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _SnackBarTab(),
-                UnderConstruction(),
+                _ToastTab(),
               ],
             ),
           ),
@@ -164,6 +163,70 @@ class _SnackBarTab extends ConsumerWidget {
             },
           ),
           const Text('Note: Material Design demands not to use icons in snackbars.'),
+        ],
+      ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Overlay tab
+//
+
+class _ToastTab extends ConsumerWidget {
+  static final _logger = Logger((_ToastTab).toString());
+
+  const _ToastTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    final enabled = ref.watch(enableActionsProvider);
+
+    Future<void> showToast(BuildContext context) async {
+      final overlay = Overlay.of(context);
+      final theme = Theme.of(context);
+      // TODO: AnimatedOpacity-ed StatefulWidget
+      final toast = OverlayEntry(
+        builder: (context) {
+          return Align(
+            alignment: const Alignment(0, 0.75),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadiusDirectional.circular(4),
+                color: theme.colorScheme.onSurface,
+              ),
+              child: DefaultTextStyle(
+                style: theme.textTheme.titleMedium!.merge(
+                  TextStyle(color: theme.colorScheme.surface),
+                ),
+                child: const Text('Toast'),
+              ),
+            ),
+          );
+        },
+      );
+      overlay!.insert(toast);
+      Future.delayed(
+        const Duration(seconds: 3),
+        () => toast.remove(),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        children: [
+          MiButtonListTile(
+              enabled: enabled,
+              icon: const Icon(Icons.breakfast_dining_outlined),
+              text: const Text('Toast!'),
+              onPressed: () async {
+                await showToast(context);
+              }),
         ],
       ),
     ).also((_) {
