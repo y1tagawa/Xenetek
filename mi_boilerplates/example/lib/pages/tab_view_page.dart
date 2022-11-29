@@ -66,34 +66,29 @@ class TabViewPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   child: SingleChildScrollView(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
                       children: [
-                        Column(
-                          children: [
-                            ..._tabs.mapIndexed(
-                              (i, tab) {
-                                return MiTextButton(
-                                  enabled: i != index,
-                                  onPressed: () {
-                                    final tabController = DefaultTabController.of(context)!;
-                                    tabController.index = i;
-                                  },
-                                  child: Text(tab.text!),
-                                );
+                        ..._tabs.mapIndexed(
+                          (i, tab) {
+                            return MiTextButton(
+                              enabled: i != index,
+                              onPressed: () {
+                                final tabController = DefaultTabController.of(context)!;
+                                tabController.index = i;
                               },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Image.network(
-                                _imageUrls[index],
-                                width: _imageWidth,
-                                height: _imageHeight,
-                                frameBuilder: (_, child, frame, __) =>
-                                    frame == null ? const CircularProgressIndicator() : child,
-                              ),
-                            ),
-                          ],
+                              child: Text(tab.text!),
+                            );
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.network(
+                            _imageUrls[index],
+                            width: _imageWidth,
+                            height: _imageHeight,
+                            frameBuilder: (_, child, frame, __) =>
+                                frame == null ? const CircularProgressIndicator() : child,
+                          ),
                         ),
                       ],
                     ),
