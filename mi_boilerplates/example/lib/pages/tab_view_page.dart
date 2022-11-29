@@ -41,19 +41,15 @@ class TabViewPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    // s.a. https://api.flutter.dev/flutter/material/TabController-class.html ,
-    // https://api.flutter.dev/flutter/material/DefaultTabController-class.html .
-    return DefaultTabController(
+    return MiDefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
-      child: Builder(builder: (BuildContext context) {
-        final tabController = DefaultTabController.of(context)!;
-        tabController.addListener(() {
-          // save tab index to prepare rebuilding.
-          if (!tabController.indexIsChanging) {
-            _tabIndex = tabController.index;
-          }
-        });
+      onIndexChanged: (index) {
+        _logger.fine('[i] onIndexChanged index=$index');
+        _tabIndex = index;
+        _logger.fine('[o] onIndexChanged');
+      },
+      builder: (BuildContext context) {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
@@ -80,6 +76,7 @@ class TabViewPage extends ConsumerWidget {
                                 return MiTextButton(
                                   enabled: i != index,
                                   onPressed: () {
+                                    final tabController = DefaultTabController.of(context)!;
                                     tabController.index = i;
                                   },
                                   child: Text(tab.text!),
@@ -107,7 +104,7 @@ class TabViewPage extends ConsumerWidget {
           ),
           bottomNavigationBar: const ExBottomNavigationBar(),
         );
-      }),
+      },
     ).also((_) {
       _logger.fine('[o] build');
     });

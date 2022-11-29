@@ -44,9 +44,7 @@ class SnackBarPage extends ConsumerWidget {
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
-        _logger.fine('[i] onIndexChanged index=$index');
         _tabIndex = index;
-        _logger.fine('[o] onIndexChanged');
       },
       builder: (context) {
         return Scaffold(
