@@ -20,14 +20,8 @@ OpenMojiプロジェクトのSVGファイルをDLする。
 8. open_moji_svgs.dart.txtをプロジェクトにコピーし、リネームする。
 9. プロジェクトのpubspec.yamlに assets/open_moji/ を追加する。fragment.yamlはたぶん必要ない。
 
-二度目以後、download.shは、すでにDLされているファイルはスキップする。
-OpenMojiがアップデートされた場合、scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
-
-## TODO
-* Material designのanatomy的な設定箇所の説明図
-* M2AppBar上用のデフォルトテーマ
-  * 淡色AppBar
-* https://pub.dev/packages/scrollable_positioned_list
+二度目以後、download.shは、すでにDLされているファイルはスキップするので、 OpenMojiがアップデートされた場合、
+scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## Tips
 
@@ -35,3 +29,12 @@ OpenMojiがアップデートされた場合、scripts/open_moji/assets/open_moj
   * 以下参照。  
     https://stackoverflow.com/questions/65841017/convert-image-to-icondata-flutter  
     https://www.fluttericon.com/
+
+## TODO
+
+* Material designのanatomy的な設定箇所の説明図
+* M2AppBar上用のデフォルトテーマ
+  * 淡色AppBar
+* https://pub.dev/packages/scrollable_positioned_list
+* ToastのF.I./F.O.、キュー（まではいらないか。SnackBarがあるのだから）
+* 通知一覧ページと通知アイコン

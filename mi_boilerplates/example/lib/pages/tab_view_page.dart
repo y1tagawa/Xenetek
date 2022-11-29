@@ -7,6 +7,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
@@ -26,6 +27,8 @@ class TabViewPage extends ConsumerWidget {
   static const icon = Icon(Icons.folder_outlined);
   static const title = Text('Tab view');
 
+  static final _logger = Logger((TabViewPage).toString());
+
   static const _tabs = [
     Tab(text: 'Zeroth'),
     Tab(text: 'First'),
@@ -36,7 +39,7 @@ class TabViewPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('TabViewPage: build: $_tabIndex');
+    _logger.fine('[i] build');
 
     // s.a. https://api.flutter.dev/flutter/material/TabController-class.html ,
     // https://api.flutter.dev/flutter/material/DefaultTabController-class.html .
@@ -48,7 +51,6 @@ class TabViewPage extends ConsumerWidget {
         tabController.addListener(() {
           // save tab index to prepare rebuilding.
           if (!tabController.indexIsChanging) {
-            debugPrint('TabViewPage: saving tab index ${tabController.index}');
             _tabIndex = tabController.index;
           }
         });
@@ -78,7 +80,6 @@ class TabViewPage extends ConsumerWidget {
                                 return MiTextButton(
                                   enabled: i != index,
                                   onPressed: () {
-                                    debugPrint('TabViewPage: setting tab index to $i');
                                     tabController.index = i;
                                   },
                                   child: Text(tab.text!),
@@ -107,6 +108,8 @@ class TabViewPage extends ConsumerWidget {
           bottomNavigationBar: const ExBottomNavigationBar(),
         );
       }),
-    );
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
   }
 }
