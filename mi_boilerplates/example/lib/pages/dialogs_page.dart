@@ -31,7 +31,7 @@ class DialogsPage extends ConsumerWidget {
   static const title = Text('Dialogs');
 
   static const methodChannel = MethodChannel('com.xenetek.mi_boilerplates/examples');
-
+  // ignore: unused_field
   static final _logger = Logger((DialogsPage).toString());
 
   const DialogsPage({super.key});
@@ -88,19 +88,6 @@ class DialogsPage extends ConsumerWidget {
                 text: const Text('Show OK/Cancel dialog'),
                 onPressed: () {
                   showWarningOkCancel(context);
-                },
-              ),
-              MiButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                icon: const Icon(Icons.volume_up_outlined),
-                text: const Text('Notification sound Icon'),
-                onPressed: () async {
-                  try {
-                    await methodChannel.invokeMethod('playSoundAsync', 0);
-                  } on PlatformException catch (e) {
-                    _logger.fine(e.message);
-                  }
                 },
               ),
               const Divider(),
