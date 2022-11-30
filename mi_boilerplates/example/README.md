@@ -43,3 +43,4 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
   * https://commons.wikimedia.org/wiki/Category:MIDI_files
   * WindowsはWAV, mp3しかだめみたい
   * https://pub.dev/packages/just_audio こっちの方がよさそう？
+    * 試しに変えたらWindowsがなおさら弱かったので今は止めておく。
