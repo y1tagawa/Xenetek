@@ -38,3 +38,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 * https://pub.dev/packages/scrollable_positioned_list
 * ToastのF.I./F.O.、キュー（まではいらないか。SnackBarがあるのだから）
 * 通知一覧ページと通知アイコン
+* https://pub.dev/packages/audioplayers
+  * https://commons.wikimedia.org/wiki/Category:Sound_sample_files
+  * https://commons.wikimedia.org/wiki/Category:MIDI_files
+  * WindowsはWAVしかだめみたい

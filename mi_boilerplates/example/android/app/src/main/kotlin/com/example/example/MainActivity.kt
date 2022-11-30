@@ -26,7 +26,8 @@ class MainActivity: FlutterActivity() {
                     Log.d(TAG, "type=$type")
                     // TODO: デフォルトではループしない適当な音源が他に無いのでパラメタは無視する。
                     val notification: Uri =
-                        RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                        RingtoneManager.getActualDefaultRingtoneUri(
+                            applicationContext, RingtoneManager.TYPE_NOTIFICATION)
                     val r: Ringtone =
                         RingtoneManager.getRingtone(applicationContext, notification)
                     r.play()

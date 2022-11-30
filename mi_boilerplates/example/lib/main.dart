@@ -6,8 +6,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
-import 'package:example/licenses.dart';
-import 'package:example/pages/page_layouts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,7 +13,9 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../licenses.dart';
 import 'pages/animations_page.dart';
+import 'pages/audio_player_page.dart';
 import 'pages/buttons_page.dart';
 import 'pages/checks_page.dart';
 import 'pages/colors_page.dart';
@@ -29,6 +29,7 @@ import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/menus_page.dart';
 import 'pages/overflow_bar_page.dart';
+import 'pages/page_layouts_page.dart';
 import 'pages/page_view_page.dart';
 import 'pages/progress_indicators_page.dart';
 import 'pages/prominent_top_bar_page.dart';
@@ -65,6 +66,12 @@ final _pages = <_PageItem>[
     title: AnimationsPage.title,
     path: '/animations',
     builder: (_, __) => const AnimationsPage(),
+  ),
+  _PageItem(
+    icon: AudioPlayerPage.icon,
+    title: AudioPlayerPage.title,
+    path: '/audio_player',
+    builder: (_, __) => const AudioPlayerPage(),
   ),
   _PageItem(
     icon: ButtonsPage.icon,
