@@ -248,7 +248,7 @@ class _AnimationGifTab extends ConsumerWidget {
 // Animated opacity tab
 //
 
-final _opaqueState = StateProvider((ref) => false);
+final _opaqueProvider = StateProvider((ref) => false);
 
 class _AnimatedOpacityTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedOpacityTab).toString());
@@ -259,7 +259,7 @@ class _AnimatedOpacityTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final opaque = ref.watch(_opaqueState);
+    final opaque = ref.watch(_opaqueProvider);
 
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -267,7 +267,7 @@ class _AnimatedOpacityTab extends ConsumerWidget {
         alignment: Alignment.topCenter,
         child: InkWell(
           onTap: () {
-            ref.read(_opaqueState.notifier).state = !opaque;
+            ref.read(_opaqueProvider.notifier).state = !opaque;
           },
           child: Stack(
             alignment: Alignment.center,
