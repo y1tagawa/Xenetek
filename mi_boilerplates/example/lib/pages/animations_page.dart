@@ -9,6 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../data/open_moji_svgs.dart';
 import 'ex_app_bar.dart';
 
 //
@@ -40,6 +41,7 @@ class AnimationsPage extends ConsumerWidget {
         ),
         tooltip: 'Lottie',
       ),
+      const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
       const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
       const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
@@ -47,6 +49,9 @@ class AnimationsPage extends ConsumerWidget {
     return MiDefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
+      onIndexChanged: (index) {
+        _tabIndex = index;
+      },
       builder: (context) {
         return Scaffold(
           appBar: ExAppBar(
@@ -86,6 +91,7 @@ class AnimationsPage extends ConsumerWidget {
               children: [
                 _AnimatedBuilderTab(),
                 _LottieTab(),
+                _AnimatedOpacityTab(),
                 _AnimationGifTab(),
                 _AnimatedIconsTab(),
               ],
@@ -212,10 +218,10 @@ class _LottieTab extends ConsumerWidget {
 }
 
 //
-// Image GIF tab
+// Animation GIF tab
 //
 
-const _imageGifUrl =
+const _imageUrl =
     'https://upload.wikimedia.org/wikipedia/commons/d/dd/Muybridge_race_horse_animated.gif';
 
 class _AnimationGifTab extends ConsumerWidget {
@@ -228,10 +234,65 @@ class _AnimationGifTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return Image.network(
-      _imageGifUrl,
+      _imageUrl,
       fit: BoxFit.contain,
       frameBuilder: (_, child, frame, __) =>
           frame == null ? const Center(child: CircularProgressIndicator()) : child,
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Animated opacity tab
+//
+
+final _opaqueState = StateProvider((ref) => false);
+
+class _AnimatedOpacityTab extends ConsumerWidget {
+  static final _logger = Logger((_AnimatedOpacityTab).toString());
+
+  const _AnimatedOpacityTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final opaque = ref.watch(_opaqueState);
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: InkWell(
+          onTap: () {
+            ref.read(_opaqueState.notifier).state = !opaque;
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AnimatedOpacity(
+                opacity: opaque ? 0.5 : 1.0,
+                duration: const Duration(seconds: 1),
+                child: const Icon(
+                  Icons.grass,
+                  color: Colors.green,
+                  size: 200,
+                ),
+              ),
+              AnimatedOpacity(
+                opacity: opaque ? 1.0 : 0.1,
+                duration: const Duration(seconds: 1),
+                child: SizedBox.square(
+                  dimension: 100,
+                  child: openMojiSvgLion,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     ).also((_) {
       _logger.fine('[o] build');
     });
