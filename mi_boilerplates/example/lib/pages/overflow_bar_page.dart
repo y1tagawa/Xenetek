@@ -12,22 +12,19 @@ import 'ex_app_bar.dart';
 /// Overflow bar example page.
 ///
 
-// UTF16＝IconDataとは……
-const _goatIconData = IconData(0x1F410);
-
 const _items = [
   MiIcon(
-    icon: Icon(_goatIconData, size: 24),
+    icon: Text('\u{1F410}', style: TextStyle(fontSize: 24)),
     spacing: 4,
     text: Text('GaraDon'),
   ),
   MiIcon(
-    icon: Icon(_goatIconData, size: 36),
+    icon: Text('\u{1F410}', style: TextStyle(fontSize: 36)),
     spacing: 6,
     text: Text('GaraGaraDon'),
   ),
   MiIcon(
-    icon: Icon(_goatIconData, size: 48),
+    icon: Text('\u{1F410}', style: TextStyle(fontSize: 48)),
     spacing: 8,
     text: Text('GaraGaraGaraDon'),
   ),
