@@ -118,13 +118,13 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: GridsPage.icon,
     title: GridsPage.title,
-    path: '/grids',
+    path: '/drawer/grids',
     builder: (_, __) => const GridsPage(),
   ),
   _PageItem(
     icon: GridsPage.icon,
     title: GridsPage.title,
-    path: '/grids/detail',
+    path: '/drawer/grids/detail',
     builder: (_, __) => const GridDetailPage(),
   ),
   _PageItem(
@@ -142,7 +142,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: MenusPage.icon,
     title: MenusPage.title,
-    path: '/menus',
+    path: '/drawer/menus',
     builder: (_, __) => const MenusPage(),
   ),
   _PageItem(

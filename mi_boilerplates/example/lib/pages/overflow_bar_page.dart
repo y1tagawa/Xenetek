@@ -8,9 +8,9 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
 
-///
-/// Overflow bar example page.
-///
+//
+// Overflow bar example page.
+//
 
 const _items = [
   MiIcon(
