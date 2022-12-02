@@ -8,7 +8,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 /// カスタム[RadioListTile]
 ///
 /// * [enabled]追加
-///
+
 class MiRadioListTile<T> extends RadioListTile<T> {
   const MiRadioListTile({
     //<editor-fold>
@@ -41,7 +41,7 @@ class MiRadioListTile<T> extends RadioListTile<T> {
 /// カスタム[SwitchListTile]
 ///
 /// * [enabled]追加
-///
+
 class MiSwitchListTile extends SwitchListTile {
   const MiSwitchListTile({
     //<editor-fold>
@@ -78,7 +78,7 @@ class MiSwitchListTile extends SwitchListTile {
 /// カスタム[ExpansionTile]
 ///
 /// * [enabled]追加、それに合わせ動作もいろいろ変更。
-///
+
 class MiExpansionTile extends StatelessWidget {
   //<editor-fold>
   final bool enabled;
@@ -183,7 +183,7 @@ class MiExpansionTile extends StatelessWidget {
 /// [ListTile]のテキストボタン的用法
 ///
 /// * 頻出コード
-///
+
 class MiButtonListTile extends StatelessWidget {
   final bool enabled;
   final bool selected;
@@ -191,7 +191,7 @@ class MiButtonListTile extends StatelessWidget {
   final Widget text;
   final Widget? title;
   final MainAxisAlignment alignment;
-  final MiIconPosition iconPosition;
+  final TextDirection iconPosition;
   final VoidCallback? onPressed;
 
   const MiButtonListTile({
@@ -202,7 +202,7 @@ class MiButtonListTile extends StatelessWidget {
     required this.text,
     this.title,
     this.alignment = MainAxisAlignment.center,
-    this.iconPosition = MiIconPosition.start,
+    this.iconPosition = TextDirection.ltr,
     this.onPressed,
     // TODO: 他のプロパティ
   });

@@ -276,7 +276,7 @@ class _ReorderableListTab extends ConsumerWidget {
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
                 text: const Text('Scroll to'),
-                iconPosition: MiIconPosition.end,
+                iconPosition: TextDirection.rtl,
               ),
             ),
           ],

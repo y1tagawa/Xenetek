@@ -75,17 +75,14 @@ extension SetHelper<T> on Set<T> {
   }
 }
 
-///
-enum MiIconPosition { start, end }
-
 /// ラベル
 ///
 /// * [icon]がnullの場合、空白を表示する。
-///
+
 class MiIcon extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
-  final MiIconPosition iconPosition;
+  final TextDirection iconPosition;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onHover;
   final double? spacing;
@@ -96,7 +93,7 @@ class MiIcon extends StatelessWidget {
     super.key,
     this.enabled = true,
     this.icon,
-    this.iconPosition = MiIconPosition.start,
+    this.iconPosition = TextDirection.ltr,
     this.onTap,
     this.onHover,
     this.spacing,
@@ -118,7 +115,7 @@ class MiIcon extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: iconPosition == MiIconPosition.end
+        children: iconPosition == TextDirection.rtl
             ? [
                 if (spacer != null) spacer,
                 text!,
@@ -164,7 +161,7 @@ class MiIcon extends StatelessWidget {
 /// カラーチップ
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
-///
+
 class MiColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
@@ -217,7 +214,7 @@ class MiColorChip extends StatelessWidget {
 }
 
 /// トグルアイコン
-///
+
 class MiToggleIcon extends StatelessWidget {
   final bool checked;
   final Widget checkIcon;
@@ -245,6 +242,8 @@ class MiToggleIcon extends StatelessWidget {
 
 /// [Image] (PNGとか)をアイコンにする
 ///
+/// [SvgPicture]対応はflutter_svgに依存することになるので考え中。
+
 class MiImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
@@ -274,7 +273,7 @@ class MiImageIcon extends StatelessWidget {
 /// カスタム[TextButton]
 ///
 /// * [enabled]追加
-///
+
 class MiTextButton extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onPressed;
@@ -324,7 +323,7 @@ class MiTextButton extends StatelessWidget {
 ///
 /// * [enabled]追加
 /// TODO: StatelessWidgetから派生。
-///
+
 class MiIconButton extends IconButton {
   const MiIconButton({
     super.key,
@@ -357,6 +356,7 @@ class MiIconButton extends IconButton {
 }
 
 /// トグルアイコンボタン
+
 class MiCheckIconButton extends StatelessWidget {
   final bool enabled;
   final bool checked;
@@ -397,6 +397,7 @@ class MiCheckIconButton extends StatelessWidget {
 }
 
 /// 直前の[child]と最新の[child]をクロスフェードする
+
 class MiFade extends StatefulWidget {
   final Duration duration;
   final Widget? child;
@@ -471,6 +472,7 @@ class _MiFadeState extends State<MiFade> {
 }
 
 /// 明示的にintの値をとる[Slider]
+
 class MiIntSlider extends StatelessWidget {
   final bool enabled;
   final int value;
@@ -510,7 +512,7 @@ class MiIntSlider extends StatelessWidget {
 /// * [crossAxisAlignment]のデフォルト値を[WrapCrossAlignment.center]に変更。
 /// * [flexes]を指定した場合、[children]の個々を[Flexible]でラップする。
 /// * [spacing]を指定した場合、[children]の間に空間を空ける。
-///
+
 class MiRow extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
@@ -612,7 +614,7 @@ class MiRow extends StatelessWidget {
 /// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
 /// [child] - [ListView]など[height]が不定のウィジェット。
 /// [top]/[tops], [bottom]/[bottoms] - [child]の上下に積まれる。
-///
+
 class MiExpandedColumn extends StatelessWidget {
   final Widget child;
   final Widget? top;
