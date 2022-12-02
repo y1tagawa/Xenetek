@@ -74,38 +74,74 @@ class RadiosPage extends ConsumerWidget {
 // Radios tab
 //
 
-class Fade extends StatelessWidget {
-  static final _logger = Logger((Fade).toString());
-
-  final double startOpacity;
-  final double finalOpacity;
-  final Widget child;
-  const Fade({
+class _Fade extends StatefulWidget {
+  final Duration duration;
+  final Widget? child;
+  const _Fade({
+    // ignore: unused_element
     super.key,
-    required this.startOpacity,
-    required this.finalOpacity,
+    // ignore: unused_element
+    this.duration = const Duration(milliseconds: 250),
     required this.child,
   });
 
   @override
+  State<StatefulWidget> createState() => _FadeState();
+}
+
+class _FadeState extends State<_Fade> {
+  static const _nullPlaceHolder = Icon(null);
+
+  static final _logger = Logger((_FadeState).toString());
+
+  late Widget? _firstChild;
+  late Widget? _secondChild;
+  late CrossFadeState _state;
+
+  void _update() {
+    if (_state == CrossFadeState.showFirst) {
+      _secondChild = widget.child;
+      _state = CrossFadeState.showSecond;
+    } else {
+      _firstChild = widget.child;
+      _state = CrossFadeState.showFirst;
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _firstChild = null;
+    _secondChild = null;
+    _state = CrossFadeState.showFirst;
+    if (widget.child != null) {
+      _update();
+    }
+  }
+
+  @override
+  void dispose() {
+    _firstChild = null;
+    _secondChild = null;
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _Fade oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.child != (_state == CrossFadeState.showFirst ? _firstChild : _secondChild)) {
+      _update();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MiAnimationController(
-      onInitialized: (controller) {
-        controller.reset();
-        controller.forward();
-      },
-      builder: (_, controller, __) {
-        return AnimatedBuilder(
-          animation: controller,
-          builder: (_, __) {
-            _logger.fine(controller.value);
-            return Opacity(
-              opacity: (finalOpacity - startOpacity) * controller.value + startOpacity,
-              child: child,
-            );
-          },
-        );
-      },
+    return AnimatedCrossFade(
+      firstChild: _firstChild ?? _nullPlaceHolder,
+      secondChild: _secondChild ?? _nullPlaceHolder,
+      crossFadeState: _state,
+      duration: widget.duration,
     );
   }
 }
@@ -146,10 +182,6 @@ final _radioItems = <_Class, _RadioItem>{
 
 final _radioIndexProvider = StateProvider((ref) => _Class.fighter);
 
-Widget? _icon1;
-Widget? _icon2;
-int _id = 0;
-
 class _RadiosTab extends ConsumerWidget {
   // ignore: unused_field
   static final _logger = Logger((_RadiosTab).toString());
@@ -178,20 +210,6 @@ class _RadiosTab extends ConsumerWidget {
                     text: item.text,
                   ),
                   onChanged: (value) {
-                    _icon1 = Fade(
-                      key: Key(_id.toString()),
-                      startOpacity: 0.0,
-                      finalOpacity: 1.0,
-                      child: _radioItems[value!]!.iconBuilder(false),
-                    );
-                    ++_id;
-                    _icon2 = Fade(
-                      key: Key(_id.toString()),
-                      startOpacity: 1.0,
-                      finalOpacity: 0.0,
-                      child: _radioItems[radioIndex]!.iconBuilder(false),
-                    );
-                    ++_id;
                     ref.read(_radioIndexProvider.notifier).state = value!;
                   },
                 );
@@ -207,11 +225,8 @@ class _RadiosTab extends ConsumerWidget {
               color: Theme.of(context).disabledColor,
               size: 60,
             ),
-            child: Stack(
-              children: [
-                if (_icon1 != null) _icon1!,
-                if (_icon2 != null) _icon2!,
-              ],
+            child: _Fade(
+              child: _radioItems[radioIndex]!.iconBuilder(false),
             ),
             //child: _radioItems[radioIndex]!.iconBuilder(false),
           ),

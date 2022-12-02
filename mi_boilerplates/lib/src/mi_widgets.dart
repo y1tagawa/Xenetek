@@ -228,7 +228,7 @@ class MiToggleIcon extends StatelessWidget {
     required this.checked,
     required this.checkIcon,
     required this.uncheckIcon,
-    this.duration = const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 250),
   });
 
   @override
