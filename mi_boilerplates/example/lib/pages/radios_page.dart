@@ -74,6 +74,42 @@ class RadiosPage extends ConsumerWidget {
 // Radios tab
 //
 
+class Fade extends StatelessWidget {
+  static final _logger = Logger((Fade).toString());
+
+  final double startOpacity;
+  final double finalOpacity;
+  final Widget child;
+  const Fade({
+    super.key,
+    required this.startOpacity,
+    required this.finalOpacity,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MiAnimationController(
+      onInitialized: (controller) {
+        controller.reset();
+        controller.forward();
+      },
+      builder: (_, controller, __) {
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (_, __) {
+            _logger.fine(controller.value);
+            return Opacity(
+              opacity: (finalOpacity - startOpacity) * controller.value + startOpacity,
+              child: child,
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
 enum _Class { fighter, cleric, mage, thief }
 
 class _RadioItem {
@@ -108,7 +144,11 @@ final _radioItems = <_Class, _RadioItem>{
   ),
 };
 
-final _classProvider = StateProvider((ref) => _Class.fighter);
+final _radioIndexProvider = StateProvider((ref) => _Class.fighter);
+
+Widget? _icon1;
+Widget? _icon2;
+int _id = 0;
 
 class _RadiosTab extends ConsumerWidget {
   // ignore: unused_field
@@ -119,7 +159,7 @@ class _RadiosTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final class_ = ref.watch(_classProvider);
+    final radioIndex = ref.watch(_radioIndexProvider);
 
     return Column(
       children: [
@@ -132,13 +172,27 @@ class _RadiosTab extends ConsumerWidget {
                 return MiRadioListTile<_Class>(
                   enabled: enableActions,
                   value: key,
-                  groupValue: class_,
+                  groupValue: radioIndex,
                   title: MiIcon(
-                    icon: item.iconBuilder(key == class_),
+                    icon: item.iconBuilder(key == radioIndex),
                     text: item.text,
                   ),
                   onChanged: (value) {
-                    ref.read(_classProvider.notifier).state = value!;
+                    _icon1 = Fade(
+                      key: Key(_id.toString()),
+                      startOpacity: 0.0,
+                      finalOpacity: 1.0,
+                      child: _radioItems[value!]!.iconBuilder(false),
+                    );
+                    ++_id;
+                    _icon2 = Fade(
+                      key: Key(_id.toString()),
+                      startOpacity: 1.0,
+                      finalOpacity: 0.0,
+                      child: _radioItems[radioIndex]!.iconBuilder(false),
+                    );
+                    ++_id;
+                    ref.read(_radioIndexProvider.notifier).state = value!;
                   },
                 );
               },
@@ -153,7 +207,13 @@ class _RadiosTab extends ConsumerWidget {
               color: Theme.of(context).disabledColor,
               size: 60,
             ),
-            child: _radioItems[class_]!.iconBuilder(false),
+            child: Stack(
+              children: [
+                if (_icon1 != null) _icon1!,
+                if (_icon2 != null) _icon2!,
+              ],
+            ),
+            //child: _radioItems[radioIndex]!.iconBuilder(false),
           ),
         ),
       ],
@@ -193,31 +253,31 @@ const _toggleItemColors = <Color>[
   Colors.brown,
 ];
 
-final _selectedProvider = StateProvider((ref) => 0);
+final _toggleIndexProvider = StateProvider((ref) => 0);
 
 class _ToggleButtonsTab extends ConsumerWidget {
-  static final _logger = Logger((_selectedProvider).toString());
+  static final _logger = Logger((_toggleIndexProvider).toString());
 
   const _ToggleButtonsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final selected = ref.watch(_selectedProvider);
+    final toggleIndex = ref.watch(_toggleIndexProvider);
 
     return MiDefaultTabController(
       length: _toggleItems.length,
-      initialIndex: selected,
+      initialIndex: toggleIndex,
       builder: (context) {
         return Column(
           children: [
             MiRadioToggleButtons(
               enabled: enableActions,
-              initiallySelected: selected,
+              initiallySelected: toggleIndex,
               split: MediaQuery.of(context).orientation == Orientation.landscape ? null : 3,
               renderBorder: false,
               onPressed: (index) {
-                ref.read(_selectedProvider.notifier).state = index;
+                ref.read(_toggleIndexProvider.notifier).state = index;
                 DefaultTabController.of(context)?.index = index;
               },
               children: _toggleItems,

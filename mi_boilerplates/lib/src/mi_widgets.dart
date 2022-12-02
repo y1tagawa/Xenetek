@@ -41,6 +41,12 @@ extension ListHelper<T> on List<T> {
     return t;
   }
 
+  List<T> removed(T value) {
+    final t = toList();
+    t.remove(value);
+    return t;
+  }
+
   List<T> removedAt(int index) {
     final t = toList();
     t.removeAt(index);
