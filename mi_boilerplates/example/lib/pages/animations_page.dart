@@ -13,7 +13,7 @@ import '../data/open_moji_svgs.dart';
 import 'ex_app_bar.dart';
 
 //
-// Animations trial page.
+// Animations example page.
 //
 
 var _tabIndex = 0;
@@ -42,7 +42,7 @@ class AnimationsPage extends ConsumerWidget {
         tooltip: 'Lottie',
       ),
       const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
-      const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
+      // const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
       const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
 
@@ -92,7 +92,7 @@ class AnimationsPage extends ConsumerWidget {
                 _AnimatedBuilderTab(),
                 _LottieTab(),
                 _AnimatedOpacityTab(),
-                _AnimationGifTab(),
+                // _AnimationGifTab(),
                 _AnimatedIconsTab(),
               ],
             ),
@@ -194,16 +194,22 @@ class _LottieTab extends ConsumerWidget {
     return Center(
       child: MiAnimationController(
         builder: (_, controller, __) {
-          return Lottie.network(
-            _lottieUrl,
-            controller: controller,
-            repeat: false,
-            onLoaded: (composition) {
-              _logger.fine('onLoaded: ${composition.duration}');
-              controller.duration = composition.duration;
-              controller.reset();
-              controller.forward();
-            },
+          return ColorFiltered(
+            colorFilter: const ColorFilter.mode(
+              Colors.red,
+              BlendMode.srcIn,
+            ),
+            child: Lottie.network(
+              _lottieUrl,
+              controller: controller,
+              repeat: false,
+              onLoaded: (composition) {
+                _logger.fine('onLoaded: ${composition.duration}');
+                controller.duration = composition.duration;
+                controller.reset();
+                controller.forward();
+              },
+            ),
           );
         },
         onTap: (controller) {
