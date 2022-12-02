@@ -37,7 +37,7 @@ class CustomPaintsPage extends ConsumerWidget {
 
     final tabs = <Widget>[
       const MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.text),
+      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
     ];
 
     return MiDefaultTabController(

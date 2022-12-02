@@ -30,7 +30,7 @@ class FilesPage extends ConsumerWidget {
       icon: icon,
     ),
     MiTab(
-      tooltip: UnderConstruction.text,
+      tooltip: UnderConstruction.title,
       icon: UnderConstruction.icon,
     ),
   ];

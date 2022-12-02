@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:example/data/primary_color_names.dart';
+import 'package:example/pages/under_construction.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -29,8 +30,8 @@ class ColorsPage extends ConsumerWidget {
       icon: Icon(Icons.schema_outlined),
     ),
     MiTab(
-      tooltip: 'Color grid',
-      icon: Icon(Icons.grid_on_outlined),
+      tooltip: UnderConstruction.title,
+      icon: UnderConstruction.icon,
     ),
   ];
 
@@ -61,7 +62,13 @@ class ColorsPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _ColorSchemeTab(),
-                _ColorGridTab(),
+                UnderConstruction(
+                  text: r'''
+* move X11Colors, JisColors to Mi
+* ColorGrid
+                ''',
+                ),
+                //_ColorGridTab(),
               ],
             ),
           ),

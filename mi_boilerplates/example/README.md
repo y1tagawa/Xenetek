@@ -46,3 +46,5 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
     * 試しに変えたらWindowsがなおさら弱かったので今は止めておく。
     * https://pub.dev/packages/dart_vlc、https://pub.dev/packages/flutter_vlc_player 
       VLCもあるが、プラットフォームで差があったり、将来に期待。
+* https://pub.dev/packages/dynamic_color#dynamic_color
+* X11Colors → CSSColors https://pub.dev/packages/css_colors

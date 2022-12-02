@@ -16,9 +16,14 @@ class UnderConstruction extends StatelessWidget {
     angle: math.pi,
     child: Icon(Icons.filter_list),
   );
-  static const text = 'Under construction';
+  static const title = 'Under construction';
 
-  const UnderConstruction({super.key});
+  final String? text;
+
+  const UnderConstruction({
+    super.key,
+    this.text,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +32,8 @@ class UnderConstruction extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = math.min(constraints.maxWidth, constraints.maxHeight) * 0.5;
+        final theme = Theme.of(context);
+
         return Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Column(
@@ -38,9 +45,15 @@ class UnderConstruction extends StatelessWidget {
                 color: theme.disabledColor.withOpacity(0.1),
               ),
               Text(
-                text,
-                style: TextStyle(color: theme.disabledColor),
+                title,
+                style: theme.textTheme.headline6?.merge(
+                  TextStyle(color: theme.disabledColor),
+                ),
               ),
+              if (text != null) ...[
+                const SizedBox(height: 8),
+                Text(text!),
+              ],
             ],
           ),
         );
