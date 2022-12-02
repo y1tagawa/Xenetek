@@ -39,7 +39,7 @@ class UnderConstruction extends StatelessWidget {
           child: Column(
             children: [
               Image.asset(
-                'assets/okcat2.png',
+                'assets/worker_cat2.png',
                 width: size,
                 height: size,
                 color: theme.disabledColor.withOpacity(0.1),

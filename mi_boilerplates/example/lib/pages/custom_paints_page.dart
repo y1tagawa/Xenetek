@@ -369,7 +369,7 @@ class _ClockTab extends ConsumerWidget {
               size: const Size(200, 200),
               dateTimeNotifier: _dateTimeNotifier,
               child: Image.asset(
-                theme.isDark ? 'assets/okcat2.png' : 'assets/okcat1.png',
+                theme.isDark ? 'assets/worker_cat2.png' : 'assets/worker_cat1.png',
               ),
             ),
           ),
