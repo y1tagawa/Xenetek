@@ -41,7 +41,7 @@ class AnimationsPage extends ConsumerWidget {
         ),
         tooltip: 'Lottie',
       ),
-      const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
+      // const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
       // const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
       const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
@@ -91,7 +91,7 @@ class AnimationsPage extends ConsumerWidget {
               children: [
                 _AnimatedBuilderTab(),
                 _LottieTab(),
-                _AnimatedOpacityTab(),
+                // _AnimatedOpacityTab(),
                 // _AnimationGifTab(),
                 _AnimatedIconsTab(),
               ],

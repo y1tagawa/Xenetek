@@ -156,7 +156,6 @@ class _RadiosTab extends ConsumerWidget {
             child: MiFade(
               child: _radioItems[radioIndex]!.iconBuilder(false),
             ),
-            //child: _radioItems[radioIndex]!.iconBuilder(false),
           ),
         ),
       ],
