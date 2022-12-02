@@ -44,3 +44,5 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
   * WindowsはWAV, mp3しかだめみたい
   * https://pub.dev/packages/just_audio こっちの方がよさそう？
     * 試しに変えたらWindowsがなおさら弱かったので今は止めておく。
+    * https://pub.dev/packages/dart_vlc、https://pub.dev/packages/flutter_vlc_player 
+      VLCもあるが、プラットフォームで差があったり、将来に期待。

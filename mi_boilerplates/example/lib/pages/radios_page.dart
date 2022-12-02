@@ -74,78 +74,6 @@ class RadiosPage extends ConsumerWidget {
 // Radios tab
 //
 
-class _Fade extends StatefulWidget {
-  final Duration duration;
-  final Widget? child;
-  const _Fade({
-    // ignore: unused_element
-    super.key,
-    // ignore: unused_element
-    this.duration = const Duration(milliseconds: 250),
-    required this.child,
-  });
-
-  @override
-  State<StatefulWidget> createState() => _FadeState();
-}
-
-class _FadeState extends State<_Fade> {
-  static const _nullPlaceHolder = Icon(null);
-
-  static final _logger = Logger((_FadeState).toString());
-
-  late Widget? _firstChild;
-  late Widget? _secondChild;
-  late CrossFadeState _state;
-
-  void _update() {
-    if (_state == CrossFadeState.showFirst) {
-      _secondChild = widget.child;
-      _state = CrossFadeState.showSecond;
-    } else {
-      _firstChild = widget.child;
-      _state = CrossFadeState.showFirst;
-    }
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _firstChild = null;
-    _secondChild = null;
-    _state = CrossFadeState.showFirst;
-    if (widget.child != null) {
-      _update();
-    }
-  }
-
-  @override
-  void dispose() {
-    _firstChild = null;
-    _secondChild = null;
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant _Fade oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.child != (_state == CrossFadeState.showFirst ? _firstChild : _secondChild)) {
-      _update();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedCrossFade(
-      firstChild: _firstChild ?? _nullPlaceHolder,
-      secondChild: _secondChild ?? _nullPlaceHolder,
-      crossFadeState: _state,
-      duration: widget.duration,
-    );
-  }
-}
-
 enum _Class { fighter, cleric, mage, thief }
 
 class _RadioItem {
@@ -225,7 +153,7 @@ class _RadiosTab extends ConsumerWidget {
               color: Theme.of(context).disabledColor,
               size: 60,
             ),
-            child: _Fade(
+            child: MiFade(
               child: _radioItems[radioIndex]!.iconBuilder(false),
             ),
             //child: _radioItems[radioIndex]!.iconBuilder(false),

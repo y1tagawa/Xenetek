@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
 
@@ -391,6 +392,80 @@ class MiCheckIconButton extends StatelessWidget {
         firstChild: checkIcon ?? const Icon(Icons.check_box_outlined),
         secondChild: uncheckIcon ?? const Icon(Icons.check_box_outline_blank),
       ),
+    );
+  }
+}
+
+/// 直前の[child]と最新の[child]をクロスフェードする
+class MiFade extends StatefulWidget {
+  final Duration duration;
+  final Widget? child;
+  const MiFade({
+    // ignore: unused_element
+    super.key,
+    // ignore: unused_element
+    this.duration = const Duration(milliseconds: 250),
+    required this.child,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _MiFadeState();
+}
+
+class _MiFadeState extends State<MiFade> {
+  static const _nullPlaceHolder = SizedBox.square(dimension: 24);
+
+  // ignore: unused_field
+  static final _logger = Logger((_MiFadeState).toString());
+
+  late Widget? _firstChild;
+  late Widget? _secondChild;
+  late CrossFadeState _state;
+
+  void _update() {
+    if (_state == CrossFadeState.showFirst) {
+      _secondChild = widget.child;
+      _state = CrossFadeState.showSecond;
+    } else {
+      _firstChild = widget.child;
+      _state = CrossFadeState.showFirst;
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _firstChild = null;
+    _secondChild = null;
+    _state = CrossFadeState.showFirst;
+    if (widget.child != null) {
+      _update();
+    }
+  }
+
+  @override
+  void dispose() {
+    _firstChild = null;
+    _secondChild = null;
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MiFade oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.child != (_state == CrossFadeState.showFirst ? _firstChild : _secondChild)) {
+      _update();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedCrossFade(
+      firstChild: _firstChild ?? _nullPlaceHolder,
+      secondChild: _secondChild ?? _nullPlaceHolder,
+      crossFadeState: _state,
+      duration: widget.duration,
     );
   }
 }
