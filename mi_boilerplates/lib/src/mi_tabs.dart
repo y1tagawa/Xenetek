@@ -218,6 +218,7 @@ class MiDefaultTabController extends StatelessWidget {
 /// AppBarのbottom以外用[TabBarView]
 ///
 /// https://m2.material.io/components/tabs#placement
+
 class MiEmbeddedTabView extends StatelessWidget {
   final List<Widget> tabs;
   final int initialIndex;

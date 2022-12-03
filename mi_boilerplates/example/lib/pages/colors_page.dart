@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
-import 'package:mi_boilerplates/src/primary_color_names.dart';
 
 import '../main.dart';
 import 'ex_app_bar.dart';
+import 'ex_color_grid.dart';
 
 //
-// Color grid example page.
+// Color example page.
 //
 
 var _tabIndex = 0;
@@ -81,12 +81,6 @@ class ColorsPage extends ConsumerWidget {
 class _ColorGridTab extends ConsumerWidget {
   static final _logger = Logger((_ColorGridTab).toString());
 
-  static const _tabs = <Widget>[
-    MiTab(icon: Icon(Icons.flutter_dash)),
-    MiTab(text: 'X11'),
-    MiTab(text: 'JIS'),
-  ];
-
   const _ColorGridTab();
 
   @override
@@ -96,29 +90,14 @@ class _ColorGridTab extends ConsumerWidget {
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
-    final colors = <List<Color?>>[
-      [if (nullable) null, ...Colors.primaries],
-      x11Colors,
-      jisCommonColors,
-    ];
-
-    final tooltips = [
-      [if (nullable) 'null', ...primaryColorNames],
-      x11ColorNames,
-      jisCommonColorNames,
-    ];
-
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10),
-      child: MiTabbedColorGrid(
-        tabs: _tabs,
-        colors: colors,
-        tooltips: tooltips,
-        // onChanged: (index) async {
-        //   final color = Colors.primaries[index];
-        //   ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
-        //   await saveThemePreferences(ref);
-        // },
+      child: ExColorGrid(
+        onChanged: (color) {
+          //   final color = Colors.primaries[index];
+          //   ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
+          //   await saveThemePreferences(ref);
+        },
       ),
     ).also((_) {
       _logger.fine('[o] build');
