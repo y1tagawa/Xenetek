@@ -30,7 +30,7 @@ class ButtonsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Text buttons',
+      tooltip: 'Push buttons',
       icon: Text(
         '[OK]',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
@@ -118,9 +118,9 @@ class ButtonsPage extends ConsumerWidget {
   }
 }
 
-///
-/// Push buttons tab
-///
+//
+// Push buttons tab
+//
 
 // TODO: https://assets10.lottiefiles.com/datafiles/WgRBwbT0n0IN0Uu/data.json
 
@@ -183,6 +183,13 @@ class _PushButtonsTab extends ConsumerWidget {
                 text: Text('levatedButton'),
               ),
             ),
+          ),
+          MiButtonListTile(
+            enabled: enabled,
+            alignment: MainAxisAlignment.start,
+            leading: const Icon(Icons.mode_standby),
+            text: const Text('ListTile'),
+            onPressed: () => _ping(ref),
           ),
           ListTile(
             iconColor: theme.colorScheme.onSurface,

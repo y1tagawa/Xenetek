@@ -75,9 +75,35 @@ extension SetHelper<T> on Set<T> {
   }
 }
 
+/// [DefaultTextStyle]+[IconTheme]
+///
+/// 頻出コード。末端でスタイル変更することになるのであまり公開したくないのだが……
+
+class MiDefaultTextColor extends StatelessWidget {
+  final Color? color;
+  final Widget child;
+
+  const MiDefaultTextColor({
+    super.key,
+    this.color,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle.merge(
+      style: TextStyle(color: color),
+      child: IconTheme.merge(
+        data: IconThemeData(color: color),
+        child: child,
+      ),
+    );
+  }
+}
+
 /// ラベル
 ///
-/// * [icon]がnullの場合、空白を表示する。
+/// * [icon]がnullの場合、アイコン部分は空白となる。
 
 class MiIcon extends StatelessWidget {
   final bool enabled;
@@ -131,12 +157,9 @@ class MiIcon extends StatelessWidget {
       );
     }
 
-    icon_ = DefaultTextStyle.merge(
-      style: TextStyle(color: textColor),
-      child: IconTheme.merge(
-        data: IconThemeData(color: textColor),
-        child: icon_,
-      ),
+    icon_ = MiDefaultTextColor(
+      color: textColor,
+      child: icon_,
     );
 
     if (onTap != null || onHover != null) {
@@ -400,12 +423,14 @@ class MiCheckIconButton extends StatelessWidget {
 
 class MiFade extends StatefulWidget {
   final Duration duration;
+  final Widget? placeHolder;
   final Widget? child;
   const MiFade({
     // ignore: unused_element
     super.key,
     // ignore: unused_element
     this.duration = const Duration(milliseconds: 250),
+    this.placeHolder,
     required this.child,
   });
 
@@ -414,8 +439,6 @@ class MiFade extends StatefulWidget {
 }
 
 class _MiFadeState extends State<MiFade> {
-  static const _nullPlaceHolder = SizedBox.square(dimension: 24);
-
   // ignore: unused_field
   static final _logger = Logger((_MiFadeState).toString());
 
@@ -462,9 +485,11 @@ class _MiFadeState extends State<MiFade> {
 
   @override
   Widget build(BuildContext context) {
+    final placeHolder =
+        widget.placeHolder ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
     return AnimatedCrossFade(
-      firstChild: _firstChild ?? _nullPlaceHolder,
-      secondChild: _secondChild ?? _nullPlaceHolder,
+      firstChild: _firstChild ?? placeHolder,
+      secondChild: _secondChild ?? placeHolder,
       crossFadeState: _state,
       duration: widget.duration,
     );

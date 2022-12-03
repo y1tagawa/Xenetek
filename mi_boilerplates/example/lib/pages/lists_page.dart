@@ -50,7 +50,7 @@ final _listItems = <String, Widget>{
 };
 
 class ListsPage extends ConsumerWidget {
-  static const icon = Icon(Icons.list);
+  static const icon = Icon(Icons.format_list_bulleted);
   static const title = Text('Lists');
 
   static final _logger = Logger((ListsPage).toString());

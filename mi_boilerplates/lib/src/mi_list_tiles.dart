@@ -147,31 +147,28 @@ class MiExpansionTile extends StatelessWidget {
             collapsedIconColor: enabled ? null : disabledColor,
             collapsedTextColor: enabled ? null : disabledColor,
           ),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(color: enabled ? null : disabledColor),
-            child: IconTheme.merge(
-              data: IconThemeData(color: enabled ? null : disabledColor),
-              child: ExpansionTile(
-                initiallyExpanded: initiallyExpanded,
-                leading: leading,
-                title: title,
-                subtitle: subtitle,
-                onExpansionChanged: onExpansionChanged,
-                trailing: trailing,
-                maintainState: maintainState,
-                tilePadding: tilePadding,
-                expandedCrossAxisAlignment: expandedCrossAxisAlignment,
-                expandedAlignment: expandedAlignment,
-                childrenPadding: childrenPadding,
-                backgroundColor: backgroundColor,
-                collapsedBackgroundColor: collapsedBackgroundColor,
-                textColor: textColor,
-                collapsedTextColor: collapsedTextColor,
-                iconColor: iconColor,
-                collapsedIconColor: collapsedIconColor,
-                controlAffinity: controlAffinity,
-                children: children,
-              ),
+          child: MiDefaultTextColor(
+            color: enabled ? null : disabledColor,
+            child: ExpansionTile(
+              initiallyExpanded: initiallyExpanded,
+              leading: leading,
+              title: title,
+              subtitle: subtitle,
+              onExpansionChanged: onExpansionChanged,
+              trailing: trailing,
+              maintainState: maintainState,
+              tilePadding: tilePadding,
+              expandedCrossAxisAlignment: expandedCrossAxisAlignment,
+              expandedAlignment: expandedAlignment,
+              childrenPadding: childrenPadding,
+              backgroundColor: backgroundColor,
+              collapsedBackgroundColor: collapsedBackgroundColor,
+              textColor: textColor,
+              collapsedTextColor: collapsedTextColor,
+              iconColor: iconColor,
+              collapsedIconColor: collapsedIconColor,
+              controlAffinity: controlAffinity,
+              children: children,
             ),
           ),
         ),
@@ -187,6 +184,8 @@ class MiExpansionTile extends StatelessWidget {
 class MiButtonListTile extends StatelessWidget {
   final bool enabled;
   final bool selected;
+  final Widget? leading;
+  final Widget? trailing;
   final Widget? icon;
   final Widget text;
   final Widget? title;
@@ -198,6 +197,8 @@ class MiButtonListTile extends StatelessWidget {
     super.key,
     this.enabled = true,
     this.selected = false,
+    this.leading,
+    this.trailing,
     this.icon,
     required this.text,
     this.title,
@@ -216,30 +217,32 @@ class MiButtonListTile extends StatelessWidget {
     Widget title_ = Row(
       mainAxisAlignment: alignment,
       children: [
-        DefaultTextStyle.merge(
-          style: TextStyle(color: textColor),
-          child: IconTheme.merge(
-            data: IconThemeData(color: textColor),
-            child: icon != null
-                ? MiIcon(
-                    icon: icon,
-                    text: text,
-                    iconPosition: iconPosition,
-                  )
-                : text,
-          ),
+        MiDefaultTextColor(
+          color: textColor,
+          child: icon != null
+              ? MiIcon(
+                  icon: icon,
+                  text: text,
+                  iconPosition: iconPosition,
+                )
+              : text,
         ),
       ],
     );
 
     if (title != null) {
       subtitle_ = title_;
-      title_ = Center(child: title!);
+      title_ = Row(
+        mainAxisAlignment: alignment,
+        children: [title!],
+      );
     }
 
     return ListTile(
       enabled: enabled,
       selected: selected,
+      leading: leading?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
+      trailing: trailing?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,
