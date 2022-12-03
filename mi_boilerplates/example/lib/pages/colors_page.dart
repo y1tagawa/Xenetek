@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:example/pages/under_construction.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -30,8 +29,8 @@ class ColorsPage extends ConsumerWidget {
       icon: Icon(Icons.schema_outlined),
     ),
     MiTab(
-      tooltip: UnderConstruction.title,
-      icon: UnderConstruction.icon,
+      tooltip: 'Color grid',
+      icon: Icon(Icons.grid_on_outlined),
     ),
   ];
 
@@ -62,13 +61,7 @@ class ColorsPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _ColorSchemeTab(),
-                UnderConstruction(
-                  text: r'''
-* move X11Colors, JisColors to Mi
-* ColorGrid
-                ''',
-                ),
-                //_ColorGridTab(),
+                _ColorGridTab(),
               ],
             ),
           ),
@@ -88,33 +81,44 @@ class ColorsPage extends ConsumerWidget {
 class _ColorGridTab extends ConsumerWidget {
   static final _logger = Logger((_ColorGridTab).toString());
 
+  static const _tabs = <Widget>[
+    MiTab(icon: Icon(Icons.flutter_dash)),
+    MiTab(text: 'X11'),
+    MiTab(text: 'JIS'),
+  ];
+
   const _ColorGridTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const bool nullable = false;
+
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
 
+    final colors = <List<Color?>>[
+      [if (nullable) null, ...Colors.primaries],
+      x11Colors,
+      jisCommonColors,
+    ];
+
+    final tooltips = [
+      [if (nullable) 'null', ...primaryColorNames],
+      x11ColorNames,
+      jisCommonColorNames,
+    ];
+
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: MiColorGrid(
-                colors: Colors.primaries,
-                tooltips: primaryColorNames,
-                onChanged: (index) async {
-                  final color = Colors.primaries[index];
-                  ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
-                  await saveThemePreferences(ref);
-                },
-              ),
-            ),
-          ),
-        ],
-        //colorize
+      padding: const EdgeInsets.only(left: 10, right: 10),
+      child: MiTabbedColorGrid(
+        tabs: _tabs,
+        colors: colors,
+        tooltips: tooltips,
+        // onChanged: (index) async {
+        //   final color = Colors.primaries[index];
+        //   ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
+        //   await saveThemePreferences(ref);
+        // },
       ),
     ).also((_) {
       _logger.fine('[o] build');
@@ -305,6 +309,7 @@ class _ColorSchemeTab extends ConsumerWidget {
                   },
                 ),
                 _ColorsView(
+                  initiallyExpanded: true,
                   title: const Text('Color scheme colors'),
                   theme1: lightTheme,
                   theme2: darkTheme,

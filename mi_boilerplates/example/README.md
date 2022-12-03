@@ -1,7 +1,17 @@
 
 # Flutterマテリアルウィジェット拡張サンプルアプリ
 
+# Licenses
+
 All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
+
+x11_colors uses material from the Wikipedia article "Web colors",
+https://en.wikipedia.org/wiki/Web_colors,
+which is released under the Creative Commons Attribution-Share-Alike License 3.0.
+
+jis_common_colors program uses material from the Wikipedia article "JIS慣用色名",
+https://ja.wikipedia.org/wiki/JIS%E6%85%A3%E7%94%A8%E8%89%B2%E5%90%8D
+which is released under the Creative Commons Attribution-Share-Alike License 3.0.
 
 ## open_moji_svgs作成手順
 
@@ -47,14 +57,3 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
     * https://pub.dev/packages/dart_vlc、https://pub.dev/packages/flutter_vlc_player 
       VLCもあるが、プラットフォームで差があったり、将来に期待。
 * https://pub.dev/packages/dynamic_color#dynamic_color
-* X11Colors → CSSColors https://pub.dev/packages/css_colors
-  * 色値に差は無し、追加も無し
-  * 名前は
-    * *Goldenrod→*GoldenRod
-    * fireblick ~Brick
-    * seashell ~Shell
-    * *aquamarine ~Marine
-    * honeydew ~Dew
-    * burlywood ~Wood
-    * grayに加えgrey
-    * 名前がかぶらない分、X11の方が使い良いかもだ。
