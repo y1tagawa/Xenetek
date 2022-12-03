@@ -85,19 +85,27 @@ class _ColorGridTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const bool nullable = false;
-
     _logger.fine('[i] build');
     //final enabled = ref.watch(enableActionsProvider);
+    final selectedColor = ref.watch(_selectedColorProvider);
 
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10),
-      child: ExColorGrid(
-        onChanged: (color) {
-          //   final color = Colors.primaries[index];
-          //   ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
-          //   await saveThemePreferences(ref);
-        },
+    return MiExpandedColumn(
+      bottoms: [
+        if (selectedColor != null) ...[
+          const Divider(),
+          ListTile(
+            title: const Text('Color swatch'),
+            subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
+          )
+        ]
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: ExColorGrid(
+          onChanged: (color) {
+            ref.read(_selectedColorProvider.notifier).state = color;
+          },
+        ),
       ),
     ).also((_) {
       _logger.fine('[o] build');
