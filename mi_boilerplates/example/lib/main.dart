@@ -426,14 +426,14 @@ class HomePage extends ConsumerWidget {
                       (item) => TextButton(
                         onPressed: () => context.push(item.path),
                         child: Container(
+                          alignment: Alignment.center,
                           width: 76,
                           height: 72,
                           padding: const EdgeInsets.all(2),
                           child: Column(
                             children: [
                               item.icon,
-                              DefaultTextStyle(
-                                style: TextStyle(color: foregroundColor),
+                              DefaultTextStyle.merge(
                                 textAlign: TextAlign.center,
                                 child: item.title,
                               ),
