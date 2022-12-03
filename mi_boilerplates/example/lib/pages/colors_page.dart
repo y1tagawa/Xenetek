@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:example/data/primary_color_names.dart';
 import 'package:example/pages/under_construction.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/src/primary_color_names.dart';
 
 import '../main.dart';
 import 'ex_app_bar.dart';

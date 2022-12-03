@@ -5,6 +5,7 @@
 library mi_boilerplates;
 
 export 'src/color_helper.dart';
+export 'src/jis_common_colors.dart';
 export 'src/mi_animation_controller.dart';
 export 'src/mi_app_bar.dart';
 export 'src/mi_bottom_navigation_bar.dart';
@@ -20,3 +21,5 @@ export 'src/mi_timer_controller.dart';
 export 'src/mi_toggle_buttons.dart';
 export 'src/mi_transforms.dart';
 export 'src/mi_widgets.dart';
+export 'src/primary_color_names.dart';
+export 'src/x11_colors.dart';

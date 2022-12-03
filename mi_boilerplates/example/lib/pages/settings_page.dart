@@ -3,14 +3,11 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
-import 'package:example/data/jis_common_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-import '../data/primary_color_names.dart';
-import '../data/x11_colors.dart';
 import '../main.dart';
 import 'ex_app_bar.dart';
 

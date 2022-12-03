@@ -1,12 +1,12 @@
 // Copyright 2022 Xenetek. All rights reserved.
-// This program is generated from the Wikipedia article "Web colors",
-// Creative Commons Attribution-Share-Alike License 3.0.
+// This program uses material from the Wikipedia article "JIS慣用色名",
+// https://ja.wikipedia.org/wiki/JIS%E6%85%A3%E7%94%A8%E8%89%B2%E5%90%8D
+// which is released under the Creative Commons Attribution-Share-Alike License 3.0.
 
 import 'package:flutter/material.dart';
 
-///
 /// JIS慣用色名
-///
+
 const jisCommonColors = [
   Color(0xFFF9A1D0), // とき色
   Color(0xFFCB4B94), // つつじ色

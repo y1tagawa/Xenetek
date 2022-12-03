@@ -48,3 +48,13 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
       VLCもあるが、プラットフォームで差があったり、将来に期待。
 * https://pub.dev/packages/dynamic_color#dynamic_color
 * X11Colors → CSSColors https://pub.dev/packages/css_colors
+  * 色値に差は無し、追加も無し
+  * 名前は
+    * *Goldenrod→*GoldenRod
+    * fireblick ~Brick
+    * seashell ~Shell
+    * *aquamarine ~Marine
+    * honeydew ~Dew
+    * burlywood ~Wood
+    * grayに加えgrey
+    * 名前がかぶらない分、X11の方が使い良いかもだ。

@@ -1,12 +1,17 @@
 // Copyright 2022 Xenetek. All rights reserved.
-// This program is generated from the Wikipedia article "Web colors",
-// Creative Commons Attribution-Share-Alike License 3.0.
+// This program uses material from the Wikipedia article "Web colors",
+// https://en.wikipedia.org/wiki/Web_colors,
+// which is released under the Creative Commons Attribution-Share-Alike License 3.0.
 
 import 'package:flutter/material.dart';
 
-///
 /// X11 colors (+RebeccaPurple)
 ///
+/// TODO: [CSSColors] https://pub.dev/packages/css_colors と被るので統合。
+/// * 色値に差はない。
+/// * grayにgreyの別つづりあり。
+/// * *goldenrod → ~Rod, fireblick → ~Brick, seashell → ~Shell, honeydew → ~Dew,
+///   burlywood → ~Wood, mediumAaquamarine → ~Marine (しかしaquamarineはそのまま。)
 
 class X11Colors {
   static const mediumVioletRed = Color(0xFFC71585);

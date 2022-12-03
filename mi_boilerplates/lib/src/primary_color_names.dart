@@ -4,11 +4,10 @@
 
 import 'package:flutter/material.dart';
 
-///
 /// [Colors.primaries]に対応する名前のリスト
 ///
 /// s.a. https://api.flutter.dev/flutter/material/Colors/primaries-constant.html
-///
+
 const primaryColorNames = <String>[
   'red',
   'pink',
