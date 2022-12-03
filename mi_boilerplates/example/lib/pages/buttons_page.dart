@@ -30,7 +30,7 @@ class ButtonsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     MiTab(
-      tooltip: 'Push buttons',
+      tooltip: 'Text buttons',
       icon: Text(
         '[OK]',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),

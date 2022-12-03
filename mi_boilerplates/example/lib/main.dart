@@ -124,7 +124,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: GridsPage.icon,
     title: GridsPage.title,
-    path: '/drawer/grids/detail',
+    path: '/grids/detail',
     builder: (_, __) => const GridDetailPage(),
   ),
   _PageItem(

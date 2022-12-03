@@ -20,16 +20,16 @@ const _switchItems = [
   _SwitchItem(
     checkIcon: Icon(Icons.visibility_outlined),
     uncheckIcon: Icon(Icons.disabled_visible_outlined),
-    title: Text('Vision'),
+    title: Text('Eye health'),
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hearing_outlined),
     uncheckIcon: MiScale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
-    title: Text('Hearing'),
+    title: Text('Ear health'),
   ),
   _SwitchItem(
-    checkIcon: Icon(Icons.psychology_outlined),
-    uncheckIcon: Icon(Icons.question_mark),
+    checkIcon: Icon(Icons.cloud_outlined),
+    uncheckIcon: Icon(Icons.cloud_circle_outlined),
     title: Text('Mental health'),
   ),
   _SwitchItem(
@@ -99,24 +99,20 @@ class SwitchesPage extends ConsumerWidget {
         minimum: const EdgeInsets.all(8),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            MiRow(
+              flexes: const [1, 1],
               children: [
-                MiTextButton(
-                  enabled: enableActions && myHp < _switchItems.length,
+                MiButtonListTile(
+                  enabled: enableActions,
                   onPressed: () => reset(true),
-                  child: const MiIcon(
-                    icon: Icon(Icons.refresh),
-                    text: Text('Reset'),
-                  ),
+                  icon: const Icon(Icons.refresh),
+                  text: const Text('Reset'),
                 ),
-                MiTextButton(
-                  enabled: enableActions && myHp > 0,
+                MiButtonListTile(
+                  enabled: enableActions,
                   onPressed: () => reset(false),
-                  child: const MiIcon(
-                    icon: Icon(Icons.clear),
-                    text: Text('Clear'),
-                  ),
+                  icon: const Icon(Icons.clear),
+                  text: const Text('Clear'),
                 ),
               ],
             ),
@@ -163,13 +159,10 @@ class SwitchesPage extends ConsumerWidget {
                   AnimatedOpacity(
                     opacity: myHp > 0 ? 0.0 : 1.0,
                     duration: const Duration(milliseconds: 500),
-                    child: MiRotate(
-                      angleDegree: 90,
-                      child: Icon(
-                        Icons.crop_7_5,
-                        size: 48,
-                        color: theme.disabledColor,
-                      ),
+                    child: Icon(
+                      Icons.portrait_outlined,
+                      size: 48,
+                      color: theme.disabledColor,
                     ),
                   )
                 ],
