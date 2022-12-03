@@ -75,45 +75,6 @@ class ColorsPage extends ConsumerWidget {
 }
 
 //
-// Color grid tab.
-//
-
-class _ColorGridTab extends ConsumerWidget {
-  static final _logger = Logger((_ColorGridTab).toString());
-
-  const _ColorGridTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-    //final enabled = ref.watch(enableActionsProvider);
-    final selectedColor = ref.watch(_selectedColorProvider);
-
-    return MiExpandedColumn(
-      bottoms: [
-        if (selectedColor != null) ...[
-          const Divider(),
-          ListTile(
-            title: const Text('Color swatch'),
-            subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
-          )
-        ]
-      ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: ExColorGrid(
-          onChanged: (color) {
-            ref.read(_selectedColorProvider.notifier).state = color;
-          },
-        ),
-      ),
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
-//
 //　Theme and color scheme tab.
 //
 
@@ -249,8 +210,6 @@ class _ColorSchemeTab extends ConsumerWidget {
 
     final selectedColor = ref.watch(_selectedColorProvider);
 
-    final theme = Theme.of(context);
-
     final lightTheme = ThemeData(
       primarySwatch: primarySwatch,
       colorScheme: ColorScheme.fromSwatch(
@@ -315,6 +274,47 @@ class _ColorSchemeTab extends ConsumerWidget {
             subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
           )
       ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Color grid tab.
+//
+
+final _selectedColorProvider2 = StateProvider<Color?>((ref) => null);
+
+class _ColorGridTab extends ConsumerWidget {
+  static final _logger = Logger((_ColorGridTab).toString());
+
+  const _ColorGridTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    //final enabled = ref.watch(enableActionsProvider);
+    final selectedColor = ref.watch(_selectedColorProvider2);
+
+    return MiExpandedColumn(
+      bottoms: [
+        if (selectedColor != null) ...[
+          const Divider(),
+          ListTile(
+            title: const Text('Color swatch'),
+            subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
+          )
+        ]
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: ExColorGrid(
+          onChanged: (color) {
+            ref.read(_selectedColorProvider2.notifier).state = color;
+          },
+        ),
+      ),
     ).also((_) {
       _logger.fine('[o] build');
     });
