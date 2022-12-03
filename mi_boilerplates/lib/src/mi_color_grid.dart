@@ -94,3 +94,40 @@ class MiTabbedColorGrid extends StatelessWidget {
     );
   }
 }
+
+///
+
+class MiColorGridHelper {
+  static Future<bool> showColorSelectDialog({
+    required BuildContext context,
+    Widget? title,
+    Color? initialColor,
+    ValueChanged<Color?>? onChanged,
+    double? width,
+    double? height,
+    required Widget Function(BuildContext context, ValueChanged<Color?>? onChanged) builder,
+  }) async {
+    Color? color = initialColor;
+
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) => MiOkCancelDialog<bool>(
+        icon: MiColorChip(color: color),
+        title: title,
+        getValue: (ok) => ok,
+        content: SizedBox(
+          width: width ?? MediaQuery.of(context).size.width * 0.8,
+          height: height ?? MediaQuery.of(context).size.height * 0.4,
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return builder(context, (color_) {
+                setState(() => color = color_);
+                onChanged?.call(color_);
+              });
+            },
+          ),
+        ),
+      ),
+    ).then((value) => value ?? false);
+  }
+}
