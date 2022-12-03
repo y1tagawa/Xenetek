@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
+import 'package:example/pages/ex_color_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -15,10 +15,7 @@ Future<bool> _showTabbedColorSelectDialog({
   required BuildContext context,
   Widget? title,
   Color? initialColor,
-  required List<Widget> tabs,
-  required List<List<Color?>> colors,
-  required List<List<String>> tooltips,
-  void Function(int tabIndex, int colorIndex)? onChanged,
+  void Function(Color?)? onChanged,
 }) async {
   Color? color = initialColor;
 
@@ -33,23 +30,12 @@ Future<bool> _showTabbedColorSelectDialog({
         height: MediaQuery.of(context).size.height * 0.4,
         child: StatefulBuilder(
           builder: (context, setState) {
-            return MiEmbeddedTabView(
-              tabs: tabs,
-              initialIndex: 0,
-              children: colors
-                  .mapIndexed(
-                    (tabIndex, colors_) => SingleChildScrollView(
-                      child: MiColorGrid(
-                        colors: colors_,
-                        tooltips: tooltips[tabIndex],
-                        onChanged: (colorIndex) {
-                          setState(() => color = colors_[colorIndex]);
-                          onChanged?.call(tabIndex, colorIndex);
-                        },
-                      ),
-                    ),
-                  )
-                  .toList(),
+            return ExColorGrid(
+              initialTabIndex: 0,
+              onChanged: (color_) {
+                setState(() => color = color_);
+                onChanged?.call(color_);
+              },
             );
           },
         ),
@@ -103,34 +89,12 @@ Future<bool> showColorSelectDialog({
   void Function(Color? value)? onChanged,
   bool nullable = false,
 }) async {
-  const tabs = <Widget>[
-    MiTab(icon: Icon(Icons.flutter_dash)),
-    MiTab(text: 'X11'),
-    MiTab(text: 'JIS'),
-  ];
-
-  final colors = <List<Color?>>[
-    [if (nullable) null, ...Colors.primaries],
-    x11Colors,
-    jisCommonColors,
-  ];
-
-  final tooltips = [
-    [if (nullable) 'null', ...primaryColorNames],
-    x11ColorNames,
-    jisCommonColorNames,
-  ];
-
   final ok = await _showTabbedColorSelectDialog(
-      context: context,
-      title: title,
-      initialColor: initialColor,
-      tabs: tabs,
-      colors: colors,
-      tooltips: tooltips,
-      onChanged: (tabIndex, colorIndex) {
-        onChanged?.call(colors[tabIndex][colorIndex]);
-      });
+    context: context,
+    title: title,
+    initialColor: initialColor,
+    onChanged: onChanged,
+  );
   if (!ok) {
     onChanged?.call(initialColor);
   }

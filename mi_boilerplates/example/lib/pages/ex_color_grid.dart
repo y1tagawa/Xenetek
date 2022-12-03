@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-// Exampleアプリ用カラーグリッド
+// Exampleアプリ用カラーグリッド(primarySwatch, secondaryColor用)
 
 class ExColorGrid extends StatelessWidget {
   final int initialTabIndex;
@@ -40,6 +40,7 @@ class ExColorGrid extends StatelessWidget {
     ];
 
     return MiTabbedColorGrid(
+      initialTabIndex: initialTabIndex,
       tabs: _tabs,
       colors: colors,
       tooltips: tooltips,
