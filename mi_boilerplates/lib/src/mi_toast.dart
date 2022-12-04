@@ -75,10 +75,14 @@ class _MiToasterState extends State<MiToaster> {
     _logger.fine('[i] build _opacity=$_opacity');
 
     if (widget.visibleNotifier.value) {
-      _dismiss?.cancel();
+      if (_dismiss != null) {
+        _logger.fine('cancel dismiss');
+        _dismiss!.cancel();
+      }
       _dismiss = CancelableOperation.fromFuture(
         Future.delayed(widget.duration, () {
           _logger.fine('dismissing');
+          _dismiss = null;
           setState(() {
             widget.visibleNotifier.value = false;
           });

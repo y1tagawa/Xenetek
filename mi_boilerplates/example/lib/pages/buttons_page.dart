@@ -223,7 +223,12 @@ class _PushButtonsTab extends ConsumerWidget {
           ),
           MiToaster(
             visibleNotifier: _toasterNotifier,
-            child: const Text('Toast'),
+            child: InkWell(
+              onTap: () {
+                _toasterNotifier.value = false;
+              },
+              child: const Text('Toast'),
+            ),
           ),
         ],
       ),
