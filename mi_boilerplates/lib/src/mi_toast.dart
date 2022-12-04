@@ -103,15 +103,19 @@ class _MiToastState extends State<MiToast> {
 ///
 
 class _Toast extends StatelessWidget {
+  final VoidCallback? onPressed;
   final Widget child;
 
-  const _Toast({required this.child});
+  const _Toast({
+    this.onPressed,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
+    Widget widget = Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadiusDirectional.circular(4),
@@ -129,6 +133,13 @@ class _Toast extends StatelessWidget {
         ),
       ),
     );
+    if (onPressed != null) {
+      widget = InkWell(
+        onTap: onPressed,
+        child: widget,
+      );
+    }
+    return widget;
   }
 }
 
@@ -172,7 +183,12 @@ class MiToastHelper {
               dismiss_();
               onDismissed?.call();
             },
-            child: _Toast(child: child),
+            child: _Toast(
+              onPressed: () {
+                visibleNotifier.value = false;
+              },
+              child: child,
+            ),
           ),
         );
       },
