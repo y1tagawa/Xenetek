@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-/// 指定時間でF.I./F.O.するウィジェット
+/// 指定時間でフェードイン・アウト
+///
+/// [visibleNotifier]をtrueに設定するとF.I.開始
 
-class MiToast extends StatefulWidget {
+class MiToaster extends StatefulWidget {
   final Duration duration;
   final Duration transitionDuration;
   final ValueNotifier<bool> visibleNotifier;
@@ -19,7 +21,7 @@ class MiToast extends StatefulWidget {
   final VoidCallback? onDismissed;
   final Widget child;
 
-  const MiToast({
+  const MiToaster({
     super.key,
     this.duration = const Duration(milliseconds: 4000),
     this.transitionDuration = const Duration(milliseconds: 250),
@@ -30,11 +32,11 @@ class MiToast extends StatefulWidget {
   }) : assert(opacity > 0.0 && opacity <= 1.0);
 
   @override
-  State<StatefulWidget> createState() => _MiToastState();
+  State<StatefulWidget> createState() => _MiToasterState();
 }
 
-class _MiToastState extends State<MiToast> {
-  static final _logger = Logger((_MiToastState).toString());
+class _MiToasterState extends State<MiToaster> {
+  static final _logger = Logger((_MiToasterState).toString());
 
   double _opacity = 0.0;
   CancelableOperation<void>? _dismiss;
@@ -61,7 +63,7 @@ class _MiToastState extends State<MiToast> {
   }
 
   @override
-  void didUpdateWidget(covariant MiToast oldWidget) {
+  void didUpdateWidget(covariant MiToaster oldWidget) {
     _logger.fine('didUpdateWidget');
     super.didUpdateWidget(oldWidget);
     oldWidget.visibleNotifier.removeListener(_update);
@@ -173,7 +175,7 @@ class MiToastHelper {
       builder: (context) {
         return Align(
           alignment: const Alignment(0, 0.75),
-          child: MiToast(
+          child: MiToaster(
             duration: duration,
             transitionDuration: transitionDuration,
             visibleNotifier: visibleNotifier,

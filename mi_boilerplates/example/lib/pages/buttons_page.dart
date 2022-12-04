@@ -14,12 +14,15 @@ import 'ex_app_bar.dart';
 //
 
 final _tabIndexProvider = StateProvider((ref) => 0);
+final _toasterNotifier = ValueNotifier(false);
 
 AnimationController? _pingController;
 
 void _ping(WidgetRef ref) async {
   _pingController?.reset();
   _pingController?.forward();
+
+  _toasterNotifier.value = true;
 }
 
 class ButtonsPage extends ConsumerWidget {
@@ -122,8 +125,6 @@ class ButtonsPage extends ConsumerWidget {
 // Push buttons tab
 //
 
-// TODO: https://assets10.lottiefiles.com/datafiles/WgRBwbT0n0IN0Uu/data.json
-
 class _PushButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_PushButtonsTab).toString());
 
@@ -219,6 +220,10 @@ class _PushButtonsTab extends ConsumerWidget {
                 onDispose: () => _pingController = null,
               ),
             ),
+          ),
+          MiToaster(
+            visibleNotifier: _toasterNotifier,
+            child: const Text('Toast'),
           ),
         ],
       ),
