@@ -8,7 +8,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 /// カスタム[RadioListTile]
 ///
 /// * [enabled]追加
-///
+
 class MiRadioListTile<T> extends RadioListTile<T> {
   const MiRadioListTile({
     //<editor-fold>
@@ -41,7 +41,7 @@ class MiRadioListTile<T> extends RadioListTile<T> {
 /// カスタム[SwitchListTile]
 ///
 /// * [enabled]追加
-///
+
 class MiSwitchListTile extends SwitchListTile {
   const MiSwitchListTile({
     //<editor-fold>
@@ -78,7 +78,7 @@ class MiSwitchListTile extends SwitchListTile {
 /// カスタム[ExpansionTile]
 ///
 /// * [enabled]追加、それに合わせ動作もいろいろ変更。
-///
+
 class MiExpansionTile extends StatelessWidget {
   //<editor-fold>
   final bool enabled;
@@ -147,31 +147,28 @@ class MiExpansionTile extends StatelessWidget {
             collapsedIconColor: enabled ? null : disabledColor,
             collapsedTextColor: enabled ? null : disabledColor,
           ),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(color: enabled ? null : disabledColor),
-            child: IconTheme.merge(
-              data: IconThemeData(color: enabled ? null : disabledColor),
-              child: ExpansionTile(
-                initiallyExpanded: initiallyExpanded,
-                leading: leading,
-                title: title,
-                subtitle: subtitle,
-                onExpansionChanged: onExpansionChanged,
-                trailing: trailing,
-                maintainState: maintainState,
-                tilePadding: tilePadding,
-                expandedCrossAxisAlignment: expandedCrossAxisAlignment,
-                expandedAlignment: expandedAlignment,
-                childrenPadding: childrenPadding,
-                backgroundColor: backgroundColor,
-                collapsedBackgroundColor: collapsedBackgroundColor,
-                textColor: textColor,
-                collapsedTextColor: collapsedTextColor,
-                iconColor: iconColor,
-                collapsedIconColor: collapsedIconColor,
-                controlAffinity: controlAffinity,
-                children: children,
-              ),
+          child: MiDefaultTextColor(
+            color: enabled ? null : disabledColor,
+            child: ExpansionTile(
+              initiallyExpanded: initiallyExpanded,
+              leading: leading,
+              title: title,
+              subtitle: subtitle,
+              onExpansionChanged: onExpansionChanged,
+              trailing: trailing,
+              maintainState: maintainState,
+              tilePadding: tilePadding,
+              expandedCrossAxisAlignment: expandedCrossAxisAlignment,
+              expandedAlignment: expandedAlignment,
+              childrenPadding: childrenPadding,
+              backgroundColor: backgroundColor,
+              collapsedBackgroundColor: collapsedBackgroundColor,
+              textColor: textColor,
+              collapsedTextColor: collapsedTextColor,
+              iconColor: iconColor,
+              collapsedIconColor: collapsedIconColor,
+              controlAffinity: controlAffinity,
+              children: children,
             ),
           ),
         ),
@@ -183,26 +180,30 @@ class MiExpansionTile extends StatelessWidget {
 /// [ListTile]のテキストボタン的用法
 ///
 /// * 頻出コード
-///
+
 class MiButtonListTile extends StatelessWidget {
   final bool enabled;
   final bool selected;
+  final Widget? leading;
+  final Widget? trailing;
   final Widget? icon;
   final Widget text;
   final Widget? title;
   final MainAxisAlignment alignment;
-  final MiIconPosition iconPosition;
+  final TextDirection iconPosition;
   final VoidCallback? onPressed;
 
   const MiButtonListTile({
     super.key,
     this.enabled = true,
     this.selected = false,
+    this.leading,
+    this.trailing,
     this.icon,
     required this.text,
     this.title,
     this.alignment = MainAxisAlignment.center,
-    this.iconPosition = MiIconPosition.start,
+    this.iconPosition = TextDirection.ltr,
     this.onPressed,
     // TODO: 他のプロパティ
   });
@@ -216,30 +217,32 @@ class MiButtonListTile extends StatelessWidget {
     Widget title_ = Row(
       mainAxisAlignment: alignment,
       children: [
-        DefaultTextStyle.merge(
-          style: TextStyle(color: textColor),
-          child: IconTheme.merge(
-            data: IconThemeData(color: textColor),
-            child: icon != null
-                ? MiIcon(
-                    icon: icon,
-                    text: text,
-                    iconPosition: iconPosition,
-                  )
-                : text,
-          ),
+        MiDefaultTextColor(
+          color: textColor,
+          child: icon != null
+              ? MiIcon(
+                  icon: icon,
+                  text: text,
+                  iconPosition: iconPosition,
+                )
+              : text,
         ),
       ],
     );
 
     if (title != null) {
       subtitle_ = title_;
-      title_ = Center(child: title!);
+      title_ = Row(
+        mainAxisAlignment: alignment,
+        children: [title!],
+      );
     }
 
     return ListTile(
       enabled: enabled,
       selected: selected,
+      leading: leading?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
+      trailing: trailing?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,

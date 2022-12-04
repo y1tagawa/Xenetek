@@ -37,7 +37,7 @@ class CustomPaintsPage extends ConsumerWidget {
 
     final tabs = <Widget>[
       const MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.text),
+      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
     ];
 
     return MiDefaultTabController(
@@ -273,7 +273,7 @@ class _ClockState extends State<_Clock> {
 
     faceColor = widget.faceColor ?? theme.colorScheme.surface;
     tickColor = widget.tickColor ?? color.withOpacity(0.5);
-    hourColor = widget.hourColor ?? color;
+    hourColor = widget.hourColor ?? color.withOpacity(0.9);
     minuteColor = widget.minuteColor ?? tickColor;
     secondColor = widget.secondColor ?? color.withOpacity(0.75);
     pivotColor = widget.pivotColor ?? (isDark ? Colors.white70 : faceColor);
@@ -369,7 +369,7 @@ class _ClockTab extends ConsumerWidget {
               size: const Size(200, 200),
               dateTimeNotifier: _dateTimeNotifier,
               child: Image.asset(
-                theme.isDark ? 'assets/under_construction.png' : 'assets/under_construction2.png',
+                theme.isDark ? 'assets/worker_cat2.png' : 'assets/worker_cat1.png',
               ),
             ),
           ),

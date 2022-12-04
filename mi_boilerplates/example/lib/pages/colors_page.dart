@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:example/data/primary_color_names.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -10,9 +9,10 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../main.dart';
 import 'ex_app_bar.dart';
+import 'ex_color_grid.dart';
 
 //
-// Color grid example page.
+// Color example page.
 //
 
 var _tabIndex = 0;
@@ -68,47 +68,6 @@ class ColorsPage extends ConsumerWidget {
           bottomNavigationBar: const ExBottomNavigationBar(),
         );
       },
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
-//
-// Color grid tab.
-//
-
-class _ColorGridTab extends ConsumerWidget {
-  static final _logger = Logger((_ColorGridTab).toString());
-
-  const _ColorGridTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-    //final enabled = ref.watch(enableActionsProvider);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: MiColorGrid(
-                colors: Colors.primaries,
-                tooltips: primaryColorNames,
-                onChanged: (index) async {
-                  final color = Colors.primaries[index];
-                  ref.read(primarySwatchProvider.notifier).state = color.toMaterialColor();
-                  await saveThemePreferences(ref);
-                },
-              ),
-            ),
-          ),
-        ],
-        //colorize
-      ),
     ).also((_) {
       _logger.fine('[o] build');
     });
@@ -251,8 +210,6 @@ class _ColorSchemeTab extends ConsumerWidget {
 
     final selectedColor = ref.watch(_selectedColorProvider);
 
-    final theme = Theme.of(context);
-
     final lightTheme = ThemeData(
       primarySwatch: primarySwatch,
       colorScheme: ColorScheme.fromSwatch(
@@ -298,6 +255,7 @@ class _ColorSchemeTab extends ConsumerWidget {
                   },
                 ),
                 _ColorsView(
+                  initiallyExpanded: true,
                   title: const Text('Color scheme colors'),
                   theme1: lightTheme,
                   theme2: darkTheme,
@@ -316,6 +274,47 @@ class _ColorSchemeTab extends ConsumerWidget {
             subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
           )
       ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Color grid tab.
+//
+
+final _selectedColorProvider2 = StateProvider<Color?>((ref) => null);
+
+class _ColorGridTab extends ConsumerWidget {
+  static final _logger = Logger((_ColorGridTab).toString());
+
+  const _ColorGridTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    //final enabled = ref.watch(enableActionsProvider);
+    final selectedColor = ref.watch(_selectedColorProvider2);
+
+    return MiExpandedColumn(
+      bottoms: [
+        if (selectedColor != null) ...[
+          const Divider(),
+          ListTile(
+            title: const Text('Color swatch'),
+            subtitle: _SwatchView(color: selectedColor.toMaterialColor()),
+          )
+        ]
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: ExColorGrid(
+          onChanged: (color) {
+            ref.read(_selectedColorProvider2.notifier).state = color;
+          },
+        ),
+      ),
     ).also((_) {
       _logger.fine('[o] build');
     });

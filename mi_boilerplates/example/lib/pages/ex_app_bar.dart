@@ -112,9 +112,10 @@ class _OverflowMenu extends ConsumerWidget {
   }
 }
 
-/// Exampleアプリ用AppBar
-///
-/// テーマ調整ON/OFFによりTabBarを切り替える
+// Exampleアプリ用AppBar
+//
+// テーマ調整ON/OFFによりTabBarを切り替える
+
 class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
@@ -229,9 +230,10 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 }
 
-/// Exampleアプリ用TabBar
-///
-/// テーマ調整ON/OFFによりTabBarを切り替える
+// Exampleアプリ用TabBar
+//
+// テーマ調整ON/OFFによりTabBarを切り替える
+
 class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   final bool enabled;
   final List<Widget> tabs;
@@ -274,9 +276,10 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   }
 }
 
-/// Exampleアプリ用BottomNavigationBar
-///
-/// TODO: 横画面でNavigationRail
+// Exampleアプリ用BottomNavigationBar
+//
+// TODO: 横画面でNavigationRail
+
 class ExBottomNavigationBar extends ConsumerWidget {
   // ignore: unused_field
   static final _logger = Logger((ExBottomNavigationBar).toString());

@@ -1,6 +1,18 @@
 
 # Flutterマテリアルウィジェット拡張サンプルアプリ
 
+# Licenses
+
+All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
+
+x11_colors uses material from the Wikipedia article "Web colors",
+https://en.wikipedia.org/wiki/Web_colors,
+which is released under the Creative Commons Attribution-Share-Alike License 3.0.
+
+jis_common_colors program uses material from the Wikipedia article "JIS慣用色名",
+https://ja.wikipedia.org/wiki/JIS%E6%85%A3%E7%94%A8%E8%89%B2%E5%90%8D
+which is released under the Creative Commons Attribution-Share-Alike License 3.0.
+
 ## open_moji_svgs作成手順
 
 絵文字テーブル https://commons.wikimedia.org/wiki/Emoji/Table を参照し、
@@ -18,30 +30,8 @@ OpenMojiプロジェクトのSVGファイルをDLする。
 8. open_moji_svgs.dart.txtをプロジェクトにコピーし、リネームする。
 9. プロジェクトのpubspec.yamlに assets/open_moji/ を追加する。fragment.yamlはたぶん必要ない。
 
-二度目以後、download.shは、すでにDLされているファイルはスキップする。
-OpenMojiがアップデートされた場合、scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
-
-## TODO
-* Material designのanatomy的な設定箇所の説明図
-* Colors
-  * Reorderable, dismissive
-* M2AppBar上用のデフォルトテーマ
-  * 淡色AppBar
-* https://pub.dev/packages/scrollable_positioned_list
-
-* 絵文字テーブル https://commons.wikimedia.org/wiki/Emoji/Table をDL、コードと名前をピックして 
-  * dartを生成
-  * OpenMojiからDL
-    wget https://commons.wikimedia.org/wiki/Emoji/Table
-    grep -e '^<td><code>\|^<td style="text-align: initial">\|^<th>[0-9]' Table >table2
-    sed -e 's/<\/code> <br \/> <code>/-/g' -e 's/<\/code>/":/g' -e 's/<td><code>/{"/g' table2
-
-  * sed -e 's/<th>\([0-9]*\)$/{"\1":/g' table2 |
-    sed -e 's/<\/code> <br \/> <code>/-/g' -e 's/<\/code>/",/g' -e 's/<td><code>/{"code":/g' |
-    sed -e 's/<br \/><small>/","keywords": "/g' -e 's/<\/small>/"}},/g' -e 's/<td style="text-align: initial">/"name":"/g'
-
-sed -e 's/<th>\([0-9]*\)/{"\1":/g' Documents/emoji_dl/table2 |   sed -e 's/<\/code> <br \/> <code>/-/g' -e 's/<\/code>/",/g' -e 's/<td><code>/{"code":/g' |   sed -e ' s/<br \/><small>/","keywords": "/g' -e 's/<\/small>/"}},/g' -e 's/<td style="text-align: initial">/"name":"/g'
-
+二度目以後、download.shは、すでにDLされているファイルはスキップするので、 OpenMojiがアップデートされた場合、
+scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## Tips
 
@@ -49,3 +39,21 @@ sed -e 's/<th>\([0-9]*\)/{"\1":/g' Documents/emoji_dl/table2 |   sed -e 's/<\/co
   * 以下参照。  
     https://stackoverflow.com/questions/65841017/convert-image-to-icondata-flutter  
     https://www.fluttericon.com/
+
+## TODO
+
+* Material designのanatomy的な設定箇所の説明図
+* M2AppBar上用のデフォルトテーマ
+  * 淡色AppBar
+* https://pub.dev/packages/scrollable_positioned_list
+* ToastのF.I./F.O.、キュー（まではいらないか。SnackBarがあるのだから）
+* 通知一覧ページと通知アイコン
+* https://pub.dev/packages/audioplayers
+  * https://commons.wikimedia.org/wiki/Category:Sound_sample_files
+  * https://commons.wikimedia.org/wiki/Category:MIDI_files
+  * WindowsはWAV, mp3しかだめみたい
+  * https://pub.dev/packages/just_audio こっちの方がよさそう？
+    * 試しに変えたらWindowsがなおさら弱かったので今は止めておく。
+    * https://pub.dev/packages/dart_vlc、https://pub.dev/packages/flutter_vlc_player 
+      VLCもあるが、プラットフォームで差があったり、将来に期待。
+* https://pub.dev/packages/dynamic_color#dynamic_color

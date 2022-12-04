@@ -7,6 +7,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
@@ -26,6 +27,8 @@ class TabViewPage extends ConsumerWidget {
   static const icon = Icon(Icons.folder_outlined);
   static const title = Text('Tab view');
 
+  static final _logger = Logger((TabViewPage).toString());
+
   static const _tabs = [
     Tab(text: 'Zeroth'),
     Tab(text: 'First'),
@@ -36,22 +39,17 @@ class TabViewPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('TabViewPage: build: $_tabIndex');
+    _logger.fine('[i] build');
 
-    // s.a. https://api.flutter.dev/flutter/material/TabController-class.html ,
-    // https://api.flutter.dev/flutter/material/DefaultTabController-class.html .
-    return DefaultTabController(
+    return MiDefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
-      child: Builder(builder: (BuildContext context) {
-        final tabController = DefaultTabController.of(context)!;
-        tabController.addListener(() {
-          // save tab index to prepare rebuilding.
-          if (!tabController.indexIsChanging) {
-            debugPrint('TabViewPage: saving tab index ${tabController.index}');
-            _tabIndex = tabController.index;
-          }
-        });
+      onIndexChanged: (index) {
+        _logger.fine('[i] onIndexChanged index=$index');
+        _tabIndex = index;
+        _logger.fine('[o] onIndexChanged');
+      },
+      builder: (BuildContext context) {
         return Scaffold(
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
@@ -68,34 +66,29 @@ class TabViewPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   child: SingleChildScrollView(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
                       children: [
-                        Column(
-                          children: [
-                            ..._tabs.mapIndexed(
-                              (i, tab) {
-                                return MiTextButton(
-                                  enabled: i != index,
-                                  onPressed: () {
-                                    debugPrint('TabViewPage: setting tab index to $i');
-                                    tabController.index = i;
-                                  },
-                                  child: Text(tab.text!),
-                                );
+                        ..._tabs.mapIndexed(
+                          (i, tab) {
+                            return MiTextButton(
+                              enabled: i != index,
+                              onPressed: () {
+                                final tabController = DefaultTabController.of(context)!;
+                                tabController.index = i;
                               },
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Image.network(
-                                _imageUrls[index],
-                                width: _imageWidth,
-                                height: _imageHeight,
-                                frameBuilder: (_, child, frame, __) =>
-                                    frame == null ? const CircularProgressIndicator() : child,
-                              ),
-                            ),
-                          ],
+                              child: Text(tab.text!),
+                            );
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Image.network(
+                            _imageUrls[index],
+                            width: _imageWidth,
+                            height: _imageHeight,
+                            frameBuilder: (_, child, frame, __) =>
+                                frame == null ? const CircularProgressIndicator() : child,
+                          ),
                         ),
                       ],
                     ),
@@ -106,7 +99,9 @@ class TabViewPage extends ConsumerWidget {
           ),
           bottomNavigationBar: const ExBottomNavigationBar(),
         );
-      }),
-    );
+      },
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
   }
 }

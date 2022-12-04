@@ -5,6 +5,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L26
@@ -174,6 +175,8 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 ///   https://api.flutter.dev/flutter/material/DefaultTabController-class.html
 
 class MiDefaultTabController extends StatelessWidget {
+  static final _logger = Logger((MiDefaultTabController).toString());
+
   final int length;
   final int initialIndex;
   final ValueChanged<int>? onIndexChanged;
@@ -196,13 +199,16 @@ class MiDefaultTabController extends StatelessWidget {
       initialIndex: initialIndex,
       child: Builder(
         builder: (BuildContext context) {
+          _logger.fine('[i] builder');
           final tabController = DefaultTabController.of(context)!;
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {
               onIndexChanged?.call(tabController.index);
             }
           });
-          return builder(context);
+          return builder(context).also((it) {
+            _logger.fine('[o] builder');
+          });
         },
       ),
     );
@@ -212,6 +218,7 @@ class MiDefaultTabController extends StatelessWidget {
 /// AppBarのbottom以外用[TabBarView]
 ///
 /// https://m2.material.io/components/tabs#placement
+
 class MiEmbeddedTabView extends StatelessWidget {
   final List<Widget> tabs;
   final int initialIndex;

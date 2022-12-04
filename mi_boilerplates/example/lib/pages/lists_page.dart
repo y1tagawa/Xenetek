@@ -42,13 +42,15 @@ final _listItems = <String, Widget>{
   // 'Caloric': const Icon(Icons.hot_tub_outlined),
   // 'Alchemy': const Icon(Icons.science_outlined),
   // 'Weak force': const Icon(Icons.filter_vintage_outlined),
+  // 'Gravity': const Icon(Icons.cloud_download_outlined),
   // 'Sorcery': const Icon(Icons.all_inclusive_outlined),
   // 'Rune magic': const Icon(Icons.bluetooth),
   // 'Chaos magic': const Icon(Icons.android),
+  // 'Weak force': const Icon(Icons.filter_vintage_outlined),
 };
 
 class ListsPage extends ConsumerWidget {
-  static const icon = Icon(Icons.list);
+  static const icon = Icon(Icons.format_list_bulleted);
   static const title = Text('Lists');
 
   static final _logger = Logger((ListsPage).toString());
@@ -274,7 +276,7 @@ class _ReorderableListTab extends ConsumerWidget {
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
                 text: const Text('Scroll to'),
-                iconPosition: MiIconPosition.end,
+                iconPosition: TextDirection.rtl,
               ),
             ),
           ],

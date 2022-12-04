@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
 
@@ -41,6 +42,12 @@ extension ListHelper<T> on List<T> {
     return t;
   }
 
+  List<T> removed(T value) {
+    final t = toList();
+    t.remove(value);
+    return t;
+  }
+
   List<T> removedAt(int index) {
     final t = toList();
     t.removeAt(index);
@@ -68,17 +75,40 @@ extension SetHelper<T> on Set<T> {
   }
 }
 
+/// [DefaultTextStyle]+[IconTheme]
 ///
-enum MiIconPosition { start, end }
+/// 頻出コード。末端でスタイル変更することになるのであまり公開したくないのだが……
+
+class MiDefaultTextColor extends StatelessWidget {
+  final Color? color;
+  final Widget child;
+
+  const MiDefaultTextColor({
+    super.key,
+    this.color,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTextStyle.merge(
+      style: TextStyle(color: color),
+      child: IconTheme.merge(
+        data: IconThemeData(color: color),
+        child: child,
+      ),
+    );
+  }
+}
 
 /// ラベル
 ///
-/// * [icon]がnullの場合、空白を表示する。
-///
+/// * [icon]がnullの場合、アイコン部分は空白となる。
+
 class MiIcon extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
-  final MiIconPosition iconPosition;
+  final TextDirection iconPosition;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onHover;
   final double? spacing;
@@ -89,7 +119,7 @@ class MiIcon extends StatelessWidget {
     super.key,
     this.enabled = true,
     this.icon,
-    this.iconPosition = MiIconPosition.start,
+    this.iconPosition = TextDirection.ltr,
     this.onTap,
     this.onHover,
     this.spacing,
@@ -111,7 +141,7 @@ class MiIcon extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: iconPosition == MiIconPosition.end
+        children: iconPosition == TextDirection.rtl
             ? [
                 if (spacer != null) spacer,
                 text!,
@@ -127,12 +157,9 @@ class MiIcon extends StatelessWidget {
       );
     }
 
-    icon_ = DefaultTextStyle.merge(
-      style: TextStyle(color: textColor),
-      child: IconTheme.merge(
-        data: IconThemeData(color: textColor),
-        child: icon_,
-      ),
+    icon_ = MiDefaultTextColor(
+      color: textColor,
+      child: icon_,
     );
 
     if (onTap != null || onHover != null) {
@@ -157,7 +184,7 @@ class MiIcon extends StatelessWidget {
 /// カラーチップ
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
-///
+
 class MiColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
@@ -210,7 +237,7 @@ class MiColorChip extends StatelessWidget {
 }
 
 /// トグルアイコン
-///
+
 class MiToggleIcon extends StatelessWidget {
   final bool checked;
   final Widget checkIcon;
@@ -222,7 +249,7 @@ class MiToggleIcon extends StatelessWidget {
     required this.checked,
     required this.checkIcon,
     required this.uncheckIcon,
-    this.duration = const Duration(milliseconds: 300),
+    this.duration = const Duration(milliseconds: 250),
   });
 
   @override
@@ -238,6 +265,8 @@ class MiToggleIcon extends StatelessWidget {
 
 /// [Image] (PNGとか)をアイコンにする
 ///
+/// [SvgPicture]対応はflutter_svgに依存することになるので考え中。
+
 class MiImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
@@ -267,7 +296,7 @@ class MiImageIcon extends StatelessWidget {
 /// カスタム[TextButton]
 ///
 /// * [enabled]追加
-///
+
 class MiTextButton extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onPressed;
@@ -317,7 +346,7 @@ class MiTextButton extends StatelessWidget {
 ///
 /// * [enabled]追加
 /// TODO: StatelessWidgetから派生。
-///
+
 class MiIconButton extends IconButton {
   const MiIconButton({
     super.key,
@@ -350,6 +379,7 @@ class MiIconButton extends IconButton {
 }
 
 /// トグルアイコンボタン
+
 class MiCheckIconButton extends StatelessWidget {
   final bool enabled;
   final bool checked;
@@ -389,7 +419,85 @@ class MiCheckIconButton extends StatelessWidget {
   }
 }
 
+/// 直前の[child]と最新の[child]をクロスフェードする
+
+class MiFade extends StatefulWidget {
+  final Duration duration;
+  final Widget? placeHolder;
+  final Widget? child;
+  const MiFade({
+    // ignore: unused_element
+    super.key,
+    // ignore: unused_element
+    this.duration = const Duration(milliseconds: 250),
+    this.placeHolder,
+    required this.child,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _MiFadeState();
+}
+
+class _MiFadeState extends State<MiFade> {
+  // ignore: unused_field
+  static final _logger = Logger((_MiFadeState).toString());
+
+  late Widget? _firstChild;
+  late Widget? _secondChild;
+  late CrossFadeState _state;
+
+  void _update() {
+    if (_state == CrossFadeState.showFirst) {
+      _secondChild = widget.child;
+      _state = CrossFadeState.showSecond;
+    } else {
+      _firstChild = widget.child;
+      _state = CrossFadeState.showFirst;
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _firstChild = null;
+    _secondChild = null;
+    _state = CrossFadeState.showFirst;
+    if (widget.child != null) {
+      _update();
+    }
+  }
+
+  @override
+  void dispose() {
+    _firstChild = null;
+    _secondChild = null;
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant MiFade oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.child != (_state == CrossFadeState.showFirst ? _firstChild : _secondChild)) {
+      _update();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final placeHolder =
+        widget.placeHolder ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
+    return AnimatedCrossFade(
+      firstChild: _firstChild ?? placeHolder,
+      secondChild: _secondChild ?? placeHolder,
+      crossFadeState: _state,
+      duration: widget.duration,
+    );
+  }
+}
+
 /// 明示的にintの値をとる[Slider]
+
 class MiIntSlider extends StatelessWidget {
   final bool enabled;
   final int value;
@@ -429,7 +537,7 @@ class MiIntSlider extends StatelessWidget {
 /// * [crossAxisAlignment]のデフォルト値を[WrapCrossAlignment.center]に変更。
 /// * [flexes]を指定した場合、[children]の個々を[Flexible]でラップする。
 /// * [spacing]を指定した場合、[children]の間に空間を空ける。
-///
+
 class MiRow extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
@@ -531,7 +639,7 @@ class MiRow extends StatelessWidget {
 /// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
 /// [child] - [ListView]など[height]が不定のウィジェット。
 /// [top]/[tops], [bottom]/[bottoms] - [child]の上下に積まれる。
-///
+
 class MiExpandedColumn extends StatelessWidget {
   final Widget child;
   final Widget? top;

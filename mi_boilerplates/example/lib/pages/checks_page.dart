@@ -189,7 +189,7 @@ class _CheckboxTab extends ConsumerWidget {
                 size: 60,
                 color: Theme.of(context).disabledColor,
               ),
-              child: tallyIcon,
+              child: MiFade(child: tallyIcon),
             ),
           ),
         ],
