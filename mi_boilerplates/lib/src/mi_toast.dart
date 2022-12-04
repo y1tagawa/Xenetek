@@ -77,8 +77,6 @@ class _MiToastState extends State<MiToast> {
       );
     }
 
-    final theme = Theme.of(context);
-
     return AnimatedOpacity(
       opacity: _opacity,
       duration: widget.transitionDuration,
@@ -87,26 +85,83 @@ class _MiToastState extends State<MiToast> {
           widget.onDismissed?.call();
         }
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadiusDirectional.circular(4),
-          color: theme.colorScheme.onSurface,
-        ),
-        child: DefaultTextStyle(
-          style: theme.textTheme.titleMedium!.merge(
-            TextStyle(color: theme.colorScheme.surface),
-          ),
-          child: IconTheme.merge(
-            data: IconThemeData(
-              color: theme.colorScheme.surface,
-            ),
-            child: widget.child,
-          ),
-        ),
-      ),
+      child: widget.child,
     ).also((it) {
       _logger.fine('[o] build');
     });
   }
+}
+
+///
+
+class _Toast extends StatelessWidget {
+  final Widget child;
+
+  const _Toast({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadiusDirectional.circular(4),
+        color: theme.colorScheme.onSurface,
+      ),
+      child: DefaultTextStyle(
+        style: theme.textTheme.titleMedium!.merge(
+          TextStyle(color: theme.colorScheme.surface),
+        ),
+        child: IconTheme.merge(
+          data: IconThemeData(
+            color: theme.colorScheme.surface,
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+///
+
+Future<void> showToast({
+  required BuildContext context,
+  Duration duration = const Duration(milliseconds: 4000),
+  Duration transitionDuration = const Duration(milliseconds: 250),
+  double opacity = 1.0,
+  VoidCallback? onDismissed,
+  required Widget child,
+}) async {
+  final logger = Logger('showToast');
+
+  final visibleNotifier = ValueNotifier(false);
+  final overlay = Overlay.of(context);
+
+  late OverlayEntry toast;
+
+  void dismiss() {
+    logger.fine('remove entry');
+    toast.remove();
+  }
+
+  toast = OverlayEntry(
+    builder: (context) {
+      return Align(
+        alignment: const Alignment(0, 0.75),
+        child: MiToast(
+          visibleNotifier: visibleNotifier,
+          onDismissed: () {
+            dismiss();
+            onDismissed?.call();
+          },
+          child: _Toast(child: child),
+        ),
+      );
+    },
+  );
+  logger.fine('insert entry');
+  overlay!.insert(toast);
+  visibleNotifier.value = true;
 }

@@ -188,37 +188,6 @@ class _ToastTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
 
-    Future<void> showToast(BuildContext context) async {
-      final overlay = Overlay.of(context);
-      final theme = Theme.of(context);
-      // TODO: AnimatedOpacity-ed StatefulWidget
-      final toast = OverlayEntry(
-        builder: (context) {
-          return Align(
-            alignment: const Alignment(0, 0.75),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadiusDirectional.circular(4),
-                color: theme.colorScheme.onSurface,
-              ),
-              child: DefaultTextStyle(
-                style: theme.textTheme.titleMedium!.merge(
-                  TextStyle(color: theme.colorScheme.surface),
-                ),
-                child: const Text('Toast'),
-              ),
-            ),
-          );
-        },
-      );
-      overlay!.insert(toast);
-      Future.delayed(
-        const Duration(seconds: 3),
-        () => toast.remove(),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
@@ -228,7 +197,10 @@ class _ToastTab extends ConsumerWidget {
               icon: const Icon(Icons.breakfast_dining_outlined),
               text: const Text('Toast!'),
               onPressed: () async {
-                await showToast(context);
+                await showToast(
+                  context: context,
+                  child: const Text('Toast!'),
+                );
               }),
         ],
       ),
