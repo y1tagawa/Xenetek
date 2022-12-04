@@ -193,15 +193,16 @@ class _ToastTab extends ConsumerWidget {
       child: Column(
         children: [
           MiButtonListTile(
-              enabled: enabled,
-              icon: const Icon(Icons.breakfast_dining_outlined),
-              text: const Text('Toast!'),
-              onPressed: () async {
-                await showToast(
-                  context: context,
-                  child: const Text('Toast!'),
-                );
-              }),
+            enabled: enabled,
+            icon: const Icon(Icons.breakfast_dining_outlined),
+            text: const Text('Toast!'),
+            onPressed: () async {
+              await MiToastHelper.showToast(
+                context: context,
+                child: const Text('Toast!'),
+              );
+            },
+          ),
         ],
       ),
     ).also((_) {
