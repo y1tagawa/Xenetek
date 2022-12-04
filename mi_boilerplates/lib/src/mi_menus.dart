@@ -13,7 +13,7 @@ import '../mi_boilerplates.dart';
 /// * AppBar上の[PopupMenuButton]など、[IconTheme]が変更されている場合、
 ///   メニュー上のアイコン色が見づらい場合があるので修正する。
 ///   TODO: PopupMenuThemeData.colorを考慮する
-///
+
 class MiPopupMenuItem<T> extends PopupMenuItem<T> {
   // ウィジェットではStateにプロパティを渡すだけ
   const MiPopupMenuItem({
@@ -46,7 +46,7 @@ class _MiPopupMenuItemState<T> extends PopupMenuItemState<T, MiPopupMenuItem<T>>
 /// チェックリストメニューアイテム
 ///
 /// [CheckedPopupMenuItem]が大きいので代替。
-///
+
 class MiCheckPopupMenuItem<T> extends MiPopupMenuItem<T> {
   static const _checkSize = 15.0;
 
@@ -78,7 +78,7 @@ class MiCheckPopupMenuItem<T> extends MiPopupMenuItem<T> {
 }
 
 /// ラジオメニューアイテム
-///
+
 class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
   static const _radioSize = 12.0;
 
@@ -110,7 +110,7 @@ class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
 }
 
 /// グリッドポップアップメニューアイテム
-///
+
 class MiGridPopupMenuItem extends PopupMenuItem<int> {
   final List<Widget> items;
   final List<String>? tooltips;
@@ -162,7 +162,7 @@ class _MiGridPopupMenuItemState extends PopupMenuItemState<int, MiGridPopupMenuI
 /// グリッドポップアップメニューボタン
 ///
 /// ポップアップに[items]をグリッド状に並べ、選択されたアイテムのインデックスを[onSelected]で通知する。
-///
+
 class MiGridPopupMenuButton extends StatelessWidget {
   final bool enabled;
   final List<Widget> items;
@@ -209,7 +209,7 @@ class MiGridPopupMenuButton extends StatelessWidget {
 /// グリッドアイテム
 ///
 /// [GridView]や[Wrap]のアイテムとして、一定サイズの中でアライメントしたら結構大変だったのでウィジェットとする。
-///
+
 class MiGridItem extends StatelessWidget {
   final Widget? child;
   final BoxConstraints? constraints;

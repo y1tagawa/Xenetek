@@ -19,8 +19,12 @@ class RadiosPage extends ConsumerWidget {
 
   static final _tabs = <Widget>[
     const MiTab(
-      tooltip: 'Radios',
+      tooltip: 'Radio buttons',
       icon: icon,
+    ),
+    const MiTab(
+      tooltip: 'Radio menu',
+      icon: Icon(Icons.more_vert),
     ),
     MiTab(
       tooltip: 'Toggle buttons',
@@ -56,7 +60,8 @@ class RadiosPage extends ConsumerWidget {
             minimum: EdgeInsets.all(8),
             child: TabBarView(
               children: [
-                _RadiosTab(),
+                _RadioButtonsTab(),
+                _RadioMenuTab(),
                 _ToggleButtonsTab(),
               ],
             ),
@@ -74,29 +79,41 @@ class RadiosPage extends ConsumerWidget {
 // Radios tab
 //
 
-enum _Class { fighter, cleric, mage, thief }
+// TODO: more entries for menu.
+
+enum _Class {
+  fighter,
+  cleric,
+  mage,
+  thief,
+  bishop,
+  load,
+  samurai,
+  ninja,
+  alkamist,
+}
 
 class _RadioItem {
   final Widget Function(bool checked) iconBuilder;
-  final Widget text;
+  final String text;
   const _RadioItem({required this.iconBuilder, required this.text});
 }
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
     iconBuilder: (checked) => const Icon(Icons.shield_outlined),
-    text: const Text('Fighter'),
+    text: 'Fighter',
   ),
   _Class.cleric: _RadioItem(
     iconBuilder: (checked) => const Icon(Icons.emergency_outlined),
-    text: const Text('Cleric'),
+    text: 'Cleric',
   ),
   _Class.mage: _RadioItem(
     //iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
     iconBuilder: (_) => MiImageIcon(
       image: Image.asset('assets/mage_hat.png'),
     ),
-    text: const Text('Mage'),
+    text: 'Mage',
   ),
   _Class.thief: _RadioItem(
     iconBuilder: (checked) => MiToggleIcon(
@@ -104,17 +121,37 @@ final _radioItems = <_Class, _RadioItem>{
       checkIcon: const Icon(Icons.lock_open),
       uncheckIcon: const Icon(Icons.lock_outlined),
     ),
-    text: const Text('Thief'),
+    text: 'Thief',
+  ),
+  _Class.bishop: _RadioItem(
+    iconBuilder: (checked) => const Icon(Icons.android),
+    text: 'Bishop',
+  ),
+  _Class.load: _RadioItem(
+    iconBuilder: (checked) => const Icon(Icons.health_and_safety_outlined),
+    text: 'Load',
+  ),
+  _Class.samurai: _RadioItem(
+    iconBuilder: (checked) => const Icon(Icons.gpp_bad_outlined),
+    text: 'Samurai',
+  ),
+  _Class.ninja: _RadioItem(
+    iconBuilder: (checked) => const Icon(Icons.people_outlined),
+    text: 'Ninja',
+  ),
+  _Class.alkamist: _RadioItem(
+    iconBuilder: (checked) => const Icon(Icons.science_outlined),
+    text: 'Alkamist',
   ),
 };
 
 final _radioIndexProvider = StateProvider((ref) => _Class.fighter);
 
-class _RadiosTab extends ConsumerWidget {
+class _RadioButtonsTab extends ConsumerWidget {
   // ignore: unused_field
-  static final _logger = Logger((_RadiosTab).toString());
+  static final _logger = Logger((_RadioButtonsTab).toString());
 
-  const _RadiosTab();
+  const _RadioButtonsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -126,7 +163,7 @@ class _RadiosTab extends ConsumerWidget {
         Flexible(
           child: ListView(
             shrinkWrap: true,
-            children: _radioItems.keys.map(
+            children: _radioItems.keys.take(4).map(
               (key) {
                 final item = _radioItems[key]!;
                 return MiRadioListTile<_Class>(
@@ -135,7 +172,7 @@ class _RadiosTab extends ConsumerWidget {
                   groupValue: radioIndex,
                   title: MiIcon(
                     icon: item.iconBuilder(key == radioIndex),
-                    text: item.text,
+                    text: Text(item.text),
                   ),
                   onChanged: (value) {
                     ref.read(_radioIndexProvider.notifier).state = value!;
@@ -143,6 +180,68 @@ class _RadiosTab extends ConsumerWidget {
                 );
               },
             ).toList(),
+          ),
+        ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: IconTheme(
+            data: IconThemeData(
+              color: Theme.of(context).disabledColor,
+              size: 60,
+            ),
+            child: MiFade(
+              child: _radioItems[radioIndex]!.iconBuilder(false),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+//
+// Radio menu tab
+//
+
+final _radioIndexProvider2 = StateProvider((ref) => _Class.fighter);
+
+class _RadioMenuTab extends ConsumerWidget {
+  // ignore: unused_field
+  static final _logger = Logger((_RadioMenuTab).toString());
+
+  const _RadioMenuTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enabled = ref.watch(enableActionsProvider);
+    final radioIndex = ref.watch(_radioIndexProvider2);
+
+    return Column(
+      children: [
+        PopupMenuButton<_Class>(
+          enabled: enabled,
+          tooltip: '',
+          initialValue: radioIndex,
+          itemBuilder: (context) {
+            return _radioItems.entries.map((entry) {
+              return MiRadioPopupMenuItem<_Class>(
+                value: entry.key,
+                checked: entry.key == radioIndex,
+                child: MiIcon(
+                  icon: entry.value.iconBuilder(false),
+                  text: Text(entry.value.text),
+                ),
+              );
+            }).toList();
+          },
+          onSelected: (key) {
+            ref.read(_radioIndexProvider2.notifier).state = key;
+          },
+          offset: const Offset(1, 0),
+          child: ListTile(
+            enabled: enabled,
+            trailing: const Icon(Icons.more_vert),
           ),
         ),
         const Divider(),
