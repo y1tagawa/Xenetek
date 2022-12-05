@@ -81,43 +81,24 @@ class RadiosPage extends ConsumerWidget {
 
 // TODO: more entries for menu.
 
-enum _Class {
-  fighter,
-  cleric,
-  mage,
-  thief,
-}
+// class _RadioItem {
+//   final Widget Function(bool checked) iconBuilder;
+//   final String text;
+//   const _RadioItem({required this.iconBuilder, required this.text});
+// }
 
-class _RadioItem {
-  final Widget Function(bool checked) iconBuilder;
-  final String text;
-  const _RadioItem({required this.iconBuilder, required this.text});
-}
-
-final _radioItems = <_Class, _RadioItem>{
-  _Class.fighter: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.shield_outlined),
-    text: 'Fighter',
-  ),
-  _Class.cleric: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
-    text: 'Cleric',
-  ),
-  _Class.mage: _RadioItem(
-    iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
-    text: 'Mage',
-  ),
-  _Class.thief: _RadioItem(
-    iconBuilder: (checked) => MiToggleIcon(
-      checked: checked,
-      checkIcon: const Icon(Icons.lock_open),
-      uncheckIcon: const Icon(Icons.lock_outlined),
-    ),
-    text: 'Thief',
-  ),
+final _radioItems = <String, Widget Function(bool checked)>{
+  'Fighter': (_) => const Icon(Icons.shield_outlined),
+  'Cleric': (_) => const Icon(Icons.emergency_outlined),
+  'Mage': (_) => const Icon(Icons.auto_fix_normal_outlined),
+  'Thief': (checked) => MiToggleIcon(
+        checked: checked,
+        checkIcon: const Icon(Icons.lock_open),
+        uncheckIcon: const Icon(Icons.lock_outlined),
+      ),
 };
 
-final _radioIndexProvider = StateProvider((ref) => _Class.fighter);
+final _radioIndexProvider = StateProvider((ref) => _radioItems.keys.first);
 
 class _RadioButtonsTab extends ConsumerWidget {
   // ignore: unused_field
@@ -135,16 +116,15 @@ class _RadioButtonsTab extends ConsumerWidget {
         Flexible(
           child: ListView(
             shrinkWrap: true,
-            children: _radioItems.keys.take(4).map(
-              (key) {
-                final item = _radioItems[key]!;
-                return MiRadioListTile<_Class>(
+            children: _radioItems.entries.map(
+              (item) {
+                return MiRadioListTile<String>(
                   enabled: enableActions,
-                  value: key,
+                  value: item.key,
                   groupValue: radioIndex,
                   title: MiIcon(
-                    icon: item.iconBuilder(key == radioIndex),
-                    text: Text(item.text),
+                    icon: item.value(item.key == radioIndex),
+                    text: Text(item.key),
                   ),
                   onChanged: (value) {
                     ref.read(_radioIndexProvider.notifier).state = value!;
@@ -163,7 +143,7 @@ class _RadioButtonsTab extends ConsumerWidget {
               size: 60,
             ),
             child: MiFade(
-              child: _radioItems[radioIndex]!.iconBuilder(false),
+              child: _radioItems[radioIndex]!.call(false),
             ),
           ),
         ),
@@ -176,7 +156,7 @@ class _RadioButtonsTab extends ConsumerWidget {
 // Radio menu tab
 //
 
-final _radioIndexProvider2 = StateProvider((ref) => _Class.fighter);
+final _radioIndexProvider2 = StateProvider((ref) => _radioItems.keys.first);
 
 class _RadioMenuTab extends ConsumerWidget {
   // ignore: unused_field
@@ -191,18 +171,18 @@ class _RadioMenuTab extends ConsumerWidget {
 
     return Column(
       children: [
-        PopupMenuButton<_Class>(
+        PopupMenuButton<String>(
           enabled: enabled,
           tooltip: '',
           initialValue: radioIndex,
           itemBuilder: (context) {
-            return _radioItems.entries.map((entry) {
-              return MiRadioPopupMenuItem<_Class>(
-                value: entry.key,
-                checked: entry.key == radioIndex,
+            return _radioItems.entries.map((item) {
+              return MiRadioPopupMenuItem<String>(
+                value: item.key,
+                checked: item.key == radioIndex,
                 child: MiIcon(
-                  icon: entry.value.iconBuilder(false),
-                  text: Text(entry.value.text),
+                  icon: item.value(false),
+                  text: Text(item.key),
                 ),
               );
             }).toList();
@@ -225,7 +205,7 @@ class _RadioMenuTab extends ConsumerWidget {
               size: 60,
             ),
             child: MiFade(
-              child: _radioItems[radioIndex]!.iconBuilder(false),
+              child: _radioItems[radioIndex]!.call(false),
             ),
           ),
         ),
