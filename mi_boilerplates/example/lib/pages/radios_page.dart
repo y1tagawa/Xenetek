@@ -79,14 +79,6 @@ class RadiosPage extends ConsumerWidget {
 // Radios tab
 //
 
-// TODO: more entries for menu.
-
-// class _RadioItem {
-//   final Widget Function(bool checked) iconBuilder;
-//   final String text;
-//   const _RadioItem({required this.iconBuilder, required this.text});
-// }
-
 final _radioItems = <String, Widget Function(bool checked)>{
   'Fighter': (_) => const Icon(Icons.shield_outlined),
   'Cleric': (_) => const Icon(Icons.emergency_outlined),
@@ -98,7 +90,7 @@ final _radioItems = <String, Widget Function(bool checked)>{
       ),
 };
 
-final _radioIndexProvider = StateProvider((ref) => _radioItems.keys.first);
+final _radioProvider = StateProvider((ref) => _radioItems.keys.first);
 
 class _RadioButtonsTab extends ConsumerWidget {
   // ignore: unused_field
@@ -109,7 +101,7 @@ class _RadioButtonsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(enableActionsProvider);
-    final radioIndex = ref.watch(_radioIndexProvider);
+    final radioKey = ref.watch(_radioProvider);
 
     return Column(
       children: [
@@ -121,13 +113,13 @@ class _RadioButtonsTab extends ConsumerWidget {
                 return MiRadioListTile<String>(
                   enabled: enableActions,
                   value: item.key,
-                  groupValue: radioIndex,
+                  groupValue: radioKey,
                   title: MiIcon(
-                    icon: item.value(item.key == radioIndex),
+                    icon: item.value(item.key == radioKey),
                     text: Text(item.key),
                   ),
                   onChanged: (value) {
-                    ref.read(_radioIndexProvider.notifier).state = value!;
+                    ref.read(_radioProvider.notifier).state = value!;
                   },
                 );
               },
@@ -143,7 +135,7 @@ class _RadioButtonsTab extends ConsumerWidget {
               size: 60,
             ),
             child: MiFade(
-              child: _radioItems[radioIndex]!.call(false),
+              child: _radioItems[radioKey]!.call(false),
             ),
           ),
         ),
@@ -156,9 +148,22 @@ class _RadioButtonsTab extends ConsumerWidget {
 // Radio menu tab
 //
 
-final _radioIndexProvider2 = StateProvider((ref) => _radioItems.keys.first);
+const _menuItems = <String, Color>{
+  'Soda': Colors.blue,
+  'Mint': Colors.green,
+  'Lemon': Colors.yellow,
+  'Orange': Colors.orange,
+  'Strawberry': Colors.red,
+  'Grape': Colors.purple,
+  'Milk': Color(0xFFEEEEEE),
+  'Cola': Colors.brown,
+};
+
+final _menuIndexProvider = StateProvider<int?>((ref) => null);
 
 class _RadioMenuTab extends ConsumerWidget {
+  static final _colors = _menuItems.values.toList();
+
   // ignore: unused_field
   static final _logger = Logger((_RadioMenuTab).toString());
 
@@ -167,49 +172,73 @@ class _RadioMenuTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
-    final radioIndex = ref.watch(_radioIndexProvider2);
+    final menuIndex = ref.watch(_menuIndexProvider);
 
-    return Column(
-      children: [
-        PopupMenuButton<String>(
-          enabled: enabled,
-          tooltip: '',
-          initialValue: radioIndex,
-          itemBuilder: (context) {
-            return _radioItems.entries.map((item) {
-              return MiRadioPopupMenuItem<String>(
-                value: item.key,
-                checked: item.key == radioIndex,
-                child: MiIcon(
-                  icon: item.value(false),
-                  text: Text(item.key),
+    return MiDefaultTabController(
+      length: _menuItems.length,
+      initialIndex: menuIndex ?? 0,
+      builder: (context) {
+        return Column(
+          children: [
+            PopupMenuButton<int>(
+              enabled: enabled,
+              tooltip: '',
+              initialValue: menuIndex,
+              itemBuilder: (context) {
+                return _menuItems.entries.mapIndexed((index, item) {
+                  return MiRadioPopupMenuItem<int>(
+                    value: index,
+                    checked: index == menuIndex,
+                    child: MiIcon(
+                      icon: MiColorChip(color: item.value),
+                      text: Text(item.key),
+                    ),
+                  );
+                }).toList();
+              },
+              onSelected: (index) {
+                ref.read(_menuIndexProvider.notifier).state = index;
+                DefaultTabController.of(context)?.index = index;
+              },
+              offset: const Offset(1, 0),
+              child: ListTile(
+                enabled: enabled,
+                trailing: const Icon(Icons.more_vert),
+              ),
+            ),
+            const Divider(),
+            if (menuIndex != null)
+              Container(
+                width: 120,
+                height: 120,
+                padding: const EdgeInsets.all(1),
+                color: Colors.white,
+                child: ColoredBox(
+                  color: _colors[menuIndex].withAlpha(128),
+                  child: MiAnimationController(
+                    builder: (_, controller, __) {
+                      return Lottie.network(
+                        menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,
+                        controller: controller,
+                        repeat: true,
+                        onLoaded: (composition) {
+                          _logger.fine('onLoaded: ${composition.duration}');
+                          controller.duration = composition.duration;
+                          controller.reset();
+                          controller.forward();
+                        },
+                      );
+                    },
+                    onCompleted: (controller) {
+                      controller.reset();
+                      controller.forward();
+                    },
+                  ),
                 ),
-              );
-            }).toList();
-          },
-          onSelected: (key) {
-            ref.read(_radioIndexProvider2.notifier).state = key;
-          },
-          offset: const Offset(1, 0),
-          child: ListTile(
-            enabled: enabled,
-            trailing: const Icon(Icons.more_vert),
-          ),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-              size: 60,
-            ),
-            child: MiFade(
-              child: _radioItems[radioIndex]!.call(false),
-            ),
-          ),
-        ),
-      ],
+              ),
+          ],
+        );
+      },
     );
   }
 }
