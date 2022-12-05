@@ -86,11 +86,6 @@ enum _Class {
   cleric,
   mage,
   thief,
-  bishop,
-  load,
-  samurai,
-  ninja,
-  alkamist,
 }
 
 class _RadioItem {
@@ -101,18 +96,15 @@ class _RadioItem {
 
 final _radioItems = <_Class, _RadioItem>{
   _Class.fighter: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.shield_outlined),
+    iconBuilder: (_) => const Icon(Icons.shield_outlined),
     text: 'Fighter',
   ),
   _Class.cleric: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.emergency_outlined),
+    iconBuilder: (_) => const Icon(Icons.emergency_outlined),
     text: 'Cleric',
   ),
   _Class.mage: _RadioItem(
-    //iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
-    iconBuilder: (_) => MiImageIcon(
-      image: Image.asset('assets/mage_hat.png'),
-    ),
+    iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
     text: 'Mage',
   ),
   _Class.thief: _RadioItem(
@@ -122,26 +114,6 @@ final _radioItems = <_Class, _RadioItem>{
       uncheckIcon: const Icon(Icons.lock_outlined),
     ),
     text: 'Thief',
-  ),
-  _Class.bishop: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.android),
-    text: 'Bishop',
-  ),
-  _Class.load: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.health_and_safety_outlined),
-    text: 'Load',
-  ),
-  _Class.samurai: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.gpp_bad_outlined),
-    text: 'Samurai',
-  ),
-  _Class.ninja: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.people_outlined),
-    text: 'Ninja',
-  ),
-  _Class.alkamist: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.science_outlined),
-    text: 'Alkamist',
   ),
 };
 
