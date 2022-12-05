@@ -174,71 +174,73 @@ class _RadioMenuTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final menuIndex = ref.watch(_menuIndexProvider);
 
-    return MiDefaultTabController(
-      length: _menuItems.length,
-      initialIndex: menuIndex ?? 0,
-      builder: (context) {
-        return Column(
-          children: [
-            PopupMenuButton<int>(
-              enabled: enabled,
-              tooltip: '',
-              initialValue: menuIndex,
-              itemBuilder: (context) {
-                return _menuItems.entries.mapIndexed((index, item) {
-                  return MiRadioPopupMenuItem<int>(
-                    value: index,
-                    checked: index == menuIndex,
-                    child: MiIcon(
-                      icon: MiColorChip(color: item.value),
-                      text: Text(item.key),
-                    ),
-                  );
-                }).toList();
-              },
-              onSelected: (index) {
-                ref.read(_menuIndexProvider.notifier).state = index;
-                DefaultTabController.of(context)?.index = index;
-              },
-              offset: const Offset(1, 0),
-              child: ListTile(
-                enabled: enabled,
-                trailing: const Icon(Icons.more_vert),
-              ),
-            ),
-            const Divider(),
-            if (menuIndex != null)
-              Container(
-                width: 120,
-                height: 120,
-                padding: const EdgeInsets.all(1),
-                color: Colors.white,
-                child: ColoredBox(
-                  color: _colors[menuIndex].withAlpha(128),
-                  child: MiAnimationController(
-                    builder: (_, controller, __) {
-                      return Lottie.network(
-                        menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,
-                        controller: controller,
-                        repeat: true,
-                        onLoaded: (composition) {
-                          _logger.fine('onLoaded: ${composition.duration}');
-                          controller.duration = composition.duration;
-                          controller.reset();
-                          controller.forward();
-                        },
-                      );
-                    },
-                    onCompleted: (controller) {
-                      controller.reset();
-                      controller.forward();
-                    },
+    return Column(
+      children: [
+        PopupMenuButton<int?>(
+          enabled: enabled,
+          tooltip: '',
+          initialValue: menuIndex,
+          itemBuilder: (context) {
+            return [
+              ..._menuItems.entries.mapIndexed(
+                (index, item) => MiRadioPopupMenuItem<int?>(
+                  value: index,
+                  checked: index == menuIndex,
+                  child: MiIcon(
+                    icon: MiColorChip(color: item.value),
+                    text: Text(item.key),
                   ),
                 ),
               ),
-          ],
-        );
-      },
+            ];
+          },
+          onSelected: (index) {
+            ref.read(_menuIndexProvider.notifier).state = index!;
+          },
+          offset: const Offset(1, 0),
+          child: ListTile(
+            enabled: enabled,
+            trailing: const Icon(Icons.more_vert),
+          ),
+        ),
+        const Divider(),
+        if (menuIndex != null) ...[
+          Container(
+            width: 120,
+            height: 120,
+            padding: const EdgeInsets.all(1),
+            color: Colors.white,
+            child: ColoredBox(
+              color: _colors[menuIndex].withAlpha(128),
+              child: MiAnimationController(
+                builder: (_, controller, __) {
+                  return Lottie.network(
+                    menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,
+                    controller: controller,
+                    repeat: true,
+                    onLoaded: (composition) {
+                      _logger.fine('onLoaded: ${composition.duration}');
+                      controller.duration = composition.duration;
+                      controller.reset();
+                      controller.forward();
+                    },
+                  );
+                },
+                onCompleted: (controller) {
+                  controller.reset();
+                  controller.forward();
+                },
+              ),
+            ),
+          ),
+          const Text(
+            '''
+Animation by LottieFiles from lottiefiles.com which is released under the Lottie Simple License.
+          ''',
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ],
     );
   }
 }
