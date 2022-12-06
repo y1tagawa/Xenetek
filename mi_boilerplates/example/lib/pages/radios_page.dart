@@ -176,32 +176,45 @@ class _RadioMenuTab extends ConsumerWidget {
 
     return Column(
       children: [
-        PopupMenuButton<int?>(
-          enabled: enabled,
-          tooltip: '',
-          initialValue: menuIndex,
-          itemBuilder: (context) {
-            return [
-              ..._menuItems.entries.mapIndexed(
-                (index, item) => MiRadioPopupMenuItem<int?>(
-                  value: index,
-                  checked: index == menuIndex,
-                  child: MiIcon(
-                    icon: MiColorChip(color: item.value),
-                    text: Text(item.key),
+        MiRow(
+          flexes: const [1, 1],
+          children: [
+            MiButtonListTile(
+              enabled: enabled && menuIndex != null,
+              onPressed: () {
+                ref.read(_menuIndexProvider.notifier).state = null;
+              },
+              icon: const Icon(Icons.refresh),
+              text: const Text('Reset'),
+            ),
+            PopupMenuButton<int?>(
+              enabled: enabled,
+              tooltip: '',
+              initialValue: menuIndex,
+              itemBuilder: (context) {
+                return [
+                  ..._menuItems.entries.mapIndexed(
+                    (index, item) => MiRadioPopupMenuItem<int?>(
+                      value: index,
+                      checked: index == menuIndex,
+                      child: MiIcon(
+                        icon: MiColorChip(color: item.value),
+                        text: Text(item.key),
+                      ),
+                    ),
                   ),
-                ),
+                ];
+              },
+              onSelected: (index) {
+                ref.read(_menuIndexProvider.notifier).state = index!;
+              },
+              offset: const Offset(1, 0),
+              child: ListTile(
+                enabled: enabled,
+                trailing: const Icon(Icons.more_vert),
               ),
-            ];
-          },
-          onSelected: (index) {
-            ref.read(_menuIndexProvider.notifier).state = index!;
-          },
-          offset: const Offset(1, 0),
-          child: ListTile(
-            enabled: enabled,
-            trailing: const Icon(Icons.more_vert),
-          ),
+            ),
+          ],
         ),
         const Divider(),
         if (menuIndex != null) ...[
@@ -234,9 +247,7 @@ class _RadioMenuTab extends ConsumerWidget {
             ),
           ),
           const Text(
-            '''
-Animation by LottieFiles from lottiefiles.com which is released under the Lottie Simple License.
-          ''',
+            'Animations by LottieFiles\nfrom lottiefiles.com.',
             textAlign: TextAlign.center,
           ),
         ],
