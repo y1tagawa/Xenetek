@@ -75,6 +75,14 @@ extension SetHelper<T> on Set<T> {
   }
 }
 
+extension IterableHelper<T> on Iterable<T> {
+  List<T> sorted({int Function<T>(T a, T b)? compare}) {
+    final t = toList();
+    t.sort(compare);
+    return t;
+  }
+}
+
 /// [DefaultTextStyle]+[IconTheme]
 ///
 /// 頻出コード。末端でスタイル変更することになるのであまり公開したくないのだが……

@@ -162,8 +162,6 @@ const _menuItems = <String, Color>{
 final _menuIndexProvider = StateProvider<int?>((ref) => null);
 
 class _RadioMenuTab extends ConsumerWidget {
-  static final _colors = _menuItems.values.toList();
-
   // ignore: unused_field
   static final _logger = Logger((_RadioMenuTab).toString());
 
@@ -177,7 +175,7 @@ class _RadioMenuTab extends ConsumerWidget {
     return Column(
       children: [
         MiRow(
-          flexes: const [1, 1],
+          flexes: const [2, 3],
           children: [
             MiButtonListTile(
               enabled: enabled && menuIndex != null,
@@ -211,6 +209,13 @@ class _RadioMenuTab extends ConsumerWidget {
               offset: const Offset(1, 0),
               child: ListTile(
                 enabled: enabled,
+                title: menuIndex != null
+                    ? _menuItems.keys.skip(menuIndex).first.let(
+                          (it) => Center(
+                            child: Text(it),
+                          ),
+                        )
+                    : null,
                 trailing: const Icon(Icons.more_vert),
               ),
             ),
@@ -224,7 +229,7 @@ class _RadioMenuTab extends ConsumerWidget {
             padding: const EdgeInsets.all(1),
             color: Colors.white,
             child: ColoredBox(
-              color: _colors[menuIndex].withAlpha(128),
+              color: _menuItems.values.skip(menuIndex).first.withAlpha(128),
               child: MiAnimationController(
                 builder: (_, controller, __) {
                   return Lottie.network(

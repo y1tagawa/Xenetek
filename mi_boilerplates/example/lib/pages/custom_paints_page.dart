@@ -381,3 +381,57 @@ class _ClockTab extends ConsumerWidget {
     });
   }
 }
+
+//
+//
+//
+
+abstract class _AbstractSprite {
+  int get plane;
+  void update(void Function(_AbstractSprite sprite) addSprite);
+  void paint(Canvas canvas, Size size);
+}
+
+class _SpritePainter extends CustomPainter {
+  var _sprites = <_AbstractSprite>[];
+  var _shouldRepaint = true;
+
+  _SpritePainter({
+    List<_AbstractSprite> sprites = const <_AbstractSprite>[],
+  }) : _sprites = sprites;
+
+  void update() {
+    var sprites = <_AbstractSprite>[];
+    for (final sprite in _sprites) {
+      sprite.update((sprite_) => sprites.add(sprite_));
+    }
+    _sprites = sprites;
+    _shouldRepaint = true;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var sprites = <int, List<_AbstractSprite>>{};
+    for (final sprite in _sprites) {
+      sprites[sprite.plane].let((it) {
+        if (it == null) {
+          sprites[sprite.plane] = [sprite];
+        } else {
+          it.add(sprite);
+        }
+      });
+    }
+    final planes = sprites.keys.toList().sorted();
+    for (final plane in planes) {
+      for (final sprite in sprites[plane]!) {
+        sprite.paint(canvas, size);
+      }
+    }
+    _shouldRepaint = false;
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return oldDelegate != this || _shouldRepaint;
+  }
+}
