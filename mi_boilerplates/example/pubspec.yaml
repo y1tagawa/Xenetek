@@ -76,7 +76,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/lottie_icon.png
-    - assets/mage_hat.png
     - assets/more_grid.png
     - assets/open_moji/
     - assets/worker_cat1.png

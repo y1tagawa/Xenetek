@@ -1,7 +1,9 @@
 // Copyright 2022 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'dart:math' as math;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -14,6 +16,8 @@ import 'knight_indicator.dart';
 // Checkbox examples page.
 //
 
+final _random = math.Random();
+
 class ChecksPage extends ConsumerWidget {
   static const icon = Icon(Icons.check_box_outlined);
   static const title = Text('Checks');
@@ -24,6 +28,10 @@ class ChecksPage extends ConsumerWidget {
     MiTab(
       tooltip: 'Checkbox',
       icon: icon,
+    ),
+    MiTab(
+      tooltip: 'Check menu',
+      icon: Icon(Icons.more_vert),
     ),
     MiTab(
       tooltip: 'Toggle buttons',
@@ -58,6 +66,7 @@ class ChecksPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _CheckboxTab(),
+                _CheckMenuTab(),
                 _ToggleButtonsTab(),
               ],
             ),
@@ -201,6 +210,165 @@ class _CheckboxTab extends ConsumerWidget {
 //
 // Check menu tab
 //
+
+final _menuItems = <String, Color>{
+  "Red": Colors.red.withOpacity(0.5),
+  "Blue": Colors.blue.withOpacity(0.5),
+};
+
+final _menuCheckListProvider = StateProvider(
+  (ref) => List<bool>.filled(_menuItems.length, false),
+);
+
+final _snowFlakeX1 = List<double>.filled(_menuItems.length, 0.0);
+final _snowFlakeX2 = List<double>.filled(_menuItems.length, 0.0);
+final _snowFlakeY = List<double>.filled(_menuItems.length, 0.0);
+final _snowFlakeColors = _menuItems.values.toList();
+
+class _SnowFlake {
+  final double x;
+  final double y;
+  final Color color;
+  const _SnowFlake({required this.x, required this.y, required this.color});
+}
+
+class _SnowPainter extends CustomPainter {
+  final List<_SnowFlake> snowFlakes;
+
+  const _SnowPainter({required this.snowFlakes});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint_ = Paint();
+    paint_.style = PaintingStyle.fill;
+
+    void paintSnowFlake(_SnowFlake snowFlake) {
+      final c = Offset(snowFlake.x * size.width, snowFlake.y * size.height);
+      paint_.color = snowFlake.color;
+      canvas.drawCircle(c, 6, paint_);
+    }
+
+    for (final snowFlake in snowFlakes) {
+      paintSnowFlake(snowFlake);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class _CheckMenuTab extends ConsumerWidget {
+  // ignore: unused_field
+  static final _logger = Logger((_CheckMenuTab).toString());
+
+  const _CheckMenuTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enabled = ref.watch(enableActionsProvider);
+    final menuCheckList = ref.watch(_menuCheckListProvider);
+
+    return Column(
+      children: [
+        MiRow(
+          flexes: const [2, 3],
+          children: [
+            MiButtonListTile(
+              enabled: enabled,
+              onPressed: () {
+                ref.read(_menuCheckListProvider.notifier).state =
+                    List<bool>.filled(_menuItems.length, false);
+              },
+              icon: const Icon(Icons.refresh),
+              text: const Text('Reset'),
+            ),
+            PopupMenuButton<int>(
+              enabled: enabled,
+              tooltip: '',
+              itemBuilder: (context) {
+                return [
+                  ..._menuItems.entries.mapIndexed(
+                    (index, item) => MiCheckPopupMenuItem<int>(
+                      value: index,
+                      checked: menuCheckList[index],
+                      child: MiIcon(
+                        icon: MiColorChip(color: item.value),
+                        text: Text(item.key),
+                      ),
+                    ),
+                  ),
+                ];
+              },
+              onSelected: (index) {
+                final checked = !menuCheckList[index];
+                if (checked) {
+                  _snowFlakeX1[index] = _random.nextDouble();
+                  _snowFlakeX2[index] = _random.nextDouble();
+                }
+                ref.read(_menuCheckListProvider.notifier).state =
+                    menuCheckList.replaced(index, checked);
+              },
+              offset: const Offset(1, 0),
+              child: ListTile(
+                enabled: enabled,
+                trailing: const Icon(Icons.more_vert),
+              ),
+            ),
+          ],
+        ),
+        const Divider(),
+        Container(
+          width: 120,
+          height: 120,
+          color: Colors.black,
+          padding: const EdgeInsets.all(1),
+          child: ClipRect(
+            child: MiAnimationController(
+              duration: const Duration(seconds: 6),
+              builder: (context, controller, _) {
+                return AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, _) {
+                    final snowFlakes = <_SnowFlake>[];
+                    for (int index = 0; index < _menuItems.length; ++index) {
+                      if (menuCheckList[index]) {
+                        snowFlakes.add(_SnowFlake(
+                          x: _snowFlakeX1[index],
+                          y: controller.value,
+                          color: _snowFlakeColors[index],
+                        ));
+                        snowFlakes.add(_SnowFlake(
+                          x: _snowFlakeX2[index],
+                          y: (controller.value + 0.5) % 1.0,
+                          color: _snowFlakeColors[index],
+                        ));
+                      }
+                    }
+                    return CustomPaint(
+                      painter: _SnowPainter(
+                        snowFlakes: snowFlakes,
+                      ),
+                      willChange: true,
+                    );
+                  },
+                );
+              },
+              onInitialized: (controller) {
+                controller.forward();
+              },
+              onCompleted: (controller) {
+                controller.reset();
+                controller.forward();
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 //
 // Toggle buttons tab

@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-/// [AnimationController]内蔵ウィジェット
+/// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
 ///
 /// s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
+
 class MiAnimationController extends StatefulWidget {
   final bool enabled;
+  final AnimationController? animationController;
   final Widget Function(
     BuildContext context,
     AnimationController controller,
@@ -25,6 +27,7 @@ class MiAnimationController extends StatefulWidget {
   const MiAnimationController({
     super.key,
     this.enabled = true,
+    this.animationController,
     required this.builder,
     this.duration = const Duration(milliseconds: 1000),
     this.onInitialized,
@@ -44,22 +47,29 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   // ignore: unused_field
   static final _logger = Logger((_MiAnimationControllerState).toString());
 
-  late final AnimationController _controller = AnimationController(
-    vsync: this, // the SingleTickerProviderStateMixin.
-    duration: widget.duration,
-  ).also((it) {
-    it.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        widget.onCompleted?.call(_controller);
-      }
-    });
-    widget.onInitialized?.call(it);
-  });
+  late final AnimationController _controller;
+
+  void _statusListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      widget.onCompleted?.call(_controller);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this, // the SingleTickerProviderStateMixin.
+      duration: widget.duration,
+    )..addStatusListener(_statusListener);
+    widget.onInitialized?.call(_controller);
+  }
 
   @override
   void dispose() {
     try {
       widget.onDispose?.call();
+      _controller.removeStatusListener(_statusListener);
     } finally {
       _controller.dispose();
       super.dispose();
