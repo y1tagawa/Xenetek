@@ -226,13 +226,13 @@ class _SnowFlake {
   static const _dy = 1.0 / 60;
   double x;
   double y;
-  double z;
+  double w;
   Color color;
   bool enabled;
-  _SnowFlake(this.x, this.y, this.z, this.color, this.enabled);
+  _SnowFlake(this.x, this.y, this.w, this.color, this.enabled);
   void update() {
     if (enabled) {
-      y += _dy * z;
+      y += _dy * w;
       if (y > 1.0) {
         x = _random.nextDouble();
         y = 0.0;
@@ -254,7 +254,7 @@ class _SnowPainter extends CustomPainter {
     void paintSnowFlake(_SnowFlake snowFlake) {
       final c = Offset(snowFlake.x * size.width, snowFlake.y * size.height);
       paint_.color = snowFlake.color;
-      canvas.drawCircle(c, 6, paint_);
+      canvas.drawCircle(c, 6.0 * snowFlake.w, paint_);
     }
 
     for (final snowFlake in snowFlakes) {
@@ -271,7 +271,7 @@ class _SnowPainter extends CustomPainter {
 }
 
 final _snowFlakes = List<_SnowFlake>.filled(
-  _menuItems.length * 2,
+  _menuItems.length * 3,
   _SnowFlake(0, 0, 1, const Color(0x00000000), false),
 );
 
@@ -322,15 +322,17 @@ class _CheckMenuTab extends ConsumerWidget {
               onSelected: (index) {
                 final checked = !menuCheckList[index];
                 if (checked) {
-                  _snowFlakes[index * 2] = _SnowFlake(_random.nextDouble(), -0.1, 1.0,
+                  _snowFlakes[index * 3] = _SnowFlake(_random.nextDouble(), -0.1, 1.0,
                       _snowFlakeColors[index].withAlpha(128), true);
-                  _snowFlakes[index * 2 + 1] = _SnowFlake(
+                  _snowFlakes[index * 3 + 1] = _SnowFlake(_random.nextDouble(), -0.1, 0.75,
+                      _snowFlakeColors[index].withAlpha(96), true);
+                  _snowFlakes[index * 3 + 2] = _SnowFlake(
                       _random.nextDouble(), -0.1, 0.5, _snowFlakeColors[index].withAlpha(64), true);
                 } else {
-                  _snowFlakes[index * 2].enabled = false;
-                  _snowFlakes[index * 2 + 1].enabled = false;
+                  _snowFlakes[index * 3].enabled = false;
+                  _snowFlakes[index * 3 + 1].enabled = false;
+                  _snowFlakes[index * 3 + 2].enabled = false;
                 }
-
                 ref.read(_menuCheckListProvider.notifier).state =
                     menuCheckList.replaced(index, checked);
               },
