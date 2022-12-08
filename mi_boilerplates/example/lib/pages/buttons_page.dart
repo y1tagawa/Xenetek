@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'under_construction.dart';
 
 //
 // Buttons example page.
@@ -40,8 +42,16 @@ class ButtonsPage extends ConsumerWidget {
       ),
     ),
     MiTab(
-      tooltip: 'Menu buttons',
-      icon: Icon(Icons.more_vert),
+      tooltip: 'Dropdown button',
+      icon: MiScale(
+        scaleX: 1.8,
+        scaleY: 2.0,
+        child: Icon(Icons.arrow_drop_down),
+      ),
+    ),
+    MiTab(
+      tooltip: UnderConstruction.title,
+      icon: UnderConstruction.icon,
     ),
   ];
 
@@ -90,6 +100,7 @@ class ButtonsPage extends ConsumerWidget {
                     physics: enabled ? null : const NeverScrollableScrollPhysics(),
                     children: const [
                       _PushButtonsTab(),
+                      _DropdownButtonTab(),
                       _MonospaceTab(),
                     ],
                   ),
@@ -230,6 +241,77 @@ class _PushButtonsTab extends ConsumerWidget {
               child: const Text('Toast'),
             ),
           ),
+        ],
+      ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Dropdown button tab.
+//
+
+const _dropdownItems = [
+  'Boots',
+  'Helmet',
+];
+
+final _dropdownIndexProvider = StateProvider((ref) => 0);
+
+class _DropdownButtonTab extends ConsumerWidget {
+  static final _logger = Logger((_DropdownButtonTab).toString());
+
+  const _DropdownButtonTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(enableActionsProvider);
+    final dropdownIndex = ref.watch(_dropdownIndexProvider);
+
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          MiRow(
+            flexes: const [1, 1],
+            children: [
+              MiButtonListTile(
+                enabled: enabled,
+                onPressed: () {
+                  //
+                },
+                icon: const Icon(Icons.clear),
+                text: const Text('Clear'),
+              ),
+              DropdownButton<int>(
+                value: dropdownIndex,
+                onChanged: (_) {},
+                items: [
+                  ..._dropdownItems.mapIndexed((index, value) {
+                    return DropdownMenuItem<int>(
+                      value: index,
+                      child: Text(value),
+                    );
+                  }),
+                  const DropdownMenuItem(
+                    value: -1,
+                    child: Text('Reset'),
+                  ),
+                  const DropdownMenuItem(
+                    value: -1,
+                    enabled: false,
+                    child: Text('Disabled'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const Divider(),
         ],
       ),
     ).also((_) {
