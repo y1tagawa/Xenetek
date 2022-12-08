@@ -219,22 +219,25 @@ final _menuItems = <String, Color>{
 };
 
 final _menuCheckListProvider = StateProvider(
-  (ref) => List<bool>.filled(_menuItems.length, false),
+  (ref) => List<bool>.filled(_menuItems.length, false).replaced(0, true),
 );
 
 class _SnowFlake {
   static const _dy = 1.0 / 60;
   double x;
+  double dx;
   double y;
   double w;
   Color color;
   bool enabled;
-  _SnowFlake(this.x, this.y, this.w, this.color, this.enabled);
+  _SnowFlake(this.x, this.dx, this.y, this.w, this.color, this.enabled);
   void update() {
     if (enabled) {
+      x += dx;
       y += _dy * w;
       if (y > 1.0) {
         x = _random.nextDouble();
+        dx = (_random.nextDouble() - 0.5) * 0.002;
         y = 0.0;
       }
     }
@@ -272,7 +275,7 @@ class _SnowPainter extends CustomPainter {
 
 final _snowFlakes = List<_SnowFlake>.filled(
   _menuItems.length * 3,
-  _SnowFlake(0, 0, 1, const Color(0x00000000), false),
+  _SnowFlake(0, 0, 0, 1, const Color(0x00000000), false),
 );
 
 final _snowFlakeColors = _menuItems.values.toList();
@@ -291,7 +294,7 @@ class _CheckMenuTab extends ConsumerWidget {
     return Column(
       children: [
         MiRow(
-          flexes: const [2, 3],
+          flexes: const [1, 1],
           children: [
             MiButtonListTile(
               enabled: enabled,
@@ -299,8 +302,8 @@ class _CheckMenuTab extends ConsumerWidget {
                 ref.read(_menuCheckListProvider.notifier).state =
                     List<bool>.filled(_menuItems.length, false);
               },
-              icon: const Icon(Icons.first_page),
-              text: const Text('Reset'),
+              icon: const Icon(Icons.clear),
+              text: const Text('Clear'),
             ),
             PopupMenuButton<int>(
               enabled: enabled,
@@ -322,12 +325,27 @@ class _CheckMenuTab extends ConsumerWidget {
               onSelected: (index) {
                 final checked = !menuCheckList[index];
                 if (checked) {
-                  _snowFlakes[index * 3] = _SnowFlake(_random.nextDouble(), -0.1, 1.0,
-                      _snowFlakeColors[index].withAlpha(128), true);
-                  _snowFlakes[index * 3 + 1] = _SnowFlake(_random.nextDouble(), -0.1, 0.75,
-                      _snowFlakeColors[index].withAlpha(96), true);
+                  _snowFlakes[index * 3] = _SnowFlake(
+                      _random.nextDouble(),
+                      (_random.nextDouble() - 0.5) * 0.002,
+                      -0.1,
+                      1.0,
+                      _snowFlakeColors[index].withAlpha(128),
+                      true);
+                  _snowFlakes[index * 3 + 1] = _SnowFlake(
+                      _random.nextDouble(),
+                      (_random.nextDouble() - 0.5) * 0.002,
+                      -0.1,
+                      0.75,
+                      _snowFlakeColors[index].withAlpha(96),
+                      true);
                   _snowFlakes[index * 3 + 2] = _SnowFlake(
-                      _random.nextDouble(), -0.1, 0.5, _snowFlakeColors[index].withAlpha(64), true);
+                      _random.nextDouble(),
+                      (_random.nextDouble() - 0.5) * 0.002,
+                      -0.1,
+                      0.5,
+                      _snowFlakeColors[index].withAlpha(64),
+                      true);
                 } else {
                   _snowFlakes[index * 3].enabled = false;
                   _snowFlakes[index * 3 + 1].enabled = false;

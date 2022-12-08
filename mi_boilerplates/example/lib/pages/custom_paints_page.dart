@@ -388,6 +388,7 @@ class _ClockTab extends ConsumerWidget {
 
 abstract class _AbstractSprite {
   int get plane;
+  bool get enabled;
   void update(void Function(_AbstractSprite sprite) addSprite);
   void paint(Canvas canvas, Size size);
 }
@@ -432,6 +433,6 @@ class _SpritePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return oldDelegate != this || _shouldRepaint;
+    return _shouldRepaint;
   }
 }
