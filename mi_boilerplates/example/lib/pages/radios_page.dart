@@ -160,7 +160,7 @@ const _menuItems = <String, Color>{
   'Cola': Colors.brown,
 };
 
-final _menuIndexProvider = StateProvider<int?>((ref) => null);
+final _menuIndexProvider = StateProvider<int?>((ref) => 0);
 
 class _RadioMenuTab extends ConsumerWidget {
   // ignore: unused_field
@@ -178,7 +178,7 @@ class _RadioMenuTab extends ConsumerWidget {
         MiRow(
           flexes: const [2, 3],
           children: [
-            ExResetButtonListTile(
+            ExClearButtonListTile(
               enabled: enabled && menuIndex != null,
               onPressed: () {
                 ref.read(_menuIndexProvider.notifier).state = null;
