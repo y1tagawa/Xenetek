@@ -11,6 +11,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'ex_widgets.dart';
 
 ///
 /// Lists example page.
@@ -151,10 +152,8 @@ class _DismissibleListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        MiButtonListTile(
+        ExResetButtonListTile(
           enabled: enabled,
-          icon: const Icon(Icons.refresh_outlined),
-          text: const Text('Reset'),
           onPressed: () {
             ref.invalidate(_leftListProvider);
             ref.invalidate(_rightListProvider);
@@ -239,10 +238,8 @@ class _ReorderableListTab extends ConsumerWidget {
         MiRow(
           flexes: const [1, 1],
           children: [
-            MiButtonListTile(
+            ExResetButtonListTile(
               enabled: enabled,
-              icon: const Icon(Icons.refresh_outlined),
-              text: const Text('Reset'),
               onPressed: () {
                 _orderNotifier.value = _initOrder;
                 ref.read(_selectedProvider.notifier).state = null;

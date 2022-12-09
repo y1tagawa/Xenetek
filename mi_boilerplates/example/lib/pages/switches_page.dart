@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'ex_widgets.dart';
 
 class _SwitchItem {
   final Widget checkIcon;
@@ -102,17 +103,13 @@ class SwitchesPage extends ConsumerWidget {
             MiRow(
               flexes: const [1, 1],
               children: [
-                MiButtonListTile(
+                ExResetButtonListTile(
                   enabled: enableActions,
                   onPressed: () => reset(true),
-                  icon: const Icon(Icons.refresh),
-                  text: const Text('Reset'),
                 ),
-                MiButtonListTile(
+                ExClearButtonListTile(
                   enabled: enableActions,
                   onPressed: () => reset(false),
-                  icon: const Icon(Icons.clear),
-                  text: const Text('Clear'),
                 ),
               ],
             ),

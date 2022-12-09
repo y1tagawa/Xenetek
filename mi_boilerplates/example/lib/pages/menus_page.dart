@@ -9,6 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'ex_widgets.dart';
 import 'knight_indicator.dart';
 
 ///
@@ -178,10 +179,8 @@ class _PopupMenuTab extends ConsumerWidget {
         ),
         const Divider(),
         if (armour.every((it) => it) && shield != 'None')
-          MiButtonListTile(
+          ExResetButtonListTile(
             enabled: enabled,
-            icon: const Icon(Icons.refresh_outlined),
-            text: const Text('Reset'),
             onPressed: () {
               ref.refresh(_armourProvider).also((_) {});
               ref.refresh(_shieldProvider).also((_) {});
@@ -317,10 +316,8 @@ class _DropdownTab extends ConsumerWidget {
           ),
         ),
         if (dropdown != null)
-          MiButtonListTile(
+          ExResetButtonListTile(
             enabled: enabled,
-            icon: const Icon(Icons.refresh_outlined),
-            text: const Text('Reset'),
             onPressed: () {
               ref.refresh(_dropdownProvider).also((_) {});
             },

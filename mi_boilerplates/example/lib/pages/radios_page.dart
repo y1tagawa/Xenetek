@@ -10,6 +10,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
+import 'ex_widgets.dart';
 
 class RadiosPage extends ConsumerWidget {
   static const icon = Icon(Icons.radio_button_checked_outlined);
@@ -177,13 +178,11 @@ class _RadioMenuTab extends ConsumerWidget {
         MiRow(
           flexes: const [2, 3],
           children: [
-            MiButtonListTile(
+            ExResetButtonListTile(
               enabled: enabled && menuIndex != null,
               onPressed: () {
                 ref.read(_menuIndexProvider.notifier).state = null;
               },
-              icon: const Icon(Icons.refresh),
-              text: const Text('Reset'),
             ),
             PopupMenuButton<int?>(
               enabled: enabled,
