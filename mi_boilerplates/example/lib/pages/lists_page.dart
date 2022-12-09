@@ -214,6 +214,7 @@ class _DismissibleListTab extends ConsumerWidget {
 final _initOrder = List<String>.unmodifiable(_listItems.keys);
 final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
+final _scrolledProvider = StateProvider((ref) => false);
 final _selectedProvider = StateProvider<String?>((ref) => null);
 
 final _scrollController = ScrollController();
@@ -228,7 +229,9 @@ class _ReorderableListTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final enabled = ref.watch(enableActionsProvider);
     final order = ref.watch(_orderProvider).value;
+    final scrolled = ref.watch(_scrolledProvider);
     final selected = ref.watch(_selectedProvider);
+    final changed = order != _initOrder || scrolled || selected != null;
     _logger.fine('order=$order');
 
     final theme = Theme.of(context);
@@ -239,10 +242,11 @@ class _ReorderableListTab extends ConsumerWidget {
           flexes: const [1, 1],
           children: [
             ExResetButtonListTile(
-              enabled: enabled,
+              enabled: enabled && changed,
               onPressed: () {
                 _orderNotifier.value = _initOrder;
                 ref.read(_selectedProvider.notifier).state = null;
+                _scrollController.jumpTo(0);
               },
             ),
             MiGridPopupMenuButton(
@@ -284,6 +288,9 @@ class _ReorderableListTab extends ConsumerWidget {
             enabled: enabled,
             scrollController: _scrollController,
             orderNotifier: _orderNotifier,
+            onScroll: (controller) {
+              ref.read(_scrolledProvider.notifier).state = (controller.offset != 0);
+            },
             dragHandleColor: theme.unselectedIconColor,
             children: order.mapIndexed(
               (index, key) {

@@ -26,6 +26,7 @@ class MiReorderableListView<T> extends StatefulWidget {
   final ValueNotifier<List<T>> orderNotifier;
   final List<Widget>? children;
   final IndexedWidgetBuilder? itemBuilder;
+  final ValueChanged<ScrollController>? onScroll;
   final Color? dragHandleColor;
   // TODO: 必要に応じて他のプロパティも
 
@@ -35,6 +36,7 @@ class MiReorderableListView<T> extends StatefulWidget {
     this.scrollController,
     required this.orderNotifier,
     required this.children,
+    this.onScroll,
     this.dragHandleColor,
   })  : assert(children != null),
         itemBuilder = null;
@@ -45,6 +47,7 @@ class MiReorderableListView<T> extends StatefulWidget {
     this.scrollController,
     required this.orderNotifier,
     required this.itemBuilder,
+    this.onScroll,
     this.dragHandleColor,
   })  : assert(itemBuilder != null),
         children = null;
@@ -62,6 +65,7 @@ class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
 
   void _scrolled() {
     _logger.fine('scroll ${widget.scrollController?.offset}');
+    widget.onScroll?.call(widget.scrollController!);
   }
 
   @override
