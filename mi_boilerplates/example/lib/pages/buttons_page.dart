@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -43,11 +45,7 @@ class ButtonsPage extends ConsumerWidget {
     ),
     MiTab(
       tooltip: 'Dropdown button',
-      icon: MiScale(
-        scaleX: 1.8,
-        scaleY: 2.0,
-        child: Icon(Icons.arrow_drop_down),
-      ),
+      icon: Icon(Icons.arrow_drop_down),
     ),
     MiTab(
       tooltip: UnderConstruction.title,
@@ -253,12 +251,31 @@ class _PushButtonsTab extends ConsumerWidget {
 // Dropdown button tab.
 //
 
-const _dropdownItems = [
-  'Boots',
-  'Helmet',
+final _random = math.Random();
+
+final _menuItems = <MaterialColor>[
+  Colors.blue,
+  Colors.cyan,
+  Colors.green,
+  Colors.yellow,
+  Colors.orange,
+  Colors.red,
+  Colors.deepPurple,
 ];
 
-final _dropdownIndexProvider = StateProvider((ref) => 0);
+class _FootPrint {
+  final math.Point position;
+  final double angle;
+  final Color color;
+  const _FootPrint({
+    required this.position,
+    required this.angle,
+    required this.color,
+  });
+}
+
+final _footPrintsProvider = StateProvider((ref) => <Widget>[]);
+final _menuIndexProvider = StateProvider((ref) => 0);
 
 class _DropdownButtonTab extends ConsumerWidget {
   static final _logger = Logger((_DropdownButtonTab).toString());
@@ -270,50 +287,75 @@ class _DropdownButtonTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
-    final dropdownIndex = ref.watch(_dropdownIndexProvider);
+    final menuIndex = ref.watch(_menuIndexProvider);
+    final footPrints = ref.watch(_footPrintsProvider);
 
     final theme = Theme.of(context);
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          MiRow(
-            flexes: const [1, 1],
+    return Column(
+      children: [
+        MiRow(
+          flexes: const [1, 1],
+          children: [
+            ExClearButtonListTile(
+              enabled: enabled,
+              onPressed: () {
+                ref.read(_footPrintsProvider.notifier).state = <Widget>[];
+              },
+            ),
+            DropdownButton<int>(
+              value: menuIndex,
+              onChanged: (value) {
+                ref.read(_menuIndexProvider.notifier).state = value!;
+              },
+              items: [
+                ..._menuItems.mapIndexed((index, value) {
+                  return DropdownMenuItem<int>(
+                    value: index,
+                    child: MiColorChip(color: value),
+                  );
+                }),
+                // const DropdownMenuItem(
+                //   value: -1,
+                //   child: Text('Reset'),
+                // ),
+                // const DropdownMenuItem(
+                //   value: -1,
+                //   enabled: false,
+                //   child: Text('Disabled'),
+                // ),
+              ],
+            ),
+          ],
+        ),
+        const Divider(),
+        Expanded(
+          child: Stack(
             children: [
-              MiButtonListTile(
-                enabled: enabled,
-                onPressed: () {
-                  //
+              ...footPrints,
+              GestureDetector(
+                onTapDown: (detail) {
+                  _logger.fine(detail.localPosition);
+                  ref.read(_footPrintsProvider.notifier).state = [
+                    ...footPrints,
+                    Positioned(
+                      left: detail.localPosition.dx - 12,
+                      top: detail.localPosition.dy - 12,
+                      child: Transform.rotate(
+                        angle: _random.nextDouble() * math.pi * 2.0,
+                        child: Icon(
+                          Icons.pets,
+                          color: _menuItems[menuIndex],
+                        ),
+                      ),
+                    ),
+                  ];
                 },
-                icon: const Icon(Icons.clear),
-                text: const Text('Clear'),
-              ),
-              DropdownButton<int>(
-                value: dropdownIndex,
-                onChanged: (_) {},
-                items: [
-                  ..._dropdownItems.mapIndexed((index, value) {
-                    return DropdownMenuItem<int>(
-                      value: index,
-                      child: Text(value),
-                    );
-                  }),
-                  const DropdownMenuItem(
-                    value: -1,
-                    child: Text('Reset'),
-                  ),
-                  const DropdownMenuItem(
-                    value: -1,
-                    enabled: false,
-                    child: Text('Disabled'),
-                  ),
-                ],
               ),
             ],
           ),
-          const Divider(),
-        ],
-      ),
+        ),
+      ],
     ).also((_) {
       _logger.fine('[o] build');
     });
@@ -358,8 +400,8 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
           ..._data.split('\n').map(
                 (line) => Text(
                   line,
-                  softWrap: false,
-                  maxLines: 1,
+                  softWrap: true,
+                  maxLines: 3,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
