@@ -9,7 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'under_construction.dart';
+import 'ex_widgets.dart';
 
 //
 // Buttons example page.

@@ -4,7 +4,6 @@
 
 import 'dart:io';
 
-import 'package:example/pages/under_construction.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -13,6 +12,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'ex_app_bar.dart';
+import 'ex_widgets.dart';
 
 //
 // File I/O examples page.
