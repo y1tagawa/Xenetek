@@ -221,28 +221,84 @@ final _menuItems = <String, Color>{
   "Purple": Colors.deepPurple[200]!,
 };
 
-final _menuItemColors = _menuItems.values.toList();
+final _menuItemColors = List.unmodifiable(_menuItems.values);
 
-class _SnowWindow extends StatefulWidget {
+// 雪の窓
+
+class _SnowFlake {
+  static const _dy = 1.0 / 60;
+  double x;
+  double dx;
+  double y;
+  double w;
+  Color color;
+
+  _SnowFlake({
+    required this.x,
+    required this.dx,
+    required this.y,
+    required this.w,
+    required this.color,
+  });
+
+  void update() {
+    x += dx;
+    y += _dy * w;
+    if (y > 1.0) {
+      x = _random.nextDouble();
+      dx = (_random.nextDouble() - 0.5) * 0.002;
+      y = 0.0;
+    }
+  }
+}
+
+class _SnowPainter extends CustomPainter {
+  final List<_SnowFlake> snowFlakes;
+
+  const _SnowPainter({required this.snowFlakes});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint_ = Paint();
+    paint_.style = PaintingStyle.fill;
+
+    void paintSnowFlake(_SnowFlake snowFlake) {
+      final c = Offset(snowFlake.x * size.width, snowFlake.y * size.height);
+      paint_.color = snowFlake.color;
+      canvas.drawCircle(c, 6.0 * snowFlake.w, paint_);
+    }
+
+    for (final snowFlake in snowFlakes) {
+      paintSnowFlake(snowFlake);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class _SnowyWindow extends StatefulWidget {
   final List<int> keys;
   final List<_SnowFlake> Function(int key) builder;
 
-  const _SnowWindow({
+  const _SnowyWindow({
     required this.keys,
     required this.builder,
   });
 
   @override
-  State<StatefulWidget> createState() => _SnowWindowState();
+  State<StatefulWidget> createState() => _SnowyWindowState();
 }
 
-class _SnowWindowState extends State<_SnowWindow> {
+class _SnowyWindowState extends State<_SnowyWindow> {
   final _snowFlakes = <int, List<_SnowFlake>>{};
 
   void _update() {
     // 現在表示中のキーが削除されたら、表示リストから削除する。
     _snowFlakes.removeWhere((key, value) => !widget.keys.contains(key));
-    // 新しいキーが追加されたら、表示リストに追加する。
+    // 新しいキーが追加されたら、キーに対応するデータを作成、表示リストに追加する。
     for (final key in widget.keys) {
       if (!_snowFlakes.containsKey(key)) {
         _snowFlakes[key] = widget.builder(key);
@@ -263,7 +319,7 @@ class _SnowWindowState extends State<_SnowWindow> {
   }
 
   @override
-  void didUpdateWidget(covariant _SnowWindow oldWidget) {
+  void didUpdateWidget(covariant _SnowyWindow oldWidget) {
     super.didUpdateWidget(oldWidget);
     _update();
   }
@@ -304,60 +360,6 @@ class _SnowWindowState extends State<_SnowWindow> {
         },
       ),
     );
-  }
-}
-
-class _SnowFlake {
-  static const _dy = 1.0 / 60;
-  double x;
-  double dx;
-  double y;
-  double w;
-  Color color;
-
-  _SnowFlake({
-    this.x = 0,
-    this.dx = 0,
-    this.y = 0,
-    this.w = 1,
-    this.color = const Color(0x00000000),
-  });
-
-  void update() {
-    x += dx;
-    y += _dy * w;
-    if (y > 1.0) {
-      x = _random.nextDouble();
-      dx = (_random.nextDouble() - 0.5) * 0.002;
-      y = 0.0;
-    }
-  }
-}
-
-class _SnowPainter extends CustomPainter {
-  final List<_SnowFlake> snowFlakes;
-
-  const _SnowPainter({required this.snowFlakes});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint_ = Paint();
-    paint_.style = PaintingStyle.fill;
-
-    void paintSnowFlake(_SnowFlake snowFlake) {
-      final c = Offset(snowFlake.x * size.width, snowFlake.y * size.height);
-      paint_.color = snowFlake.color;
-      canvas.drawCircle(c, 6.0 * snowFlake.w, paint_);
-    }
-
-    for (final snowFlake in snowFlakes) {
-      paintSnowFlake(snowFlake);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
   }
 }
 
@@ -429,7 +431,7 @@ class _CheckMenuTab extends ConsumerWidget {
           height: 120,
           color: Colors.black,
           padding: const EdgeInsets.all(1),
-          child: _SnowWindow(
+          child: _SnowyWindow(
             keys: keys,
             builder: (key) {
               final color = _menuItemColors[key];
