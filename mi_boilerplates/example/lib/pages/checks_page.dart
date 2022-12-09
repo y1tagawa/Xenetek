@@ -212,16 +212,100 @@ class _CheckboxTab extends ConsumerWidget {
 //
 
 final _menuItems = <String, Color>{
-  "Red": Colors.red[200]!,
   "Blue": Colors.blue[200]!,
   "Cyan": Colors.cyan[200]!,
+  "Green": Colors.green[200]!,
   "Yellow": Colors.yellow[200]!,
   "Orange": Colors.orange[200]!,
-  "Green": Colors.green[200]!,
+  "Red": Colors.red[200]!,
   "Purple": Colors.deepPurple[200]!,
 };
 
 final _menuItemColors = _menuItems.values.toList();
+
+class _SnowWindow extends StatefulWidget {
+  final List<int> keys;
+  final List<_SnowFlake> Function(int key) builder;
+
+  const _SnowWindow({
+    required this.keys,
+    required this.builder,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _SnowWindowState();
+}
+
+class _SnowWindowState extends State<_SnowWindow> {
+  final _snowFlakes = <int, List<_SnowFlake>>{};
+
+  void _update() {
+    // 現在表示中のキーが削除されたら、表示リストから削除する。
+    _snowFlakes.removeWhere((key, value) => !widget.keys.contains(key));
+    // 新しいキーが追加されたら、表示リストに追加する。
+    for (final key in widget.keys) {
+      if (!_snowFlakes.containsKey(key)) {
+        _snowFlakes[key] = widget.builder(key);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _update();
+  }
+
+  @override
+  void dispose() {
+    _snowFlakes.clear();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SnowWindow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _update();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRect(
+      child: MiAnimationController(
+        duration: const Duration(seconds: 6),
+        onInitialized: (controller) {
+          controller.forward();
+        },
+        onCompleted: (controller) {
+          controller.reset();
+          controller.forward();
+        },
+        onTick: (controller) {
+          _snowFlakes.forEach((key, value) {
+            for (final snowFlake in value) {
+              snowFlake.update();
+            }
+          });
+        },
+        builder: (context, controller, _) {
+          return AnimatedBuilder(
+            animation: controller,
+            builder: (context, _) {
+              final snowFlakes = <_SnowFlake>[];
+              _snowFlakes.forEach((_, value) => snowFlakes.addAll(value));
+              return CustomPaint(
+                painter: _SnowPainter(
+                  snowFlakes: snowFlakes,
+                ),
+                willChange: true,
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
 
 class _SnowFlake {
   static const _dy = 1.0 / 60;
@@ -230,7 +314,6 @@ class _SnowFlake {
   double y;
   double w;
   Color color;
-  bool enabled;
 
   _SnowFlake({
     this.x = 0,
@@ -238,18 +321,15 @@ class _SnowFlake {
     this.y = 0,
     this.w = 1,
     this.color = const Color(0x00000000),
-    this.enabled = false,
   });
 
   void update() {
-    if (enabled) {
-      x += dx;
-      y += _dy * w;
-      if (y > 1.0) {
-        x = _random.nextDouble();
-        dx = (_random.nextDouble() - 0.5) * 0.002;
-        y = 0.0;
-      }
+    x += dx;
+    y += _dy * w;
+    if (y > 1.0) {
+      x = _random.nextDouble();
+      dx = (_random.nextDouble() - 0.5) * 0.002;
+      y = 0.0;
     }
   }
 }
@@ -271,54 +351,13 @@ class _SnowPainter extends CustomPainter {
     }
 
     for (final snowFlake in snowFlakes) {
-      if (snowFlake.enabled) {
-        paintSnowFlake(snowFlake);
-      }
+      paintSnowFlake(snowFlake);
     }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return true;
-  }
-}
-
-//
-
-final _snowFlakes = List<_SnowFlake>.filled(
-  _menuItems.length * 3,
-  _SnowFlake(),
-);
-
-void _startSnowFlake(final int index) {
-  final i = index * 3;
-  final color = _menuItemColors[index];
-  _snowFlakes[i] = _SnowFlake(
-      x: _random.nextDouble(),
-      dx: (_random.nextDouble() - 0.5) * 0.002,
-      y: -0.1,
-      w: 1.0,
-      color: color.withAlpha(128),
-      enabled: true);
-  _snowFlakes[i + 1] = _SnowFlake(
-      x: _random.nextDouble(),
-      dx: (_random.nextDouble() - 0.5) * 0.002,
-      y: -0.1,
-      w: 0.75,
-      color: color.withAlpha(96),
-      enabled: true);
-  _snowFlakes[index * 3 + 2] = _SnowFlake(
-      x: _random.nextDouble(),
-      dx: (_random.nextDouble() - 0.5) * 0.002,
-      y: -0.1,
-      w: 0.5,
-      color: color.withAlpha(64),
-      enabled: true);
-}
-
-void _stopSnowFlake(final int index) {
-  for (int i = index * 3; i < index * 3 + 3; ++i) {
-    _snowFlakes[i].enabled = false;
   }
 }
 
@@ -338,6 +377,8 @@ class _CheckMenuTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final menuCheckList = ref.watch(_menuCheckListProvider);
 
+    final keys = iota(menuCheckList.length).where((value) => menuCheckList[value]).toList();
+
     return Column(
       children: [
         MiRow(
@@ -348,9 +389,6 @@ class _CheckMenuTab extends ConsumerWidget {
               onPressed: () {
                 ref.read(_menuCheckListProvider.notifier).state =
                     List<bool>.filled(_menuItems.length, false);
-                _menuItems.keys.mapIndexed((index, _) {
-                  _stopSnowFlake(index);
-                });
               },
               icon: const Icon(Icons.clear),
               text: const Text('Clear'),
@@ -374,11 +412,6 @@ class _CheckMenuTab extends ConsumerWidget {
               },
               onSelected: (index) {
                 final checked = !menuCheckList[index];
-                if (checked) {
-                  _startSnowFlake(index);
-                } else {
-                  _stopSnowFlake(index);
-                }
                 ref.read(_menuCheckListProvider.notifier).state =
                     menuCheckList.replaced(index, checked);
               },
@@ -396,35 +429,34 @@ class _CheckMenuTab extends ConsumerWidget {
           height: 120,
           color: Colors.black,
           padding: const EdgeInsets.all(1),
-          child: ClipRect(
-            child: MiAnimationController(
-              duration: const Duration(seconds: 6),
-              onInitialized: (controller) {
-                controller.forward();
-              },
-              onCompleted: (controller) {
-                controller.reset();
-                controller.forward();
-              },
-              onTick: (controller) {
-                for (final snowFlake in _snowFlakes) {
-                  snowFlake.update();
-                }
-              },
-              builder: (context, controller, _) {
-                return AnimatedBuilder(
-                  animation: controller,
-                  builder: (context, _) {
-                    return CustomPaint(
-                      painter: _SnowPainter(
-                        snowFlakes: _snowFlakes,
-                      ),
-                      willChange: true,
-                    );
-                  },
-                );
-              },
-            ),
+          child: _SnowWindow(
+            keys: keys,
+            builder: (key) {
+              final color = _menuItemColors[key];
+              return [
+                _SnowFlake(
+                  x: _random.nextDouble(),
+                  dx: (_random.nextDouble() - 0.5) * 0.002,
+                  y: -0.1,
+                  w: 1.0,
+                  color: color.withAlpha(128),
+                ),
+                _SnowFlake(
+                  x: _random.nextDouble(),
+                  dx: (_random.nextDouble() - 0.5) * 0.002,
+                  y: -0.1,
+                  w: 0.75,
+                  color: color.withAlpha(96),
+                ),
+                _SnowFlake(
+                  x: _random.nextDouble(),
+                  dx: (_random.nextDouble() - 0.5) * 0.002,
+                  y: -0.1,
+                  w: 0.5,
+                  color: color.withAlpha(64),
+                ),
+              ];
+            },
           ),
         ),
       ],
