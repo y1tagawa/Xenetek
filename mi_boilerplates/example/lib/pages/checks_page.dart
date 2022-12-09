@@ -226,6 +226,7 @@ final _menuItemColors = List.unmodifiable(_menuItems.values);
 // 雪の窓
 
 class _SnowFlake {
+  // TODO: wを速度とradiusに、マジックナンバーをプロパティに、updateの中もカスタマイズ可能に
   static const _dy = 1.0 / 60;
   double x;
   double dx;
