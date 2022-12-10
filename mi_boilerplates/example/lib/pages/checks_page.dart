@@ -211,6 +211,8 @@ class _CheckboxTab extends ConsumerWidget {
 // Check menu tab
 //
 
+//<editor-fold>
+
 final _menuItems = <String, Color>{
   "Blue": Colors.blue[200]!,
   "Cyan": Colors.cyan[200]!,
@@ -223,6 +225,7 @@ final _menuItems = <String, Color>{
 
 final _menuItemColors = List.unmodifiable(_menuItems.values);
 
+//<editor-fold>
 // 雪の窓
 
 class _SnowFlake {
@@ -363,8 +366,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
     );
   }
 }
-
-//
+//</editor-fold>
 
 final _menuCheckListProvider =
     StateProvider((ref) => List<bool>.filled(_menuItems.length, false).replaced(0, true));
@@ -466,6 +468,8 @@ class _CheckMenuTab extends ConsumerWidget {
     );
   }
 }
+
+//</editor-fold>
 
 //
 // Toggle buttons tab

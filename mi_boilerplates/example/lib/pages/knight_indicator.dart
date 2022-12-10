@@ -8,6 +8,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 /// 甲冑装備状態表示ウィジェット
 ///
 /// [equipped]の状態に応じて各部位の装備状態を表示する。
+
 class KnightIndicator extends StatelessWidget {
   static const kHelmetIcon = Icon(Icons.balcony_outlined);
   static const kArmourIcon = MiScale(
@@ -41,48 +42,53 @@ class KnightIndicator extends StatelessWidget {
   final List<bool> equipped;
   final Widget? helmetIcon;
   final Widget? shieldIcon;
+  final Color? color;
 
   const KnightIndicator({
     super.key,
     required this.equipped,
     this.helmetIcon,
     this.shieldIcon,
+    this.color,
   }) : assert(equipped.length == items.length);
 
   @override
   Widget build(BuildContext context) {
     final helmetIcon_ = helmetIcon ?? kHelmetIcon;
     final shieldIcon_ = shieldIcon ?? kShieldIcon;
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (equipped[3]) helmetIcon_ else _kFaceIcon,
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (equipped[2])
-              const MiTranslate(offset: Offset(0, -6), child: _kRGauntletIcon)
-            else
-              const MiTranslate(offset: Offset(2, -6), child: _kRHandIcon),
-            if (equipped[1]) kArmourIcon else _kBlankIcon,
-            if (equipped[4])
-              MiTranslate(offset: const Offset(-4, 0), child: shieldIcon_)
-            else if (equipped[2])
-              const MiTranslate(offset: Offset(-1, -6), child: _kLGauntletIcon)
-            else
-              const MiTranslate(offset: Offset(-4, -6), child: _kLHandIcon),
-          ],
-        ),
-        if (equipped[0])
+    return IconTheme.merge(
+      data: IconThemeData(color: color),
+      child: Column(
+        children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [_kRBootIcon, _kLBootIcon],
+            children: [
+              if (equipped[3]) helmetIcon_ else _kFaceIcon,
+            ],
           ),
-      ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (equipped[2])
+                const MiTranslate(offset: Offset(0, -6), child: _kRGauntletIcon)
+              else
+                const MiTranslate(offset: Offset(2, -6), child: _kRHandIcon),
+              if (equipped[1]) kArmourIcon else _kBlankIcon,
+              if (equipped[4])
+                MiTranslate(offset: const Offset(-4, 0), child: shieldIcon_)
+              else if (equipped[2])
+                const MiTranslate(offset: Offset(-1, -6), child: _kLGauntletIcon)
+              else
+                const MiTranslate(offset: Offset(-4, -6), child: _kLHandIcon),
+            ],
+          ),
+          if (equipped[0])
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [_kRBootIcon, _kLBootIcon],
+            ),
+        ],
+      ),
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
 import 'ex_widgets.dart';
+import 'knight_indicator.dart';
 
 //
 // Buttons example page.
@@ -46,6 +47,10 @@ class ButtonsPage extends ConsumerWidget {
     MiTab(
       tooltip: 'Dropdown button',
       icon: Icon(Icons.arrow_drop_down),
+    ),
+    MiTab(
+      tooltip: 'Toggle buttons',
+      icon: Icon(Icons.more_horiz),
     ),
     MiTab(
       tooltip: UnderConstruction.title,
@@ -99,6 +104,7 @@ class ButtonsPage extends ConsumerWidget {
                     children: const [
                       _PushButtonsTab(),
                       _DropdownButtonTab(),
+                      _ToggleButtonsTab(),
                       _MonospaceTab(),
                     ],
                   ),
@@ -251,6 +257,8 @@ class _PushButtonsTab extends ConsumerWidget {
 // Dropdown button tab.
 //
 
+//<editor-fold>
+
 const _lightColors = <Color>[
   Colors.blue,
   Colors.cyan,
@@ -401,6 +409,98 @@ class _DropdownButtonTab extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>
+
+//
+// Toggle buttons tab.
+//
+
+//<editor-fold>
+
+const _shieldItems = <String, Widget?>{
+  'Shield': Icon(Icons.shield_outlined),
+  'Shield+1': Icon(Icons.gpp_good_outlined),
+  'Shield of Snake': Icon(Icons.monetization_on_outlined),
+};
+
+final _armourProvider =
+    StateProvider((ref) => List.filled(KnightIndicator.items.length - 1, false));
+final _shieldProvider = StateProvider<int>((ref) => 0);
+
+class _ToggleButtonsTab extends ConsumerWidget {
+  static final _logger = Logger((_ToggleButtonsTab).toString());
+
+  const _ToggleButtonsTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(enableActionsProvider);
+    final armour = ref.watch(_armourProvider);
+    final shield = ref.watch(_shieldProvider);
+
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        // Armours
+        ToggleButtons(
+          color: theme.unselectedIconColor,
+          isSelected: armour,
+          onPressed: enabled
+              ? (index) {
+                  ref.read(_armourProvider.notifier).state = armour.replaced(index, !armour[index]);
+                }
+              : null,
+          children: KnightIndicator.items.entries
+              .take(KnightIndicator.items.length - 1)
+              .mapIndexed((index, item) {
+            return Tooltip(
+              message: item.key,
+              child: item.value,
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 8),
+        // Shields
+        ToggleButtons(
+          color: theme.unselectedIconColor,
+          isSelected: List.filled(_shieldItems.length, false)
+              .let((it) => shield >= 0 ? it.replaced(shield, true) : it),
+          onPressed: enabled
+              ? (index) {
+                  ref.read(_shieldProvider.notifier).state = index == shield ? -1 : index;
+                }
+              : null,
+          children: _shieldItems.entries.mapIndexed((index, item) {
+            return Tooltip(
+              message: item.key,
+              child: item.value,
+            );
+          }).toList(),
+        ),
+        const Divider(),
+        Center(
+          child: KnightIndicator(
+            color: enabled ? theme.unselectedIconColor : theme.disabledColor,
+            shieldIcon: shield >= 0 ? _shieldItems.values.skip(shield).first : null,
+            equipped: [
+              ...armour,
+              shield >= 0,
+            ],
+          ),
+        )
+      ],
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//</editor-fold>
 
 //
 //
