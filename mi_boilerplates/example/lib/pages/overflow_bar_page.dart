@@ -56,7 +56,7 @@ class OverflowBarPage extends ConsumerWidget {
           child: Column(
             children: [
               ExResetButtonListTile(
-                enabled: enableActions,
+                enabled: enableActions && trollHp < 100,
                 onPressed: () => ref.invalidate(_trollHpProvider),
               ),
               const Divider(),

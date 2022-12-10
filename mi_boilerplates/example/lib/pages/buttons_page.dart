@@ -5,6 +5,7 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -559,19 +560,33 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
+    final theme = Theme.of(context);
+    String? fontFamily;
+    switch (theme.platform) {
+      case TargetPlatform.windows:
+        fontFamily = 'Courier New';
+        break;
+      case TargetPlatform.android:
+        fontFamily = 'Roboto Mono';
+        break;
+      default:
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 8),
           ..._data.split('\n').map(
                 (line) => Text(
                   line,
                   softWrap: true,
                   maxLines: 3,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    color: theme.isDark ? theme.unselectedIconColor : null,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'Courier New',
+                    fontFamily: fontFamily,
                   ),
                 ),
               ),

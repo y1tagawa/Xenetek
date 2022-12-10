@@ -104,11 +104,11 @@ class SwitchesPage extends ConsumerWidget {
               flexes: const [1, 1],
               children: [
                 ExResetButtonListTile(
-                  enabled: enableActions,
+                  enabled: enableActions && switches.every((value) => !value),
                   onPressed: () => reset(true),
                 ),
                 ExClearButtonListTile(
-                  enabled: enableActions,
+                  enabled: enableActions && switches.any((value) => value),
                   onPressed: () => reset(false),
                 ),
               ],
@@ -116,7 +116,6 @@ class SwitchesPage extends ConsumerWidget {
             const Divider(),
             Expanded(
               child: ListView(
-                shrinkWrap: true,
                 children: _switchItems.mapIndexed(
                   (index, item) {
                     final switchValue = switches[index];
