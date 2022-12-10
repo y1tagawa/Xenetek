@@ -255,7 +255,7 @@ final _menuItems = <MaterialColor>[
   Colors.blue,
   Colors.cyan,
   Colors.green,
-  Colors.yellow,
+  Colors.amber,
   Colors.orange,
   Colors.red,
   Colors.purple,
@@ -307,9 +307,8 @@ class _DropdownButtonTab extends ConsumerWidget {
             DropdownButton<int?>(
               value: menuIndex,
               hint: MiImageIcon(
-                image: Image.asset(
-                  'assets/worker_cat2.png',
-                ),
+                image: Image.asset('assets/worker_cat2.png'),
+                color: enabled ? theme.unselectedIconColor : theme.disabledColor,
               ),
               onChanged: enabled
                   ? (value) {

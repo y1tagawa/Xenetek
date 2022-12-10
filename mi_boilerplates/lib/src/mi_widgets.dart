@@ -278,11 +278,13 @@ class MiToggleIcon extends StatelessWidget {
 class MiImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
+  final Color? color;
 
   const MiImageIcon({
     super.key,
     required this.image,
     this.size,
+    this.color,
   });
 
   @override
@@ -294,7 +296,7 @@ class MiImageIcon extends StatelessWidget {
         alignment: Alignment.center,
         child: Image(
           image: image.image,
-          color: theme.color,
+          color: color ?? theme.color,
         ),
       ),
     );
