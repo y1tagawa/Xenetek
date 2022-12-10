@@ -27,12 +27,6 @@ class RadiosPage extends ConsumerWidget {
       tooltip: 'Radio menu',
       icon: Icon(Icons.more_vert),
     ),
-    MiTab(
-      tooltip: 'Toggle buttons',
-      icon: MiImageIcon(
-        image: Image.asset('assets/more_grid.png'),
-      ),
-    ),
   ];
 
   const RadiosPage({super.key});
@@ -63,7 +57,6 @@ class RadiosPage extends ConsumerWidget {
               children: [
                 _RadioButtonsTab(),
                 _RadioMenuTab(),
-                _ToggleButtonsTab(),
               ],
             ),
           ),
@@ -79,6 +72,8 @@ class RadiosPage extends ConsumerWidget {
 //
 // Radios tab
 //
+
+//<editor-fold>
 
 final _radioItems = <String, Widget Function(bool checked)>{
   'Fighter': (_) => const Icon(Icons.shield_outlined),
@@ -146,9 +141,19 @@ class _RadioButtonsTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Radio menu tab
 //
+
+//<editor-fold>
+
+// https://lottiefiles.com/301-search-location
+const _rippleLottieUrl =
+    'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
+// https://lottiefiles.com/94-soda-loader
+const _sodaLottieUrl = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
 
 const _menuItems = <String, Color>{
   'Soda': Colors.blue,
@@ -261,109 +266,4 @@ class _RadioMenuTab extends ConsumerWidget {
   }
 }
 
-//
-// Toggle buttons tab
-//
-
-// https://lottiefiles.com/301-search-location
-const _rippleLottieUrl =
-    'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
-// https://lottiefiles.com/94-soda-loader
-const _sodaLottieUrl = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
-
-const _toggleItems = <Widget>[
-  Text('Soda'),
-  Text('Mint'),
-  Text('Lemon'),
-  Text('Orange'),
-  Text('Straw\nberry'),
-  Text('Grape'),
-  Text('Milk'),
-  Text('Cola'),
-];
-
-const _toggleItemColors = <Color>[
-  Colors.blue,
-  Colors.green,
-  Colors.yellow,
-  Colors.orange,
-  Colors.red,
-  Colors.purple,
-  Color(0xFFEEEEEE),
-  Colors.brown,
-];
-
-final _toggleIndexProvider = StateProvider((ref) => 0);
-
-class _ToggleButtonsTab extends ConsumerWidget {
-  static final _logger = Logger((_toggleIndexProvider).toString());
-
-  const _ToggleButtonsTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
-    final toggleIndex = ref.watch(_toggleIndexProvider);
-
-    return MiDefaultTabController(
-      length: _toggleItems.length,
-      initialIndex: toggleIndex,
-      builder: (context) {
-        return Column(
-          children: [
-            MiRadioToggleButtons(
-              enabled: enableActions,
-              initiallySelected: toggleIndex,
-              split: MediaQuery.of(context).orientation == Orientation.landscape ? null : 3,
-              renderBorder: false,
-              onPressed: (index) {
-                ref.read(_toggleIndexProvider.notifier).state = index;
-                DefaultTabController.of(context)?.index = index;
-              },
-              children: _toggleItems,
-            ),
-            const Divider(),
-            Expanded(
-              child: TabBarView(
-                children: _toggleItemColors.mapIndexed(
-                  (index, color) {
-                    final url = index == 6 ? _rippleLottieUrl : _sodaLottieUrl;
-                    return Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.all(1),
-                        child: ColoredBox(
-                          color: color.withAlpha(128),
-                          child: MiAnimationController(
-                            builder: (_, controller, __) {
-                              return Lottie.network(
-                                url,
-                                controller: controller,
-                                repeat: true,
-                                onLoaded: (composition) {
-                                  _logger.fine('onLoaded: ${composition.duration}');
-                                  controller.duration = composition.duration;
-                                  controller.reset();
-                                  controller.forward();
-                                },
-                              );
-                            },
-                            onCompleted: (controller) {
-                              controller.reset();
-                              controller.forward();
-                            },
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ).toList(),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
+//</editor-fold>

@@ -27,7 +27,6 @@ import 'pages/files_page.dart';
 import 'pages/grids_page.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
-import 'pages/menus_page.dart';
 import 'pages/overflow_bar_page.dart';
 import 'pages/page_layouts_page.dart';
 import 'pages/page_view_page.dart';
@@ -138,12 +137,6 @@ final _pages = <_PageItem>[
     title: ListTilesPage.title,
     path: '/drawer/list_tiles',
     builder: (_, __) => const ListTilesPage(),
-  ),
-  _PageItem(
-    icon: MenusPage.icon,
-    title: MenusPage.title,
-    path: '/drawer/menus',
-    builder: (_, __) => const MenusPage(),
   ),
   _PageItem(
     icon: OverflowBarPage.icon,

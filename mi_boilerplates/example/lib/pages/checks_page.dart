@@ -10,7 +10,6 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'ex_app_bar.dart';
-import 'knight_indicator.dart';
 
 //
 // Checkbox examples page.
@@ -32,10 +31,6 @@ class ChecksPage extends ConsumerWidget {
     MiTab(
       tooltip: 'Check menu',
       icon: Icon(Icons.more_vert),
-    ),
-    MiTab(
-      tooltip: 'Toggle buttons',
-      icon: Icon(Icons.more_horiz),
     ),
   ];
 
@@ -67,7 +62,6 @@ class ChecksPage extends ConsumerWidget {
               children: [
                 _CheckboxTab(),
                 _CheckMenuTab(),
-                _ToggleButtonsTab(),
               ],
             ),
           ),
@@ -470,57 +464,3 @@ class _CheckMenuTab extends ConsumerWidget {
 }
 
 //</editor-fold>
-
-//
-// Toggle buttons tab
-//
-
-final _toggleProvider =
-    StateProvider<List<bool>>((ref) => List.filled(KnightIndicator.items.length, false));
-
-class _ToggleButtonsTab extends ConsumerWidget {
-  static final _logger = Logger((_ToggleButtonsTab).toString());
-
-  const _ToggleButtonsTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
-    final toggle = ref.watch(_toggleProvider);
-    _logger.fine(toggle.length);
-
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          ToggleButtons(
-            isSelected: toggle,
-            onPressed: enableActions
-                ? (index) {
-                    ref.read(_toggleProvider.notifier).state =
-                        toggle.replaced(index, !toggle[index]);
-                  }
-                : null,
-            children: KnightIndicator.items.entries
-                .map(
-                  (entry) => MiIcon(
-                    icon: entry.value,
-                    tooltip: entry.key,
-                  ),
-                )
-                .toList(),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: IconTheme.merge(
-              data: IconThemeData(
-                color: Theme.of(context).disabledColor,
-              ),
-              child: KnightIndicator(equipped: toggle),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
