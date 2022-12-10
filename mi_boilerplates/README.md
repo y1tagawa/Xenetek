@@ -59,13 +59,6 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 * VTState -> StateNotifier<VTState> -> VT
   * w, h, style, clear(), put(x, y, ...), scrollPos...
 
-## AnimationをValueNotifier化するために
-
-AnimationControllerを外部からコントコールできないと不便でしょうがない。
-ValueNotifier, ChangeNotifierProviderにして制御できるようにしたい。
-今のMiAnintialimationControllerにstartを送れれば良いので、
-（今はonInitializedでAnimationControllerを変数に保存している、）
-
 # 
 
 Node

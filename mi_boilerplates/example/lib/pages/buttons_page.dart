@@ -5,7 +5,6 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -22,11 +21,13 @@ import 'knight_indicator.dart';
 final _tabIndexProvider = StateProvider((ref) => 0);
 final _toasterNotifier = ValueNotifier(false);
 
-AnimationController? _pingController;
+final _pingNotifier = MiSinkNotifier<MiAnimationControllerCommand>();
 
 void _ping(WidgetRef ref) async {
-  _pingController?.reset();
-  _pingController?.forward();
+  _pingNotifier.addAll(const [
+    MiAnimationControllerCommand.reset,
+    MiAnimationControllerCommand.forward,
+  ]);
 
   _toasterNotifier.value = true;
 }
@@ -221,6 +222,7 @@ class _PushButtonsTab extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             child: Center(
               child: MiRingingIcon(
+                commandNotifier: _pingNotifier,
                 icon: Icon(
                   Icons.notifications_outlined,
                   size: 48,
@@ -232,8 +234,6 @@ class _PushButtonsTab extends ConsumerWidget {
                   color: theme.disabledColor,
                 ),
                 origin: const Offset(0, -20),
-                onInitialized: (controller) => _pingController = controller,
-                onDispose: () => _pingController = null,
               ),
             ),
           ),

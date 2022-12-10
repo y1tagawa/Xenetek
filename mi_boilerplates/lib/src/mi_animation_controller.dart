@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-class QueueNotifier<T> extends ChangeNotifier {
+/// Synchronous sink-like value notifier
+
+class MiSinkNotifier<T> extends ChangeNotifier {
   T? _value;
 
-  QueueNotifier();
+  MiSinkNotifier();
 
   T get value {
     assert(_value != null);
@@ -15,18 +17,25 @@ class QueueNotifier<T> extends ChangeNotifier {
   }
 
   void add(T value) {
-    _value = value;
-    notifyListeners();
-    _value = null;
+    if (hasListeners) {
+      _value = value;
+      notifyListeners();
+      _value = null;
+    }
   }
 
   void addAll(Iterable<T> values) {
-    for (final value in values) {
-      add(value);
+    if (hasListeners) {
+      for (final value in values) {
+        _value = value;
+        notifyListeners();
+      }
+      _value = null;
     }
   }
 }
 
+/// [MiAnimationController]に外部から供給するコマンド
 enum MiAnimationControllerCommand { reset, forward }
 
 /// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
@@ -40,7 +49,7 @@ class MiAnimationController extends StatefulWidget {
     AnimationController controller,
     Widget? child,
   ) builder;
-  final QueueNotifier<MiAnimationControllerCommand>? commandNotifier;
+  final MiSinkNotifier<MiAnimationControllerCommand>? commandNotifier;
   final Duration duration;
   final void Function(AnimationController controller)? onInitialized;
   final void Function()? onDispose;
@@ -151,8 +160,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
 /// [MiAnimationController]の使用例
 ///
 /// [duration]の間、[frequency]回アイコンを振動させる。
-/// [onInitialized]から[onDispose]の間、AnimationControllerを外部に提供するので、
-/// Animationの制御はそれを使う。
+/// アニメーションの制御は[commandNotifier]またはコールバック引数の[AnimationController]によって行う。
 
 class MiRingingIcon extends StatelessWidget {
   final bool enabled;
@@ -160,6 +168,7 @@ class MiRingingIcon extends StatelessWidget {
   final double frequency;
   final Widget icon;
   final Widget? ringingIcon;
+  final MiSinkNotifier<MiAnimationControllerCommand>? commandNotifier;
   final void Function(AnimationController controller)? onInitialized;
   final VoidCallback? onDispose;
   final VoidCallback? onPressed;
@@ -174,6 +183,7 @@ class MiRingingIcon extends StatelessWidget {
     this.frequency = 10,
     this.icon = const Icon(Icons.notifications_outlined),
     this.ringingIcon = const Icon(Icons.notifications_active_outlined),
+    this.commandNotifier,
     this.onInitialized,
     this.onDispose,
     this.onPressed,
@@ -187,6 +197,7 @@ class MiRingingIcon extends StatelessWidget {
     final angle_ = angle ?? angleDegree?.toRadian() ?? (20.0 * DoubleHelper.degreeToRadian);
     return MiAnimationController(
       duration: duration,
+      commandNotifier: commandNotifier,
       builder: (context, controller, _) {
         return AnimatedBuilder(
           animation: controller,
