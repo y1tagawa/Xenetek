@@ -9,71 +9,67 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 ///
 /// * [enabled]追加
 
-class MiRadioListTile<T> extends RadioListTile<T> {
-  const MiRadioListTile({
-    //<editor-fold>
-    super.key,
-    bool enabled = true,
-    required super.value,
-    required super.groupValue,
-    required ValueChanged<T?>? onChanged,
-    super.toggleable = false,
-    super.activeColor,
-    super.title,
-    super.subtitle,
-    super.isThreeLine = false,
-    super.dense,
-    super.secondary,
-    super.selected = false,
-    super.controlAffinity = ListTileControlAffinity.platform,
-    super.autofocus = false,
-    super.contentPadding,
-    super.shape,
-    super.tileColor,
-    super.selectedTileColor,
-    super.visualDensity,
-    super.focusNode,
-    super.enableFeedback,
-//</editor-fold>
-  }) : super(onChanged: enabled ? onChanged : null);
-}
+// class MiRadioListTile<T> extends RadioListTile<T> {
+//   const MiRadioListTile({
+//     super.key,
+//     bool enabled = true,
+//     required super.value,
+//     required super.groupValue,
+//     required ValueChanged<T?>? onChanged,
+//     super.toggleable = false,
+//     super.activeColor,
+//     super.title,
+//     super.subtitle,
+//     super.isThreeLine = false,
+//     super.dense,
+//     super.secondary,
+//     super.selected = false,
+//     super.controlAffinity = ListTileControlAffinity.platform,
+//     super.autofocus = false,
+//     super.contentPadding,
+//     super.shape,
+//     super.tileColor,
+//     super.selectedTileColor,
+//     super.visualDensity,
+//     super.focusNode,
+//     super.enableFeedback,
+//   }) : super(onChanged: enabled ? onChanged : null);
+// }
 
 /// カスタム[SwitchListTile]
 ///
 /// * [enabled]追加
 
-class MiSwitchListTile extends SwitchListTile {
-  const MiSwitchListTile({
-    //<editor-fold>
-    super.key,
-    bool enabled = true,
-    required super.value,
-    required ValueChanged<bool>? onChanged,
-    super.tileColor,
-    super.activeColor,
-    super.activeTrackColor,
-    super.inactiveThumbColor,
-    super.inactiveTrackColor,
-    super.activeThumbImage,
-    super.inactiveThumbImage,
-    super.title,
-    super.subtitle,
-    super.isThreeLine = false,
-    super.dense,
-    super.contentPadding,
-    super.secondary,
-    super.selected = false,
-    super.autofocus = false,
-    super.controlAffinity = ListTileControlAffinity.platform,
-    super.shape,
-    super.selectedTileColor,
-    super.visualDensity,
-    super.focusNode,
-    super.enableFeedback,
-    super.hoverColor,
-//</editor-fold>]
-  }) : super(onChanged: enabled ? onChanged : null);
-}
+// class MiSwitchListTile extends SwitchListTile {
+//   const MiSwitchListTile({
+//     super.key,
+//     bool enabled = true,
+//     required super.value,
+//     required ValueChanged<bool>? onChanged,
+//     super.tileColor,
+//     super.activeColor,
+//     super.activeTrackColor,
+//     super.inactiveThumbColor,
+//     super.inactiveTrackColor,
+//     super.activeThumbImage,
+//     super.inactiveThumbImage,
+//     super.title,
+//     super.subtitle,
+//     super.isThreeLine = false,
+//     super.dense,
+//     super.contentPadding,
+//     super.secondary,
+//     super.selected = false,
+//     super.autofocus = false,
+//     super.controlAffinity = ListTileControlAffinity.platform,
+//     super.shape,
+//     super.selectedTileColor,
+//     super.visualDensity,
+//     super.focusNode,
+//     super.enableFeedback,
+//     super.hoverColor,
+//   }) : super(onChanged: enabled ? onChanged : null);
+// }
 
 /// カスタム[ExpansionTile]
 ///

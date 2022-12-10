@@ -120,21 +120,23 @@ class SwitchesPage extends ConsumerWidget {
                 children: _switchItems.mapIndexed(
                   (index, item) {
                     final switchValue = switches[index];
-                    return MiSwitchListTile(
-                        enabled: enableActions,
-                        value: switchValue,
-                        title: MiIcon(
-                          icon: MiToggleIcon(
-                            checked: switchValue,
-                            checkIcon: item.checkIcon,
-                            uncheckIcon: item.uncheckIcon,
-                          ),
-                          text: item.title,
+                    return SwitchListTile(
+                      value: switchValue,
+                      title: MiIcon(
+                        icon: MiToggleIcon(
+                          checked: switchValue,
+                          checkIcon: item.checkIcon,
+                          uncheckIcon: item.uncheckIcon,
                         ),
-                        onChanged: (value) {
-                          ref.read(_switchProvider.notifier).state =
-                              switches.replaced(index, value);
-                        });
+                        text: item.title,
+                      ),
+                      onChanged: enableActions
+                          ? (value) {
+                              ref.read(_switchProvider.notifier).state =
+                                  switches.replaced(index, value);
+                            }
+                          : null,
+                    );
                   },
                 ).toList(),
               ),

@@ -70,12 +70,13 @@ class TabViewPage extends ConsumerWidget {
                       children: [
                         ..._tabs.mapIndexed(
                           (i, tab) {
-                            return MiTextButton(
-                              enabled: i != index,
-                              onPressed: () {
-                                final tabController = DefaultTabController.of(context)!;
-                                tabController.index = i;
-                              },
+                            return TextButton(
+                              onPressed: i != index
+                                  ? () {
+                                      final tabController = DefaultTabController.of(context)!;
+                                      tabController.index = i;
+                                    }
+                                  : null,
                               child: Text(tab.text!),
                             );
                           },

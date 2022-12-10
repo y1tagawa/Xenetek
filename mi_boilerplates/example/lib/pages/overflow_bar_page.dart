@@ -84,13 +84,14 @@ class OverflowBarPage extends ConsumerWidget {
         overflowAlignment: OverflowBarAlignment.end,
         children: _items
             .map(
-              (item) => MiTextButton(
-                enabled: enableActions,
-                onPressed: () {
-                  if (trollHp >= 0) {
-                    ref.read(_trollHpProvider.notifier).state = trollHp - 10;
-                  }
-                },
+              (item) => TextButton(
+                onPressed: enableActions
+                    ? () {
+                        if (trollHp >= 0) {
+                          ref.read(_trollHpProvider.notifier).state = trollHp - 10;
+                        }
+                      }
+                    : null,
                 child: item,
               ),
             )

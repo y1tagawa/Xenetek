@@ -82,29 +82,31 @@ class ListTilesPage extends ConsumerWidget {
                   text: Text('CheckboxListTile'),
                 ),
               ),
-              MiRadioListTile<int>(
-                enabled: enableActions,
+              RadioListTile<int>(
                 selected: selected == 2,
                 groupValue: radio,
                 toggleable: true,
                 value: 0,
-                onChanged: (_) {
-                  ref.read(_radioProvider.notifier).state = radio == 0 ? 1 : 0;
-                  ref.read(_selectedProvider.notifier).state = 2;
-                },
+                onChanged: enableActions
+                    ? (_) {
+                        ref.read(_radioProvider.notifier).state = radio == 0 ? 1 : 0;
+                        ref.read(_selectedProvider.notifier).state = 2;
+                      }
+                    : null,
                 title: const MiIcon(
                   icon: Icon(Icons.person_outline),
                   text: Text('RadioListTile'),
                 ),
               ),
-              MiSwitchListTile(
-                enabled: enableActions,
+              SwitchListTile(
                 selected: selected == 3,
                 value: switch_,
-                onChanged: (value) {
-                  ref.read(_switchProvider.notifier).state = value;
-                  ref.read(_selectedProvider.notifier).state = 3;
-                },
+                onChanged: enableActions
+                    ? (value) {
+                        ref.read(_switchProvider.notifier).state = value;
+                        ref.read(_selectedProvider.notifier).state = 3;
+                      }
+                    : null,
                 title: const MiIcon(
                   icon: Icon(Icons.person_outline),
                   text: Text('SwitchListTile'),

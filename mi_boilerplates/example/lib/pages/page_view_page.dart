@@ -88,18 +88,20 @@ class PageViewPage extends ConsumerWidget {
           data: (items) {
             return MiExpandedColumn(
               bottom: ListTile(
-                leading: MiIconButton(
-                  enabled: enabled && pageIndex > 0,
-                  onPressed: () {
-                    _pageIndexNotifier.value = pageIndex - 1;
-                  },
+                leading: IconButton(
+                  onPressed: enabled && pageIndex > 0
+                      ? () {
+                          _pageIndexNotifier.value = pageIndex - 1;
+                        }
+                      : null,
                   icon: const Icon(Icons.arrow_back),
                 ),
-                trailing: MiIconButton(
-                  enabled: enabled && pageIndex < items.length - 1,
-                  onPressed: () {
-                    _pageIndexNotifier.value = pageIndex + 1;
-                  },
+                trailing: IconButton(
+                  onPressed: enabled && pageIndex < items.length - 1
+                      ? () {
+                          _pageIndexNotifier.value = pageIndex + 1;
+                        }
+                      : null,
                   icon: const Icon(Icons.arrow_forward),
                 ),
                 title: Center(child: Text('${pageIndex + 1} / ${items.length}')),

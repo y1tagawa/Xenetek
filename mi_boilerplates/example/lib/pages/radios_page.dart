@@ -111,17 +111,18 @@ class _RadioButtonsTab extends ConsumerWidget {
             shrinkWrap: true,
             children: _radioItems.entries.map(
               (item) {
-                return MiRadioListTile<String>(
-                  enabled: enableActions,
+                return RadioListTile<String>(
                   value: item.key,
                   groupValue: radioKey,
                   title: MiIcon(
                     icon: item.value(item.key == radioKey),
                     text: Text(item.key),
                   ),
-                  onChanged: (value) {
-                    ref.read(_radioProvider.notifier).state = value!;
-                  },
+                  onChanged: enableActions
+                      ? (value) {
+                          ref.read(_radioProvider.notifier).state = value!;
+                        }
+                      : null,
                 );
               },
             ).toList(),

@@ -307,86 +307,86 @@ class MiImageIcon extends StatelessWidget {
 ///
 /// * [enabled]追加
 
-class MiTextButton extends StatelessWidget {
-  final bool enabled;
-  final VoidCallback? onPressed;
-  final VoidCallback? onLongPress;
-  final ValueChanged<bool>? onHover;
-  final ValueChanged<bool>? onFocusChange;
-  final ButtonStyle? style;
-  final FocusNode? focusNode;
-  final bool autofocus;
-  final Clip clipBehavior;
-  final MaterialStatesController? statesController;
-  final Widget child;
-
-  const MiTextButton({
-    super.key,
-    this.enabled = true,
-    this.onPressed,
-    this.onLongPress,
-    this.onHover,
-    this.onFocusChange,
-    this.style,
-    this.focusNode,
-    this.autofocus = false,
-    this.clipBehavior = Clip.none,
-    this.statesController,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: enabled ? onPressed : null,
-      onLongPress: enabled ? onLongPress : null,
-      onHover: onHover,
-      onFocusChange: onFocusChange,
-      style: style,
-      focusNode: focusNode,
-      autofocus: autofocus,
-      clipBehavior: clipBehavior,
-      statesController: statesController,
-      child: child,
-    );
-  }
-}
+// class MiTextButton extends StatelessWidget {
+//   final bool enabled;
+//   final VoidCallback? onPressed;
+//   final VoidCallback? onLongPress;
+//   final ValueChanged<bool>? onHover;
+//   final ValueChanged<bool>? onFocusChange;
+//   final ButtonStyle? style;
+//   final FocusNode? focusNode;
+//   final bool autofocus;
+//   final Clip clipBehavior;
+//   final MaterialStatesController? statesController;
+//   final Widget child;
+//
+//   const MiTextButton({
+//     super.key,
+//     this.enabled = true,
+//     this.onPressed,
+//     this.onLongPress,
+//     this.onHover,
+//     this.onFocusChange,
+//     this.style,
+//     this.focusNode,
+//     this.autofocus = false,
+//     this.clipBehavior = Clip.none,
+//     this.statesController,
+//     required this.child,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return TextButton(
+//       onPressed: enabled ? onPressed : null,
+//       onLongPress: enabled ? onLongPress : null,
+//       onHover: onHover,
+//       onFocusChange: onFocusChange,
+//       style: style,
+//       focusNode: focusNode,
+//       autofocus: autofocus,
+//       clipBehavior: clipBehavior,
+//       statesController: statesController,
+//       child: child,
+//     );
+//   }
+// }
 
 /// カスタム[IconButton]
 ///
 /// * [enabled]追加
 /// TODO: StatelessWidgetから派生。
 
-class MiIconButton extends IconButton {
-  const MiIconButton({
-    super.key,
-    bool enabled = true,
-    super.iconSize,
-    super.visualDensity,
-    super.padding = const EdgeInsets.all(8.0),
-    super.alignment = Alignment.center,
-    super.splashRadius,
-    super.color,
-    super.focusColor,
-    super.hoverColor,
-    super.highlightColor,
-    super.splashColor,
-    super.disabledColor,
-    required VoidCallback? onPressed,
-    super.mouseCursor,
-    super.focusNode,
-    super.autofocus = false,
-    super.tooltip,
-    super.enableFeedback = true,
-    super.constraints,
-    super.style,
-    super.isSelected,
-    super.selectedIcon,
-    required super.icon,
-  }) : super(
-          onPressed: enabled ? onPressed : null,
-        );
-}
+// class MiIconButton extends IconButton {
+//   const MiIconButton({
+//     super.key,
+//     bool enabled = true,
+//     super.iconSize,
+//     super.visualDensity,
+//     super.padding = const EdgeInsets.all(8.0),
+//     super.alignment = Alignment.center,
+//     super.splashRadius,
+//     super.color,
+//     super.focusColor,
+//     super.hoverColor,
+//     super.highlightColor,
+//     super.splashColor,
+//     super.disabledColor,
+//     required VoidCallback? onPressed,
+//     super.mouseCursor,
+//     super.focusNode,
+//     super.autofocus = false,
+//     super.tooltip,
+//     super.enableFeedback = true,
+//     super.constraints,
+//     super.style,
+//     super.isSelected,
+//     super.selectedIcon,
+//     required super.icon,
+//   }) : super(
+//           onPressed: enabled ? onPressed : null,
+//         );
+// }
 
 /// トグルアイコンボタン
 
