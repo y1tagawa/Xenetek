@@ -251,7 +251,7 @@ class _PushButtonsTab extends ConsumerWidget {
 // Dropdown button tab.
 //
 
-final _menuItems = <MaterialColor>[
+const _lightColors = <Color>[
   Colors.blue,
   Colors.cyan,
   Colors.green,
@@ -261,14 +261,24 @@ final _menuItems = <MaterialColor>[
   Colors.purple,
 ];
 
+final _darkColors = <Color>[
+  Colors.blue[200]!,
+  Colors.cyan[200]!,
+  Colors.green[200]!,
+  Colors.yellow[200]!,
+  Colors.orange[200]!,
+  Colors.red[200]!,
+  Colors.purple[200]!,
+];
+
 class _FootPrint {
   final math.Point<double> position;
   final double angle;
-  final MaterialColor color;
+  final int colorIndex;
   const _FootPrint({
     required this.position,
     required this.angle,
-    required this.color,
+    required this.colorIndex,
   });
 }
 
@@ -282,6 +292,7 @@ class _DropdownButtonTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    assert(_lightColors.length == _darkColors.length);
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
@@ -289,8 +300,7 @@ class _DropdownButtonTab extends ConsumerWidget {
     final footPrints = ref.watch(_footPrintsProvider);
 
     final theme = Theme.of(context);
-
-    Color color(MaterialColor value) => theme.isDark ? value[200]! : value;
+    final colors = theme.isDark ? _darkColors : _lightColors;
 
     return Column(
       children: [
@@ -316,10 +326,14 @@ class _DropdownButtonTab extends ConsumerWidget {
                     }
                   : null,
               items: [
-                ..._menuItems.mapIndexed((index, value) {
+                ..._lightColors.mapIndexed((index, value) {
                   return DropdownMenuItem<int?>(
                     value: index,
-                    child: Icon(Icons.pets, color: enabled ? color(value) : theme.disabledColor),
+                    alignment: AlignmentDirectional.center,
+                    child: Icon(
+                      Icons.pets,
+                      color: enabled ? colors[index] : theme.disabledColor,
+                    ),
                   );
                 }),
               ],
@@ -339,6 +353,7 @@ class _DropdownButtonTab extends ConsumerWidget {
               children: [
                 ...footPrints.map(
                   (footPrint) {
+                    final color = colors[footPrint.colorIndex];
                     return Positioned(
                       left: footPrint.position.x - 12,
                       top: footPrint.position.y - 18,
@@ -346,7 +361,7 @@ class _DropdownButtonTab extends ConsumerWidget {
                         angle: footPrint.angle,
                         child: Icon(
                           Icons.pets,
-                          color: enabled ? color(footPrint.color) : footPrint.color.withAlpha(128),
+                          color: enabled ? color : color.withAlpha(128),
                         ),
                       ),
                     );
@@ -370,7 +385,7 @@ class _DropdownButtonTab extends ConsumerWidget {
                         _FootPrint(
                           position: position,
                           angle: angle,
-                          color: _menuItems[menuIndex],
+                          colorIndex: menuIndex,
                         ),
                       ];
                     }

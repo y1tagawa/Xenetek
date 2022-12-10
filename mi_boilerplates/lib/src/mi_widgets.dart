@@ -576,11 +576,19 @@ class MiRow extends StatelessWidget {
         assert(spacing >= 0);
 
   Widget _flexChild(Widget child, int flex) {
-    return Flexible(
-      flex: flex,
-      fit: fit,
-      child: child,
-    );
+    if (flex >= 0) {
+      return Flexible(
+        flex: flex,
+        fit: fit,
+        child: child,
+      );
+    } else {
+      final width = -flex.toDouble();
+      return ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: width, minWidth: width),
+        child: child,
+      );
+    }
   }
 
   List<Widget> _flexChildren() {
