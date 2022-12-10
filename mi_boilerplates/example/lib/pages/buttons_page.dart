@@ -316,7 +316,7 @@ class _DropdownButtonTab extends ConsumerWidget {
           flexes: const [4, 1],
           children: [
             ExClearButtonListTile(
-              enabled: enabled,
+              enabled: enabled && (footPrints.isNotEmpty || menuIndex != null),
               onPressed: () {
                 ref.read(_menuIndexProvider.notifier).state = null;
                 ref.read(_footPrintsProvider.notifier).state = <_FootPrint>[];
@@ -465,23 +465,48 @@ class _ToggleButtonsTab extends ConsumerWidget {
           }).toList(),
         ),
         const SizedBox(height: 8),
-        // Shields
-        ToggleButtons(
-          color: theme.unselectedIconColor,
-          isSelected: List.filled(_shieldItems.length, false)
-              .let((it) => shield != null ? it.replaced(shield, true) : it),
-          onPressed: enabled
-              ? (index) {
-                  _logger.fine('$index $shield');
-                  ref.read(_shieldProvider.notifier).state = (index == shield ? null : index);
-                }
-              : null,
-          children: _shieldItems.entries.mapIndexed((index, item) {
-            return Tooltip(
-              message: item.key,
-              child: item.value,
-            );
-          }).toList(),
+        MiRow(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Shields
+            ToggleButtons(
+              color: theme.unselectedIconColor,
+              isSelected: List.filled(_shieldItems.length, false)
+                  .let((it) => shield != null ? it.replaced(shield, true) : it),
+              onPressed: enabled
+                  ? (index) {
+                      _logger.fine('$index $shield');
+                      ref.read(_shieldProvider.notifier).state = (index == shield ? null : index);
+                    }
+                  : null,
+              children: _shieldItems.entries.mapIndexed((index, item) {
+                return Tooltip(
+                  message: item.key,
+                  child: item.value,
+                );
+              }).toList(),
+            ),
+
+            // Clear button
+            ToggleButtons(
+              color: theme.unselectedIconColor,
+              isSelected: [
+                armour.any((value) => value) || shield != null,
+              ],
+              onPressed: enabled
+                  ? (_) {
+                      final _ = ref.refresh(_armourProvider.notifier);
+                      ref.read(_shieldProvider.notifier).state = null;
+                    }
+                  : null,
+              children: const [
+                Tooltip(
+                  message: 'Clear',
+                  child: Icon(Icons.clear),
+                ),
+              ],
+            ),
+          ],
         ),
         const Divider(),
         Center(
