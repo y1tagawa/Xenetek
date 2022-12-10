@@ -113,6 +113,8 @@ class AnimationsPage extends ConsumerWidget {
 //   https://api.flutter.dev/flutter/animation/AnimationController-class.html
 //
 
+//<editor-fold>
+
 class _AnimatedBuilderTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedBuilderTab).toString());
 
@@ -171,12 +173,16 @@ class _AnimatedBuilderTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Lottie tab
 //
 // https://lottiefiles.com/lottiefilez
 // https://pub.dev/packages/lottie
 //
+
+//<editor-fold>
 
 //// https://lottiefiles.com/99-bell
 // https://lottiefiles.com/11458-empty
@@ -223,9 +229,13 @@ class _LottieTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Animation GIF tab
 //
+
+//<editor-fold>
 
 const _imageUrl =
     'https://upload.wikimedia.org/wikipedia/commons/d/dd/Muybridge_race_horse_animated.gif';
@@ -250,9 +260,13 @@ class _AnimationGifTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Animated opacity tab
 //
+
+//<editor-fold>
 
 final _opaqueProvider = StateProvider((ref) => false);
 
@@ -305,9 +319,13 @@ class _AnimatedOpacityTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Animated icons catalogue tab
 //
+
+//<editor-fold>
 
 const _animatedIcons = <AnimatedIconData>[
   AnimatedIcons.arrow_menu,
@@ -389,3 +407,5 @@ class _AnimatedIconsTab extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>

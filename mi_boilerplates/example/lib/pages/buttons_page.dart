@@ -567,6 +567,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
         fontFamily = 'Courier New';
         break;
       case TargetPlatform.android:
+        // デフォルトでは入ってないみたい
         fontFamily = 'Roboto Mono';
         break;
       default:

@@ -104,7 +104,7 @@ class SwitchesPage extends ConsumerWidget {
               flexes: const [1, 1],
               children: [
                 ExResetButtonListTile(
-                  enabled: enableActions && switches.every((value) => !value),
+                  enabled: enableActions && switches.any((value) => !value),
                   onPressed: () => reset(true),
                 ),
                 ExClearButtonListTile(

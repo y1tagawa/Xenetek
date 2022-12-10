@@ -4,18 +4,43 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+class QueueNotifier<T> extends ChangeNotifier {
+  T? _value;
+
+  QueueNotifier();
+
+  T get value {
+    assert(_value != null);
+    return _value!;
+  }
+
+  void add(T value) {
+    _value = value;
+    notifyListeners();
+    _value = null;
+  }
+
+  void addAll(Iterable<T> values) {
+    for (final value in values) {
+      add(value);
+    }
+  }
+}
+
+enum MiAnimationControllerCommand { reset, forward }
+
 /// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
 ///
 /// s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
 
 class MiAnimationController extends StatefulWidget {
   final bool enabled;
-  final AnimationController? animationController;
   final Widget Function(
     BuildContext context,
     AnimationController controller,
     Widget? child,
   ) builder;
+  final QueueNotifier<MiAnimationControllerCommand>? commandNotifier;
   final Duration duration;
   final void Function(AnimationController controller)? onInitialized;
   final void Function()? onDispose;
@@ -28,8 +53,8 @@ class MiAnimationController extends StatefulWidget {
   const MiAnimationController({
     super.key,
     this.enabled = true,
-    this.animationController,
     required this.builder,
+    this.commandNotifier,
     this.duration = const Duration(milliseconds: 1000),
     this.onInitialized,
     this.onDispose,
@@ -61,6 +86,18 @@ class _MiAnimationControllerState extends State<MiAnimationController>
     }
   }
 
+  void _commandListener() {
+    assert(widget.commandNotifier != null);
+    switch (widget.commandNotifier!.value) {
+      case MiAnimationControllerCommand.reset:
+        _controller.reset();
+        break;
+      case MiAnimationControllerCommand.forward:
+        _controller.forward();
+        break;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +107,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
     )
       ..addListener(_listener)
       ..addStatusListener(_statusListener);
+    widget.commandNotifier?.addListener(_commandListener);
     widget.onInitialized?.call(_controller);
   }
 
@@ -77,11 +115,21 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   void dispose() {
     try {
       widget.onDispose?.call();
-      _controller.removeStatusListener(_statusListener);
     } finally {
+      widget.commandNotifier?.removeListener(_commandListener);
+      _controller
+        ..removeStatusListener(_statusListener)
+        ..removeListener(_listener);
       _controller.dispose();
       super.dispose();
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant MiAnimationController oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.commandNotifier?.removeListener(_commandListener);
+    widget.commandNotifier?.addListener(_commandListener);
   }
 
   @override
@@ -105,6 +153,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
 /// [duration]の間、[frequency]回アイコンを振動させる。
 /// [onInitialized]から[onDispose]の間、AnimationControllerを外部に提供するので、
 /// Animationの制御はそれを使う。
+
 class MiRingingIcon extends StatelessWidget {
   final bool enabled;
   final Duration duration;

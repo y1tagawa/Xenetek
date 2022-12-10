@@ -53,14 +53,18 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 
 * 回避策の実態コメント
 * x11, JisColorをライブラリに移動
-* colors整理
-  * gridを削除？
-  * themeをスクロールせず見やすく出来ないか
 * snackbarのサンプル+toastの実験ページ
 * embedded tabのもっとおもしろいやつ
 * ex_appbar整理
 * VTState -> StateNotifier<VTState> -> VT
   * w, h, style, clear(), put(x, y, ...), scrollPos...
+
+## AnimationをValueNotifier化するために
+
+AnimationControllerを外部からコントコールできないと不便でしょうがない。
+ValueNotifier, ChangeNotifierProviderにして制御できるようにしたい。
+今のMiAnintialimationControllerにstartを送れれば良いので、
+（今はonInitializedでAnimationControllerを変数に保存している、）
 
 # 
 
