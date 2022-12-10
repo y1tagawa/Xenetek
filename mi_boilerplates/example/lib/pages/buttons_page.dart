@@ -251,8 +251,6 @@ class _PushButtonsTab extends ConsumerWidget {
 // Dropdown button tab.
 //
 
-final _random = math.Random();
-
 final _menuItems = <MaterialColor>[
   Colors.blue,
   Colors.cyan,
@@ -264,7 +262,7 @@ final _menuItems = <MaterialColor>[
 ];
 
 class _FootPrint {
-  final math.Point position;
+  final math.Point<double> position;
   final double angle;
   final Color color;
   const _FootPrint({
@@ -274,8 +272,8 @@ class _FootPrint {
   });
 }
 
-final _footPrintsProvider = StateProvider((ref) => <Widget>[]);
-final _menuIndexProvider = StateProvider((ref) => 0);
+final _footPrintsProvider = StateProvider((ref) => <_FootPrint>[]);
+final _menuIndexProvider = StateProvider<int?>((ref) => 4);
 
 class _DropdownButtonTab extends ConsumerWidget {
   static final _logger = Logger((_DropdownButtonTab).toString());
@@ -295,35 +293,32 @@ class _DropdownButtonTab extends ConsumerWidget {
     return Column(
       children: [
         MiRow(
-          flexes: const [1, 1],
+          flexes: const [4, 1],
           children: [
             ExClearButtonListTile(
               enabled: enabled,
               onPressed: () {
-                ref.read(_footPrintsProvider.notifier).state = <Widget>[];
+                ref.read(_menuIndexProvider.notifier).state = null;
+                ref.read(_footPrintsProvider.notifier).state = <_FootPrint>[];
               },
             ),
-            DropdownButton<int>(
+            DropdownButton<int?>(
               value: menuIndex,
-              onChanged: (value) {
-                ref.read(_menuIndexProvider.notifier).state = value!;
-              },
+              hint: MiImageIcon(
+                image: Image.asset('assets/worker_cat2.png'),
+              ),
+              onChanged: enabled
+                  ? (value) {
+                      ref.read(_menuIndexProvider.notifier).state = value!;
+                    }
+                  : null,
               items: [
                 ..._menuItems.mapIndexed((index, value) {
-                  return DropdownMenuItem<int>(
+                  return DropdownMenuItem<int?>(
                     value: index,
-                    child: MiColorChip(color: value),
+                    child: Icon(Icons.pets, color: enabled ? value : theme.disabledColor),
                   );
                 }),
-                // const DropdownMenuItem(
-                //   value: -1,
-                //   child: Text('Reset'),
-                // ),
-                // const DropdownMenuItem(
-                //   value: -1,
-                //   enabled: false,
-                //   child: Text('Disabled'),
-                // ),
               ],
             ),
           ],
@@ -332,25 +327,42 @@ class _DropdownButtonTab extends ConsumerWidget {
         Expanded(
           child: Stack(
             children: [
-              ...footPrints,
-              GestureDetector(
-                onTapDown: (detail) {
-                  _logger.fine(detail.localPosition);
-                  ref.read(_footPrintsProvider.notifier).state = [
-                    ...footPrints,
-                    Positioned(
-                      left: detail.localPosition.dx - 12,
-                      top: detail.localPosition.dy - 12,
-                      child: Transform.rotate(
-                        angle: _random.nextDouble() * math.pi * 2.0,
-                        child: Icon(
-                          Icons.pets,
-                          color: _menuItems[menuIndex],
-                        ),
+              ...footPrints.map(
+                (footPrint) {
+                  return Positioned(
+                    left: footPrint.position.x - 12,
+                    top: footPrint.position.y - 18,
+                    child: Transform.rotate(
+                      angle: footPrint.angle,
+                      child: Icon(
+                        Icons.pets,
+                        color: enabled ? footPrint.color : footPrint.color.withAlpha(128),
                       ),
                     ),
-                  ];
+                  );
                 },
+              ).toList(),
+              GestureDetector(
+                onTapDown: menuIndex != null
+                    ? (detail) {
+                        _logger.fine(detail.localPosition);
+                        final position =
+                            math.Point(detail.localPosition.dx, detail.localPosition.dy);
+                        final angle = footPrints.isEmpty
+                            ? 0.0
+                            : (position - footPrints.last.position)
+                                .let((it) => math.atan2(it.x, -it.y));
+
+                        ref.read(_footPrintsProvider.notifier).state = [
+                          ...footPrints,
+                          _FootPrint(
+                            position: position,
+                            angle: angle,
+                            color: _menuItems[menuIndex],
+                          ),
+                        ];
+                      }
+                    : null,
               ),
             ],
           ),
