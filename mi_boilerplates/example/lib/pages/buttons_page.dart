@@ -418,7 +418,7 @@ class _DropdownButtonTab extends ConsumerWidget {
 
 //<editor-fold>
 
-const _shieldItems = <String, Widget?>{
+const _shieldItems = <String, Widget>{
   'Shield': Icon(Icons.shield_outlined),
   'Shield+1': Icon(Icons.gpp_good_outlined),
   'Shield of Snake': Icon(Icons.monetization_on_outlined),
@@ -426,7 +426,7 @@ const _shieldItems = <String, Widget?>{
 
 final _armourProvider =
     StateProvider((ref) => List.filled(KnightIndicator.items.length - 1, false));
-final _shieldProvider = StateProvider<int>((ref) => 0);
+final _shieldProvider = StateProvider<int?>((ref) => null);
 
 class _ToggleButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_ToggleButtonsTab).toString());
@@ -469,10 +469,11 @@ class _ToggleButtonsTab extends ConsumerWidget {
         ToggleButtons(
           color: theme.unselectedIconColor,
           isSelected: List.filled(_shieldItems.length, false)
-              .let((it) => shield >= 0 ? it.replaced(shield, true) : it),
+              .let((it) => shield != null ? it.replaced(shield, true) : it),
           onPressed: enabled
               ? (index) {
-                  ref.read(_shieldProvider.notifier).state = index == shield ? -1 : index;
+                  _logger.fine('$index $shield');
+                  ref.read(_shieldProvider.notifier).state = (index == shield ? null : index);
                 }
               : null,
           children: _shieldItems.entries.mapIndexed((index, item) {
@@ -486,10 +487,10 @@ class _ToggleButtonsTab extends ConsumerWidget {
         Center(
           child: KnightIndicator(
             color: enabled ? theme.unselectedIconColor : theme.disabledColor,
-            shieldIcon: shield >= 0 ? _shieldItems.values.skip(shield).first : null,
+            shieldIcon: shield != null ? _shieldItems.values.skip(shield).first : null,
             equipped: [
               ...armour,
-              shield >= 0,
+              shield != null,
             ],
           ),
         )
