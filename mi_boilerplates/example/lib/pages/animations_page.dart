@@ -115,6 +115,8 @@ class AnimationsPage extends ConsumerWidget {
 
 //<editor-fold>
 
+final _pingCallbackNotifier = MiSinkNotifier<MiAnimationControllerCallback>();
+
 class _AnimatedBuilderTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedBuilderTab).toString());
 
@@ -125,47 +127,51 @@ class _AnimatedBuilderTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return Center(
-      child: MiAnimationController(
-        duration: const Duration(milliseconds: 800),
-        builder: (_, controller, __) => AnimatedBuilder(
-          animation: controller,
-          builder: (_, __) {
-            final t = controller.value;
-            _logger.fine(t);
-            return SizedBox.square(
-              dimension: 120,
-              child: Stack(
-                fit: StackFit.expand,
-                alignment: Alignment.center,
-                children: [
-                  // dispenser
-                  Transform.rotate(
-                    angle: (360.0 * Curves.bounceOut.transform(t)).toRadian(),
-                    child: const Icon(
-                      Icons.refresh,
-                      size: 60,
-                    ),
-                  ),
-                  // star
-                  if (t != 0.0 && t < 0.99)
-                    Transform.translate(
-                      offset: Offset(400.0 * t, 400.0 * t * t),
-                      child: const Icon(
-                        Icons.star,
-                        size: 24,
-                        color: Colors.orange,
-                      ),
-                    ),
-                ],
-              ),
-            );
+      child: InkWell(
+        onTap: () => _pingCallbackNotifier.add(
+          (controller) {
+            controller.reset();
+            controller.forward();
           },
         ),
-        onTap: (controller) {
-          _logger.fine('tap');
-          controller.reset();
-          controller.forward();
-        },
+        child: MiAnimationController(
+          callbackNotifier: _pingCallbackNotifier,
+          duration: const Duration(milliseconds: 800),
+          builder: (_, controller, __) => AnimatedBuilder(
+            animation: controller,
+            builder: (_, __) {
+              final t = controller.value;
+              _logger.fine(t);
+              return SizedBox.square(
+                dimension: 120,
+                child: Stack(
+                  fit: StackFit.expand,
+                  alignment: Alignment.center,
+                  children: [
+                    // dispenser
+                    Transform.rotate(
+                      angle: (360.0 * Curves.bounceOut.transform(t)).toRadian(),
+                      child: const Icon(
+                        Icons.refresh,
+                        size: 60,
+                      ),
+                    ),
+                    // star
+                    if (t != 0.0 && t < 0.99)
+                      Transform.translate(
+                        offset: Offset(400.0 * t, 400.0 * t * t),
+                        child: const Icon(
+                          Icons.star,
+                          size: 24,
+                          color: Colors.orange,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
     ).also((_) {
       _logger.fine('[o] build');
@@ -188,6 +194,8 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 // https://lottiefiles.com/11458-empty
 const _lottieUrl = 'https://assets3.lottiefiles.com/packages/lf20_tDw3lP/empty_03.json';
 
+final _lottieCallbackNotifier = MiSinkNotifier<MiAnimationControllerCallback>();
+
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
 
@@ -198,30 +206,35 @@ class _LottieTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return Center(
-      child: MiAnimationController(
-        builder: (_, controller, __) {
-          return ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Colors.red,
-              BlendMode.srcIn,
-            ),
-            child: Lottie.network(
-              _lottieUrl,
-              controller: controller,
-              repeat: false,
-              onLoaded: (composition) {
-                _logger.fine('onLoaded: ${composition.duration}');
-                controller.duration = composition.duration;
-                controller.reset();
-                controller.forward();
-              },
-            ),
-          );
-        },
-        onTap: (controller) {
-          controller.reset();
-          controller.forward();
-        },
+      child: InkWell(
+        onTap: () => _lottieCallbackNotifier.add(
+          (controller) {
+            controller.reset();
+            controller.forward();
+          },
+        ),
+        child: MiAnimationController(
+          callbackNotifier: _lottieCallbackNotifier,
+          builder: (_, controller, __) {
+            return ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Colors.red,
+                BlendMode.srcIn,
+              ),
+              child: Lottie.network(
+                _lottieUrl,
+                controller: controller,
+                repeat: false,
+                onLoaded: (composition) {
+                  _logger.fine('onLoaded: ${composition.duration}');
+                  controller.duration = composition.duration;
+                  controller.reset();
+                  controller.forward();
+                },
+              ),
+            );
+          },
+        ),
       ),
     ).also((_) {
       _logger.fine('[o] build');
@@ -359,7 +372,10 @@ const _animatedIconNames = [
   'view_list',
 ];
 
-final _animatedIconDirections = List<bool>.generate(_animatedIcons.length, (_) => true);
+final _iconAnimationCallbackNotifiers =
+    List.filled(_animatedIcons.length, MiSinkNotifier<MiAnimationControllerCallback>());
+
+final _animatedIconDirections = List.filled(_animatedIcons.length, true);
 
 class _AnimatedIconsTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedIconsTab).toString());
@@ -378,27 +394,32 @@ class _AnimatedIconsTab extends ConsumerWidget {
       runSpacing: 8,
       children: [
         ..._animatedIcons.mapIndexed(
-          (index, data) => MiAnimationController(
-            builder: (_, controller, __) {
-              return Tooltip(
-                message: _animatedIconNames[index],
-                child: AnimatedIcon(
-                  icon: data,
-                  progress: controller,
-                  size: 48,
-                  color: theme.colorScheme.background,
-                ),
-              );
-            },
-            onTap: (controller) {
-              final direction = _animatedIconDirections[index];
-              if (direction) {
-                controller.forward(from: controller.value);
-              } else {
-                controller.reverse(from: controller.value);
-              }
-              _animatedIconDirections[index] = !direction;
-            },
+          (index, data) => InkWell(
+            onTap: () => _iconAnimationCallbackNotifiers[index].add(
+              (controller) {
+                final direction = _animatedIconDirections[index];
+                if (direction) {
+                  controller.forward(from: controller.value);
+                } else {
+                  controller.reverse(from: controller.value);
+                }
+                _animatedIconDirections[index] = !direction;
+              },
+            ),
+            child: MiAnimationController(
+              callbackNotifier: _iconAnimationCallbackNotifiers[index],
+              builder: (_, controller, __) {
+                return Tooltip(
+                  message: _animatedIconNames[index],
+                  child: AnimatedIcon(
+                    icon: data,
+                    progress: controller,
+                    size: 48,
+                    color: theme.colorScheme.background,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],

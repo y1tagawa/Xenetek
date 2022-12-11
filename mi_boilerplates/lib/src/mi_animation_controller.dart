@@ -28,12 +28,13 @@ class MiSinkNotifier<T> extends ChangeNotifier {
 /// [MiAnimationController]に要求するコールバック
 typedef MiAnimationControllerCallback = void Function(AnimationController controller);
 
+typedef MiAnimationControllerCallbackNotifier = MiSinkNotifier<MiAnimationControllerCallback>;
+
 /// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
 ///
 /// s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
 
 class MiAnimationController extends StatefulWidget {
-  final bool enabled;
   final Widget Function(
     BuildContext context,
     AnimationController controller,
@@ -44,22 +45,17 @@ class MiAnimationController extends StatefulWidget {
   final void Function(AnimationController controller)? onInitialized;
   final void Function()? onDispose;
   final void Function(AnimationController controller)? onCompleted;
-  final void Function(AnimationController controller)? onTap;
-  final void Function(AnimationController controller, bool enter)? onHover;
   final void Function(AnimationController controller)? onUpdate;
   final Widget? child;
 
   const MiAnimationController({
     super.key,
-    this.enabled = true,
     required this.builder,
     this.callbackNotifier,
     this.duration = const Duration(milliseconds: 1000),
     this.onInitialized,
     this.onDispose,
     this.onCompleted,
-    this.onTap,
-    this.onHover,
     this.onUpdate,
     this.child,
   });
@@ -127,15 +123,8 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   @override
   Widget build(BuildContext context) {
     //_logger.fine('[i] build ${_controller.value}');
-    Widget child = widget.builder(context, _controller, widget.child);
-    if (widget.onTap != null || widget.onHover != null) {
-      child = InkWell(
-        onTap: widget.enabled ? () => widget.onTap?.call(_controller) : null,
-        onHover: widget.enabled ? (enter) => widget.onHover?.call(_controller, enter) : null,
-        child: child,
-      );
-    }
-    return child //.also((_) { _logger.fine('[o] build');})
+    return widget.builder(context, _controller, widget.child)
+        //.also((_) { _logger.fine('[o] build');})
         ;
   }
 }
@@ -198,11 +187,6 @@ class MiRingingIcon extends StatelessWidget {
         );
       },
       onInitialized: (controller) => onInitialized?.call(controller),
-      onTap: onPressed != null
-          ? (_) {
-              onPressed!.call();
-            }
-          : null,
       onCompleted: (controller) => controller.reset(),
     );
   }
