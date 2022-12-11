@@ -10,8 +10,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
-import 'ex_widgets.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 import 'knight_indicator.dart';
 
 //
@@ -56,8 +56,8 @@ class ButtonsPage extends ConsumerWidget {
       icon: Icon(Icons.more_horiz),
     ),
     mi.Tab(
-      tooltip: UnderConstruction.title,
-      icon: UnderConstruction.icon,
+      tooltip: ex.UnderConstruction.title,
+      icon: ex.UnderConstruction.icon,
     ),
   ];
 
@@ -67,7 +67,7 @@ class ButtonsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     final tabIndex = ref.watch(_tabIndexProvider);
 
@@ -80,8 +80,8 @@ class ButtonsPage extends ConsumerWidget {
       },
       builder: (context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
             actions: [
@@ -92,7 +92,7 @@ class ButtonsPage extends ConsumerWidget {
                   tooltip: 'IconButton',
                 ),
             ],
-            bottom: ExTabBar(
+            bottom: ex.ExTabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -130,7 +130,7 @@ class ButtonsPage extends ConsumerWidget {
                   child: const Icon(Icons.notifications_outlined),
                 )
               : null,
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -154,7 +154,7 @@ class _PushButtonsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     final theme = Theme.of(context);
 
@@ -303,7 +303,7 @@ class _DropdownButtonTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
     final menuIndex = ref.watch(_menuIndexProvider);
     final footPrints = ref.watch(_footPrintsProvider);
 
@@ -315,7 +315,7 @@ class _DropdownButtonTab extends ConsumerWidget {
         mi.Row(
           flexes: const [1, 1],
           children: [
-            ExClearButtonListTile(
+            ex.ExClearButtonListTile(
               enabled: enabled && (footPrints.isNotEmpty || menuIndex != null),
               onPressed: () {
                 ref.read(_menuIndexProvider.notifier).state = null;
@@ -324,9 +324,12 @@ class _DropdownButtonTab extends ConsumerWidget {
             ),
             DropdownButton<int?>(
               value: menuIndex,
-              hint: mi.ImageIcon(
-                image: Image.asset('assets/worker_cat2.png'),
-                color: enabled ? theme.unselectedIconColor : theme.disabledColor,
+              isExpanded: true,
+              hint: Center(
+                child: mi.ImageIcon(
+                  image: Image.asset('assets/worker_cat2.png'),
+                  color: enabled ? theme.unselectedIconColor : theme.disabledColor,
+                ),
               ),
               onChanged: enabled
                   ? (value) {
@@ -437,7 +440,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
     final armour = ref.watch(_armourProvider);
     final shield = ref.watch(_shieldProvider);
 

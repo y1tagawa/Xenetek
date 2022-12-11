@@ -254,3 +254,7 @@ class GridItem extends StatelessWidget {
     );
   }
 }
+
+// DropdownMenuItemはステートレスなのでカスタマイズは困難。
+// https://github.com/flutter/flutter/blob/4a15111660c509a7f90b8bd549bad72f62ee38f5/packages/flutter/lib/src/material/dropdown.dart#L739
+// 必要ならPopupMenuButtonでアイコンを変えるとかで対応する。
