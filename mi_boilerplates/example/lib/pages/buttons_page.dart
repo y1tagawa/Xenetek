@@ -21,14 +21,13 @@ import 'knight_indicator.dart';
 final _tabIndexProvider = StateProvider((ref) => 0);
 final _toasterNotifier = ValueNotifier(false);
 
-final _pingNotifier = MiSinkNotifier<MiAnimationControllerCommand>();
+final _pingNotifier = MiSinkNotifier<MiAnimationControllerCallback>();
 
 void _ping(WidgetRef ref) async {
-  _pingNotifier.addAll(const [
-    MiAnimationControllerCommand.reset,
-    MiAnimationControllerCommand.forward,
-  ]);
-
+  _pingNotifier.add((controller) {
+    controller.reset();
+    controller.forward();
+  });
   _toasterNotifier.value = true;
 }
 
@@ -222,7 +221,7 @@ class _PushButtonsTab extends ConsumerWidget {
             padding: const EdgeInsets.all(10),
             child: Center(
               child: MiRingingIcon(
-                commandNotifier: _pingNotifier,
+                callbackNotifier: _pingNotifier,
                 icon: Icon(
                   Icons.notifications_outlined,
                   size: 48,

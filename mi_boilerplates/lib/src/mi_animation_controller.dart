@@ -23,20 +23,10 @@ class MiSinkNotifier<T> extends ChangeNotifier {
       _value = null;
     }
   }
-
-  void addAll(Iterable<T> values) {
-    if (hasListeners) {
-      for (final value in values) {
-        _value = value;
-        notifyListeners();
-      }
-      _value = null;
-    }
-  }
 }
 
-/// [MiAnimationController]に外部から供給するコマンド
-enum MiAnimationControllerCommand { reset, forward }
+/// [MiAnimationController]に要求するコールバック
+typedef MiAnimationControllerCallback = void Function(AnimationController controller);
 
 /// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
 ///
@@ -49,7 +39,7 @@ class MiAnimationController extends StatefulWidget {
     AnimationController controller,
     Widget? child,
   ) builder;
-  final MiSinkNotifier<MiAnimationControllerCommand>? commandNotifier;
+  final MiSinkNotifier<MiAnimationControllerCallback>? callbackNotifier;
   final Duration duration;
   final void Function(AnimationController controller)? onInitialized;
   final void Function()? onDispose;
@@ -63,7 +53,7 @@ class MiAnimationController extends StatefulWidget {
     super.key,
     this.enabled = true,
     required this.builder,
-    this.commandNotifier,
+    this.callbackNotifier,
     this.duration = const Duration(milliseconds: 1000),
     this.onInitialized,
     this.onDispose,
@@ -95,16 +85,9 @@ class _MiAnimationControllerState extends State<MiAnimationController>
     }
   }
 
-  void _commandListener() {
-    assert(widget.commandNotifier != null);
-    switch (widget.commandNotifier!.value) {
-      case MiAnimationControllerCommand.reset:
-        _controller.reset();
-        break;
-      case MiAnimationControllerCommand.forward:
-        _controller.forward();
-        break;
-    }
+  void _callbackListener() {
+    assert(widget.callbackNotifier != null);
+    widget.callbackNotifier!.value(_controller);
   }
 
   @override
@@ -116,7 +99,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
     )
       ..addListener(_listener)
       ..addStatusListener(_statusListener);
-    widget.commandNotifier?.addListener(_commandListener);
+    widget.callbackNotifier?.addListener(_callbackListener);
     widget.onInitialized?.call(_controller);
   }
 
@@ -125,7 +108,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
     try {
       widget.onDispose?.call();
     } finally {
-      widget.commandNotifier?.removeListener(_commandListener);
+      widget.callbackNotifier?.removeListener(_callbackListener);
       _controller
         ..removeStatusListener(_statusListener)
         ..removeListener(_listener);
@@ -137,8 +120,8 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   @override
   void didUpdateWidget(covariant MiAnimationController oldWidget) {
     super.didUpdateWidget(oldWidget);
-    oldWidget.commandNotifier?.removeListener(_commandListener);
-    widget.commandNotifier?.addListener(_commandListener);
+    oldWidget.callbackNotifier?.removeListener(_callbackListener);
+    widget.callbackNotifier?.addListener(_callbackListener);
   }
 
   @override
@@ -160,7 +143,8 @@ class _MiAnimationControllerState extends State<MiAnimationController>
 /// [MiAnimationController]の使用例
 ///
 /// [duration]の間、[frequency]回アイコンを振動させる。
-/// アニメーションの制御は[commandNotifier]またはコールバック引数の[AnimationController]によって行う。
+/// [AnimationController]は[callbackNotifier]にコールバックを要求して受け取るか、
+/// または[onInitialized]の引数を使用する。
 
 class MiRingingIcon extends StatelessWidget {
   final bool enabled;
@@ -168,9 +152,8 @@ class MiRingingIcon extends StatelessWidget {
   final double frequency;
   final Widget icon;
   final Widget? ringingIcon;
-  final MiSinkNotifier<MiAnimationControllerCommand>? commandNotifier;
+  final MiSinkNotifier<MiAnimationControllerCallback>? callbackNotifier;
   final void Function(AnimationController controller)? onInitialized;
-  final VoidCallback? onDispose;
   final VoidCallback? onPressed;
   final double? angle;
   final double? angleDegree;
@@ -183,9 +166,8 @@ class MiRingingIcon extends StatelessWidget {
     this.frequency = 10,
     this.icon = const Icon(Icons.notifications_outlined),
     this.ringingIcon = const Icon(Icons.notifications_active_outlined),
-    this.commandNotifier,
+    this.callbackNotifier,
     this.onInitialized,
-    this.onDispose,
     this.onPressed,
     this.angle,
     this.angleDegree,
@@ -197,7 +179,7 @@ class MiRingingIcon extends StatelessWidget {
     final angle_ = angle ?? angleDegree?.toRadian() ?? (20.0 * DoubleHelper.degreeToRadian);
     return MiAnimationController(
       duration: duration,
-      commandNotifier: commandNotifier,
+      callbackNotifier: callbackNotifier,
       builder: (context, controller, _) {
         return AnimatedBuilder(
           animation: controller,
@@ -216,7 +198,6 @@ class MiRingingIcon extends StatelessWidget {
         );
       },
       onInitialized: (controller) => onInitialized?.call(controller),
-      onDispose: () => onDispose?.call(),
       onTap: onPressed != null
           ? (_) {
               onPressed!.call();
