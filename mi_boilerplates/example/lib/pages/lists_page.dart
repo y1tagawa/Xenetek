@@ -250,6 +250,7 @@ class _ReorderableListTab extends ConsumerWidget {
               },
             ),
             mi.GridPopupMenuButton(
+              tooltip: '',
               offset: const Offset(0, kToolbarHeight),
               onSelected: (index) {
                 final key = order[index];
@@ -276,7 +277,7 @@ class _ReorderableListTab extends ConsumerWidget {
               child: mi.ButtonListTile(
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
-                text: const Text('Scroll to'),
+                text: const Text('Scroll\nto'), // TODO: constrain width.
                 iconPosition: TextDirection.rtl,
               ),
             ),

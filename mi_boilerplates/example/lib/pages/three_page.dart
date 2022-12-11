@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:example/pages/ex_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,8 +29,8 @@ class ThreePage extends ConsumerWidget {
       icon: Icon(Icons.cruelty_free_outlined),
     ),
     mi.Tab(
-      tooltip: 'TBD',
-      icon: Icon(Icons.more_horiz),
+      tooltip: UnderConstruction.title,
+      icon: UnderConstruction.icon,
     ),
   ];
 
@@ -60,7 +61,7 @@ class ThreePage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _BunnyTab(),
-                _BunnyTab(),
+                UnderConstruction(),
               ],
             ),
           ),

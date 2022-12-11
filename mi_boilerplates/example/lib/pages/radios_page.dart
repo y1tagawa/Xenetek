@@ -189,7 +189,7 @@ class _RadioMenuTab extends ConsumerWidget {
     return Column(
       children: [
         mi.Row(
-          flexes: const [2, 3],
+          flexes: const [1, 1],
           children: [
             ExClearButtonListTile(
               enabled: enabled && menuIndex != null,

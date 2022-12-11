@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart' hide PopupMenuItem;
-import 'package:flutter/material.dart' as material show PopupMenuItem;
+import 'package:flutter/material.dart' hide PopupMenuButton, PopupMenuItem;
+import 'package:flutter/material.dart' as material show PopupMenuButton, PopupMenuItem;
 
 import '../mi_boilerplates.dart' as mi;
 
@@ -173,6 +173,7 @@ class GridPopupMenuButton extends StatelessWidget {
   final double runSpacing;
   final Widget? child;
   final Offset offset;
+  final String? tooltip;
 
   const GridPopupMenuButton({
     super.key,
@@ -184,14 +185,16 @@ class GridPopupMenuButton extends StatelessWidget {
     this.runSpacing = 0.0,
     this.child,
     this.offset = Offset.zero,
+    this.tooltip,
   }) : assert(tooltips == null || tooltips.length == items.length);
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<int>(
+    return material.PopupMenuButton<int>(
       enabled: enabled,
       onSelected: onSelected,
       offset: offset,
+      tooltip: tooltip,
       itemBuilder: (context) {
         return [
           GridPopupMenuItem(
