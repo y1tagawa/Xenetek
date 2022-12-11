@@ -74,7 +74,7 @@ class AnimationsPage extends ConsumerWidget {
               onInitialized: (controller) {
                 controller.forward();
               },
-              onCompleted: (controller) {
+              onEnd: (controller) {
                 controller.reset();
                 controller.forward();
               },

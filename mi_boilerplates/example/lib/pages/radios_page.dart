@@ -249,7 +249,7 @@ class _RadioMenuTab extends ConsumerWidget {
                     },
                   );
                 },
-                onCompleted: (controller) {
+                onEnd: (controller) {
                   controller.reset();
                   controller.forward();
                 },

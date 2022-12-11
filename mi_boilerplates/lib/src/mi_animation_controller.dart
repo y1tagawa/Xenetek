@@ -26,13 +26,15 @@ class MiSinkNotifier<T> extends ChangeNotifier {
 }
 
 /// [MiAnimationController]に要求するコールバック
-typedef MiAnimationControllerCallback = void Function(AnimationController controller);
 
-typedef MiAnimationControllerCallbackNotifier = MiSinkNotifier<MiAnimationControllerCallback>;
+typedef MiAnimationControllerCallback = void Function(AnimationController controller);
 
 /// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
 ///
 /// s.a. https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html
+/// Stateに[AnimationController]のライフサイクルをカプセル化する。
+/// ライフサイクルに伴うイベントは、[onInitialized]などのコールバックによって外部に通知される。
+/// また外部からは[callbackNotifier]を使用してアニメーションを制御することができる。
 
 class MiAnimationController extends StatefulWidget {
   final Widget Function(
@@ -44,7 +46,7 @@ class MiAnimationController extends StatefulWidget {
   final Duration duration;
   final void Function(AnimationController controller)? onInitialized;
   final void Function()? onDispose;
-  final void Function(AnimationController controller)? onCompleted;
+  final void Function(AnimationController controller)? onEnd;
   final void Function(AnimationController controller)? onUpdate;
   final Widget? child;
 
@@ -55,7 +57,7 @@ class MiAnimationController extends StatefulWidget {
     this.duration = const Duration(milliseconds: 1000),
     this.onInitialized,
     this.onDispose,
-    this.onCompleted,
+    this.onEnd,
     this.onUpdate,
     this.child,
   });
@@ -76,8 +78,12 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   }
 
   void _statusListener(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      widget.onCompleted?.call(_controller);
+    switch (status) {
+      case AnimationStatus.completed:
+      case AnimationStatus.dismissed:
+        widget.onEnd?.call(_controller);
+        break;
+      default:
     }
   }
 
@@ -90,7 +96,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      vsync: this, // the SingleTickerProviderStateMixin.
+      vsync: this,
       duration: widget.duration,
     )
       ..addListener(_listener)
@@ -132,8 +138,6 @@ class _MiAnimationControllerState extends State<MiAnimationController>
 /// [MiAnimationController]の使用例
 ///
 /// [duration]の間、[frequency]回アイコンを振動させる。
-/// [AnimationController]は[callbackNotifier]にコールバックを要求して受け取るか、
-/// または[onInitialized]の引数を使用する。
 
 class MiRingingIcon extends StatelessWidget {
   final bool enabled;
@@ -165,7 +169,7 @@ class MiRingingIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final angle_ = angle ?? angleDegree?.toRadian() ?? (20.0 * DoubleHelper.degreeToRadian);
+    final angle_ = angle ?? angleDegree?.toRadian() ?? 20.0.toRadian();
     return MiAnimationController(
       duration: duration,
       callbackNotifier: callbackNotifier,
@@ -187,7 +191,7 @@ class MiRingingIcon extends StatelessWidget {
         );
       },
       onInitialized: (controller) => onInitialized?.call(controller),
-      onCompleted: (controller) => controller.reset(),
+      onEnd: (controller) => controller.reset(),
     );
   }
 }

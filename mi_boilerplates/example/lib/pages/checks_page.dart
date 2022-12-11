@@ -434,7 +434,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
         onInitialized: (controller) {
           controller.forward();
         },
-        onCompleted: (controller) {
+        onEnd: (controller) {
           controller.reset();
           controller.forward();
         },
