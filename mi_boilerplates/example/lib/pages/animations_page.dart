@@ -372,8 +372,10 @@ const _animatedIconNames = [
   'view_list',
 ];
 
-final _iconAnimationCallbackNotifiers =
-    List.filled(_animatedIcons.length, MiSinkNotifier<MiAnimationControllerCallback>());
+final _iconAnimationCallbackNotifiers = List.generate(
+  _animatedIcons.length,
+  (index) => MiSinkNotifier<MiAnimationControllerCallback>(),
+);
 
 final _animatedIconDirections = List.filled(_animatedIcons.length, true);
 
