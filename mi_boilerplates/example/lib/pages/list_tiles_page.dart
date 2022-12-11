@@ -113,7 +113,7 @@ class ListTilesPage extends ConsumerWidget {
                 ),
               ),
               if (themeAdjustment)
-                mi.MiExpansionTile(
+                mi.ExpansionTile(
                   enabled: enableActions,
                   title: const mi.MiIcon(
                     icon: Icon(Icons.person_outline),

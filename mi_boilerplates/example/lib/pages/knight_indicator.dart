@@ -11,24 +11,24 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 class KnightIndicator extends StatelessWidget {
   static const kHelmetIcon = Icon(Icons.balcony_outlined);
-  static const kArmourIcon = mi.MiScale(
+  static const kArmourIcon = mi.Scale(
     scale: 1.2,
-    child: mi.MiRotate(
+    child: mi.Rotate(
       angleDegree: 90.0,
       child: Icon(Icons.bento_outlined),
     ),
   );
   static const _kLGauntletIcon = Icon(Icons.thumb_up_outlined);
-  static const _kRGauntletIcon = mi.MiScale(scaleX: -1, child: _kLGauntletIcon);
-  static const kGauntletsIcon = mi.MiRow(spacing: 0, children: [_kRGauntletIcon, _kLGauntletIcon]);
+  static const _kRGauntletIcon = mi.Scale(scaleX: -1, child: _kLGauntletIcon);
+  static const kGauntletsIcon = mi.Row(spacing: 0, children: [_kRGauntletIcon, _kLGauntletIcon]);
   static const _kLBootIcon = Icon(Icons.roller_skating_outlined);
-  static const _kRBootIcon = mi.MiScale(scaleX: -1, child: _kLBootIcon);
-  static const kBootsIcon = mi.MiRow(spacing: 0, children: [_kRBootIcon, _kLBootIcon]);
+  static const _kRBootIcon = mi.Scale(scaleX: -1, child: _kLBootIcon);
+  static const kBootsIcon = mi.Row(spacing: 0, children: [_kRBootIcon, _kLBootIcon]);
   static const kShieldIcon = Icon(Icons.shield_outlined);
 
   static const _kFaceIcon = Icon(Icons.child_care_outlined);
-  static const _kRHandIcon = mi.MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
-  static const _kLHandIcon = mi.MiScale(scaleX: -1, child: _kRHandIcon);
+  static const _kRHandIcon = mi.Scale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
+  static const _kLHandIcon = mi.Scale(scaleX: -1, child: _kRHandIcon);
   static const _kBlankIcon = Icon(null);
 
   static const items = <String, Widget>{
@@ -70,16 +70,16 @@ class KnightIndicator extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (equipped[2])
-                const mi.MiTranslate(offset: Offset(0, -6), child: _kRGauntletIcon)
+                const mi.Translate(offset: Offset(0, -6), child: _kRGauntletIcon)
               else
-                const mi.MiTranslate(offset: Offset(2, -6), child: _kRHandIcon),
+                const mi.Translate(offset: Offset(2, -6), child: _kRHandIcon),
               if (equipped[1]) kArmourIcon else _kBlankIcon,
               if (equipped[4])
-                mi.MiTranslate(offset: const Offset(-4, 0), child: shieldIcon_)
+                mi.Translate(offset: const Offset(-4, 0), child: shieldIcon_)
               else if (equipped[2])
-                const mi.MiTranslate(offset: Offset(-1, -6), child: _kLGauntletIcon)
+                const mi.Translate(offset: Offset(-1, -6), child: _kLGauntletIcon)
               else
-                const mi.MiTranslate(offset: Offset(-4, -6), child: _kLHandIcon),
+                const mi.Translate(offset: Offset(-4, -6), child: _kLHandIcon),
             ],
           ),
           if (equipped[0])

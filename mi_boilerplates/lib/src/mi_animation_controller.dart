@@ -6,10 +6,10 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 /// Synchronous sink-like value notifier
 
-class MiSinkNotifier<T> extends ChangeNotifier {
+class SinkNotifier<T> extends ChangeNotifier {
   T? _value;
 
-  MiSinkNotifier();
+  SinkNotifier();
 
   T get value {
     assert(_value != null);
@@ -25,9 +25,9 @@ class MiSinkNotifier<T> extends ChangeNotifier {
   }
 }
 
-/// [MiAnimationController]に要求するコールバック
+/// [AnimationControllerWidget]に要求するコールバック
 
-typedef MiAnimationControllerCallback = void Function(AnimationController controller);
+typedef AnimationControllerCallback = void Function(AnimationController controller);
 
 /// [SingleTickerProviderStateMixin], [AnimationController]内蔵ウィジェット
 ///
@@ -36,13 +36,13 @@ typedef MiAnimationControllerCallback = void Function(AnimationController contro
 /// ライフサイクルに伴うイベントは、[onInitialized]などのコールバックによって外部に通知される。
 /// また外部からは[callbackNotifier]を使用してアニメーションを制御することができる。
 
-class MiAnimationController extends StatefulWidget {
+class AnimationControllerWidget extends StatefulWidget {
   final Widget Function(
     BuildContext context,
     AnimationController controller,
     Widget? child,
   ) builder;
-  final MiSinkNotifier<MiAnimationControllerCallback>? callbackNotifier;
+  final SinkNotifier<AnimationControllerCallback>? callbackNotifier;
   final Duration duration;
   final void Function(AnimationController controller)? onInitialized;
   final void Function()? onDispose;
@@ -50,7 +50,7 @@ class MiAnimationController extends StatefulWidget {
   final void Function(AnimationController controller)? onUpdate;
   final Widget? child;
 
-  const MiAnimationController({
+  const AnimationControllerWidget({
     super.key,
     required this.builder,
     this.callbackNotifier,
@@ -63,13 +63,13 @@ class MiAnimationController extends StatefulWidget {
   });
 
   @override
-  State<StatefulWidget> createState() => _MiAnimationControllerState();
+  State<StatefulWidget> createState() => _AnimationControllerWidgetState();
 }
 
-class _MiAnimationControllerState extends State<MiAnimationController>
+class _AnimationControllerWidgetState extends State<AnimationControllerWidget>
     with SingleTickerProviderStateMixin {
   // ignore: unused_field
-  static final _logger = Logger((_MiAnimationControllerState).toString());
+  static final _logger = Logger((_AnimationControllerWidgetState).toString());
 
   late final AnimationController _controller;
 
@@ -120,7 +120,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   }
 
   @override
-  void didUpdateWidget(covariant MiAnimationController oldWidget) {
+  void didUpdateWidget(covariant AnimationControllerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     oldWidget.callbackNotifier?.removeListener(_callbackListener);
     widget.callbackNotifier?.addListener(_callbackListener);
@@ -135,23 +135,23 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   }
 }
 
-/// [MiAnimationController]の使用例
+/// [AnimationControllerWidget]の使用例
 ///
 /// [duration]の間、[frequency]回アイコンを振動させる。
 
-class MiRingingIcon extends StatelessWidget {
+class RingBell extends StatelessWidget {
   final Duration duration;
   final double frequency;
   final Widget icon;
   final Widget? ringingIcon;
-  final MiSinkNotifier<MiAnimationControllerCallback>? callbackNotifier;
+  final SinkNotifier<AnimationControllerCallback>? callbackNotifier;
   final void Function(AnimationController controller)? onInitialized;
   final VoidCallback? onPressed;
   final double? angle;
   final double? angleDegree;
   final Offset? origin;
 
-  const MiRingingIcon({
+  const RingBell({
     super.key,
     this.duration = const Duration(milliseconds: 2000),
     this.frequency = 10,
@@ -168,7 +168,7 @@ class MiRingingIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final angle_ = angle ?? angleDegree?.toRadian() ?? 20.0.toRadian();
-    return MiAnimationController(
+    return AnimationControllerWidget(
       duration: duration,
       callbackNotifier: callbackNotifier,
       builder: (context, controller, _) {
@@ -194,23 +194,23 @@ class MiRingingIcon extends StatelessWidget {
   }
 }
 
-/// [MiAnimationController]の使用例
+/// [AnimationControllerWidget]の使用例
 ///
 /// マジックワンドを振る動作
 
-class MiFlickingWand extends StatelessWidget {
+class FlickWand extends StatelessWidget {
   final bool enabled;
   final Duration duration;
   final Widget icon;
   final Widget? ringingIcon;
-  final MiSinkNotifier<MiAnimationControllerCallback>? callbackNotifier;
+  final SinkNotifier<AnimationControllerCallback>? callbackNotifier;
   final void Function(AnimationController controller)? onInitialized;
   final VoidCallback? onPressed;
   final double? angle;
   final double? angleDegree;
   final Offset? origin;
 
-  const MiFlickingWand({
+  const FlickWand({
     super.key,
     this.enabled = true,
     this.duration = const Duration(milliseconds: 800),
@@ -227,7 +227,7 @@ class MiFlickingWand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final angle_ = angle ?? angleDegree?.toRadian() ?? 60.0.toRadian();
-    return MiAnimationController(
+    return AnimationControllerWidget(
       duration: duration,
       callbackNotifier: callbackNotifier,
       builder: (context, controller, _) {

@@ -5,7 +5,8 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Row;
+import 'package:flutter/material.dart' as material show Row;
 import 'package:logging/logging.dart';
 
 Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
@@ -87,11 +88,11 @@ extension IterableHelper<T> on Iterable<T> {
 ///
 /// 頻出コード。末端でスタイル変更することになるのであまり公開したくないのだが……
 
-class MiDefaultTextColor extends StatelessWidget {
+class DefaultTextColor extends StatelessWidget {
   final Color? color;
   final Widget child;
 
-  const MiDefaultTextColor({
+  const DefaultTextColor({
     super.key,
     this.color,
     required this.child,
@@ -165,7 +166,7 @@ class MiIcon extends StatelessWidget {
       );
     }
 
-    icon_ = MiDefaultTextColor(
+    icon_ = DefaultTextColor(
       color: textColor,
       child: icon_,
     );
@@ -193,7 +194,7 @@ class MiIcon extends StatelessWidget {
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
 
-class MiColorChip extends StatelessWidget {
+class ColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
   final VoidCallback? onTap;
@@ -204,7 +205,7 @@ class MiColorChip extends StatelessWidget {
   final Widget? text;
   final String? tooltip;
 
-  const MiColorChip({
+  const ColorChip({
     super.key,
     this.enabled = true,
     required this.color,
@@ -246,13 +247,13 @@ class MiColorChip extends StatelessWidget {
 
 /// トグルアイコン
 
-class MiToggleIcon extends StatelessWidget {
+class ToggleIcon extends StatelessWidget {
   final bool checked;
   final Widget checkIcon;
   final Widget uncheckIcon;
   final Duration duration;
 
-  const MiToggleIcon({
+  const ToggleIcon({
     super.key,
     required this.checked,
     required this.checkIcon,
@@ -275,12 +276,12 @@ class MiToggleIcon extends StatelessWidget {
 ///
 /// [SvgPicture]対応はflutter_svgに依存することになるので考え中。
 
-class MiImageIcon extends StatelessWidget {
+class ImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
   final Color? color;
 
-  const MiImageIcon({
+  const ImageIcon({
     super.key,
     required this.image,
     this.size,
@@ -303,94 +304,9 @@ class MiImageIcon extends StatelessWidget {
   }
 }
 
-/// カスタム[TextButton]
-///
-/// * [enabled]追加
-
-// class MiTextButton extends StatelessWidget {
-//   final bool enabled;
-//   final VoidCallback? onPressed;
-//   final VoidCallback? onLongPress;
-//   final ValueChanged<bool>? onHover;
-//   final ValueChanged<bool>? onFocusChange;
-//   final ButtonStyle? style;
-//   final FocusNode? focusNode;
-//   final bool autofocus;
-//   final Clip clipBehavior;
-//   final MaterialStatesController? statesController;
-//   final Widget child;
-//
-//   const MiTextButton({
-//     super.key,
-//     this.enabled = true,
-//     this.onPressed,
-//     this.onLongPress,
-//     this.onHover,
-//     this.onFocusChange,
-//     this.style,
-//     this.focusNode,
-//     this.autofocus = false,
-//     this.clipBehavior = Clip.none,
-//     this.statesController,
-//     required this.child,
-//   });
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return TextButton(
-//       onPressed: enabled ? onPressed : null,
-//       onLongPress: enabled ? onLongPress : null,
-//       onHover: onHover,
-//       onFocusChange: onFocusChange,
-//       style: style,
-//       focusNode: focusNode,
-//       autofocus: autofocus,
-//       clipBehavior: clipBehavior,
-//       statesController: statesController,
-//       child: child,
-//     );
-//   }
-// }
-
-/// カスタム[IconButton]
-///
-/// * [enabled]追加
-/// TODO: StatelessWidgetから派生。
-
-// class MiIconButton extends IconButton {
-//   const MiIconButton({
-//     super.key,
-//     bool enabled = true,
-//     super.iconSize,
-//     super.visualDensity,
-//     super.padding = const EdgeInsets.all(8.0),
-//     super.alignment = Alignment.center,
-//     super.splashRadius,
-//     super.color,
-//     super.focusColor,
-//     super.hoverColor,
-//     super.highlightColor,
-//     super.splashColor,
-//     super.disabledColor,
-//     required VoidCallback? onPressed,
-//     super.mouseCursor,
-//     super.focusNode,
-//     super.autofocus = false,
-//     super.tooltip,
-//     super.enableFeedback = true,
-//     super.constraints,
-//     super.style,
-//     super.isSelected,
-//     super.selectedIcon,
-//     required super.icon,
-//   }) : super(
-//           onPressed: enabled ? onPressed : null,
-//         );
-// }
-
 /// トグルアイコンボタン
 
-class MiCheckIconButton extends StatelessWidget {
+class CheckIconButton extends StatelessWidget {
   final bool enabled;
   final bool checked;
   final double? iconSize;
@@ -399,7 +315,7 @@ class MiCheckIconButton extends StatelessWidget {
   final Widget? uncheckIcon;
   final Duration? duration;
 
-  const MiCheckIconButton({
+  const CheckIconButton({
     super.key,
     this.enabled = true,
     required this.checked,
@@ -431,11 +347,11 @@ class MiCheckIconButton extends StatelessWidget {
 
 /// 直前の[child]と最新の[child]をクロスフェードする
 
-class MiFade extends StatefulWidget {
+class Fade extends StatefulWidget {
   final Duration duration;
   final Widget? placeHolder;
   final Widget? child;
-  const MiFade({
+  const Fade({
     // ignore: unused_element
     super.key,
     // ignore: unused_element
@@ -445,12 +361,12 @@ class MiFade extends StatefulWidget {
   });
 
   @override
-  State<StatefulWidget> createState() => _MiFadeState();
+  State<StatefulWidget> createState() => _FadeState();
 }
 
-class _MiFadeState extends State<MiFade> {
+class _FadeState extends State<Fade> {
   // ignore: unused_field
-  static final _logger = Logger((_MiFadeState).toString());
+  static final _logger = Logger((_FadeState).toString());
 
   late Widget? _firstChild;
   late Widget? _secondChild;
@@ -486,7 +402,7 @@ class _MiFadeState extends State<MiFade> {
   }
 
   @override
-  void didUpdateWidget(covariant MiFade oldWidget) {
+  void didUpdateWidget(covariant Fade oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.child != (_state == CrossFadeState.showFirst ? _firstChild : _secondChild)) {
       _update();
@@ -508,7 +424,7 @@ class _MiFadeState extends State<MiFade> {
 
 /// 明示的にintの値をとる[Slider]
 
-class MiIntSlider extends StatelessWidget {
+class IntSlider extends StatelessWidget {
   final bool enabled;
   final int value;
   final int min;
@@ -518,7 +434,7 @@ class MiIntSlider extends StatelessWidget {
   final ValueChanged<int> onChanged;
   // TODO: 必要になったら他のプロパティも
 
-  const MiIntSlider({
+  const IntSlider({
     super.key,
     this.enabled = true,
     required this.value,
@@ -548,7 +464,7 @@ class MiIntSlider extends StatelessWidget {
 /// * [flexes]を指定した場合、[children]の個々を[Flexible]でラップする。
 /// * [spacing]を指定した場合、[children]の間に空間を空ける。
 
-class MiRow extends StatelessWidget {
+class Row extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
   final CrossAxisAlignment crossAxisAlignment;
@@ -560,7 +476,7 @@ class MiRow extends StatelessWidget {
   final FlexFit fit;
   final double spacing;
 
-  const MiRow({
+  const Row({
     super.key,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.mainAxisSize = MainAxisSize.max,
@@ -625,7 +541,7 @@ class MiRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return material.Row(
       mainAxisAlignment: mainAxisAlignment,
       mainAxisSize: mainAxisSize,
       crossAxisAlignment: crossAxisAlignment,
@@ -658,14 +574,14 @@ class MiRow extends StatelessWidget {
 /// [child] - [ListView]など[height]が不定のウィジェット。
 /// [top]/[tops], [bottom]/[bottoms] - [child]の上下に積まれる。
 
-class MiExpandedColumn extends StatelessWidget {
+class ExpandedColumn extends StatelessWidget {
   final Widget child;
   final Widget? top;
   final List<Widget>? tops;
   final Widget? bottom;
   final List<Widget>? bottoms;
 
-  const MiExpandedColumn({
+  const ExpandedColumn({
     super.key,
     required this.child,
     this.top,

@@ -63,8 +63,7 @@ extension ThemeDataHelper on ThemeData {
       (listTileTheme.contentPadding) ?? const EdgeInsets.symmetric(horizontal: 16.0);
 
   /// 現状のmaterial widgetsの実装は、ダークテーマの挙動がまちまちなので、一貫するよう調整
-  ///
-  ThemeData modifyWith({
+  ThemeData modify({
     Color? textColor,
     Color? backgroundColor,
   }) {

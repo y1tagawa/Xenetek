@@ -341,7 +341,7 @@ class MyApp extends ConsumerWidget {
           useMaterial3: ref.watch(useM3Provider),
         ).let(
           (it) => ref.watch(modifyThemeProvider)
-              ? it.modifyWith(
+              ? it.modify(
                   textColor: textColor,
                   backgroundColor: backgroundColor,
                 )

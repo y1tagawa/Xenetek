@@ -41,7 +41,7 @@ class TabViewPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -60,7 +60,7 @@ class TabViewPage extends ConsumerWidget {
           body: TabBarView(
             children: _tabs.mapIndexed(
               (index, tab) {
-                return mi.MiExpandedColumn(
+                return mi.ExpandedColumn(
                   top: Text(
                     '${tab.text!} Tab',
                     style: Theme.of(context).textTheme.headline5,

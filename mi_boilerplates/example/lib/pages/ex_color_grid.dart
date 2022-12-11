@@ -13,9 +13,9 @@ class ExColorGrid extends StatelessWidget {
   final void Function(Color?)? onChanged;
 
   static const _tabs = <Widget>[
-    mi.MiTab(icon: Icon(Icons.flutter_dash)),
-    mi.MiTab(text: 'X11'),
-    mi.MiTab(text: 'JIS'),
+    mi.Tab(icon: Icon(Icons.flutter_dash)),
+    mi.Tab(text: 'X11'),
+    mi.Tab(text: 'JIS'),
   ];
 
   const ExColorGrid({
@@ -39,7 +39,7 @@ class ExColorGrid extends StatelessWidget {
       mi.jisCommonColorNames,
     ];
 
-    return mi.MiTabbedColorGrid(
+    return mi.TabbedColorGrid(
       initialTabIndex: initialTabIndex,
       tabs: _tabs,
       colors: colors,

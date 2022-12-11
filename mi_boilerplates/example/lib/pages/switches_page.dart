@@ -25,7 +25,7 @@ const _switchItems = [
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hearing_outlined),
-    uncheckIcon: mi.MiScale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
+    uncheckIcon: mi.Scale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
     title: Text('Ear health'),
   ),
   _SwitchItem(
@@ -89,7 +89,7 @@ class SwitchesPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        icon: mi.MiToggleIcon(
+        icon: mi.ToggleIcon(
           checked: enableActions,
           checkIcon: icon,
           uncheckIcon: const Icon(Icons.toggle_off_outlined),
@@ -100,7 +100,7 @@ class SwitchesPage extends ConsumerWidget {
         minimum: const EdgeInsets.all(8),
         child: Column(
           children: [
-            mi.MiRow(
+            mi.Row(
               flexes: const [1, 1],
               children: [
                 ExResetButtonListTile(
@@ -122,7 +122,7 @@ class SwitchesPage extends ConsumerWidget {
                     return SwitchListTile(
                       value: switchValue,
                       title: mi.MiIcon(
-                        icon: mi.MiToggleIcon(
+                        icon: mi.ToggleIcon(
                           checked: switchValue,
                           checkIcon: item.checkIcon,
                           uncheckIcon: item.uncheckIcon,

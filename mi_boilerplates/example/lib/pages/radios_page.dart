@@ -19,11 +19,11 @@ class RadiosPage extends ConsumerWidget {
   static final _logger = Logger((RadiosPage).toString());
 
   static final _tabs = <Widget>[
-    const mi.MiTab(
+    const mi.Tab(
       tooltip: 'Radio buttons',
       icon: icon,
     ),
-    const mi.MiTab(
+    const mi.Tab(
       tooltip: 'Radio menu',
       icon: Icon(Icons.more_vert),
     ),
@@ -37,7 +37,7 @@ class RadiosPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
@@ -78,8 +78,8 @@ class RadiosPage extends ConsumerWidget {
 final _radioItems = <String, Widget Function(bool checked)>{
   'Fighter': (_) => const Icon(Icons.shield_outlined),
   'Cleric': (_) => const Icon(Icons.emergency_outlined),
-  'Mage': (_) => mi.MiFlickingWand(callbackNotifier: _flickNotifier),
-  'Thief': (checked) => mi.MiToggleIcon(
+  'Mage': (_) => mi.FlickWand(callbackNotifier: _flickNotifier),
+  'Thief': (checked) => mi.ToggleIcon(
         checked: checked,
         checkIcon: const Icon(Icons.lock_open),
         uncheckIcon: const Icon(Icons.lock_outlined),
@@ -87,7 +87,7 @@ final _radioItems = <String, Widget Function(bool checked)>{
 };
 
 final _radioProvider = StateProvider((ref) => _radioItems.keys.first);
-final _flickNotifier = mi.MiSinkNotifier<mi.MiAnimationControllerCallback>();
+final _flickNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
 class _RadioButtonsTab extends ConsumerWidget {
   // ignore: unused_field
@@ -138,7 +138,7 @@ class _RadioButtonsTab extends ConsumerWidget {
               color: Theme.of(context).disabledColor,
               size: 60,
             ),
-            child: mi.MiFade(
+            child: mi.Fade(
               child: _radioItems[radioKey]!.call(false),
             ),
           ),
@@ -188,7 +188,7 @@ class _RadioMenuTab extends ConsumerWidget {
 
     return Column(
       children: [
-        mi.MiRow(
+        mi.Row(
           flexes: const [2, 3],
           children: [
             ExClearButtonListTile(
@@ -204,11 +204,11 @@ class _RadioMenuTab extends ConsumerWidget {
               itemBuilder: (context) {
                 return [
                   ..._menuItems.entries.mapIndexed(
-                    (index, item) => mi.MiRadioPopupMenuItem<int?>(
+                    (index, item) => mi.RadioPopupMenuItem<int?>(
                       value: index,
                       checked: index == menuIndex,
                       child: mi.MiIcon(
-                        icon: mi.MiColorChip(color: item.value),
+                        icon: mi.ColorChip(color: item.value),
                         text: Text(item.key),
                       ),
                     ),
@@ -242,7 +242,7 @@ class _RadioMenuTab extends ConsumerWidget {
             color: Colors.white,
             child: ColoredBox(
               color: _menuItems.values.skip(menuIndex).first.withAlpha(128),
-              child: mi.MiAnimationController(
+              child: mi.AnimationControllerWidget(
                 builder: (_, controller, __) {
                   return Lottie.network(
                     menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,

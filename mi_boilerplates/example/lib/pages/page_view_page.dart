@@ -86,7 +86,7 @@ class PageViewPage extends ConsumerWidget {
         minimum: const EdgeInsets.symmetric(horizontal: 8),
         child: pageItems.when(
           data: (items) {
-            return mi.MiExpandedColumn(
+            return mi.ExpandedColumn(
               bottom: ListTile(
                 leading: IconButton(
                   onPressed: enabled && pageIndex > 0
@@ -113,18 +113,18 @@ class PageViewPage extends ConsumerWidget {
                 //   },
                 // ),
               ),
-              child: mi.MiPageView.builder(
+              child: mi.PageView.builder(
                 enabled: enabled,
                 initialPage: pageIndex,
                 pageNotifier: _pageIndexNotifier,
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];
-                  return mi.MiExpandedColumn(
-                    top: mi.MiGridPopupMenuButton(
+                  return mi.ExpandedColumn(
+                    top: mi.GridPopupMenuButton(
                       items: items
                           .map(
-                            (item) => mi.MiGridItem(
+                            (item) => mi.GridItem(
                               child: Text(item.name),
                             ),
                           )

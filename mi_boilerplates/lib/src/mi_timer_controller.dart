@@ -10,24 +10,24 @@ import 'package:logging/logging.dart';
 /// [Timer]のウィジェット化
 ///
 /// State存在期間、タイマイベントをコールバックする。
-///
-class MiTimerController extends StatefulWidget {
+
+class TimerController extends StatefulWidget {
   // ignore: unused_field
-  static final _logger = Logger((MiTimerController).toString());
+  static final _logger = Logger((TimerController).toString());
 
   final Duration duration;
   final VoidCallback? onTimer;
   final ValueChanged<Timer>? onPeriodic;
   final Widget child;
 
-  const MiTimerController({
+  const TimerController({
     super.key,
     required this.duration,
     required this.onTimer,
     required this.child,
   }) : onPeriodic = null;
 
-  const MiTimerController.periodic({
+  const TimerController.periodic({
     super.key,
     required this.duration,
     required this.onPeriodic,
@@ -35,10 +35,10 @@ class MiTimerController extends StatefulWidget {
   }) : onTimer = null;
 
   @override
-  State<MiTimerController> createState() => _MiTimerControllerState();
+  State<TimerController> createState() => _TimerControllerState();
 }
 
-class _MiTimerControllerState extends State<MiTimerController> {
+class _TimerControllerState extends State<TimerController> {
   late Timer _timer;
 
   @override

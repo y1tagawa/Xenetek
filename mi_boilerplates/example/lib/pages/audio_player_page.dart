@@ -108,7 +108,7 @@ class AudioPlayerPage extends ConsumerWidget {
                   await _player.release();
                 },
               ),
-              mi.MiButtonListTile(
+              mi.ButtonListTile(
                 enabled: enableActions,
                 alignment: MainAxisAlignment.start,
                 icon: const Icon(Icons.volume_up_outlined),

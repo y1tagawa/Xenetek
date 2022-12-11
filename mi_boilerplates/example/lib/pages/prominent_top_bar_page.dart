@@ -30,7 +30,7 @@ final _imageProvider = StateProvider<Widget?>((ref) => null);
 int _tabIndex = 0;
 
 class ProminentTopBarPage extends ConsumerWidget {
-  static const icon = mi.MiRotate(
+  static const icon = mi.Rotate(
     angleDegree: 180.0,
     child: Icon(Icons.horizontal_split_outlined),
   );
@@ -40,8 +40,8 @@ class ProminentTopBarPage extends ConsumerWidget {
   static final _logger = Logger((ProminentTopBarPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(icon: Text('Dummy')),
-    mi.MiTab(icon: Text('Dummy')),
+    mi.Tab(icon: Text('Dummy')),
+    mi.Tab(icon: Text('Dummy')),
   ];
 
   const ProminentTopBarPage({super.key});
@@ -121,7 +121,7 @@ class ProminentTopBarPage extends ConsumerWidget {
     );
 
     if (tabbed) {
-      return mi.MiDefaultTabController(
+      return mi.DefaultTabController(
         length: _tabs.length,
         initialIndex: _tabIndex,
         builder: (context) {

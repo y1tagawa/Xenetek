@@ -23,11 +23,11 @@ class ThreePage extends ConsumerWidget {
   static final _logger = Logger((ThreePage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Bunny',
       icon: Icon(Icons.cruelty_free_outlined),
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'TBD',
       icon: Icon(Icons.more_horiz),
     ),
@@ -41,7 +41,7 @@ class ThreePage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {

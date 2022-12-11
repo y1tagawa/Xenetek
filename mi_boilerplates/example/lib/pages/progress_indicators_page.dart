@@ -22,8 +22,8 @@ class ProgressIndicatorsPage extends ConsumerWidget {
   static final _logger = Logger((ProgressIndicatorsPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(text: 'Determinate'),
-    mi.MiTab(text: 'Indeterminate'),
+    mi.Tab(text: 'Determinate'),
+    mi.Tab(text: 'Indeterminate'),
   ];
 
   const ProgressIndicatorsPage({super.key});
@@ -34,7 +34,7 @@ class ProgressIndicatorsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {

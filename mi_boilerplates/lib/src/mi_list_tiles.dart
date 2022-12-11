@@ -2,80 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ExpansionTile;
+import 'package:flutter/material.dart' as material show ExpansionTile;
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
-
-/// カスタム[RadioListTile]
-///
-/// * [enabled]追加
-
-// class MiRadioListTile<T> extends RadioListTile<T> {
-//   const MiRadioListTile({
-//     super.key,
-//     bool enabled = true,
-//     required super.value,
-//     required super.groupValue,
-//     required ValueChanged<T?>? onChanged,
-//     super.toggleable = false,
-//     super.activeColor,
-//     super.title,
-//     super.subtitle,
-//     super.isThreeLine = false,
-//     super.dense,
-//     super.secondary,
-//     super.selected = false,
-//     super.controlAffinity = ListTileControlAffinity.platform,
-//     super.autofocus = false,
-//     super.contentPadding,
-//     super.shape,
-//     super.tileColor,
-//     super.selectedTileColor,
-//     super.visualDensity,
-//     super.focusNode,
-//     super.enableFeedback,
-//   }) : super(onChanged: enabled ? onChanged : null);
-// }
-
-/// カスタム[SwitchListTile]
-///
-/// * [enabled]追加
-
-// class MiSwitchListTile extends SwitchListTile {
-//   const MiSwitchListTile({
-//     super.key,
-//     bool enabled = true,
-//     required super.value,
-//     required ValueChanged<bool>? onChanged,
-//     super.tileColor,
-//     super.activeColor,
-//     super.activeTrackColor,
-//     super.inactiveThumbColor,
-//     super.inactiveTrackColor,
-//     super.activeThumbImage,
-//     super.inactiveThumbImage,
-//     super.title,
-//     super.subtitle,
-//     super.isThreeLine = false,
-//     super.dense,
-//     super.contentPadding,
-//     super.secondary,
-//     super.selected = false,
-//     super.autofocus = false,
-//     super.controlAffinity = ListTileControlAffinity.platform,
-//     super.shape,
-//     super.selectedTileColor,
-//     super.visualDensity,
-//     super.focusNode,
-//     super.enableFeedback,
-//     super.hoverColor,
-//   }) : super(onChanged: enabled ? onChanged : null);
-// }
 
 /// カスタム[ExpansionTile]
 ///
 /// * [enabled]追加、それに合わせ動作もいろいろ変更。
 
-class MiExpansionTile extends StatelessWidget {
+class ExpansionTile extends StatelessWidget {
   //<editor-fold>
   final bool enabled;
   final Widget? leading;
@@ -100,7 +35,7 @@ class MiExpansionTile extends StatelessWidget {
   final Color? dividerColor;
 //</editor-fold>
 
-  const MiExpansionTile({
+  const ExpansionTile({
     //<editor-fold>
     super.key,
     this.enabled = true,
@@ -143,9 +78,9 @@ class MiExpansionTile extends StatelessWidget {
             collapsedIconColor: enabled ? null : disabledColor,
             collapsedTextColor: enabled ? null : disabledColor,
           ),
-          child: mi.MiDefaultTextColor(
+          child: mi.DefaultTextColor(
             color: enabled ? null : disabledColor,
-            child: ExpansionTile(
+            child: material.ExpansionTile(
               initiallyExpanded: initiallyExpanded,
               leading: leading,
               title: title,
@@ -177,7 +112,7 @@ class MiExpansionTile extends StatelessWidget {
 ///
 /// * 頻出コード
 
-class MiButtonListTile extends StatelessWidget {
+class ButtonListTile extends StatelessWidget {
   final bool enabled;
   final bool selected;
   final Widget? leading;
@@ -189,7 +124,7 @@ class MiButtonListTile extends StatelessWidget {
   final TextDirection iconPosition;
   final VoidCallback? onPressed;
 
-  const MiButtonListTile({
+  const ButtonListTile({
     super.key,
     this.enabled = true,
     this.selected = false,
@@ -213,7 +148,7 @@ class MiButtonListTile extends StatelessWidget {
     Widget title_ = Row(
       mainAxisAlignment: alignment,
       children: [
-        mi.MiDefaultTextColor(
+        mi.DefaultTextColor(
           color: textColor,
           child: icon != null
               ? mi.MiIcon(
@@ -237,8 +172,8 @@ class MiButtonListTile extends StatelessWidget {
     return ListTile(
       enabled: enabled,
       selected: selected,
-      leading: leading?.let((it) => mi.MiDefaultTextColor(color: textColor, child: it)),
-      trailing: trailing?.let((it) => mi.MiDefaultTextColor(color: textColor, child: it)),
+      leading: leading?.let((it) => mi.DefaultTextColor(color: textColor, child: it)),
+      trailing: trailing?.let((it) => mi.DefaultTextColor(color: textColor, child: it)),
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,

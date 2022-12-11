@@ -78,7 +78,7 @@ class DialogsPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              mi.MiButtonListTile(
+              mi.ButtonListTile(
                 enabled: enableActions,
                 alignment: MainAxisAlignment.start,
                 text: const Text('Show OK dialog'),
@@ -86,7 +86,7 @@ class DialogsPage extends ConsumerWidget {
                   showInfoOk(context);
                 },
               ),
-              mi.MiButtonListTile(
+              mi.ButtonListTile(
                 enabled: enableActions,
                 alignment: MainAxisAlignment.start,
                 text: const Text('Show OK/Cancel dialog'),

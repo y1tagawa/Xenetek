@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ReorderableListView;
+import 'package:flutter/material.dart' as material show ReorderableListView;
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
@@ -20,7 +21,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 /// [orderNotifier] リストを保持する[ValueNotifier]。
 /// [itemBuilder] リストのウィジェットを生成するメソッド。それぞれユニークな[key]を与える必要がある。
 
-class MiReorderableListView<T> extends StatefulWidget {
+class ReorderableListView<T> extends StatefulWidget {
   final bool enabled;
   final ScrollController? scrollController;
   final ValueNotifier<List<T>> orderNotifier;
@@ -30,7 +31,7 @@ class MiReorderableListView<T> extends StatefulWidget {
   final Color? dragHandleColor;
   // TODO: 必要に応じて他のプロパティも
 
-  const MiReorderableListView({
+  const ReorderableListView({
     super.key,
     this.enabled = true,
     this.scrollController,
@@ -41,7 +42,7 @@ class MiReorderableListView<T> extends StatefulWidget {
   })  : assert(children != null),
         itemBuilder = null;
 
-  const MiReorderableListView.builder({
+  const ReorderableListView.builder({
     super.key,
     this.enabled = true,
     this.scrollController,
@@ -53,11 +54,11 @@ class MiReorderableListView<T> extends StatefulWidget {
         children = null;
 
   @override
-  State<MiReorderableListView> createState() => _MiReorderableListViewState();
+  State<ReorderableListView> createState() => _ReorderableListViewState();
 }
 
-class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
-  static final _logger = Logger((_MiReorderableListViewState).toString());
+class _ReorderableListViewState<T> extends State<ReorderableListView<T>> {
+  static final _logger = Logger((_ReorderableListViewState).toString());
 
   void _valueChanged() {
     setState(() {});
@@ -87,7 +88,7 @@ class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
   }
 
   @override
-  void didUpdateWidget(covariant MiReorderableListView<T> oldWidget) {
+  void didUpdateWidget(covariant ReorderableListView<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget != widget) {
       oldWidget.orderNotifier.removeListener(_valueChanged);
@@ -129,12 +130,12 @@ class _MiReorderableListViewState<T> extends State<MiReorderableListView<T>> {
           color: widget.enabled ? widget.dragHandleColor : theme.disabledColor,
         ),
         child: widget.children != null
-            ? ReorderableListView(
+            ? material.ReorderableListView(
                 scrollController: widget.scrollController,
                 onReorder: onReorder,
                 children: widget.children!,
               )
-            : ReorderableListView.builder(
+            : material.ReorderableListView.builder(
                 scrollController: widget.scrollController,
                 onReorder: onReorder,
                 itemCount: widget.orderNotifier.value.length,

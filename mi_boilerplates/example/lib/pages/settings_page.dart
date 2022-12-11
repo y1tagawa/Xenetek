@@ -18,7 +18,7 @@ Future<bool> _showColorSelectDialog({
   void Function(Color? value)? onChanged,
   bool nullable = false,
 }) async {
-  final ok = await mi.MiColorGridHelper.showColorSelectDialog(
+  final ok = await mi.ColorGridHelper.showColorSelectDialog(
     context: context,
     title: title,
     initialColor: initialColor,
@@ -58,7 +58,7 @@ Future<bool> _showTextColorSelectDialog({
     ...mi.primaryColorNames.map((it) => '${it}900'),
   ];
 
-  final ok = await mi.MiColorGridHelper.showColorSelectDialog(
+  final ok = await mi.ColorGridHelper.showColorSelectDialog(
     context: context,
     title: title,
     initialColor: initialColor,
@@ -67,7 +67,7 @@ Future<bool> _showTextColorSelectDialog({
     },
     builder: (_, onChanged_) {
       return SingleChildScrollView(
-        child: mi.MiColorGrid(
+        child: mi.ColorGrid(
           colors: colors,
           tooltips: tooltips,
           onChanged: (index) => onChanged_?.call(colors[index]),
@@ -104,7 +104,7 @@ Future<bool> _showBackgroundColorSelectDialog({
     ...mi.primaryColorNames.map((it) => '${it}100'),
   ];
 
-  final ok = await mi.MiColorGridHelper.showColorSelectDialog(
+  final ok = await mi.ColorGridHelper.showColorSelectDialog(
     context: context,
     title: title,
     initialColor: initialColor,
@@ -113,7 +113,7 @@ Future<bool> _showBackgroundColorSelectDialog({
     },
     builder: (_, onChanged_) {
       return SingleChildScrollView(
-        child: mi.MiColorGrid(
+        child: mi.ColorGrid(
           colors: colors,
           tooltips: tooltips,
           onChanged: (index) => onChanged_?.call(colors[index]),
@@ -170,7 +170,7 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Primary swatch'),
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 5),
-                child: mi.MiColorChip(color: primarySwatch),
+                child: mi.ColorChip(color: primarySwatch),
               ),
               onTap: () async {
                 final ok = await _showColorSelectDialog(
@@ -190,7 +190,7 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Secondary color'),
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 5),
-                child: mi.MiColorChip(color: secondaryColor),
+                child: mi.ColorChip(color: secondaryColor),
               ),
               onTap: () async {
                 final ok = await _showColorSelectDialog(
@@ -211,7 +211,7 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Text color'),
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 5),
-                child: mi.MiColorChip(color: textColor),
+                child: mi.ColorChip(color: textColor),
               ),
               onTap: () async {
                 final ok = await _showTextColorSelectDialog(
@@ -232,7 +232,7 @@ class SettingsPage extends ConsumerWidget {
               title: const Text('Background color'),
               trailing: Padding(
                 padding: const EdgeInsets.only(right: 5),
-                child: mi.MiColorChip(color: backgroundColor),
+                child: mi.ColorChip(color: backgroundColor),
               ),
               onTap: () async {
                 final ok = await _showBackgroundColorSelectDialog(

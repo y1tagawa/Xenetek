@@ -25,11 +25,11 @@ class FilesPage extends ConsumerWidget {
   static final _logger = Logger((FilesPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Paths & pickers',
       icon: icon,
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: UnderConstruction.title,
       icon: UnderConstruction.icon,
     ),
@@ -43,7 +43,7 @@ class FilesPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {

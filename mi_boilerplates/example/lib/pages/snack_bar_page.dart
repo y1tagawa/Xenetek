@@ -22,11 +22,11 @@ class SnackBarPage extends ConsumerWidget {
   static final _logger = Logger((SnackBarPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Snack bar',
       icon: Icon(Icons.notifications_outlined),
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Toast',
       icon: Icon(Icons.breakfast_dining_outlined),
     ),
@@ -40,7 +40,7 @@ class SnackBarPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -101,12 +101,12 @@ class _SnackBarTab extends ConsumerWidget {
     void showSnackBar() {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: mi.MiRow(
+          content: mi.Row(
             children: [
               const Text('Ping'),
               IconTheme.merge(
                 data: IconThemeData(color: theme.colorScheme.surface),
-                child: mi.MiRingingIcon(
+                child: mi.RingBell(
                   origin: const Offset(0, -10),
                   onInitialized: (controller) {
                     controller.forward();
@@ -139,7 +139,7 @@ class _SnackBarTab extends ConsumerWidget {
                     ? theme.colorScheme.onSurface
                     : Color.alphaBlend(
                         theme.colorScheme.onSurface.withOpacity(0.80), theme.colorScheme.surface)),
-            leading: mi.MiRow(
+            leading: mi.Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 DefaultTextStyle(
@@ -191,12 +191,12 @@ class _ToastTab extends ConsumerWidget {
       padding: const EdgeInsets.only(top: 8),
       child: Column(
         children: [
-          mi.MiButtonListTile(
+          mi.ButtonListTile(
             enabled: enabled,
             icon: const Icon(Icons.breakfast_dining_outlined),
             text: const Text('Toast!'),
             onPressed: () async {
-              await mi.MiToastHelper.showToast(
+              await mi.ToastHelper.showToast(
                 context: context,
                 child: const Text('Toast!'),
               );

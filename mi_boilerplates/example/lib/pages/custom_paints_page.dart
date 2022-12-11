@@ -36,11 +36,11 @@ class CustomPaintsPage extends ConsumerWidget {
     final enableActions = ref.watch(enableActionsProvider);
 
     final tabs = <Widget>[
-      const mi.MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const mi.MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
+      const mi.Tab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
+      const mi.Tab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
     ];
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
@@ -347,7 +347,7 @@ class _ClockTab extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return mi.MiTimerController.periodic(
+    return mi.TimerController.periodic(
       duration: const Duration(milliseconds: 200),
       onPeriodic: (_) {
         final now = DateTime.now();

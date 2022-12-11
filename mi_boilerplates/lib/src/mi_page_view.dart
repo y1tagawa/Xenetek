@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide PageView;
+import 'package:flutter/material.dart' as material show PageView;
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
@@ -12,8 +13,8 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 /// * ページ位置[pageNotifier]を外部と共有。
 /// * [PageController]を内蔵し隠蔽。
 ///   s.a. https://api.flutter.dev/flutter/widgets/PageController-class.html
-///
-class MiPageView extends StatefulWidget {
+
+class PageView extends StatefulWidget {
   final bool enabled;
   final int initialPage;
   final ValueNotifier<int> pageNotifier;
@@ -37,7 +38,7 @@ class MiPageView extends StatefulWidget {
   final Duration? animationDuration;
   final Curve curve;
 
-  const MiPageView({
+  const PageView({
     super.key,
     this.enabled = true,
     this.initialPage = 0,
@@ -61,7 +62,7 @@ class MiPageView extends StatefulWidget {
         itemCount = null,
         itemBuilder = null;
 
-  const MiPageView.builder({
+  const PageView.builder({
     super.key,
     this.enabled = true,
     this.initialPage = 0,
@@ -86,12 +87,12 @@ class MiPageView extends StatefulWidget {
         items = null;
 
   @override
-  State<mi.MiPageView> createState() => _MiPageViewState();
+  State<mi.PageView> createState() => _PageViewState();
 }
 
-class _MiPageViewState extends State<MiPageView> {
+class _PageViewState extends State<PageView> {
   // ignore: unused_field
-  static final _logger = Logger((_MiPageViewState).toString());
+  static final _logger = Logger((_PageViewState).toString());
 
   late PageController _pageController;
   late int _lastPage;
@@ -129,7 +130,7 @@ class _MiPageViewState extends State<MiPageView> {
   }
 
   @override
-  void didUpdateWidget(covariant MiPageView oldWidget) {
+  void didUpdateWidget(covariant PageView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget != widget) {
       oldWidget.pageNotifier.removeListener(_pageChanged);
@@ -143,7 +144,7 @@ class _MiPageViewState extends State<MiPageView> {
     assert((widget.items != null && widget.itemCount == null && widget.itemBuilder == null) ||
         (widget.items == null && widget.itemCount != null && widget.itemBuilder != null));
 
-    return PageView.builder(
+    return material.PageView.builder(
       controller: _pageController,
       itemCount: widget.itemCount ?? widget.items!.length,
       itemBuilder: widget.itemBuilder ?? (_, index) => widget.items![index],
@@ -168,7 +169,7 @@ class _MiPageViewState extends State<MiPageView> {
 
 /// ページインジケータ
 ///
-class MiPageIndicator extends StatelessWidget {
+class PageIndicator extends StatelessWidget {
   static const Widget kDefaultSelectedIcon = Icon(Icons.circle, size: 12);
   static const Widget kDefaultUnselectedIcon = Icon(Icons.fiber_manual_record, size: 12);
 
@@ -183,7 +184,7 @@ class MiPageIndicator extends StatelessWidget {
   final double? runSpacing;
   final String? tooltip;
 
-  const MiPageIndicator({
+  const PageIndicator({
     super.key,
     required this.length,
     required this.index,

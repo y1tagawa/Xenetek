@@ -84,14 +84,14 @@ Future<bool> showWarningOkCancelDialog({
 
 /// OK/Cancelダイアログの枠
 
-class MiOkCancelDialog<T> extends StatelessWidget {
+class OkCancelDialog<T> extends StatelessWidget {
   final Widget? icon;
   final Widget? title;
   final Widget? content;
   final bool scrollable;
   final T Function(bool ok) getValue;
 
-  const MiOkCancelDialog({
+  const OkCancelDialog({
     super.key,
     this.icon,
     this.title,

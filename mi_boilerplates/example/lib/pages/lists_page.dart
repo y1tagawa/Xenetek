@@ -57,7 +57,7 @@ class ListsPage extends ConsumerWidget {
   static final _logger = Logger((ListsPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
     ),
@@ -65,7 +65,7 @@ class ListsPage extends ConsumerWidget {
     //   tooltip: 'Dismissible list',
     //   icon: Icon(Icons.segment),
     // ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Stepper list',
       icon: Icon(Icons.onetwothree_outlined),
     ),
@@ -79,7 +79,7 @@ class ListsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
@@ -161,7 +161,7 @@ class _DismissibleListTab extends ConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: mi.MiRow(
+          child: mi.Row(
             flexes: const [1, 0, 1],
             children: [
               ListView(
@@ -238,7 +238,7 @@ class _ReorderableListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        mi.MiRow(
+        mi.Row(
           flexes: const [1, 1],
           children: [
             ExResetButtonListTile(
@@ -249,7 +249,7 @@ class _ReorderableListTab extends ConsumerWidget {
                 _scrollController.jumpTo(0);
               },
             ),
-            mi.MiGridPopupMenuButton(
+            mi.GridPopupMenuButton(
               offset: const Offset(0, kToolbarHeight),
               onSelected: (index) {
                 final key = order[index];
@@ -273,7 +273,7 @@ class _ReorderableListTab extends ConsumerWidget {
                     ),
                   )
                   .toList(),
-              child: mi.MiButtonListTile(
+              child: mi.ButtonListTile(
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
                 text: const Text('Scroll to'),
@@ -284,7 +284,7 @@ class _ReorderableListTab extends ConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: mi.MiReorderableListView(
+          child: mi.ReorderableListView(
             enabled: enabled,
             scrollController: _scrollController,
             orderNotifier: _orderNotifier,
@@ -391,7 +391,7 @@ class _StepperTab extends ConsumerWidget {
         ),
         const Divider(),
         if (index < 0)
-          mi.MiButtonListTile(
+          mi.ButtonListTile(
             enabled: enabled,
             icon: const Icon(Icons.play_arrow_outlined),
             text: const Text('Start'),
@@ -426,7 +426,7 @@ class _StepperTab extends ConsumerWidget {
             ),
           )
         else ...[
-          mi.MiButtonListTile(
+          mi.ButtonListTile(
             enabled: enabled,
             title: const Text('OK.'),
             icon: const Icon(Icons.refresh_outlined),

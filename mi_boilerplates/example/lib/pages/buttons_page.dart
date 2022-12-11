@@ -21,7 +21,7 @@ import 'knight_indicator.dart';
 final _tabIndexProvider = StateProvider((ref) => 0);
 final _toasterNotifier = ValueNotifier(false);
 
-final _pingNotifier = mi.MiSinkNotifier<mi.MiAnimationControllerCallback>();
+final _pingNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
 void _ping(WidgetRef ref) async {
   _pingNotifier.add((controller) {
@@ -38,22 +38,22 @@ class ButtonsPage extends ConsumerWidget {
   static final _logger = Logger((ButtonsPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Push buttons',
       icon: Text(
         '[OK]',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
       ),
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Dropdown button',
       icon: Icon(Icons.arrow_drop_down),
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Toggle buttons',
       icon: Icon(Icons.more_horiz),
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: UnderConstruction.title,
       icon: UnderConstruction.icon,
     ),
@@ -69,7 +69,7 @@ class ButtonsPage extends ConsumerWidget {
 
     final tabIndex = ref.watch(_tabIndexProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: tabIndex,
       onIndexChanged: (value) {
@@ -110,7 +110,7 @@ class ButtonsPage extends ConsumerWidget {
                     ],
                   ),
                 ),
-                mi.MiPageIndicator(
+                mi.PageIndicator(
                   index: tabIndex,
                   length: _tabs.length,
                   onSelected: (index) {
@@ -201,7 +201,7 @@ class _PushButtonsTab extends ConsumerWidget {
               ),
             ),
           ),
-          mi.MiButtonListTile(
+          mi.ButtonListTile(
             enabled: enabled,
             alignment: MainAxisAlignment.start,
             leading: const Icon(Icons.mode_standby),
@@ -220,7 +220,7 @@ class _PushButtonsTab extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Center(
-              child: mi.MiRingingIcon(
+              child: mi.RingBell(
                 callbackNotifier: _pingNotifier,
                 icon: Icon(
                   Icons.notifications_outlined,
@@ -236,7 +236,7 @@ class _PushButtonsTab extends ConsumerWidget {
               ),
             ),
           ),
-          mi.MiToaster(
+          mi.Toaster(
             visibleNotifier: _toasterNotifier,
             child: InkWell(
               onTap: () {
@@ -312,7 +312,7 @@ class _DropdownButtonTab extends ConsumerWidget {
 
     return Column(
       children: [
-        mi.MiRow(
+        mi.Row(
           flexes: const [4, 1],
           children: [
             ExClearButtonListTile(
@@ -324,7 +324,7 @@ class _DropdownButtonTab extends ConsumerWidget {
             ),
             DropdownButton<int?>(
               value: menuIndex,
-              hint: mi.MiImageIcon(
+              hint: mi.ImageIcon(
                 image: Image.asset('assets/worker_cat2.png'),
                 color: enabled ? theme.unselectedIconColor : theme.disabledColor,
               ),
@@ -465,7 +465,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
           }).toList(),
         ),
         const SizedBox(height: 8),
-        mi.MiRow(
+        mi.Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Shields

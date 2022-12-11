@@ -59,14 +59,14 @@ class _OverflowMenu extends ConsumerWidget {
     return PopupMenuButton(
       itemBuilder: (context) {
         return [
-          mi.MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             checked: enabled,
             child: const Text('Enable actions'),
             onChanged: (value) {
               ref.read(enableActionsProvider.notifier).state = value;
             },
           ),
-          mi.MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(modifyThemeProvider),
             child: const Text('Adjust theme'),
@@ -74,7 +74,7 @@ class _OverflowMenu extends ConsumerWidget {
               ref.read(modifyThemeProvider.notifier).state = value;
             },
           ),
-          mi.MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(useM3Provider),
             child: const Text('Use M3'),
@@ -82,14 +82,14 @@ class _OverflowMenu extends ConsumerWidget {
               ref.read(useM3Provider.notifier).state = value;
             },
           ),
-          mi.MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             enabled: enabled,
             checked: brightness.isDark,
             child: const Text('Dark mode'),
             onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                 value ? Brightness.dark : Brightness.light,
           ),
-          mi.MiPopupMenuItem(
+          mi.PopupMenuItem(
             enabled: enabled,
             child: const mi.MiIcon(
               text: Text('Color settings...'),
@@ -142,7 +142,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        mi.MiAppBar.preferredHeight(
+        mi.AppBar.preferredHeight(
           prominent: prominent,
           bottom: bottom,
           toolbarHeight: toolbarHeight,
@@ -172,7 +172,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         });
 
     if (ref.watch(modifyThemeProvider)) {
-      return mi.MiAppBar(
+      return mi.AppBar(
         prominent: prominent,
         leading: leading,
         title: InkWell(
@@ -187,7 +187,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
           if (actions != null) ...actions!,
           if (prominent) ...[
             _ThemeAdjustmentCheckbox(),
-            mi.MiCheckIconButton(
+            mi.CheckIconButton(
               enabled: enabled,
               checked: ref.watch(useM3Provider),
               onChanged: (value) {
@@ -196,7 +196,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
               checkIcon: const Icon(Icons.filter_3_outlined),
               uncheckIcon: const Icon(Icons.filter_2_outlined),
             ),
-            mi.MiCheckIconButton(
+            mi.CheckIconButton(
               enabled: enabled,
               checked: brightness.isDark,
               onChanged: (value) async {
@@ -254,7 +254,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        mi.MiTabBar.preferredHeight(
+        mi.TabBar.preferredHeight(
           tabs: tabs,
           indicatorWeight: indicatorWeight,
         ),
@@ -263,7 +263,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(modifyThemeProvider)
-        ? mi.MiTabBar(
+        ? mi.TabBar(
             enabled: enabled,
             tabs: tabs,
             isScrollable: isScrollable,
@@ -317,7 +317,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
       }
     });
 
-    return mi.MiBottomNavigationBar(
+    return mi.BottomNavigationBar(
       enabled: ref.watch(enableActionsProvider),
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,

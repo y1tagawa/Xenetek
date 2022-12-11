@@ -18,11 +18,11 @@ class PageLayoutsPage extends ConsumerWidget {
   static final _logger = Logger((PageLayoutsPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Expanded single child scroll view',
       icon: icon,
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Expanded list view',
       icon: Icon(Icons.list),
     ),
@@ -36,7 +36,7 @@ class PageLayoutsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
@@ -124,7 +124,7 @@ class _ExpandedScrollViewTab extends ConsumerWidget {
       }
     });
 
-    return mi.MiExpandedColumn(
+    return mi.ExpandedColumn(
       tops: [
         ListTile(
           title: const Text('Top'),

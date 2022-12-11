@@ -15,34 +15,34 @@ import 'ex_app_bar.dart';
 ///
 
 const _tabs = <Widget>[
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.looks_one_outlined),
     text: 'One',
   ),
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.looks_two_outlined),
     text: 'Two',
   ),
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.looks_3_outlined),
     text: 'Three',
   ),
 ];
 
 const _embeddedTabs = <Widget>[
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.filter_1_outlined),
     text: 'One',
   ),
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.filter_2_outlined),
     text: 'Two',
   ),
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.filter_3_outlined),
     text: 'Three',
   ),
-  mi.MiTab(
+  mi.Tab(
     icon: Icon(Icons.filter_4_outlined),
     text: 'Three',
   ),
@@ -65,7 +65,7 @@ class EmbeddedTabViewPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (value) => _tabIndex = value,
@@ -116,7 +116,7 @@ class _EmbeddedTabViewTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
 
     return SingleChildScrollView(
-      child: mi.MiDefaultTabController(
+      child: mi.DefaultTabController(
         length: _embeddedTabs.length,
         initialIndex: _embeddedTabIndices[index],
         onIndexChanged: (value) => _embeddedTabIndices[index] = value,

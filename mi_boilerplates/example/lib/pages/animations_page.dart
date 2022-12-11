@@ -34,19 +34,19 @@ class AnimationsPage extends ConsumerWidget {
     final enableActions = ref.watch(enableActionsProvider);
 
     final tabs = <Widget>[
-      const mi.MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
-      mi.MiTab(
-        icon: mi.MiImageIcon(
+      const mi.Tab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
+      mi.Tab(
+        icon: mi.ImageIcon(
           image: Image.asset('assets/lottie_icon.png'),
         ),
         tooltip: 'Lottie',
       ),
       // const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
       // const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
-      const mi.MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
+      const mi.Tab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -57,14 +57,14 @@ class AnimationsPage extends ConsumerWidget {
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
             //icon: icon,
-            icon: mi.MiAnimationController(
+            icon: mi.AnimationControllerWidget(
               duration: const Duration(seconds: 120),
               builder: (_, controller, __) {
                 _logger.fine(controller.value);
                 return AnimatedBuilder(
                   animation: controller,
                   builder: (context, _) {
-                    return mi.MiRotate(
+                    return mi.Rotate(
                       angleDegree: controller.value * 360,
                       child: icon,
                     );
@@ -115,7 +115,7 @@ class AnimationsPage extends ConsumerWidget {
 
 //<editor-fold>
 
-final _pingCallbackNotifier = mi.MiSinkNotifier<mi.MiAnimationControllerCallback>();
+final _pingCallbackNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
 class _AnimatedBuilderTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedBuilderTab).toString());
@@ -134,7 +134,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
             controller.forward();
           },
         ),
-        child: mi.MiAnimationController(
+        child: mi.AnimationControllerWidget(
           callbackNotifier: _pingCallbackNotifier,
           duration: const Duration(milliseconds: 800),
           builder: (_, controller, __) => AnimatedBuilder(
@@ -194,7 +194,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 // https://lottiefiles.com/11458-empty
 const _lottieUrl = 'https://assets3.lottiefiles.com/packages/lf20_tDw3lP/empty_03.json';
 
-final _lottieCallbackNotifier = mi.MiSinkNotifier<mi.MiAnimationControllerCallback>();
+final _lottieCallbackNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
@@ -213,7 +213,7 @@ class _LottieTab extends ConsumerWidget {
             controller.forward();
           },
         ),
-        child: mi.MiAnimationController(
+        child: mi.AnimationControllerWidget(
           callbackNotifier: _lottieCallbackNotifier,
           builder: (_, controller, __) {
             return ColorFiltered(
@@ -374,7 +374,7 @@ const _animatedIconNames = [
 
 final _iconAnimationCallbackNotifiers = List.generate(
   _animatedIcons.length,
-  (index) => mi.MiSinkNotifier<mi.MiAnimationControllerCallback>(),
+  (index) => mi.SinkNotifier<mi.AnimationControllerCallback>(),
 );
 
 final _animatedIconDirections = List.filled(_animatedIcons.length, true);
@@ -408,7 +408,7 @@ class _AnimatedIconsTab extends ConsumerWidget {
                 _animatedIconDirections[index] = !direction;
               },
             ),
-            child: mi.MiAnimationController(
+            child: mi.AnimationControllerWidget(
               callbackNotifier: _iconAnimationCallbackNotifiers[index],
               builder: (_, controller, __) {
                 return Tooltip(

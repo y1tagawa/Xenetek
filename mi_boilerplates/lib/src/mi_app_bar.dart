@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AppBar;
+import 'package:flutter/material.dart' as material show AppBar;
 
 import 'mi_themes.dart';
 
 /// カスタム[AppBar]
 
-class MiAppBar extends StatelessWidget implements PreferredSizeWidget {
+class AppBar extends StatelessWidget implements PreferredSizeWidget {
   static const _kProminentTitleHeight = 48.0; // dense listTile height
 
   final bool prominent;
@@ -23,7 +24,7 @@ class MiAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double? toolbarHeight;
   final double prominentTitleHeight;
 
-  const MiAppBar({
+  const AppBar({
     super.key,
     this.prominent = false,
     this.leading,
@@ -105,7 +106,7 @@ class MiAppBar extends StatelessWidget implements PreferredSizeWidget {
       data: checkBoxTheme,
       child: SwitchTheme(
         data: switchTheme,
-        child: AppBar(
+        child: material.AppBar(
           leading: leading,
           title: prominent ? null : title,
           actions: actions,

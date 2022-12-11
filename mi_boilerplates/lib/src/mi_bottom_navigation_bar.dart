@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide BottomNavigationBar;
+import 'package:flutter/material.dart' as material show BottomNavigationBar;
 import 'package:logging/logging.dart';
 
 /// 非選択状態可能な[BottomNavigationBar]。
 ///
 /// [currentIndex]が負またはitems範囲外の場合、見た目だけ、どのアイテムも選択されていないように表示する。
 
-class MiBottomNavigationBar extends StatelessWidget {
+class BottomNavigationBar extends StatelessWidget {
   // ignore: unused_field
-  static final _logger = Logger((MiBottomNavigationBar).toString());
+  static final _logger = Logger((BottomNavigationBar).toString());
 
   final bool enabled;
   final List<BottomNavigationBarItem> items;
@@ -25,7 +26,7 @@ class MiBottomNavigationBar extends StatelessWidget {
   final double unselectedFontSize;
 
   // TODO: 必要になったら他のプロパティも
-  const MiBottomNavigationBar({
+  const BottomNavigationBar({
     super.key,
     this.enabled = true,
     this.currentIndex = 0,
@@ -46,7 +47,7 @@ class MiBottomNavigationBar extends StatelessWidget {
 
     return IgnorePointer(
       ignoring: !enabled,
-      child: BottomNavigationBar(
+      child: material.BottomNavigationBar(
         currentIndex: unselected ? 0 : currentIndex,
         items: items,
         onTap: onTap,

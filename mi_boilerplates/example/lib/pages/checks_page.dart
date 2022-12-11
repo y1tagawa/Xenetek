@@ -24,11 +24,11 @@ class ChecksPage extends ConsumerWidget {
   static final _logger = Logger((ChecksPage).toString());
 
   static const _tabs = <Widget>[
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Checkbox',
       icon: icon,
     ),
-    mi.MiTab(
+    mi.Tab(
       tooltip: 'Check menu',
       icon: Icon(Icons.more_vert),
     ),
@@ -42,7 +42,7 @@ class ChecksPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return mi.MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
@@ -148,7 +148,7 @@ class _CheckboxTab extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          mi.MiExpansionTile(
+          mi.ExpansionTile(
             enabled: enableActions,
             initiallyExpanded: true,
             // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
@@ -194,7 +194,7 @@ class _CheckboxTab extends ConsumerWidget {
                 size: 60,
                 color: Theme.of(context).disabledColor,
               ),
-              child: mi.MiFade(child: tallyIcon),
+              child: mi.Fade(child: tallyIcon),
             ),
           ),
         ],
@@ -429,7 +429,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
   @override
   Widget build(BuildContext context) {
     return ClipRect(
-      child: mi.MiAnimationController(
+      child: mi.AnimationControllerWidget(
         duration: const Duration(seconds: 1),
         onInitialized: (controller) {
           controller.forward();
@@ -485,10 +485,10 @@ class _CheckMenuTab extends ConsumerWidget {
 
     return Column(
       children: [
-        mi.MiRow(
+        mi.Row(
           flexes: const [1, 1],
           children: [
-            mi.MiButtonListTile(
+            mi.ButtonListTile(
               enabled: enabled && menuCheckList.any((value) => value),
               onPressed: () {
                 ref.read(_menuCheckListProvider.notifier).state =
@@ -503,11 +503,11 @@ class _CheckMenuTab extends ConsumerWidget {
               itemBuilder: (context) {
                 return [
                   ..._menuItems.entries.mapIndexed(
-                    (index, item) => mi.MiCheckPopupMenuItem<int>(
+                    (index, item) => mi.CheckPopupMenuItem<int>(
                       value: index,
                       checked: menuCheckList[index],
                       child: mi.MiIcon(
-                        icon: mi.MiColorChip(color: item.value),
+                        icon: mi.ColorChip(color: item.value),
                         text: Text(item.key),
                       ),
                     ),
