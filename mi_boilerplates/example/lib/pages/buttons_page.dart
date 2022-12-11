@@ -18,6 +18,8 @@ import 'knight_indicator.dart';
 // Buttons example page.
 //
 
+//<editor-fold>
+
 final _tabIndexProvider = StateProvider((ref) => 0);
 final _toasterNotifier = ValueNotifier(false);
 
@@ -136,6 +138,8 @@ class ButtonsPage extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>
 
 //
 // Push buttons tab
@@ -259,24 +263,21 @@ class _PushButtonsTab extends ConsumerWidget {
 
 //<editor-fold>
 
-const _lightColors = <Color>[
-  Colors.blue,
-  Colors.cyan,
-  Colors.green,
-  Colors.amber,
-  Colors.orange,
-  Colors.red,
-  Colors.purple,
-];
+class _DropdownItem {
+  final Color light;
+  final Color dark;
+  const _DropdownItem({required this.light, required this.dark});
+  Color color(bool isDark) => isDark ? dark : light;
+}
 
-final _darkColors = <Color>[
-  Colors.blue[200]!,
-  Colors.cyan[200]!,
-  Colors.green[200]!,
-  Colors.yellow[200]!,
-  Colors.orange[200]!,
-  Colors.red[200]!,
-  Colors.purple[200]!,
+final _dropdownItems = <_DropdownItem>[
+  _DropdownItem(light: Colors.blue, dark: Colors.blue[200]!),
+  _DropdownItem(light: Colors.cyan, dark: Colors.cyan[200]!),
+  _DropdownItem(light: Colors.green, dark: Colors.green[200]!),
+  _DropdownItem(light: Colors.amber, dark: Colors.yellow[200]!),
+  _DropdownItem(light: Colors.orange, dark: Colors.orange[200]!),
+  _DropdownItem(light: Colors.red, dark: Colors.red[200]!),
+  _DropdownItem(light: Colors.purple, dark: Colors.purple[200]!),
 ];
 
 class _FootPrint {
@@ -300,7 +301,6 @@ class _DropdownButtonTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    assert(_lightColors.length == _darkColors.length);
     _logger.fine('[i] build');
 
     final enabled = ref.watch(enableActionsProvider);
@@ -308,12 +308,12 @@ class _DropdownButtonTab extends ConsumerWidget {
     final footPrints = ref.watch(_footPrintsProvider);
 
     final theme = Theme.of(context);
-    final colors = theme.isDark ? _darkColors : _lightColors;
+    final isDark = theme.isDark;
 
     return Column(
       children: [
         mi.Row(
-          flexes: const [4, 1],
+          flexes: const [1, 1],
           children: [
             ExClearButtonListTile(
               enabled: enabled && (footPrints.isNotEmpty || menuIndex != null),
@@ -334,13 +334,13 @@ class _DropdownButtonTab extends ConsumerWidget {
                     }
                   : null,
               items: [
-                ..._lightColors.mapIndexed((index, value) {
+                ..._dropdownItems.mapIndexed((index, value) {
                   return DropdownMenuItem<int?>(
                     value: index,
                     alignment: AlignmentDirectional.center,
                     child: Icon(
                       Icons.pets,
-                      color: enabled ? colors[index] : theme.disabledColor,
+                      color: enabled ? _dropdownItems[index].color(isDark) : theme.disabledColor,
                     ),
                   );
                 }),
@@ -361,7 +361,7 @@ class _DropdownButtonTab extends ConsumerWidget {
               children: [
                 ...footPrints.map(
                   (footPrint) {
-                    final color = colors[footPrint.colorIndex];
+                    final color = _dropdownItems[footPrint.colorIndex].color(isDark);
                     return Positioned(
                       left: footPrint.position.x - 12,
                       top: footPrint.position.y - 18,
@@ -532,6 +532,8 @@ class _ToggleButtonsTab extends ConsumerWidget {
 //
 //
 
+//<editor-fold>
+
 class _MonospaceTab extends ConsumerWidget {
   static final _logger = Logger((_MonospaceTab).toString());
 
@@ -596,3 +598,5 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
     );
   }
 }
+
+//</editor-fold>
