@@ -140,7 +140,6 @@ class _MiAnimationControllerState extends State<MiAnimationController>
 /// [duration]の間、[frequency]回アイコンを振動させる。
 
 class MiRingingIcon extends StatelessWidget {
-  final bool enabled;
   final Duration duration;
   final double frequency;
   final Widget icon;
@@ -154,7 +153,6 @@ class MiRingingIcon extends StatelessWidget {
 
   const MiRingingIcon({
     super.key,
-    this.enabled = true,
     this.duration = const Duration(milliseconds: 2000),
     this.frequency = 10,
     this.icon = const Icon(Icons.notifications_outlined),
@@ -165,7 +163,7 @@ class MiRingingIcon extends StatelessWidget {
     this.angle,
     this.angleDegree,
     this.origin,
-  });
+  }) : assert(angle == null || angleDegree == null);
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +180,64 @@ class MiRingingIcon extends StatelessWidget {
                 angle: Curves.easeIn.transform(1.0 - controller.value) *
                     math.sin(controller.value * frequency * 2 * math.pi) *
                     angle_,
+                origin: origin,
+                child: ringingIcon ?? icon,
+              );
+            }
+            return icon;
+          },
+        );
+      },
+      onInitialized: (controller) => onInitialized?.call(controller),
+      onEnd: (controller) => controller.reset(),
+    );
+  }
+}
+
+/// [MiAnimationController]の使用例
+///
+/// マジックワンドを振る動作
+
+class MiFlickingWand extends StatelessWidget {
+  final bool enabled;
+  final Duration duration;
+  final Widget icon;
+  final Widget? ringingIcon;
+  final MiSinkNotifier<MiAnimationControllerCallback>? callbackNotifier;
+  final void Function(AnimationController controller)? onInitialized;
+  final VoidCallback? onPressed;
+  final double? angle;
+  final double? angleDegree;
+  final Offset? origin;
+
+  const MiFlickingWand({
+    super.key,
+    this.enabled = true,
+    this.duration = const Duration(milliseconds: 800),
+    this.icon = const Icon(Icons.auto_fix_normal_outlined),
+    this.ringingIcon = const Icon(Icons.auto_fix_high_outlined),
+    this.callbackNotifier,
+    this.onInitialized,
+    this.onPressed,
+    this.angle,
+    this.angleDegree,
+    this.origin,
+  }) : assert(angle == null || angleDegree == null);
+
+  @override
+  Widget build(BuildContext context) {
+    final angle_ = angle ?? angleDegree?.toRadian() ?? 60.0.toRadian();
+    return MiAnimationController(
+      duration: duration,
+      callbackNotifier: callbackNotifier,
+      builder: (context, controller, _) {
+        return AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            if (controller.isAnimating) {
+              return Transform.rotate(
+                angle:
+                    (Curves.easeInOutBack.transform(controller.value) - controller.value) * angle_,
                 origin: origin,
                 child: ringingIcon ?? icon,
               );

@@ -78,7 +78,7 @@ class RadiosPage extends ConsumerWidget {
 final _radioItems = <String, Widget Function(bool checked)>{
   'Fighter': (_) => const Icon(Icons.shield_outlined),
   'Cleric': (_) => const Icon(Icons.emergency_outlined),
-  'Mage': (_) => const Icon(Icons.auto_fix_normal_outlined),
+  'Mage': (_) => MiFlickingWand(callbackNotifier: _flickNotifier),
   'Thief': (checked) => MiToggleIcon(
         checked: checked,
         checkIcon: const Icon(Icons.lock_open),
@@ -87,6 +87,7 @@ final _radioItems = <String, Widget Function(bool checked)>{
 };
 
 final _radioProvider = StateProvider((ref) => _radioItems.keys.first);
+final _flickNotifier = MiSinkNotifier<MiAnimationControllerCallback>();
 
 class _RadioButtonsTab extends ConsumerWidget {
   // ignore: unused_field
@@ -116,6 +117,12 @@ class _RadioButtonsTab extends ConsumerWidget {
                   onChanged: enableActions
                       ? (value) {
                           ref.read(_radioProvider.notifier).state = value!;
+                          if (value == 'Mage') {
+                            _flickNotifier.add((controller) {
+                              controller.reset();
+                              controller.forward();
+                            });
+                          }
                         }
                       : null,
                 );
