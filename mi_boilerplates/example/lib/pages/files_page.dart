@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path_provider/path_provider.dart';
 
 import 'ex_app_bar.dart';
@@ -25,11 +25,11 @@ class FilesPage extends ConsumerWidget {
   static final _logger = Logger((FilesPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Paths & pickers',
       icon: icon,
     ),
-    MiTab(
+    mi.MiTab(
       tooltip: UnderConstruction.title,
       icon: UnderConstruction.icon,
     ),
@@ -43,7 +43,7 @@ class FilesPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {

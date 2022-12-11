@@ -8,7 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -41,7 +41,7 @@ class TabViewPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -60,7 +60,7 @@ class TabViewPage extends ConsumerWidget {
           body: TabBarView(
             children: _tabs.mapIndexed(
               (index, tab) {
-                return MiExpandedColumn(
+                return mi.MiExpandedColumn(
                   top: Text(
                     '${tab.text!} Tab',
                     style: Theme.of(context).textTheme.headline5,

@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 import 'ex_widgets.dart';
@@ -14,17 +14,17 @@ import 'ex_widgets.dart';
 //
 
 const _items = [
-  MiIcon(
+  mi.MiIcon(
     icon: Text('\u{1F410}', style: TextStyle(fontSize: 24)),
     spacing: 4,
     text: Text('GaraDon'),
   ),
-  MiIcon(
+  mi.MiIcon(
     icon: Text('\u{1F410}', style: TextStyle(fontSize: 36)),
     spacing: 6,
     text: Text('GaraGaraDon'),
   ),
-  MiIcon(
+  mi.MiIcon(
     icon: Text('\u{1F410}', style: TextStyle(fontSize: 48)),
     spacing: 8,
     text: Text('GaraGaraGaraDon'),

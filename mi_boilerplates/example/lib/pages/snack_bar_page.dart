@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -22,11 +22,11 @@ class SnackBarPage extends ConsumerWidget {
   static final _logger = Logger((SnackBarPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Snack bar',
       icon: Icon(Icons.notifications_outlined),
     ),
-    MiTab(
+    mi.MiTab(
       tooltip: 'Toast',
       icon: Icon(Icons.breakfast_dining_outlined),
     ),
@@ -40,7 +40,7 @@ class SnackBarPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -92,7 +92,6 @@ class _SnackBarTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final enabled = ref.watch(enableActionsProvider);
 
     final theme = Theme.of(context);
     // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L446
@@ -102,12 +101,12 @@ class _SnackBarTab extends ConsumerWidget {
     void showSnackBar() {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: MiRow(
+          content: mi.MiRow(
             children: [
               const Text('Ping'),
               IconTheme.merge(
                 data: IconThemeData(color: theme.colorScheme.surface),
-                child: MiRingingIcon(
+                child: mi.MiRingingIcon(
                   origin: const Offset(0, -10),
                   onInitialized: (controller) {
                     controller.forward();
@@ -140,7 +139,7 @@ class _SnackBarTab extends ConsumerWidget {
                     ? theme.colorScheme.onSurface
                     : Color.alphaBlend(
                         theme.colorScheme.onSurface.withOpacity(0.80), theme.colorScheme.surface)),
-            leading: MiRow(
+            leading: mi.MiRow(
               mainAxisSize: MainAxisSize.min,
               children: [
                 DefaultTextStyle(
@@ -192,12 +191,12 @@ class _ToastTab extends ConsumerWidget {
       padding: const EdgeInsets.only(top: 8),
       child: Column(
         children: [
-          MiButtonListTile(
+          mi.MiButtonListTile(
             enabled: enabled,
             icon: const Icon(Icons.breakfast_dining_outlined),
             text: const Text('Toast!'),
             onPressed: () async {
-              await MiToastHelper.showToast(
+              await mi.MiToastHelper.showToast(
                 context: context,
                 child: const Text('Toast!'),
               );

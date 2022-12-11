@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
 import 'ex_app_bar.dart';
@@ -24,11 +24,11 @@ class ColorsPage extends ConsumerWidget {
   static final _logger = Logger((ColorsPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Theme & color scheme',
       icon: Icon(Icons.schema_outlined),
     ),
-    MiTab(
+    mi.MiTab(
       tooltip: 'Color grid',
       icon: Icon(Icons.grid_on_outlined),
     ),
@@ -42,7 +42,7 @@ class ColorsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
@@ -154,18 +154,18 @@ class _ColorsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiExpansionTile(
+    return mi.MiExpansionTile(
       title: title,
       initiallyExpanded: initiallyExpanded,
       children: items.keys.map((key) {
-        return MiRow(
+        return mi.MiRow(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            items[key]!.call(theme1).let((color) => MiColorChip(
+            items[key]!.call(theme1).let((color) => mi.MiColorChip(
                   color: color,
                   onTap: () => onColorSelected?.call(color),
                 )),
-            items[key]!.call(theme2).let((color) => MiColorChip(
+            items[key]!.call(theme2).let((color) => mi.MiColorChip(
                   color: color,
                   onTap: () => onColorSelected?.call(color),
                 )),
@@ -186,7 +186,7 @@ class _SwatchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       children: [900, 800, 700, 600, 500, 400, 300, 200, 100, 50].map((index) {
-        return MiColorChip(color: color[index]!);
+        return mi.MiColorChip(color: color[index]!);
       }).toList(),
     );
   }
@@ -297,7 +297,7 @@ class _ColorGridTab extends ConsumerWidget {
     //final enabled = ref.watch(enableActionsProvider);
     final selectedColor = ref.watch(_selectedColorProvider2);
 
-    return MiExpandedColumn(
+    return mi.MiExpandedColumn(
       bottoms: [
         if (selectedColor != null) ...[
           const Divider(),

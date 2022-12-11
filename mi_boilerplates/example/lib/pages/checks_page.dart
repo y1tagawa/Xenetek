@@ -7,7 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -24,11 +24,11 @@ class ChecksPage extends ConsumerWidget {
   static final _logger = Logger((ChecksPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Checkbox',
       icon: icon,
     ),
-    MiTab(
+    mi.MiTab(
       tooltip: 'Check menu',
       icon: Icon(Icons.more_vert),
     ),
@@ -42,7 +42,7 @@ class ChecksPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
@@ -148,7 +148,7 @@ class _CheckboxTab extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          MiExpansionTile(
+          mi.MiExpansionTile(
             enabled: enableActions,
             initiallyExpanded: true,
             // ExpansionTileに他のウィジェットを入れるケースは稀だろうからカスタムウィジェットはまだ作らない
@@ -165,7 +165,7 @@ class _CheckboxTab extends ConsumerWidget {
                     }
                   : null,
             ),
-            title: MiIcon(
+            title: mi.MiIcon(
               icon: tallyIcon,
               text: const Text('Tally'),
             ),
@@ -175,7 +175,7 @@ class _CheckboxTab extends ConsumerWidget {
                   enabled: enableActions,
                   value: ref.read(item.provider),
                   contentPadding: const EdgeInsets.only(left: 28),
-                  title: MiIcon(
+                  title: mi.MiIcon(
                     icon: item.icon,
                     text: item.text,
                   ),
@@ -194,7 +194,7 @@ class _CheckboxTab extends ConsumerWidget {
                 size: 60,
                 color: Theme.of(context).disabledColor,
               ),
-              child: MiFade(child: tallyIcon),
+              child: mi.MiFade(child: tallyIcon),
             ),
           ),
         ],
@@ -429,7 +429,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
   @override
   Widget build(BuildContext context) {
     return ClipRect(
-      child: MiAnimationController(
+      child: mi.MiAnimationController(
         duration: const Duration(seconds: 1),
         onInitialized: (controller) {
           controller.forward();
@@ -481,14 +481,14 @@ class _CheckMenuTab extends ConsumerWidget {
     final enabled = ref.watch(enableActionsProvider);
     final menuCheckList = ref.watch(_menuCheckListProvider);
 
-    final keys = iota(menuCheckList.length).where((value) => menuCheckList[value]).toList();
+    final keys = mi.iota(menuCheckList.length).where((value) => menuCheckList[value]).toList();
 
     return Column(
       children: [
-        MiRow(
+        mi.MiRow(
           flexes: const [1, 1],
           children: [
-            MiButtonListTile(
+            mi.MiButtonListTile(
               enabled: enabled && menuCheckList.any((value) => value),
               onPressed: () {
                 ref.read(_menuCheckListProvider.notifier).state =
@@ -503,11 +503,11 @@ class _CheckMenuTab extends ConsumerWidget {
               itemBuilder: (context) {
                 return [
                   ..._menuItems.entries.mapIndexed(
-                    (index, item) => MiCheckPopupMenuItem<int>(
+                    (index, item) => mi.MiCheckPopupMenuItem<int>(
                       value: index,
                       checked: menuCheckList[index],
-                      child: MiIcon(
-                        icon: MiColorChip(color: item.value),
+                      child: mi.MiIcon(
+                        icon: mi.MiColorChip(color: item.value),
                         text: Text(item.key),
                       ),
                     ),

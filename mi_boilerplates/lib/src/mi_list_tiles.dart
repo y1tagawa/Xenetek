@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 /// カスタム[RadioListTile]
 ///
@@ -143,7 +143,7 @@ class MiExpansionTile extends StatelessWidget {
             collapsedIconColor: enabled ? null : disabledColor,
             collapsedTextColor: enabled ? null : disabledColor,
           ),
-          child: MiDefaultTextColor(
+          child: mi.MiDefaultTextColor(
             color: enabled ? null : disabledColor,
             child: ExpansionTile(
               initiallyExpanded: initiallyExpanded,
@@ -213,10 +213,10 @@ class MiButtonListTile extends StatelessWidget {
     Widget title_ = Row(
       mainAxisAlignment: alignment,
       children: [
-        MiDefaultTextColor(
+        mi.MiDefaultTextColor(
           color: textColor,
           child: icon != null
-              ? MiIcon(
+              ? mi.MiIcon(
                   icon: icon,
                   text: text,
                   iconPosition: iconPosition,
@@ -237,8 +237,8 @@ class MiButtonListTile extends StatelessWidget {
     return ListTile(
       enabled: enabled,
       selected: selected,
-      leading: leading?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
-      trailing: trailing?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
+      leading: leading?.let((it) => mi.MiDefaultTextColor(color: textColor, child: it)),
+      trailing: trailing?.let((it) => mi.MiDefaultTextColor(color: textColor, child: it)),
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,

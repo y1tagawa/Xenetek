@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../data/open_moji_svgs.dart';
 import 'ex_app_bar.dart';
@@ -34,19 +34,19 @@ class AnimationsPage extends ConsumerWidget {
     final enableActions = ref.watch(enableActionsProvider);
 
     final tabs = <Widget>[
-      const MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
-      MiTab(
-        icon: MiImageIcon(
+      const mi.MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
+      mi.MiTab(
+        icon: mi.MiImageIcon(
           image: Image.asset('assets/lottie_icon.png'),
         ),
         tooltip: 'Lottie',
       ),
       // const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
       // const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
-      const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
+      const mi.MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -57,14 +57,14 @@ class AnimationsPage extends ConsumerWidget {
           appBar: ExAppBar(
             prominent: ref.watch(prominentProvider),
             //icon: icon,
-            icon: MiAnimationController(
+            icon: mi.MiAnimationController(
               duration: const Duration(seconds: 120),
               builder: (_, controller, __) {
                 _logger.fine(controller.value);
                 return AnimatedBuilder(
                   animation: controller,
                   builder: (context, _) {
-                    return MiRotate(
+                    return mi.MiRotate(
                       angleDegree: controller.value * 360,
                       child: icon,
                     );
@@ -115,7 +115,7 @@ class AnimationsPage extends ConsumerWidget {
 
 //<editor-fold>
 
-final _pingCallbackNotifier = MiSinkNotifier<MiAnimationControllerCallback>();
+final _pingCallbackNotifier = mi.MiSinkNotifier<mi.MiAnimationControllerCallback>();
 
 class _AnimatedBuilderTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedBuilderTab).toString());
@@ -134,7 +134,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
             controller.forward();
           },
         ),
-        child: MiAnimationController(
+        child: mi.MiAnimationController(
           callbackNotifier: _pingCallbackNotifier,
           duration: const Duration(milliseconds: 800),
           builder: (_, controller, __) => AnimatedBuilder(
@@ -194,7 +194,7 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 // https://lottiefiles.com/11458-empty
 const _lottieUrl = 'https://assets3.lottiefiles.com/packages/lf20_tDw3lP/empty_03.json';
 
-final _lottieCallbackNotifier = MiSinkNotifier<MiAnimationControllerCallback>();
+final _lottieCallbackNotifier = mi.MiSinkNotifier<mi.MiAnimationControllerCallback>();
 
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
@@ -213,7 +213,7 @@ class _LottieTab extends ConsumerWidget {
             controller.forward();
           },
         ),
-        child: MiAnimationController(
+        child: mi.MiAnimationController(
           callbackNotifier: _lottieCallbackNotifier,
           builder: (_, controller, __) {
             return ColorFiltered(
@@ -374,7 +374,7 @@ const _animatedIconNames = [
 
 final _iconAnimationCallbackNotifiers = List.generate(
   _animatedIcons.length,
-  (index) => MiSinkNotifier<MiAnimationControllerCallback>(),
+  (index) => mi.MiSinkNotifier<mi.MiAnimationControllerCallback>(),
 );
 
 final _animatedIconDirections = List.filled(_animatedIcons.length, true);
@@ -408,7 +408,7 @@ class _AnimatedIconsTab extends ConsumerWidget {
                 _animatedIconDirections[index] = !direction;
               },
             ),
-            child: MiAnimationController(
+            child: mi.MiAnimationController(
               callbackNotifier: _iconAnimationCallbackNotifiers[index],
               builder: (_, controller, __) {
                 return Tooltip(

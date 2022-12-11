@@ -5,7 +5,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 /// カスタム[PageView]
 ///
@@ -86,7 +86,7 @@ class MiPageView extends StatefulWidget {
         items = null;
 
   @override
-  State<MiPageView> createState() => _MiPageViewState();
+  State<mi.MiPageView> createState() => _MiPageViewState();
 }
 
 class _MiPageViewState extends State<MiPageView> {
@@ -216,7 +216,7 @@ class MiPageIndicator extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: spacing ?? 2.0,
           runSpacing: runSpacing ?? 2.0,
-          children: iota(length).map(
+          children: mi.iota(length).map(
             (i) {
               Widget widget = i == index
                   ? IconTheme.merge(

@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -18,11 +18,11 @@ class PageLayoutsPage extends ConsumerWidget {
   static final _logger = Logger((PageLayoutsPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Expanded single child scroll view',
       icon: icon,
     ),
-    MiTab(
+    mi.MiTab(
       tooltip: 'Expanded list view',
       icon: Icon(Icons.list),
     ),
@@ -36,7 +36,7 @@ class PageLayoutsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
@@ -92,7 +92,7 @@ class _ExpandedScrollViewTab extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    final content_ = run(() {
+    final content_ = mi.run(() {
       switch (content) {
         case (SingleChildScrollView):
           return SingleChildScrollView(
@@ -124,7 +124,7 @@ class _ExpandedScrollViewTab extends ConsumerWidget {
       }
     });
 
-    return MiExpandedColumn(
+    return mi.MiExpandedColumn(
       tops: [
         ListTile(
           title: const Text('Top'),

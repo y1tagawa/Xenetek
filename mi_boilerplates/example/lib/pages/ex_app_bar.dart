@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
 
@@ -59,14 +59,14 @@ class _OverflowMenu extends ConsumerWidget {
     return PopupMenuButton(
       itemBuilder: (context) {
         return [
-          MiCheckPopupMenuItem(
+          mi.MiCheckPopupMenuItem(
             checked: enabled,
             child: const Text('Enable actions'),
             onChanged: (value) {
               ref.read(enableActionsProvider.notifier).state = value;
             },
           ),
-          MiCheckPopupMenuItem(
+          mi.MiCheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(modifyThemeProvider),
             child: const Text('Adjust theme'),
@@ -74,7 +74,7 @@ class _OverflowMenu extends ConsumerWidget {
               ref.read(modifyThemeProvider.notifier).state = value;
             },
           ),
-          MiCheckPopupMenuItem(
+          mi.MiCheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(useM3Provider),
             child: const Text('Use M3'),
@@ -82,16 +82,16 @@ class _OverflowMenu extends ConsumerWidget {
               ref.read(useM3Provider.notifier).state = value;
             },
           ),
-          MiCheckPopupMenuItem(
+          mi.MiCheckPopupMenuItem(
             enabled: enabled,
             checked: brightness.isDark,
             child: const Text('Dark mode'),
             onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                 value ? Brightness.dark : Brightness.light,
           ),
-          MiPopupMenuItem(
+          mi.MiPopupMenuItem(
             enabled: enabled,
-            child: const MiIcon(
+            child: const mi.MiIcon(
               text: Text('Color settings...'),
             ),
             onTap: () {
@@ -142,7 +142,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        MiAppBar.preferredHeight(
+        mi.MiAppBar.preferredHeight(
           prominent: prominent,
           bottom: bottom,
           toolbarHeight: toolbarHeight,
@@ -172,7 +172,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         });
 
     if (ref.watch(modifyThemeProvider)) {
-      return MiAppBar(
+      return mi.MiAppBar(
         prominent: prominent,
         leading: leading,
         title: InkWell(
@@ -187,7 +187,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
           if (actions != null) ...actions!,
           if (prominent) ...[
             _ThemeAdjustmentCheckbox(),
-            MiCheckIconButton(
+            mi.MiCheckIconButton(
               enabled: enabled,
               checked: ref.watch(useM3Provider),
               onChanged: (value) {
@@ -196,7 +196,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
               checkIcon: const Icon(Icons.filter_3_outlined),
               uncheckIcon: const Icon(Icons.filter_2_outlined),
             ),
-            MiCheckIconButton(
+            mi.MiCheckIconButton(
               enabled: enabled,
               checked: brightness.isDark,
               onChanged: (value) async {
@@ -254,7 +254,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        MiTabBar.preferredHeight(
+        mi.MiTabBar.preferredHeight(
           tabs: tabs,
           indicatorWeight: indicatorWeight,
         ),
@@ -263,7 +263,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(modifyThemeProvider)
-        ? MiTabBar(
+        ? mi.MiTabBar(
             enabled: enabled,
             tabs: tabs,
             isScrollable: isScrollable,
@@ -317,7 +317,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
       }
     });
 
-    return MiBottomNavigationBar(
+    return mi.MiBottomNavigationBar(
       enabled: ref.watch(enableActionsProvider),
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,

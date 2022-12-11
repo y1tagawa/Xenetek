@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../licenses.dart';
@@ -367,7 +367,6 @@ class HomePage extends ConsumerWidget {
     _logger.fine('[i] build');
 
     final theme = Theme.of(context);
-    final foregroundColor = theme.foregroundColor;
 
     return Scaffold(
       appBar: ExAppBar(

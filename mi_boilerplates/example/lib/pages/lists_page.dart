@@ -8,7 +8,7 @@ import 'package:example/pages/knight_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 import 'ex_widgets.dart';
@@ -57,15 +57,15 @@ class ListsPage extends ConsumerWidget {
   static final _logger = Logger((ListsPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
     ),
-    // MiTab(
+    // mi.MiTab(
     //   tooltip: 'Dismissible list',
     //   icon: Icon(Icons.segment),
     // ),
-    MiTab(
+    mi.MiTab(
       tooltip: 'Stepper list',
       icon: Icon(Icons.onetwothree_outlined),
     ),
@@ -79,7 +79,7 @@ class ListsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
@@ -161,7 +161,7 @@ class _DismissibleListTab extends ConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: MiRow(
+          child: mi.MiRow(
             flexes: const [1, 0, 1],
             children: [
               ListView(
@@ -238,7 +238,7 @@ class _ReorderableListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        MiRow(
+        mi.MiRow(
           flexes: const [1, 1],
           children: [
             ExResetButtonListTile(
@@ -249,7 +249,7 @@ class _ReorderableListTab extends ConsumerWidget {
                 _scrollController.jumpTo(0);
               },
             ),
-            MiGridPopupMenuButton(
+            mi.MiGridPopupMenuButton(
               offset: const Offset(0, kToolbarHeight),
               onSelected: (index) {
                 final key = order[index];
@@ -273,7 +273,7 @@ class _ReorderableListTab extends ConsumerWidget {
                     ),
                   )
                   .toList(),
-              child: MiButtonListTile(
+              child: mi.MiButtonListTile(
                 enabled: enabled,
                 icon: const Icon(Icons.more_vert),
                 text: const Text('Scroll to'),
@@ -284,7 +284,7 @@ class _ReorderableListTab extends ConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: MiReorderableListView(
+          child: mi.MiReorderableListView(
             enabled: enabled,
             scrollController: _scrollController,
             orderNotifier: _orderNotifier,
@@ -344,7 +344,7 @@ class _StepperTab extends ConsumerWidget {
     final steps = <Step>[
       Step(
         title: const Text('Boots'),
-        content: const MiIcon(
+        content: const mi.MiIcon(
           icon: Text('Put the boots on.'),
           text: KnightIndicator.kBootsIcon,
         ),
@@ -352,7 +352,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Armour'),
-        content: const MiIcon(
+        content: const mi.MiIcon(
           icon: Text('Put the armour on.'),
           text: KnightIndicator.kArmourIcon,
         ),
@@ -360,7 +360,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Gauntlets'),
-        content: const MiIcon(
+        content: const mi.MiIcon(
           icon: Text('Put the gauntlets on.'),
           text: KnightIndicator.kGauntletsIcon,
         ),
@@ -368,7 +368,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Helmet'),
-        content: const MiIcon(
+        content: const mi.MiIcon(
           icon: Text('Wear the helmet.'),
           text: KnightIndicator.kHelmetIcon,
         ),
@@ -376,7 +376,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Shield'),
-        content: const MiIcon(
+        content: const mi.MiIcon(
           icon: Text('Have the shield.'),
           text: KnightIndicator.kShieldIcon,
         ),
@@ -387,11 +387,11 @@ class _StepperTab extends ConsumerWidget {
     return Column(
       children: [
         KnightIndicator(
-          equipped: iota(steps.length).map((i) => i < index).toList(),
+          equipped: mi.iota(steps.length).map((i) => i < index).toList(),
         ),
         const Divider(),
         if (index < 0)
-          MiButtonListTile(
+          mi.MiButtonListTile(
             enabled: enabled,
             icon: const Icon(Icons.play_arrow_outlined),
             text: const Text('Start'),
@@ -426,7 +426,7 @@ class _StepperTab extends ConsumerWidget {
             ),
           )
         else ...[
-          MiButtonListTile(
+          mi.MiButtonListTile(
             enabled: enabled,
             title: const Text('OK.'),
             icon: const Icon(Icons.refresh_outlined),

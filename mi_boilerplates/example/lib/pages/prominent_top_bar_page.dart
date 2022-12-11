@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -30,7 +30,7 @@ final _imageProvider = StateProvider<Widget?>((ref) => null);
 int _tabIndex = 0;
 
 class ProminentTopBarPage extends ConsumerWidget {
-  static const icon = MiRotate(
+  static const icon = mi.MiRotate(
     angleDegree: 180.0,
     child: Icon(Icons.horizontal_split_outlined),
   );
@@ -40,8 +40,8 @@ class ProminentTopBarPage extends ConsumerWidget {
   static final _logger = Logger((ProminentTopBarPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(icon: Text('Dummy')),
-    MiTab(icon: Text('Dummy')),
+    mi.MiTab(icon: Text('Dummy')),
+    mi.MiTab(icon: Text('Dummy')),
   ];
 
   const ProminentTopBarPage({super.key});
@@ -121,7 +121,7 @@ class ProminentTopBarPage extends ConsumerWidget {
     );
 
     if (tabbed) {
-      return MiDefaultTabController(
+      return mi.MiDefaultTabController(
         length: _tabs.length,
         initialIndex: _tabIndex,
         builder: (context) {

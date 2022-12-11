@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 import 'ex_widgets.dart';
@@ -36,11 +36,11 @@ class CustomPaintsPage extends ConsumerWidget {
     final enableActions = ref.watch(enableActionsProvider);
 
     final tabs = <Widget>[
-      const MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
+      const mi.MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
+      const mi.MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
     ];
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
@@ -347,7 +347,7 @@ class _ClockTab extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return MiTimerController.periodic(
+    return mi.MiTimerController.periodic(
       duration: const Duration(milliseconds: 200),
       onPeriodic: (_) {
         final now = DateTime.now();

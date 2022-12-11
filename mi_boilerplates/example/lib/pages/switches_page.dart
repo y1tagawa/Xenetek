@@ -5,7 +5,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 import 'ex_widgets.dart';
@@ -25,7 +25,7 @@ const _switchItems = [
   ),
   _SwitchItem(
     checkIcon: Icon(Icons.hearing_outlined),
-    uncheckIcon: MiScale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
+    uncheckIcon: mi.MiScale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
     title: Text('Ear health'),
   ),
   _SwitchItem(
@@ -89,7 +89,7 @@ class SwitchesPage extends ConsumerWidget {
     return Scaffold(
       appBar: ExAppBar(
         prominent: ref.watch(prominentProvider),
-        icon: MiToggleIcon(
+        icon: mi.MiToggleIcon(
           checked: enableActions,
           checkIcon: icon,
           uncheckIcon: const Icon(Icons.toggle_off_outlined),
@@ -100,7 +100,7 @@ class SwitchesPage extends ConsumerWidget {
         minimum: const EdgeInsets.all(8),
         child: Column(
           children: [
-            MiRow(
+            mi.MiRow(
               flexes: const [1, 1],
               children: [
                 ExResetButtonListTile(
@@ -121,8 +121,8 @@ class SwitchesPage extends ConsumerWidget {
                     final switchValue = switches[index];
                     return SwitchListTile(
                       value: switchValue,
-                      title: MiIcon(
-                        icon: MiToggleIcon(
+                      title: mi.MiIcon(
+                        icon: mi.MiToggleIcon(
                           checked: switchValue,
                           checkIcon: item.checkIcon,
                           uncheckIcon: item.uncheckIcon,

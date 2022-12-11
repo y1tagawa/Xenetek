@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path/path.dart' as p;
 
 import 'ex_app_bar.dart';
@@ -86,7 +86,7 @@ class PageViewPage extends ConsumerWidget {
         minimum: const EdgeInsets.symmetric(horizontal: 8),
         child: pageItems.when(
           data: (items) {
-            return MiExpandedColumn(
+            return mi.MiExpandedColumn(
               bottom: ListTile(
                 leading: IconButton(
                   onPressed: enabled && pageIndex > 0
@@ -105,7 +105,7 @@ class PageViewPage extends ConsumerWidget {
                   icon: const Icon(Icons.arrow_forward),
                 ),
                 title: Center(child: Text('${pageIndex + 1} / ${items.length}')),
-                // title: MiPageIndicator(
+                // title: mi.MiPageIndicator(
                 //   length: items.length,
                 //   index: pageIndex,
                 //   onSelected: (index) {
@@ -113,18 +113,18 @@ class PageViewPage extends ConsumerWidget {
                 //   },
                 // ),
               ),
-              child: MiPageView.builder(
+              child: mi.MiPageView.builder(
                 enabled: enabled,
                 initialPage: pageIndex,
                 pageNotifier: _pageIndexNotifier,
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];
-                  return MiExpandedColumn(
-                    top: MiGridPopupMenuButton(
+                  return mi.MiExpandedColumn(
+                    top: mi.MiGridPopupMenuButton(
                       items: items
                           .map(
-                            (item) => MiGridItem(
+                            (item) => mi.MiGridItem(
                               child: Text(item.name),
                             ),
                           )

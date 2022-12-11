@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
 import 'ex_app_bar.dart';
@@ -41,7 +41,7 @@ class ListTilesPage extends ConsumerWidget {
 
     const expansionTileChild = Padding(
       padding: EdgeInsets.symmetric(vertical: 8),
-      child: MiIcon(
+      child: mi.MiIcon(
         icon: Icon(Icons.child_care_outlined),
         text: Text('Child'),
       ),
@@ -64,7 +64,7 @@ class ListTilesPage extends ConsumerWidget {
                 onTap: () {
                   ref.read(_selectedProvider.notifier).state = 0;
                 },
-                title: const MiIcon(
+                title: const mi.MiIcon(
                   icon: Icon(Icons.person_outline),
                   text: Text('ListTile'),
                 ),
@@ -77,7 +77,7 @@ class ListTilesPage extends ConsumerWidget {
                   ref.read(_checkProvider.notifier).state = value!;
                   ref.read(_selectedProvider.notifier).state = 1;
                 },
-                title: const MiIcon(
+                title: const mi.MiIcon(
                   icon: Icon(Icons.person_outline),
                   text: Text('CheckboxListTile'),
                 ),
@@ -93,7 +93,7 @@ class ListTilesPage extends ConsumerWidget {
                         ref.read(_selectedProvider.notifier).state = 2;
                       }
                     : null,
-                title: const MiIcon(
+                title: const mi.MiIcon(
                   icon: Icon(Icons.person_outline),
                   text: Text('RadioListTile'),
                 ),
@@ -107,17 +107,17 @@ class ListTilesPage extends ConsumerWidget {
                         ref.read(_selectedProvider.notifier).state = 3;
                       }
                     : null,
-                title: const MiIcon(
+                title: const mi.MiIcon(
                   icon: Icon(Icons.person_outline),
                   text: Text('SwitchListTile'),
                 ),
               ),
               if (themeAdjustment)
-                MiExpansionTile(
+                mi.MiExpansionTile(
                   enabled: enableActions,
-                  title: const MiIcon(
+                  title: const mi.MiIcon(
                     icon: Icon(Icons.person_outline),
-                    text: Text('MiExpansionTile'),
+                    text: Text('mi.ExpansionTile'),
                   ),
                   initiallyExpanded: _expanded,
                   onExpansionChanged: (value) {
@@ -128,7 +128,7 @@ class ListTilesPage extends ConsumerWidget {
                 )
               else
                 ExpansionTile(
-                  title: const MiIcon(
+                  title: const mi.MiIcon(
                     icon: Icon(Icons.person_outline),
                     text: Text('ExpansionTile'),
                   ),

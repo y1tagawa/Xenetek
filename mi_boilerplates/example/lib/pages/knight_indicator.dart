@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 /// 甲冑装備状態表示ウィジェット
 ///
@@ -11,24 +11,24 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 class KnightIndicator extends StatelessWidget {
   static const kHelmetIcon = Icon(Icons.balcony_outlined);
-  static const kArmourIcon = MiScale(
+  static const kArmourIcon = mi.MiScale(
     scale: 1.2,
-    child: MiRotate(
+    child: mi.MiRotate(
       angleDegree: 90.0,
       child: Icon(Icons.bento_outlined),
     ),
   );
   static const _kLGauntletIcon = Icon(Icons.thumb_up_outlined);
-  static const _kRGauntletIcon = MiScale(scaleX: -1, child: _kLGauntletIcon);
-  static const kGauntletsIcon = MiRow(spacing: 0, children: [_kRGauntletIcon, _kLGauntletIcon]);
+  static const _kRGauntletIcon = mi.MiScale(scaleX: -1, child: _kLGauntletIcon);
+  static const kGauntletsIcon = mi.MiRow(spacing: 0, children: [_kRGauntletIcon, _kLGauntletIcon]);
   static const _kLBootIcon = Icon(Icons.roller_skating_outlined);
-  static const _kRBootIcon = MiScale(scaleX: -1, child: _kLBootIcon);
-  static const kBootsIcon = MiRow(spacing: 0, children: [_kRBootIcon, _kLBootIcon]);
+  static const _kRBootIcon = mi.MiScale(scaleX: -1, child: _kLBootIcon);
+  static const kBootsIcon = mi.MiRow(spacing: 0, children: [_kRBootIcon, _kLBootIcon]);
   static const kShieldIcon = Icon(Icons.shield_outlined);
 
   static const _kFaceIcon = Icon(Icons.child_care_outlined);
-  static const _kRHandIcon = MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
-  static const _kLHandIcon = MiScale(scaleX: -1, child: _kRHandIcon);
+  static const _kRHandIcon = mi.MiScale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
+  static const _kLHandIcon = mi.MiScale(scaleX: -1, child: _kRHandIcon);
   static const _kBlankIcon = Icon(null);
 
   static const items = <String, Widget>{
@@ -70,16 +70,16 @@ class KnightIndicator extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (equipped[2])
-                const MiTranslate(offset: Offset(0, -6), child: _kRGauntletIcon)
+                const mi.MiTranslate(offset: Offset(0, -6), child: _kRGauntletIcon)
               else
-                const MiTranslate(offset: Offset(2, -6), child: _kRHandIcon),
+                const mi.MiTranslate(offset: Offset(2, -6), child: _kRHandIcon),
               if (equipped[1]) kArmourIcon else _kBlankIcon,
               if (equipped[4])
-                MiTranslate(offset: const Offset(-4, 0), child: shieldIcon_)
+                mi.MiTranslate(offset: const Offset(-4, 0), child: shieldIcon_)
               else if (equipped[2])
-                const MiTranslate(offset: Offset(-1, -6), child: _kLGauntletIcon)
+                const mi.MiTranslate(offset: Offset(-1, -6), child: _kLGauntletIcon)
               else
-                const MiTranslate(offset: Offset(-4, -6), child: _kLHandIcon),
+                const mi.MiTranslate(offset: Offset(-4, -6), child: _kLHandIcon),
             ],
           ),
           if (equipped[0])

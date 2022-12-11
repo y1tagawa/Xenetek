@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;

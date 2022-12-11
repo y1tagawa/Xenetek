@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -42,23 +42,27 @@ class DialogsPage extends ConsumerWidget {
     final ping = ref.watch(_pingProvider);
 
     void showInfoOk(BuildContext context) {
-      showInfoOkDialog(
+      mi
+          .showInfoOkDialog(
         context: context,
         title: const Text('This is an OK dialog example.'),
         content: const Text('That is not dead which can eternal lie. '
             'And with strange aeons even death may die.'),
-      ).then((_) {
+      )
+          .then((_) {
         _ping(ref, 'OK');
       });
     }
 
     void showWarningOkCancel(BuildContext context) {
-      showWarningOkCancelDialog(
+      mi
+          .showWarningOkCancelDialog(
         context: context,
         title: const Text('This is an OK/Cancel dialog example.'),
         content: const Text('One short sleepe past, wee wake eternally, '
             'And death shall be no more; death, thou shalt die.'),
-      ).then((value) {
+      )
+          .then((value) {
         _ping(ref, value ? 'OK' : 'CANCEL');
       });
     }
@@ -74,7 +78,7 @@ class DialogsPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              MiButtonListTile(
+              mi.MiButtonListTile(
                 enabled: enableActions,
                 alignment: MainAxisAlignment.start,
                 text: const Text('Show OK dialog'),
@@ -82,7 +86,7 @@ class DialogsPage extends ConsumerWidget {
                   showInfoOk(context);
                 },
               ),
-              MiButtonListTile(
+              mi.MiButtonListTile(
                 enabled: enableActions,
                 alignment: MainAxisAlignment.start,
                 text: const Text('Show OK/Cancel dialog'),

@@ -5,7 +5,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 //
 // Exampleアプリ頻出コード
@@ -29,7 +29,7 @@ class ExClearButtonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiButtonListTile(
+    return mi.MiButtonListTile(
       enabled: enabled,
       onPressed: onPressed,
       icon: icon ?? const Icon(Icons.clear),
@@ -56,10 +56,10 @@ class ExResetButtonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiButtonListTile(
+    return mi.MiButtonListTile(
       enabled: enabled,
       onPressed: onPressed,
-      icon: icon ?? const MiScale(scaleX: -1, child: Icon(Icons.refresh)),
+      icon: icon ?? const mi.MiScale(scaleX: -1, child: Icon(Icons.refresh)),
       text: text ?? const Text('Reset'),
     );
   }
@@ -68,7 +68,7 @@ class ExResetButtonListTile extends StatelessWidget {
 /// Under construction
 
 class UnderConstruction extends StatelessWidget {
-  static const icon = MiRotate(
+  static const icon = mi.MiRotate(
     angle: math.pi,
     child: Icon(Icons.filter_list),
   );

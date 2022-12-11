@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path/path.dart' as p;
 
 import 'ex_app_bar.dart';
@@ -108,7 +108,7 @@ class AudioPlayerPage extends ConsumerWidget {
                   await _player.release();
                 },
               ),
-              MiButtonListTile(
+              mi.MiButtonListTile(
                 enabled: enableActions,
                 alignment: MainAxisAlignment.start,
                 icon: const Icon(Icons.volume_up_outlined),

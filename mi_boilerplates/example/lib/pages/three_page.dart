@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -23,11 +23,11 @@ class ThreePage extends ConsumerWidget {
   static final _logger = Logger((ThreePage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.MiTab(
       tooltip: 'Bunny',
       icon: Icon(Icons.cruelty_free_outlined),
     ),
-    MiTab(
+    mi.MiTab(
       tooltip: 'TBD',
       icon: Icon(Icons.more_horiz),
     ),
@@ -41,7 +41,7 @@ class ThreePage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {

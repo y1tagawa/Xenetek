@@ -7,7 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart';
 
@@ -22,8 +22,8 @@ class ProgressIndicatorsPage extends ConsumerWidget {
   static final _logger = Logger((ProgressIndicatorsPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(text: 'Determinate'),
-    MiTab(text: 'Indeterminate'),
+    mi.MiTab(text: 'Determinate'),
+    mi.MiTab(text: 'Indeterminate'),
   ];
 
   const ProgressIndicatorsPage({super.key});
@@ -34,7 +34,7 @@ class ProgressIndicatorsPage extends ConsumerWidget {
 
     final enabled = ref.watch(enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.MiDefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 // Exampleアプリ用カラーグリッド(primarySwatch, secondaryColor用)
 
@@ -13,9 +13,9 @@ class ExColorGrid extends StatelessWidget {
   final void Function(Color?)? onChanged;
 
   static const _tabs = <Widget>[
-    MiTab(icon: Icon(Icons.flutter_dash)),
-    MiTab(text: 'X11'),
-    MiTab(text: 'JIS'),
+    mi.MiTab(icon: Icon(Icons.flutter_dash)),
+    mi.MiTab(text: 'X11'),
+    mi.MiTab(text: 'JIS'),
   ];
 
   const ExColorGrid({
@@ -29,17 +29,17 @@ class ExColorGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = <List<Color?>>[
       [if (nullable) null, ...Colors.primaries],
-      x11Colors,
-      jisCommonColors,
+      mi.x11Colors,
+      mi.jisCommonColors,
     ];
 
     final tooltips = [
-      [if (nullable) 'null', ...primaryColorNames],
-      x11ColorNames,
-      jisCommonColorNames,
+      [if (nullable) 'null', ...mi.primaryColorNames],
+      mi.x11ColorNames,
+      mi.jisCommonColorNames,
     ];
 
-    return MiTabbedColorGrid(
+    return mi.MiTabbedColorGrid(
       initialTabIndex: initialTabIndex,
       tabs: _tabs,
       colors: colors,
