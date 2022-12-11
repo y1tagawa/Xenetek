@@ -56,7 +56,7 @@ class MiAnimationController extends StatefulWidget {
   final void Function(AnimationController controller)? onCompleted;
   final void Function(AnimationController controller)? onTap;
   final void Function(AnimationController controller, bool enter)? onHover;
-  final void Function(AnimationController controller)? onTick;
+  final void Function(AnimationController controller)? onUpdate;
   final Widget? child;
 
   const MiAnimationController({
@@ -70,7 +70,7 @@ class MiAnimationController extends StatefulWidget {
     this.onCompleted,
     this.onTap,
     this.onHover,
-    this.onTick,
+    this.onUpdate,
     this.child,
   });
 
@@ -86,7 +86,7 @@ class _MiAnimationControllerState extends State<MiAnimationController>
   late final AnimationController _controller;
 
   void _listener() {
-    widget.onTick?.call(_controller);
+    widget.onUpdate?.call(_controller);
   }
 
   void _statusListener(AnimationStatus status) {

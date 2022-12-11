@@ -78,6 +78,8 @@ class ChecksPage extends ConsumerWidget {
 // Checkbox tab
 //
 
+//<editor-fold>
+
 // But see also https://pub.dev/packages/flutter_treeview ,
 // https://pub.dev/packages/flutter_simple_treeview .
 
@@ -201,6 +203,8 @@ class _CheckboxTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Check menu tab
 //
@@ -223,31 +227,83 @@ final _menuItemColors = List.unmodifiable(_menuItems.values);
 // 雪の窓
 
 class _SnowFlake {
-  // TODO: wを速度とradiusに、マジックナンバーをプロパティに、updateの中もカスタマイズ可能に
-  static const _dy = 1.0 / 60;
   double x;
-  double dx;
   double y;
+  double dx;
+  double dy;
   double w;
   Color color;
+  double radius;
+
+//<editor-fold desc="Data Methods">
 
   _SnowFlake({
     required this.x,
-    required this.dx,
     required this.y,
+    required this.dx,
+    required this.dy,
     required this.w,
     required this.color,
+    required this.radius,
   });
 
-  void update() {
-    x += dx;
-    y += _dy * w;
-    if (y > 1.0) {
-      x = _random.nextDouble();
-      dx = (_random.nextDouble() - 0.5) * 0.002;
-      y = 0.0;
-    }
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is _SnowFlake &&
+          runtimeType == other.runtimeType &&
+          x == other.x &&
+          y == other.y &&
+          dx == other.dx &&
+          dy == other.dy &&
+          w == other.w &&
+          color == other.color &&
+          radius == other.radius);
+
+  @override
+  int get hashCode =>
+      x.hashCode ^
+      y.hashCode ^
+      dx.hashCode ^
+      dy.hashCode ^
+      w.hashCode ^
+      color.hashCode ^
+      radius.hashCode;
+
+  @override
+  String toString() {
+    return '_SnowFlake{'
+        ' x: $x,'
+        ' y: $y,'
+        ' dx: $dx,'
+        ' dy: $dy,'
+        ' w: $w,'
+        ' color: $color,'
+        ' radius: $radius,'
+        '}';
   }
+
+  _SnowFlake copyWith({
+    double? x,
+    double? y,
+    double? dx,
+    double? dy,
+    double? w,
+    Color? color,
+    double? radius,
+  }) {
+    return _SnowFlake(
+      x: x ?? this.x,
+      y: y ?? this.y,
+      dx: dx ?? this.dx,
+      dy: dy ?? this.dy,
+      w: w ?? this.w,
+      color: color ?? this.color,
+      radius: radius ?? this.radius,
+    );
+  }
+
+  //</editor-fold>
 }
 
 class _SnowPainter extends CustomPainter {
@@ -263,7 +319,7 @@ class _SnowPainter extends CustomPainter {
     void paintSnowFlake(_SnowFlake snowFlake) {
       final c = Offset(snowFlake.x * size.width, snowFlake.y * size.height);
       paint_.color = snowFlake.color;
-      canvas.drawCircle(c, 6.0 * snowFlake.w, paint_);
+      canvas.drawCircle(c, snowFlake.radius, paint_);
     }
 
     for (final snowFlake in snowFlakes) {
@@ -279,27 +335,74 @@ class _SnowPainter extends CustomPainter {
 
 class _SnowyWindow extends StatefulWidget {
   final List<int> keys;
-  final List<_SnowFlake> Function(int key) builder;
+  final double speed; // 窓からの距離の逆数w=1における落下速度(窓の高さ/1s)
+  final int intensity; // 雪の強さ
+  final double wind; // 風の強さ(w=1)
+  final double radius; // 雪片の半径[pix](w=1の時)
 
   const _SnowyWindow({
     required this.keys,
-    required this.builder,
-  });
+    required this.speed,
+    required this.intensity,
+    required this.wind,
+    required this.radius,
+  }) : assert(intensity > 0);
 
   @override
   State<StatefulWidget> createState() => _SnowyWindowState();
 }
 
 class _SnowyWindowState extends State<_SnowyWindow> {
+  static const _dy = 1.0 / 60;
+
+  static final _logger = Logger((_SnowyWindowState).toString());
+
   final _snowFlakes = <int, List<_SnowFlake>>{};
+
+  List<_SnowFlake> _newSnowFlakes(int key, double y) {
+    _logger.fine('[i] _newSnowFlakes $key $y');
+    // 指定のキーに対応する雪片を追加。
+    final t = <_SnowFlake>[];
+    // TODO: key to color
+    final color = _menuItems.values.skip(key).first;
+    for (int i = 0; i < widget.intensity; ++i) {
+      final w = (i * 0.8) / widget.intensity + 1.0;
+      t.add(_SnowFlake(
+        x: _random.nextDouble(),
+        y: y,
+        dx: (_random.nextDouble() - 0.5) * widget.wind,
+        dy: widget.speed * _dy * w,
+        w: i.toDouble() / widget.intensity,
+        color: color.withOpacity(0.5 * w),
+        radius: widget.radius * w,
+      ));
+    }
+    return t.also((it) {
+      _logger.fine('[o] _newSnowFlakes $it');
+    });
+  }
+
+  void _updateSnow(_SnowFlake snowFlake) {
+    snowFlake.x += snowFlake.dx;
+    snowFlake.y += snowFlake.dy;
+    // 窓下に出たら再利用
+    if (snowFlake.y > 1.0) {
+      snowFlake.x = _random.nextDouble();
+      snowFlake.dx = (_random.nextDouble() - 0.5) * widget.wind * snowFlake.w;
+      snowFlake.y = -0.1;
+    }
+  }
 
   void _update() {
     // 現在表示中のキーが削除されたら、表示リストから削除する。
     _snowFlakes.removeWhere((key, value) => !widget.keys.contains(key));
     // 新しいキーが追加されたら、キーに対応するデータを作成、表示リストに追加する。
+    var y = -0.1;
     for (final key in widget.keys) {
       if (!_snowFlakes.containsKey(key)) {
-        _snowFlakes[key] = widget.builder(key);
+        _snowFlakes[key] = _newSnowFlakes(key, y);
+        // 複数のキーが同時に追加される場合、重なると変なので、y初期値を散らばす。
+        y -= _random.nextDouble() * 0.8;
       }
     }
   }
@@ -326,7 +429,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
   Widget build(BuildContext context) {
     return ClipRect(
       child: MiAnimationController(
-        duration: const Duration(seconds: 6),
+        duration: const Duration(seconds: 1),
         onInitialized: (controller) {
           controller.forward();
         },
@@ -334,10 +437,10 @@ class _SnowyWindowState extends State<_SnowyWindow> {
           controller.reset();
           controller.forward();
         },
-        onTick: (controller) {
+        onUpdate: (controller) {
           _snowFlakes.forEach((key, value) {
             for (final snowFlake in value) {
-              snowFlake.update();
+              _updateSnow(snowFlake);
             }
           });
         },
@@ -360,6 +463,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
     );
   }
 }
+
 //</editor-fold>
 
 final _menuCheckListProvider =
@@ -430,32 +534,10 @@ class _CheckMenuTab extends ConsumerWidget {
           padding: const EdgeInsets.all(1),
           child: _SnowyWindow(
             keys: keys,
-            builder: (key) {
-              final color = _menuItemColors[key];
-              return [
-                _SnowFlake(
-                  x: _random.nextDouble(),
-                  dx: (_random.nextDouble() - 0.5) * 0.002,
-                  y: -0.1,
-                  w: 1.0,
-                  color: color.withAlpha(128),
-                ),
-                _SnowFlake(
-                  x: _random.nextDouble(),
-                  dx: (_random.nextDouble() - 0.5) * 0.002,
-                  y: -0.1,
-                  w: 0.75,
-                  color: color.withAlpha(96),
-                ),
-                _SnowFlake(
-                  x: _random.nextDouble(),
-                  dx: (_random.nextDouble() - 0.5) * 0.002,
-                  y: -0.1,
-                  w: 0.5,
-                  color: color.withAlpha(64),
-                ),
-              ];
-            },
+            speed: 0.7, // s/cycle
+            intensity: 3,
+            wind: 0.003,
+            radius: 3.0,
           ),
         ),
       ],
