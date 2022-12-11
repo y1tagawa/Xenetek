@@ -363,8 +363,9 @@ class _SnowyWindowState extends State<_SnowyWindow> {
     _logger.fine('[i] _newSnowFlakes $key $y');
     // 指定のキーに対応する雪片を追加。
     final t = <_SnowFlake>[];
-    // TODO: key to color
-    final color = _menuItems.values.skip(key).first;
+    // TODO: key to colorのパラメタ化
+    // _randomも
+    final color = _menuItemColors[key];
     for (int i = 0; i < widget.intensity; ++i) {
       final w = (i * 0.8) / widget.intensity + 1.0;
       t.add(_SnowFlake(
