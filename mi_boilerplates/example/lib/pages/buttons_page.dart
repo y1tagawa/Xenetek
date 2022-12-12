@@ -446,83 +446,86 @@ class _ToggleButtonsTab extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return Column(
-      children: [
-        const SizedBox(height: 8),
-        // Armours
-        ToggleButtons(
-          color: theme.unselectedIconColor,
-          isSelected: armour,
-          onPressed: enabled
-              ? (index) {
-                  ref.read(_armourProvider.notifier).state = armour.replaced(index, !armour[index]);
-                }
-              : null,
-          children: KnightIndicator.items.entries
-              .take(KnightIndicator.items.length - 1)
-              .mapIndexed((index, item) {
-            return Tooltip(
-              message: item.key,
-              child: item.value,
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 8),
-        mi.Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Shields
-            ToggleButtons(
-              color: theme.unselectedIconColor,
-              isSelected: List.filled(_shieldItems.length, false)
-                  .let((it) => shield != null ? it.replaced(shield, true) : it),
-              onPressed: enabled
-                  ? (index) {
-                      _logger.fine('$index $shield');
-                      ref.read(_shieldProvider.notifier).state = (index == shield ? null : index);
-                    }
-                  : null,
-              children: _shieldItems.entries.mapIndexed((index, item) {
-                return Tooltip(
-                  message: item.key,
-                  child: item.value,
-                );
-              }).toList(),
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          // Armours
+          ToggleButtons(
+            color: theme.unselectedIconColor,
+            isSelected: armour,
+            onPressed: enabled
+                ? (index) {
+                    ref.read(_armourProvider.notifier).state =
+                        armour.replaced(index, !armour[index]);
+                  }
+                : null,
+            children: KnightIndicator.items.entries
+                .take(KnightIndicator.items.length - 1)
+                .mapIndexed((index, item) {
+              return Tooltip(
+                message: item.key,
+                child: item.value,
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          mi.Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Shields
+              ToggleButtons(
+                color: theme.unselectedIconColor,
+                isSelected: List.filled(_shieldItems.length, false)
+                    .let((it) => shield != null ? it.replaced(shield, true) : it),
+                onPressed: enabled
+                    ? (index) {
+                        _logger.fine('$index $shield');
+                        ref.read(_shieldProvider.notifier).state = (index == shield ? null : index);
+                      }
+                    : null,
+                children: _shieldItems.entries.mapIndexed((index, item) {
+                  return Tooltip(
+                    message: item.key,
+                    child: item.value,
+                  );
+                }).toList(),
+              ),
 
-            // Clear button
-            ToggleButtons(
-              color: theme.unselectedIconColor,
-              isSelected: [
-                armour.any((value) => value) || shield != null,
-              ],
-              onPressed: enabled
-                  ? (_) {
-                      final _ = ref.refresh(_armourProvider.notifier);
-                      ref.read(_shieldProvider.notifier).state = null;
-                    }
-                  : null,
-              children: const [
-                Tooltip(
-                  message: 'Clear',
-                  child: Icon(Icons.clear),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const Divider(),
-        Center(
-          child: KnightIndicator(
-            color: enabled ? theme.unselectedIconColor : theme.disabledColor,
-            shieldIcon: shield != null ? _shieldItems.values.skip(shield).first : null,
-            equipped: [
-              ...armour,
-              shield != null,
+              // Clear button
+              ToggleButtons(
+                color: theme.unselectedIconColor,
+                isSelected: [
+                  armour.any((value) => value) || shield != null,
+                ],
+                onPressed: enabled
+                    ? (_) {
+                        final _ = ref.refresh(_armourProvider.notifier);
+                        ref.read(_shieldProvider.notifier).state = null;
+                      }
+                    : null,
+                children: const [
+                  Tooltip(
+                    message: 'Clear',
+                    child: Icon(Icons.clear),
+                  ),
+                ],
+              ),
             ],
           ),
-        )
-      ],
+          const Divider(),
+          Center(
+            child: KnightIndicator(
+              color: enabled ? theme.unselectedIconColor : theme.disabledColor,
+              shieldIcon: shield != null ? _shieldItems.values.skip(shield).first : null,
+              equipped: [
+                ...armour,
+                shield != null,
+              ],
+            ),
+          )
+        ],
+      ),
     ).also((_) {
       _logger.fine('[o] build');
     });
