@@ -41,7 +41,7 @@ class ListTilesPage extends ConsumerWidget {
 
     const expansionTileChild = Padding(
       padding: EdgeInsets.symmetric(vertical: 8),
-      child: mi.MiIcon(
+      child: mi.Tag(
         icon: Icon(Icons.child_care_outlined),
         text: Text('Child'),
       ),
@@ -64,7 +64,7 @@ class ListTilesPage extends ConsumerWidget {
                 onTap: () {
                   ref.read(_selectedProvider.notifier).state = 0;
                 },
-                title: const mi.MiIcon(
+                title: const mi.Tag(
                   icon: Icon(Icons.person_outline),
                   text: Text('ListTile'),
                 ),
@@ -77,7 +77,7 @@ class ListTilesPage extends ConsumerWidget {
                   ref.read(_checkProvider.notifier).state = value!;
                   ref.read(_selectedProvider.notifier).state = 1;
                 },
-                title: const mi.MiIcon(
+                title: const mi.Tag(
                   icon: Icon(Icons.person_outline),
                   text: Text('CheckboxListTile'),
                 ),
@@ -93,7 +93,7 @@ class ListTilesPage extends ConsumerWidget {
                         ref.read(_selectedProvider.notifier).state = 2;
                       }
                     : null,
-                title: const mi.MiIcon(
+                title: const mi.Tag(
                   icon: Icon(Icons.person_outline),
                   text: Text('RadioListTile'),
                 ),
@@ -107,7 +107,7 @@ class ListTilesPage extends ConsumerWidget {
                         ref.read(_selectedProvider.notifier).state = 3;
                       }
                     : null,
-                title: const mi.MiIcon(
+                title: const mi.Tag(
                   icon: Icon(Icons.person_outline),
                   text: Text('SwitchListTile'),
                 ),
@@ -115,7 +115,7 @@ class ListTilesPage extends ConsumerWidget {
               if (themeAdjustment)
                 mi.ExpansionTile(
                   enabled: enableActions,
-                  title: const mi.MiIcon(
+                  title: const mi.Tag(
                     icon: Icon(Icons.person_outline),
                     text: Text('mi.ExpansionTile'),
                   ),
@@ -128,7 +128,7 @@ class ListTilesPage extends ConsumerWidget {
                 )
               else
                 ExpansionTile(
-                  title: const mi.MiIcon(
+                  title: const mi.Tag(
                     icon: Icon(Icons.person_outline),
                     text: Text('ExpansionTile'),
                   ),

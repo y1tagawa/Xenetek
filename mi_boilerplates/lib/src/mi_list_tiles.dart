@@ -151,7 +151,7 @@ class ButtonListTile extends StatelessWidget {
         mi.DefaultTextColor(
           color: textColor,
           child: icon != null
-              ? mi.MiIcon(
+              ? mi.Tag(
                   icon: icon,
                   text: text,
                   iconPosition: iconPosition,

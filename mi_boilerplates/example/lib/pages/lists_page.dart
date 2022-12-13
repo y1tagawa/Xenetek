@@ -345,7 +345,7 @@ class _StepperTab extends ConsumerWidget {
     final steps = <Step>[
       Step(
         title: const Text('Boots'),
-        content: const mi.MiIcon(
+        content: const mi.Tag(
           icon: Text('Put the boots on.'),
           text: KnightIndicator.kBootsIcon,
         ),
@@ -353,7 +353,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Armour'),
-        content: const mi.MiIcon(
+        content: const mi.Tag(
           icon: Text('Put the armour on.'),
           text: KnightIndicator.kArmourIcon,
         ),
@@ -361,7 +361,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Gauntlets'),
-        content: const mi.MiIcon(
+        content: const mi.Tag(
           icon: Text('Put the gauntlets on.'),
           text: KnightIndicator.kGauntletsIcon,
         ),
@@ -369,7 +369,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Helmet'),
-        content: const mi.MiIcon(
+        content: const mi.Tag(
           icon: Text('Wear the helmet.'),
           text: KnightIndicator.kHelmetIcon,
         ),
@@ -377,7 +377,7 @@ class _StepperTab extends ConsumerWidget {
       ),
       Step(
         title: const Text('Shield'),
-        content: const mi.MiIcon(
+        content: const mi.Tag(
           icon: Text('Have the shield.'),
           text: KnightIndicator.kShieldIcon,
         ),

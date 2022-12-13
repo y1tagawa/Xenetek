@@ -110,7 +110,7 @@ class _RadioButtonsTab extends ConsumerWidget {
                 return RadioListTile<String>(
                   value: item.key,
                   groupValue: radioKey,
-                  title: mi.MiIcon(
+                  title: mi.Tag(
                     icon: item.value(item.key == radioKey),
                     text: Text(item.key),
                   ),
@@ -207,7 +207,7 @@ class _RadioMenuTab extends ConsumerWidget {
                     (index, item) => mi.RadioPopupMenuItem<int?>(
                       value: index,
                       checked: index == menuIndex,
-                      child: mi.MiIcon(
+                      child: mi.Tag(
                         icon: mi.ColorChip(color: item.value),
                         text: Text(item.key),
                       ),

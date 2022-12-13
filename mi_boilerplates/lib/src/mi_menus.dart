@@ -65,7 +65,7 @@ class CheckPopupMenuItem<T> extends PopupMenuItem<T> {
 
   @override
   Widget? get child {
-    return mi.MiIcon(
+    return mi.Tag(
       icon: SizedBox.square(
         dimension: 24,
         child: checked ? const Icon(Icons.check_rounded, size: _checkSize) : null,
@@ -97,7 +97,7 @@ class RadioPopupMenuItem<T> extends PopupMenuItem<T> {
 
   @override
   Widget? get child {
-    return mi.MiIcon(
+    return mi.Tag(
       icon: SizedBox.square(
         dimension: 24,
         child: checked ? const Icon(Icons.circle, size: _radioSize) : null,
