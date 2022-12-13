@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Grids example page.
@@ -41,8 +41,8 @@ class GridsPage extends ConsumerWidget {
     //final enableActions = ref.watch(enableActionsProvider);
 
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
@@ -87,7 +87,7 @@ class GridsPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     );
   }
 }
@@ -102,8 +102,8 @@ class GridDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: GridsPage.icon,
         title: Text('PL. ${_pageIndex + 1}'),
       ),
@@ -130,7 +130,7 @@ class GridDetailPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     );
   }
 }

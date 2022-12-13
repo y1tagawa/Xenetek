@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
-import 'ex_widgets.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 //
 // Overflow bar example page.
@@ -41,12 +41,12 @@ class OverflowBarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
     final trollHp = ref.watch(_trollHpProvider);
 
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
@@ -55,7 +55,7 @@ class OverflowBarPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ExResetButtonListTile(
+              ex.ExResetButtonListTile(
                 enabled: enableActions && trollHp < 100,
                 onPressed: () => ref.invalidate(_trollHpProvider),
               ),
@@ -97,7 +97,7 @@ class OverflowBarPage extends ConsumerWidget {
             )
             .toList(),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     );
   }
 }

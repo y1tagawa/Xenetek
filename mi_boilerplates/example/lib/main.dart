@@ -22,7 +22,7 @@ import 'pages/colors_page.dart';
 import 'pages/custom_paints_page.dart';
 import 'pages/dialogs_page.dart';
 import 'pages/embedded_tab_view_page.dart';
-import 'pages/ex_app_bar.dart';
+import 'pages/ex_app_bar.dart' as ex;
 import 'pages/files_page.dart';
 import 'pages/grids_page.dart';
 import 'pages/list_tiles_page.dart';
@@ -369,8 +369,8 @@ class HomePage extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
@@ -439,7 +439,7 @@ class HomePage extends ConsumerWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     ).also((_) {
       _logger.fine('[o] build');
     });

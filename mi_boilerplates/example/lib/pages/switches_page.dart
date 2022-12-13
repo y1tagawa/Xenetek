@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
-import 'ex_widgets.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 class _SwitchItem {
   final Widget checkIcon;
@@ -75,7 +75,7 @@ class SwitchesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
     final switches = ref.watch(_switchProvider);
 
     final theme = Theme.of(context);
@@ -87,8 +87,8 @@ class SwitchesPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: mi.ToggleIcon(
           checked: enableActions,
           checkIcon: icon,
@@ -103,11 +103,11 @@ class SwitchesPage extends ConsumerWidget {
             mi.Row(
               flexes: const [1, 1],
               children: [
-                ExResetButtonListTile(
+                ex.ExResetButtonListTile(
                   enabled: enableActions && switches.any((value) => !value),
                   onPressed: () => reset(true),
                 ),
-                ExClearButtonListTile(
+                ex.ExClearButtonListTile(
                   enabled: enableActions && switches.any((value) => value),
                   onPressed: () => reset(false),
                 ),
@@ -169,7 +169,7 @@ class SwitchesPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     );
   }
 }

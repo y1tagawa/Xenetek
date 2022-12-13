@@ -10,7 +10,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../data/open_moji_svgs.dart';
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Animations example page.
@@ -31,7 +31,7 @@ class AnimationsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
 
     final tabs = <Widget>[
       const mi.Tab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
@@ -54,8 +54,8 @@ class AnimationsPage extends ConsumerWidget {
       },
       builder: (context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
             icon: mi.AnimationControllerWidget(
               duration: const Duration(seconds: 120),
@@ -80,7 +80,7 @@ class AnimationsPage extends ConsumerWidget {
               },
             ),
             title: _title,
-            bottom: ExTabBar(
+            bottom: ex.ExTabBar(
               enabled: enableActions,
               tabs: tabs,
             ),
@@ -97,7 +97,7 @@ class AnimationsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((it) {

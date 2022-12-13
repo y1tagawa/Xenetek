@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 var _tabIndex = 0;
 
@@ -34,18 +34,18 @@ class PageLayoutsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.ExTabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -59,7 +59,7 @@ class PageLayoutsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((_) {

@@ -58,3 +58,4 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
       VLCもあるが、プラットフォームで差があったり、将来に期待。
 * https://pub.dev/packages/dynamic_color#dynamic_color
 * TextPainterで文字列の幅を取得、Widgetの幅を可変にする（端末設定で変わったりもする）
+* Path operation https://api.flutter.dev/flutter/dart-ui/Path-class.html

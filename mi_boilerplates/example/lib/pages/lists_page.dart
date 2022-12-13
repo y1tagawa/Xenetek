@@ -10,8 +10,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
-import 'ex_widgets.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 ///
 /// Lists example page.
@@ -77,18 +77,18 @@ class ListsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.ExTabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -103,7 +103,7 @@ class ListsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -134,7 +134,7 @@ class _DismissibleListTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     final theme = Theme.of(context);
 
@@ -152,7 +152,7 @@ class _DismissibleListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        ExResetButtonListTile(
+        ex.ExResetButtonListTile(
           enabled: enabled,
           onPressed: () {
             ref.invalidate(_leftListProvider);
@@ -227,7 +227,7 @@ class _ReorderableListTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
     final order = ref.watch(_orderProvider).value;
     final scrolled = ref.watch(_scrolledProvider);
     final selected = ref.watch(_selectedProvider);
@@ -241,7 +241,7 @@ class _ReorderableListTab extends ConsumerWidget {
         mi.Row(
           flexes: const [1, 1],
           children: [
-            ExResetButtonListTile(
+            ex.ExResetButtonListTile(
               enabled: enabled && changed,
               onPressed: () {
                 _orderNotifier.value = _initOrder;
@@ -338,7 +338,7 @@ class _StepperTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
     final index = ref.watch(_stepIndexProvider);
 
     // TODO: Stepが開いた時にensureVisible

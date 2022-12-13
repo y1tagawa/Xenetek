@@ -10,7 +10,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path/path.dart' as p;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Audio player example page.
@@ -53,13 +53,13 @@ class AudioPlayerPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
 
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
@@ -125,7 +125,7 @@ class AudioPlayerPage extends ConsumerWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     );
   }
 }

@@ -10,7 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 const _imageWidth = 138.0;
 const _imageHeight = 240.0;
@@ -51,8 +51,8 @@ class TabViewPage extends ConsumerWidget {
       },
       builder: (BuildContext context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
             bottom: const TabBar(tabs: _tabs),
@@ -98,7 +98,7 @@ class TabViewPage extends ConsumerWidget {
               },
             ).toList(),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((_) {

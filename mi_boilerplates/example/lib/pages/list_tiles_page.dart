@@ -8,7 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // List tiles examples page.
@@ -32,7 +32,7 @@ class ListTilesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
     final themeAdjustment = ref.watch(modifyThemeProvider);
     final check = ref.watch(_checkProvider);
     final radio = ref.watch(_radioProvider);
@@ -48,8 +48,8 @@ class ListTilesPage extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+      appBar: ex.ExAppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
@@ -142,7 +142,7 @@ class ListTilesPage extends ConsumerWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.ExBottomNavigationBar(),
     );
   }
 }

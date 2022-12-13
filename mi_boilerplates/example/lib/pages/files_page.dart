@@ -11,8 +11,8 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path_provider/path_provider.dart';
 
-import 'ex_app_bar.dart';
-import 'ex_widgets.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 //
 // File I/O examples page.
@@ -30,8 +30,8 @@ class FilesPage extends ConsumerWidget {
       icon: icon,
     ),
     mi.Tab(
-      tooltip: UnderConstruction.title,
-      icon: UnderConstruction.icon,
+      tooltip: ex.UnderConstruction.title,
+      icon: ex.UnderConstruction.icon,
     ),
   ];
 
@@ -41,18 +41,18 @@ class FilesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.ExTabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -62,11 +62,11 @@ class FilesPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _PathsTab(),
-                UnderConstruction(),
+                ex.UnderConstruction(),
               ],
             ),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -105,7 +105,7 @@ class _PathsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
     final paths = ref.watch(_pathsProvider).value;
 

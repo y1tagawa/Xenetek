@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 const _imageUrls = <String>[
   // ゴッホ 星月夜
@@ -49,7 +49,7 @@ class ProminentTopBarPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     //final enableActions = ref.watch(enableActionsProvider);
-    final prominent = ref.watch(prominentProvider);
+    final prominent = ref.watch(ex.prominentProvider);
     final tabbed = ref.watch(_tabbedProvider);
     final centerTitle = ref.watch(_centerTitleProvider);
     final image = ref.watch(_imageProvider);
@@ -76,7 +76,7 @@ class ProminentTopBarPage extends ConsumerWidget {
             CheckboxListTile(
               value: prominent,
               onChanged: (value) {
-                ref.read(prominentProvider.notifier).state = value!;
+                ref.read(ex.prominentProvider.notifier).state = value!;
               },
               title: const Text('Prominent'),
             ),
@@ -126,30 +126,30 @@ class ProminentTopBarPage extends ConsumerWidget {
         initialIndex: _tabIndex,
         builder: (context) {
           return Scaffold(
-            appBar: ExAppBar(
+            appBar: ex.ExAppBar(
               prominent: prominent,
               icon: icon,
               title: title,
               centerTitle: centerTitle,
-              bottom: const ExTabBar(tabs: _tabs),
+              bottom: const ex.ExTabBar(tabs: _tabs),
               flexibleSpace: flexibleSpace,
             ),
             body: body,
-            bottomNavigationBar: const ExBottomNavigationBar(),
+            bottomNavigationBar: const ex.ExBottomNavigationBar(),
           );
         },
       );
     } else {
       return Scaffold(
-        appBar: ExAppBar(
-          prominent: ref.watch(prominentProvider),
+        appBar: ex.ExAppBar(
+          prominent: ref.watch(ex.prominentProvider),
           icon: icon,
           title: title,
           centerTitle: centerTitle,
           flexibleSpace: flexibleSpace,
         ),
         body: body,
-        bottomNavigationBar: const ExBottomNavigationBar(),
+        bottomNavigationBar: const ex.ExBottomNavigationBar(),
       );
     }
   }

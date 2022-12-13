@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
-import 'ex_widgets.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 //
 // Custom paints trial page.
@@ -33,11 +33,11 @@ class CustomPaintsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
 
     final tabs = <Widget>[
       const mi.Tab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const mi.Tab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
+      const mi.Tab(icon: ex.UnderConstruction.icon, tooltip: ex.UnderConstruction.title),
     ];
 
     return mi.DefaultTabController(
@@ -45,12 +45,12 @@ class CustomPaintsPage extends ConsumerWidget {
       initialIndex: _tabIndex,
       builder: (context) {
         return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+          appBar: ex.ExAppBar(
+            prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.ExTabBar(
               enabled: enableActions,
               tabs: tabs,
             ),
@@ -60,11 +60,11 @@ class CustomPaintsPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _ClockTab(),
-                UnderConstruction(),
+                ex.UnderConstruction(),
               ],
             ),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.ExBottomNavigationBar(),
         );
       },
     ).also((it) {
