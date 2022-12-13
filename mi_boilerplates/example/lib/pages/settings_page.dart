@@ -24,7 +24,7 @@ Future<bool> _showColorSelectDialog({
     initialColor: initialColor,
     onChanged: onChanged,
     builder: (_, onChanged) {
-      return ExColorGrid(
+      return ColorGrid(
         onChanged: onChanged,
       );
     },
@@ -152,7 +152,7 @@ class SettingsPage extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
@@ -288,7 +288,7 @@ class SettingsPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     ).also((_) {
       _logger.fine('[o] build');
     });

@@ -45,12 +45,12 @@ class CustomPaintsPage extends ConsumerWidget {
       initialIndex: _tabIndex,
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
             icon: icon,
             title: title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enableActions,
               tabs: tabs,
             ),
@@ -64,7 +64,7 @@ class CustomPaintsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((it) {

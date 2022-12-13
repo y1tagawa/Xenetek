@@ -45,7 +45,7 @@ class OverflowBarPage extends ConsumerWidget {
     final trollHp = ref.watch(_trollHpProvider);
 
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
@@ -55,7 +55,7 @@ class OverflowBarPage extends ConsumerWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ex.ExResetButtonListTile(
+              ex.ResetButtonListTile(
                 enabled: enableActions && trollHp < 100,
                 onPressed: () => ref.invalidate(_trollHpProvider),
               ),
@@ -97,7 +97,7 @@ class OverflowBarPage extends ConsumerWidget {
             )
             .toList(),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

@@ -41,11 +41,11 @@ class PageLayoutsPage extends ConsumerWidget {
       initialIndex: _tabIndex,
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -59,7 +59,7 @@ class PageLayoutsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {

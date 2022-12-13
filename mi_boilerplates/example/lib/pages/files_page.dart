@@ -48,11 +48,11 @@ class FilesPage extends ConsumerWidget {
       initialIndex: 0,
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -66,7 +66,7 @@ class FilesPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {

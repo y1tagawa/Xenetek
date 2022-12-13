@@ -7,7 +7,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 // Exampleアプリ用カラーグリッド(primarySwatch, secondaryColor用)
 
-class ExColorGrid extends StatelessWidget {
+class ColorGrid extends StatelessWidget {
   final int initialTabIndex;
   final bool nullable;
   final void Function(Color?)? onChanged;
@@ -18,7 +18,7 @@ class ExColorGrid extends StatelessWidget {
     mi.Tab(text: 'JIS'),
   ];
 
-  const ExColorGrid({
+  const ColorGrid({
     super.key,
     this.initialTabIndex = 0,
     this.onChanged,

@@ -84,11 +84,11 @@ class ListsPage extends ConsumerWidget {
       initialIndex: 0,
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -103,7 +103,7 @@ class ListsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -152,7 +152,7 @@ class _DismissibleListTab extends ConsumerWidget {
 
     return Column(
       children: [
-        ex.ExResetButtonListTile(
+        ex.ResetButtonListTile(
           enabled: enabled,
           onPressed: () {
             ref.invalidate(_leftListProvider);
@@ -241,7 +241,7 @@ class _ReorderableListTab extends ConsumerWidget {
         mi.Row(
           flexes: const [1, 1],
           children: [
-            ex.ExResetButtonListTile(
+            ex.ResetButtonListTile(
               enabled: enabled && changed,
               onPressed: () {
                 _orderNotifier.value = _initOrder;

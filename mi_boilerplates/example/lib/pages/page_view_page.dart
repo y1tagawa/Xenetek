@@ -77,7 +77,7 @@ class PageViewPage extends ConsumerWidget {
     final pageIndex = ref.watch(_pageIndexProvider).value;
 
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
@@ -176,7 +176,7 @@ class PageViewPage extends ConsumerWidget {
           loading: () => const CircularProgressIndicator(),
         ),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     ).also((_) {
       _logger.fine('[o] build');
     });

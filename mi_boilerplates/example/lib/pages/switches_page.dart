@@ -87,7 +87,7 @@ class SwitchesPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: mi.ToggleIcon(
           checked: enableActions,
@@ -103,11 +103,11 @@ class SwitchesPage extends ConsumerWidget {
             mi.Row(
               flexes: const [1, 1],
               children: [
-                ex.ExResetButtonListTile(
+                ex.ResetButtonListTile(
                   enabled: enableActions && switches.any((value) => !value),
                   onPressed: () => reset(true),
                 ),
-                ex.ExClearButtonListTile(
+                ex.ClearButtonListTile(
                   enabled: enableActions && switches.any((value) => value),
                   onPressed: () => reset(false),
                 ),
@@ -169,7 +169,7 @@ class SwitchesPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

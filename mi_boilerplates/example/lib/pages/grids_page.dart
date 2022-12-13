@@ -41,7 +41,7 @@ class GridsPage extends ConsumerWidget {
     //final enableActions = ref.watch(enableActionsProvider);
 
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
@@ -87,7 +87,7 @@ class GridsPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }
@@ -102,7 +102,7 @@ class GridDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: GridsPage.icon,
         title: Text('PL. ${_pageIndex + 1}'),
@@ -130,7 +130,7 @@ class GridDetailPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

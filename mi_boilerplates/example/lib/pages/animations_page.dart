@@ -54,7 +54,7 @@ class AnimationsPage extends ConsumerWidget {
       },
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
             icon: mi.AnimationControllerWidget(
@@ -80,7 +80,7 @@ class AnimationsPage extends ConsumerWidget {
               },
             ),
             title: _title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enableActions,
               tabs: tabs,
             ),
@@ -97,7 +97,7 @@ class AnimationsPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((it) {

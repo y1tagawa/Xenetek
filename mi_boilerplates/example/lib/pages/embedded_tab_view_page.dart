@@ -71,11 +71,11 @@ class EmbeddedTabViewPage extends ConsumerWidget {
       onIndexChanged: (value) => _tabIndex = value,
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -89,7 +89,7 @@ class EmbeddedTabViewPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -123,7 +123,7 @@ class _EmbeddedTabViewTab extends ConsumerWidget {
         builder: (context) {
           return Column(
             children: [
-              ex.ExTabBar(
+              ex.TabBar(
                 enabled: enabled,
                 embedded: true,
                 tabs: _embeddedTabs,

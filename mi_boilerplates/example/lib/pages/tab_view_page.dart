@@ -51,7 +51,7 @@ class TabViewPage extends ConsumerWidget {
       },
       builder: (BuildContext context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
@@ -98,7 +98,7 @@ class TabViewPage extends ConsumerWidget {
               },
             ).toList(),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {

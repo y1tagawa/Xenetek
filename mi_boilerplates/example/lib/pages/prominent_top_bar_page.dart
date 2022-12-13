@@ -126,22 +126,22 @@ class ProminentTopBarPage extends ConsumerWidget {
         initialIndex: _tabIndex,
         builder: (context) {
           return Scaffold(
-            appBar: ex.ExAppBar(
+            appBar: ex.AppBar(
               prominent: prominent,
               icon: icon,
               title: title,
               centerTitle: centerTitle,
-              bottom: const ex.ExTabBar(tabs: _tabs),
+              bottom: const ex.TabBar(tabs: _tabs),
               flexibleSpace: flexibleSpace,
             ),
             body: body,
-            bottomNavigationBar: const ex.ExBottomNavigationBar(),
+            bottomNavigationBar: const ex.BottomNavigationBar(),
           );
         },
       );
     } else {
       return Scaffold(
-        appBar: ex.ExAppBar(
+        appBar: ex.AppBar(
           prominent: ref.watch(ex.prominentProvider),
           icon: icon,
           title: title,
@@ -149,7 +149,7 @@ class ProminentTopBarPage extends ConsumerWidget {
           flexibleSpace: flexibleSpace,
         ),
         body: body,
-        bottomNavigationBar: const ex.ExBottomNavigationBar(),
+        bottomNavigationBar: const ex.BottomNavigationBar(),
       );
     }
   }

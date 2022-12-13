@@ -116,7 +116,7 @@ class _OverflowMenu extends ConsumerWidget {
 //
 // テーマ調整ON/OFFによりTabBarを切り替える
 
-class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class AppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
   final Widget title;
@@ -127,7 +127,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool? centerTitle;
   final double? toolbarHeight;
 
-  const ExAppBar({
+  const AppBar({
     super.key,
     this.prominent = false,
     this.leading,
@@ -234,7 +234,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 //
 // テーマ調整ON/OFFによりTabBarを切り替える
 
-class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
+class TabBar extends ConsumerWidget with PreferredSizeWidget {
   final bool enabled;
   final List<Widget> tabs;
   final bool isScrollable;
@@ -242,7 +242,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   final ValueChanged<int>? onTap;
   final bool embedded;
 
-  const ExTabBar({
+  const TabBar({
     super.key,
     this.enabled = true,
     required this.tabs,
@@ -280,11 +280,11 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 //
 // TODO: 横画面でNavigationRail
 
-class ExBottomNavigationBar extends ConsumerWidget {
+class BottomNavigationBar extends ConsumerWidget {
   // ignore: unused_field
-  static final _logger = Logger((ExBottomNavigationBar).toString());
+  static final _logger = Logger((BottomNavigationBar).toString());
 
-  const ExBottomNavigationBar({super.key});
+  const BottomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

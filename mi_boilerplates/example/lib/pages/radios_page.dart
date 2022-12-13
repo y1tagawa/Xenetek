@@ -42,11 +42,11 @@ class RadiosPage extends ConsumerWidget {
       initialIndex: 0,
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -60,7 +60,7 @@ class RadiosPage extends ConsumerWidget {
               ],
             ),
           ),
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -191,7 +191,7 @@ class _RadioMenuTab extends ConsumerWidget {
         mi.Row(
           flexes: const [1, 1],
           children: [
-            ex.ExClearButtonListTile(
+            ex.ClearButtonListTile(
               enabled: enabled && menuIndex != null,
               onPressed: () {
                 ref.read(_menuIndexProvider.notifier).state = null;

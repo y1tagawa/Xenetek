@@ -80,7 +80,7 @@ class ButtonsPage extends ConsumerWidget {
       },
       builder: (context) {
         return Scaffold(
-          appBar: ex.ExAppBar(
+          appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
@@ -92,7 +92,7 @@ class ButtonsPage extends ConsumerWidget {
                   tooltip: 'IconButton',
                 ),
             ],
-            bottom: ex.ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
@@ -130,7 +130,7 @@ class ButtonsPage extends ConsumerWidget {
                   child: const Icon(Icons.notifications_outlined),
                 )
               : null,
-          bottomNavigationBar: const ex.ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -315,7 +315,7 @@ class _DropdownButtonTab extends ConsumerWidget {
         mi.Row(
           flexes: const [1, 1],
           children: [
-            ex.ExClearButtonListTile(
+            ex.ClearButtonListTile(
               enabled: enabled && (footPrints.isNotEmpty || menuIndex != null),
               onPressed: () {
                 ref.read(_menuIndexProvider.notifier).state = null;

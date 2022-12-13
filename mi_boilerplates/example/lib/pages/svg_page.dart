@@ -29,7 +29,7 @@ class SvgPage extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: ex.ExAppBar(
+      appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
@@ -48,7 +48,7 @@ class SvgPage extends ConsumerWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const ex.ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

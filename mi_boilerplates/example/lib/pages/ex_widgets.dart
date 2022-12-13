@@ -13,13 +13,13 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 /// クリアボタン
 
-class ExClearButtonListTile extends StatelessWidget {
+class ClearButtonListTile extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
   final Widget? text;
   final VoidCallback? onPressed;
 
-  const ExClearButtonListTile({
+  const ClearButtonListTile({
     super.key,
     this.enabled = true,
     this.onPressed,
@@ -40,13 +40,13 @@ class ExClearButtonListTile extends StatelessWidget {
 
 /// リセットボタン
 
-class ExResetButtonListTile extends StatelessWidget {
+class ResetButtonListTile extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
   final Widget? text;
   final VoidCallback? onPressed;
 
-  const ExResetButtonListTile({
+  const ResetButtonListTile({
     super.key,
     this.enabled = true,
     this.onPressed,
