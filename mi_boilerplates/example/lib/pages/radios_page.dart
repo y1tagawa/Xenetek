@@ -100,50 +100,47 @@ class _RadioButtonsTab extends ConsumerWidget {
     final enableActions = ref.watch(ex.enableActionsProvider);
     final radioKey = ref.watch(_radioProvider);
 
-    return Column(
-      children: [
-        Flexible(
-          child: ListView(
-            shrinkWrap: true,
-            children: _radioItems.entries.map(
-              (item) {
-                return RadioListTile<String>(
-                  value: item.key,
-                  groupValue: radioKey,
-                  title: mi.Tag(
-                    icon: item.value(item.key == radioKey),
-                    text: Text(item.key),
-                  ),
-                  onChanged: enableActions
-                      ? (value) {
-                          ref.read(_radioProvider.notifier).state = value!;
-                          if (value == 'Mage') {
-                            _flickNotifier.add((controller) {
-                              controller.reset();
-                              controller.forward();
-                            });
-                          }
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ..._radioItems.entries.map(
+            (item) {
+              return RadioListTile<String>(
+                value: item.key,
+                groupValue: radioKey,
+                title: mi.Tag(
+                  icon: item.value(item.key == radioKey),
+                  text: Text(item.key),
+                ),
+                onChanged: enableActions
+                    ? (value) {
+                        ref.read(_radioProvider.notifier).state = value!;
+                        if (value == 'Mage') {
+                          _flickNotifier.add((controller) {
+                            controller.reset();
+                            controller.forward();
+                          });
                         }
-                      : null,
-                );
-              },
-            ).toList(),
-          ),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-              size: 60,
+                      }
+                    : null,
+              );
+            },
+          ).toList(),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme(
+              data: IconThemeData(
+                color: Theme.of(context).disabledColor,
+                size: 60,
+              ),
+              child: mi.Fade(
+                child: _radioItems[radioKey]!.call(false),
+              ),
             ),
-            child: mi.Fade(
-              child: _radioItems[radioKey]!.call(false),
-            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
