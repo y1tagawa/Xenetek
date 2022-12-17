@@ -386,53 +386,84 @@ class _ClockTab extends ConsumerWidget {
 //
 //
 
-abstract class _AbstractSprite {
+abstract class AbstractSprite {
   int get plane;
-  bool get enabled;
-  void update(void Function(_AbstractSprite sprite) addSprite);
   void paint(Canvas canvas, Size size);
 }
 
 class _SpritePainter extends CustomPainter {
-  var _sprites = <_AbstractSprite>[];
-  var _shouldRepaint = true;
+  final List<AbstractSprite> sprites;
 
-  _SpritePainter({
-    List<_AbstractSprite> sprites = const <_AbstractSprite>[],
-  }) : _sprites = sprites;
-
-  void update() {
-    var sprites = <_AbstractSprite>[];
-    for (final sprite in _sprites) {
-      sprite.update((sprite_) => sprites.add(sprite_));
-    }
-    _sprites = sprites;
-    _shouldRepaint = true;
-  }
+  _SpritePainter({this.sprites = const <AbstractSprite>[]});
 
   @override
   void paint(Canvas canvas, Size size) {
-    var sprites = <int, List<_AbstractSprite>>{};
-    for (final sprite in _sprites) {
-      sprites[sprite.plane].let((it) {
+    final sprites_ = <int, List<AbstractSprite>>{};
+    for (final sprite in sprites) {
+      sprites_[sprite.plane].let((it) {
         if (it == null) {
-          sprites[sprite.plane] = [sprite];
+          sprites_[sprite.plane] = [sprite];
         } else {
           it.add(sprite);
         }
       });
     }
-    final planes = sprites.keys.toList().sorted();
+    final planes = sprites_.keys.toList().sorted();
     for (final plane in planes) {
-      for (final sprite in sprites[plane]!) {
+      for (final sprite in sprites_[plane]!) {
         sprite.paint(canvas, size);
       }
     }
-    _shouldRepaint = false;
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return _shouldRepaint;
+  bool shouldRepaint(covariant _SpritePainter oldDelegate) {
+    return sprites != oldDelegate.sprites;
+  }
+}
+
+class SpritePaint extends StatefulWidget {
+  final ValueNotifier<List<AbstractSprite>> spritesNotifier;
+
+  const SpritePaint({
+    super.key,
+    required this.spritesNotifier,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _SpritePainterState();
+}
+
+class _SpritePainterState extends State<SpritePaint> {
+  void _update() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.spritesNotifier.addListener(_update);
+  }
+
+  @override
+  void dispose() {
+    widget.spritesNotifier.removeListener(_update);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SpritePaint oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.spritesNotifier.removeListener(_update);
+    widget.spritesNotifier.addListener(_update);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _SpritePainter(
+        sprites: widget.spritesNotifier.value,
+      ),
+    );
   }
 }
