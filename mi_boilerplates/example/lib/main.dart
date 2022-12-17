@@ -34,6 +34,7 @@ import 'pages/progress_indicators_page.dart';
 import 'pages/prominent_top_bar_page.dart';
 import 'pages/radios_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/sliders_page.dart';
 import 'pages/snack_bar_page.dart';
 import 'pages/svg_page.dart';
 import 'pages/switches_page.dart';
@@ -179,6 +180,12 @@ final _pages = <_PageItem>[
     title: SettingsPage.title,
     path: '/settings',
     builder: (_, __) => const SettingsPage(),
+  ),
+  _PageItem(
+    icon: SlidersPage.icon,
+    title: SlidersPage.title,
+    path: '/sliders',
+    builder: (_, __) => const SlidersPage(),
   ),
   _PageItem(
     icon: SnackBarPage.icon,

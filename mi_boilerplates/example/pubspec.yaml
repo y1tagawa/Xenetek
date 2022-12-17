@@ -78,6 +78,7 @@ flutter:
     - assets/lottie_icon.png
     - assets/more_grid.png
     - assets/open_moji/
+    - assets/walk64x64/
     - assets/worker_cat1.png
     - assets/worker_cat2.png
     - assets/pandemonium.json

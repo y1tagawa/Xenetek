@@ -56,9 +56,11 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 * リリースビルド
 * 回避策の実態コメント
 * snackbarのサンプル+toastの実験ページ
+  * 実験中
 * embedded tabのもっとおもしろいやつ
 * ex_appbar整理
 * スプライトビュー
+  * domainとpresentationの切り分けの練習
 * 3Dの数値モデラ
 
 # 
@@ -67,7 +69,7 @@ Node
   // 親の座標空間中の原点位置（例えば肘なら肩からのオフセット）
   Point position
   // 親からの回転（肘の曲げ角）
-  Matrix rotation
+  Quaternion rotation
   Map<String, Node> children
 
   // パスにあるchild nodeを置換・変換
