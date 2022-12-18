@@ -153,11 +153,6 @@ class _FrameAnimationState extends State<FrameAnimation> {
 
 enum _PlayerState { stop, play, pause }
 
-extension _PlayerStateHelper on _PlayerState {
-  bool get isStop => this == _PlayerState.stop;
-  bool get isPlay => this == _PlayerState.play;
-}
-
 final _speedProvider = StateProvider((ref) => 1.0);
 final _playProvider = StateProvider((ref) => _PlayerState.stop);
 
@@ -182,22 +177,22 @@ class _SliderTab extends ConsumerWidget {
           children: [
             mi.ButtonListTile(
               icon: mi.ToggleIcon(
-                checked: play.isPlay,
+                checked: play == _PlayerState.play,
                 checkIcon: const Icon(Icons.pause),
                 uncheckIcon: const Icon(Icons.play_arrow),
               ),
-              text: play.isPlay ? const Text('Pause') : const Text('Play'),
+              text: play == _PlayerState.play ? const Text('Pause') : const Text('Play'),
               onPressed: enabled
                   ? () {
                       ref.read(_playProvider.notifier).state =
-                          play.isPlay ? _PlayerState.pause : _PlayerState.play;
+                          play == _PlayerState.play ? _PlayerState.pause : _PlayerState.play;
                     }
                   : null,
             ),
             mi.ButtonListTile(
               icon: const Icon(Icons.stop),
               text: const Text('Stop'),
-              onPressed: enabled && !(play.isStop)
+              onPressed: enabled && play != _PlayerState.stop
                   ? () {
                       ref.read(_playProvider.notifier).state = _PlayerState.stop;
                     }
@@ -211,7 +206,7 @@ class _SliderTab extends ConsumerWidget {
             min: 1.0,
             max: 3.0,
             value: speed,
-            onChanged: enabled && play == _PlayerState.play
+            onChanged: enabled && play != _PlayerState.stop
                 ? (value) {
                     ref.read(_speedProvider.notifier).state = value;
                   }
