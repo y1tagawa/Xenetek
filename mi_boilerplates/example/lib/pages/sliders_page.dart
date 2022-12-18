@@ -20,8 +20,8 @@ class SlidersPage extends ConsumerWidget {
 
   static final _tabs = <Widget>[
     const mi.Tab(
-      tooltip: 'Slider',
-      icon: icon,
+      tooltip: 'Int slider',
+      icon: Icon(Icons.linear_scale),
     ),
     const mi.Tab(
       tooltip: ex.UnderConstruction.title,
