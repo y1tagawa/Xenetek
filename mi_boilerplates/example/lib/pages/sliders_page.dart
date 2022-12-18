@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -83,6 +85,69 @@ final _walkAnimationImages = <Image>[
 
 final _walkAnimationFrames = <int>[0, 1, 2, 3, 4, 3, 2, 1];
 
+class _FrameAnimation extends StatefulWidget {
+  final List<Image> images;
+  final List<int> frames;
+  final Duration duration;
+
+  const _FrameAnimation({
+    super.key,
+    required this.images,
+    required this.frames,
+    required this.duration,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _FrameAnimationState();
+}
+
+class _FrameAnimationState extends State<_FrameAnimation> {
+  // ignore: unused_field
+  static final _logger = Logger((_FrameAnimationState).toString());
+
+  Timer? _timer;
+  int _frame = 0;
+
+  void _setTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(widget.duration ~/ widget.frames.length, _onTimer);
+  }
+
+  void _onTimer(Timer _) {
+    //_logger.fine('_frame=$_frame');
+    setState(() {});
+    _frame = (_frame + 1) % widget.frames.length;
+  }
+
+  @override
+  void initState() {
+    assert(widget.frames.isNotEmpty);
+    assert(widget.frames.every((index) => index >= 0 && index <= widget.images.length));
+    super.initState();
+    _setTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer = null;
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _FrameAnimation oldWidget) {
+    assert(widget.frames.isNotEmpty);
+    assert(widget.frames.every((index) => index >= 0 && index <= widget.images.length));
+    super.didUpdateWidget(oldWidget);
+    _setTimer();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    assert(_frame >= 0 && _frame < widget.frames.length);
+    return widget.images[widget.frames[_frame]];
+  }
+}
+
 final _speedProvider = StateProvider((ref) => 0.0); // + 1.0
 
 class _SliderTab extends ConsumerWidget {
@@ -93,7 +158,7 @@ class _SliderTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(ex.enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
     final speed = ref.watch(_speedProvider);
 
     return Column(
@@ -102,15 +167,21 @@ class _SliderTab extends ConsumerWidget {
           trailing: Text('x${(speed + 1.0).toStringAsFixed(1)}'),
           title: Slider(
             value: speed,
-            onChanged: (value) {
-              ref.read(_speedProvider.notifier).state = value;
-            },
+            onChanged: enabled
+                ? (value) {
+                    ref.read(_speedProvider.notifier).state = value;
+                  }
+                : null,
           ),
         ),
         const Divider(),
         Padding(
           padding: const EdgeInsets.all(10),
-          child: _walkAnimationImages[0],
+          child: _FrameAnimation(
+            images: _walkAnimationImages,
+            frames: _walkAnimationFrames,
+            duration: Duration(milliseconds: (1000 * speed).toInt()),
+          ),
         ),
       ],
     );
