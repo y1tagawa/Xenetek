@@ -85,23 +85,25 @@ final _walkAnimationImages = <Image>[
 
 final _walkAnimationFrames = <int>[0, 1, 2, 3, 4, 3, 2, 1];
 
-class _FrameAnimation extends StatefulWidget {
+class FrameAnimation extends StatefulWidget {
   final List<Image> images;
   final List<int> frames;
   final Duration duration;
+  final bool enabled;
 
-  const _FrameAnimation({
+  const FrameAnimation({
     super.key,
     required this.images,
     required this.frames,
     required this.duration,
+    this.enabled = true,
   });
 
   @override
   State<StatefulWidget> createState() => _FrameAnimationState();
 }
 
-class _FrameAnimationState extends State<_FrameAnimation> {
+class _FrameAnimationState extends State<FrameAnimation> {
   // ignore: unused_field
   static final _logger = Logger((_FrameAnimationState).toString());
 
@@ -110,7 +112,9 @@ class _FrameAnimationState extends State<_FrameAnimation> {
 
   void _setTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(widget.duration ~/ widget.frames.length, _onTimer);
+    if (widget.enabled) {
+      _timer = Timer.periodic(widget.duration ~/ widget.frames.length, _onTimer);
+    }
   }
 
   void _onTimer(Timer _) {
@@ -122,7 +126,6 @@ class _FrameAnimationState extends State<_FrameAnimation> {
   @override
   void initState() {
     assert(widget.frames.isNotEmpty);
-    assert(widget.frames.every((index) => index >= 0 && index <= widget.images.length));
     super.initState();
     _setTimer();
   }
@@ -134,21 +137,20 @@ class _FrameAnimationState extends State<_FrameAnimation> {
   }
 
   @override
-  void didUpdateWidget(covariant _FrameAnimation oldWidget) {
+  void didUpdateWidget(covariant FrameAnimation oldWidget) {
     assert(widget.frames.isNotEmpty);
-    assert(widget.frames.every((index) => index >= 0 && index <= widget.images.length));
     super.didUpdateWidget(oldWidget);
     _setTimer();
   }
 
   @override
   Widget build(BuildContext context) {
-    assert(_frame >= 0 && _frame < widget.frames.length);
+    _frame = _frame.clamp(0, widget.frames.length - 1);
     return widget.images[widget.frames[_frame]];
   }
 }
 
-final _speedProvider = StateProvider((ref) => 0.0); // + 1.0
+final _speedProvider = StateProvider((ref) => 1.0);
 
 class _SliderTab extends ConsumerWidget {
   // ignore: unused_field
@@ -161,11 +163,15 @@ class _SliderTab extends ConsumerWidget {
     final enabled = ref.watch(ex.enableActionsProvider);
     final speed = ref.watch(_speedProvider);
 
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         ListTile(
-          trailing: Text('x${(speed + 1.0).toStringAsFixed(1)}'),
+          trailing: Text('x${speed.toStringAsFixed(1)}'),
           title: Slider(
+            min: 1.0,
+            max: 4.0,
             value: speed,
             onChanged: enabled
                 ? (value) {
@@ -177,10 +183,17 @@ class _SliderTab extends ConsumerWidget {
         const Divider(),
         Padding(
           padding: const EdgeInsets.all(10),
-          child: _FrameAnimation(
-            images: _walkAnimationImages,
-            frames: _walkAnimationFrames,
-            duration: Duration(milliseconds: (1000 * speed).toInt()),
+          child: ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              theme.disabledColor,
+              BlendMode.srcIn,
+            ),
+            child: FrameAnimation(
+              enabled: enabled,
+              images: _walkAnimationImages,
+              frames: _walkAnimationFrames,
+              duration: Duration(milliseconds: 1000 ~/ speed),
+            ),
           ),
         ),
       ],
