@@ -132,6 +132,7 @@ class _FrameAnimationState extends State<FrameAnimation> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _timer = null;
     super.dispose();
   }
