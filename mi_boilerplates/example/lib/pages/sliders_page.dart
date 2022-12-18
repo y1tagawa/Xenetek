@@ -151,7 +151,16 @@ class _FrameAnimationState extends State<FrameAnimation> {
   }
 }
 
+enum _PlayerState { stop, play, pause }
+
+extension _PlayerStateHelper on _PlayerState {
+  bool get isStop => this == _PlayerState.stop;
+  bool get isPlay => this == _PlayerState.play;
+  bool get isPause => this == _PlayerState.pause;
+}
+
 final _speedProvider = StateProvider((ref) => 1.0);
+final _playProvider = StateProvider((ref) => _PlayerState.stop);
 
 class _SliderTab extends ConsumerWidget {
   // ignore: unused_field
@@ -163,18 +172,47 @@ class _SliderTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(ex.enableActionsProvider);
     final speed = ref.watch(_speedProvider);
+    final play = ref.watch(_playProvider);
 
     final theme = Theme.of(context);
 
     return Column(
       children: [
+        mi.Row(
+          flexes: const [1, 1],
+          children: [
+            mi.ButtonListTile(
+              icon: mi.ToggleIcon(
+                checked: play.isPlay,
+                checkIcon: const Icon(Icons.pause),
+                uncheckIcon: const Icon(Icons.play_arrow),
+              ),
+              text: play.isPlay ? const Text('Pause') : const Text('Play'),
+              onPressed: enabled
+                  ? () {
+                      ref.read(_playProvider.notifier).state =
+                          play.isPlay ? _PlayerState.pause : _PlayerState.play;
+                    }
+                  : null,
+            ),
+            mi.ButtonListTile(
+              icon: const Icon(Icons.stop),
+              text: const Text('Stop'),
+              onPressed: enabled && !(play.isStop)
+                  ? () {
+                      ref.read(_playProvider.notifier).state = _PlayerState.stop;
+                    }
+                  : null,
+            ),
+          ],
+        ),
         ListTile(
           trailing: Text('x${speed.toStringAsFixed(1)}'),
           title: Slider(
             min: 1.0,
-            max: 4.0,
+            max: 3.0,
             value: speed,
-            onChanged: enabled
+            onChanged: enabled && play == _PlayerState.play
                 ? (value) {
                     ref.read(_speedProvider.notifier).state = value;
                   }
@@ -185,17 +223,18 @@ class _SliderTab extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.all(10),
           child: ColorFiltered(
-            colorFilter: ColorFilter.mode(
-              theme.disabledColor,
-              BlendMode.srcIn,
-            ),
-            child: FrameAnimation(
-              enabled: enabled,
-              images: _walkAnimationImages,
-              frames: _walkAnimationFrames,
-              duration: Duration(milliseconds: 1000 ~/ speed),
-            ),
-          ),
+              colorFilter: ColorFilter.mode(
+                theme.disabledColor,
+                BlendMode.srcIn,
+              ),
+              child: play == _PlayerState.stop
+                  ? const Icon(Icons.accessibility_new, size: 64)
+                  : FrameAnimation(
+                      enabled: enabled && play == _PlayerState.play,
+                      images: _walkAnimationImages,
+                      frames: _walkAnimationFrames,
+                      duration: Duration(milliseconds: 1000 ~/ speed),
+                    )),
         ),
       ],
     );
