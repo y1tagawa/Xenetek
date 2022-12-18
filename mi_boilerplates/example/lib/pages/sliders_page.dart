@@ -75,18 +75,18 @@ class SlidersPage extends ConsumerWidget {
 
 //<editor-fold>
 
-final _walkAnimationImages = <Image>[
-  Image.asset('assets/walk64x64/walk64x64f1.png'),
-  Image.asset('assets/walk64x64/walk64x64f2.png'),
-  Image.asset('assets/walk64x64/walk64x64f3.png'),
-  Image.asset('assets/walk64x64/walk64x64f4.png'),
-  Image.asset('assets/walk64x64/walk64x64f5.png'),
+const _walkAnimationImages = <AssetImage>[
+  AssetImage('assets/walk64x64/walk64x64f1.png'),
+  AssetImage('assets/walk64x64/walk64x64f2.png'),
+  AssetImage('assets/walk64x64/walk64x64f3.png'),
+  AssetImage('assets/walk64x64/walk64x64f4.png'),
+  AssetImage('assets/walk64x64/walk64x64f5.png'),
 ];
 
 final _walkAnimationFrames = <int>[0, 1, 2, 3, 4, 3, 2, 1];
 
 class FrameAnimation extends StatefulWidget {
-  final List<Image> images;
+  final List<ImageProvider> images;
   final List<int> frames;
   final Duration duration;
   final bool enabled;
@@ -147,11 +147,10 @@ class _FrameAnimationState extends State<FrameAnimation> {
   @override
   Widget build(BuildContext context) {
     _frame = _frame.clamp(0, widget.frames.length - 1);
-    return widget.images[widget.frames[_frame]];
+    return Image(image: widget.images[widget.frames[_frame]]);
   }
 }
 
-enum _PlayerState { stop, play, pause }
 final _speedProvider = StateProvider((ref) => 0);
 
 class _IntSliderTab extends ConsumerWidget {
