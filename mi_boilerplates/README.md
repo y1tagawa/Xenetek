@@ -62,6 +62,8 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 * スプライトビュー
   * domainとpresentationの切り分けの練習
 * 3Dの数値モデラ
+* loadImage, loadImages
+  * FutureProviderでハンドルできるやつ
 
 # 
 
