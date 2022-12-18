@@ -55,7 +55,7 @@ class SlidersPage extends ConsumerWidget {
             minimum: EdgeInsets.all(8),
             child: TabBarView(
               children: [
-                _SliderTab(),
+                _IntSliderTab(),
                 ex.UnderConstruction(),
               ],
             ),
@@ -70,7 +70,7 @@ class SlidersPage extends ConsumerWidget {
 }
 
 //
-// Slider tab
+// Int slider tab
 //
 
 //<editor-fold>
@@ -152,14 +152,13 @@ class _FrameAnimationState extends State<FrameAnimation> {
 }
 
 enum _PlayerState { stop, play, pause }
-
 final _speedProvider = StateProvider((ref) => 0);
 
-class _SliderTab extends ConsumerWidget {
+class _IntSliderTab extends ConsumerWidget {
   // ignore: unused_field
-  static final _logger = Logger((_SliderTab).toString());
+  static final _logger = Logger((_IntSliderTab).toString());
 
-  const _SliderTab();
+  const _IntSliderTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
