@@ -153,7 +153,7 @@ class _FrameAnimationState extends State<FrameAnimation> {
 
 enum _PlayerState { stop, play, pause }
 
-final _speedProvider = StateProvider((ref) => 1.0);
+final _speedProvider = StateProvider((ref) => 1);
 final _playProvider = StateProvider((ref) => _PlayerState.stop);
 
 class _SliderTab extends ConsumerWidget {
@@ -202,9 +202,9 @@ class _SliderTab extends ConsumerWidget {
         ),
         ListTile(
           trailing: Text('x${speed.toStringAsFixed(1)}'),
-          title: Slider(
-            min: 1.0,
-            max: 3.0,
+          title: mi.IntSlider(
+            min: 1,
+            max: 3,
             value: speed,
             onChanged: enabled && play != _PlayerState.stop
                 ? (value) {

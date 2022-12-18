@@ -425,13 +425,16 @@ class _FadeState extends State<Fade> {
 /// 明示的にintの値をとる[Slider]
 
 class IntSlider extends StatelessWidget {
+  // ignore: unused_field
+  static final _logger = Logger((IntSlider).toString());
+
   final bool enabled;
   final int value;
   final int min;
   final int max;
   final int? divisions;
   final String? label;
-  final ValueChanged<int> onChanged;
+  final ValueChanged<int>? onChanged;
   // TODO: 必要になったら他のプロパティも
 
   const IntSlider({
@@ -442,7 +445,7 @@ class IntSlider extends StatelessWidget {
     required this.max,
     this.divisions,
     this.label,
-    required this.onChanged,
+    this.onChanged,
   }) : assert(divisions == null || (max > min && divisions % (max - min) == 0));
 
   @override
@@ -453,7 +456,14 @@ class IntSlider extends StatelessWidget {
       max: max.toDouble(),
       divisions: divisions ?? (max - min),
       label: label,
-      onChanged: enabled ? (value) => onChanged(value.round()) : null,
+      onChanged: enabled && onChanged != null
+          ? (data) {
+              final value_ = data.round();
+              if (value_ != value) {
+                onChanged!.call(value_);
+              }
+            }
+          : null,
     );
   }
 }
