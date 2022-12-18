@@ -141,8 +141,9 @@ class ButtonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final enabled_ = enabled && onPressed != null;
     final theme = Theme.of(context);
-    final textColor = enabled ? theme.foregroundColor : null;
+    final textColor = enabled_ ? theme.foregroundColor : null;
 
     Widget? subtitle_;
     Widget title_ = Row(
@@ -170,7 +171,7 @@ class ButtonListTile extends StatelessWidget {
     }
 
     return ListTile(
-      enabled: enabled,
+      enabled: enabled_,
       selected: selected,
       leading: leading?.let((it) => mi.DefaultTextColor(color: textColor, child: it)),
       trailing: trailing?.let((it) => mi.DefaultTextColor(color: textColor, child: it)),

@@ -156,7 +156,6 @@ enum _PlayerState { stop, play, pause }
 extension _PlayerStateHelper on _PlayerState {
   bool get isStop => this == _PlayerState.stop;
   bool get isPlay => this == _PlayerState.play;
-  bool get isPause => this == _PlayerState.pause;
 }
 
 final _speedProvider = StateProvider((ref) => 1.0);
