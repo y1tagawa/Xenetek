@@ -165,7 +165,7 @@ class _CheckboxTab extends ConsumerWidget {
                     }
                   : null,
             ),
-            title: mi.Tag(
+            title: mi.Label(
               icon: tallyIcon,
               text: const Text('Tally'),
             ),
@@ -175,7 +175,7 @@ class _CheckboxTab extends ConsumerWidget {
                   enabled: enableActions,
                   value: ref.read(item.provider),
                   contentPadding: const EdgeInsets.only(left: 28),
-                  title: mi.Tag(
+                  title: mi.Label(
                     icon: item.icon,
                     text: item.text,
                   ),
@@ -506,7 +506,7 @@ class _CheckMenuTab extends ConsumerWidget {
                     (index, item) => mi.CheckPopupMenuItem<int>(
                       value: index,
                       checked: menuCheckList[index],
-                      child: mi.Tag(
+                      child: mi.Label(
                         icon: mi.ColorChip(color: item.value),
                         text: Text(item.key),
                       ),

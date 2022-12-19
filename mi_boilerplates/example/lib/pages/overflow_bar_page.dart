@@ -14,17 +14,17 @@ import 'ex_widgets.dart' as ex;
 //
 
 const _items = [
-  mi.Tag(
+  mi.Label(
     icon: Text('\u{1F410}', style: TextStyle(fontSize: 24)),
     spacing: 4,
     text: Text('GaraDon'),
   ),
-  mi.Tag(
+  mi.Label(
     icon: Text('\u{1F410}', style: TextStyle(fontSize: 36)),
     spacing: 6,
     text: Text('GaraGaraDon'),
   ),
-  mi.Tag(
+  mi.Label(
     icon: Text('\u{1F410}', style: TextStyle(fontSize: 48)),
     spacing: 8,
     text: Text('GaraGaraGaraDon'),

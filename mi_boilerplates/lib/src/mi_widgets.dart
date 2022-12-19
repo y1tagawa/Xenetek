@@ -114,7 +114,7 @@ class DefaultTextColor extends StatelessWidget {
 ///
 /// * [icon]がnullの場合、アイコン部分は空白となる。
 
-class Tag extends StatelessWidget {
+class Label extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
   final TextDirection iconPosition;
@@ -124,7 +124,7 @@ class Tag extends StatelessWidget {
   final Widget? text;
   final String? tooltip;
 
-  const Tag({
+  const Label({
     super.key,
     this.enabled = true,
     this.icon,
@@ -223,7 +223,7 @@ class ColorChip extends StatelessWidget {
     final theme = Theme.of(context);
     final size_ = size ?? IconTheme.of(context).size ?? 24;
 
-    return Tag(
+    return Label(
       enabled: enabled,
       icon: color == null
           ? Icon(

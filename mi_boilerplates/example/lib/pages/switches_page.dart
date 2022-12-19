@@ -121,7 +121,7 @@ class SwitchesPage extends ConsumerWidget {
                     final switchValue = switches[index];
                     return SwitchListTile(
                       value: switchValue,
-                      title: mi.Tag(
+                      title: mi.Label(
                         icon: mi.ToggleIcon(
                           checked: switchValue,
                           checkIcon: item.checkIcon,

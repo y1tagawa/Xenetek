@@ -149,16 +149,13 @@ class ButtonListTile extends StatelessWidget {
     Widget title_ = Row(
       mainAxisAlignment: alignment,
       children: [
-        mi.DefaultTextColor(
-          color: textColor,
-          child: icon != null
-              ? mi.Tag(
-                  icon: icon,
-                  text: text,
-                  iconPosition: iconPosition,
-                )
-              : text,
-        ),
+        icon != null
+            ? mi.Label(
+                icon: icon,
+                text: text,
+                iconPosition: iconPosition,
+              )
+            : text,
       ],
     );
 
@@ -173,8 +170,10 @@ class ButtonListTile extends StatelessWidget {
     return ListTile(
       enabled: enabled_,
       selected: selected,
-      leading: leading?.let((it) => mi.DefaultTextColor(color: textColor, child: it)),
-      trailing: trailing?.let((it) => mi.DefaultTextColor(color: textColor, child: it)),
+      iconColor: textColor,
+      textColor: textColor,
+      leading: leading,
+      trailing: trailing,
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,

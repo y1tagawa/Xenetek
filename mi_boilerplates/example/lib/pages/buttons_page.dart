@@ -165,7 +165,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ListTile(
             leading: TextButton(
               onPressed: enabled ? () => _ping(ref) : null,
-              child: const mi.Tag(
+              child: const mi.Label(
                 icon: Icon(Icons.title),
                 spacing: 0,
                 text: Text('extButton'),
@@ -175,7 +175,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ListTile(
             leading: TextButton.icon(
               onPressed: enabled ? () => _ping(ref) : null,
-              icon: const mi.Tag(
+              icon: const mi.Label(
                 icon: Text('TextButton.'),
                 spacing: 0,
                 text: Icon(Icons.info_outline),
@@ -186,7 +186,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ListTile(
             leading: OutlinedButton(
               onPressed: enabled ? () => _ping(ref) : null,
-              child: const mi.Tag(
+              child: const mi.Label(
                 icon: Icon(Icons.center_focus_strong_outlined),
                 spacing: 0,
                 text: Text('utlinedButton'),
@@ -196,7 +196,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ListTile(
             leading: ElevatedButton(
               onPressed: enabled ? () => _ping(ref) : null,
-              child: const mi.Tag(
+              child: const mi.Label(
                 icon: Icon(
                   Icons.explicit,
                 ),

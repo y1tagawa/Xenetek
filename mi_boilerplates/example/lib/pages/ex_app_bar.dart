@@ -91,7 +91,7 @@ class _OverflowMenu extends ConsumerWidget {
           ),
           mi.PopupMenuItem(
             enabled: enabled,
-            child: const mi.Tag(
+            child: const mi.Label(
               text: Text('Color settings...'),
             ),
             onTap: () {
