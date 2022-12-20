@@ -81,8 +81,11 @@ const _animationImages = <AssetImage>[
   AssetImage('assets/walk64x64/walk64x64_2.png'),
   AssetImage('assets/walk64x64/walk64x64_3.png'),
   AssetImage('assets/walk64x64/walk64x64_4.png'),
+  AssetImage('assets/walk64x64/walk64x64_5.png'),
+  AssetImage('assets/walk64x64/walk64x64_6.png'),
 ];
 
+final _animationFrames0 = <int>[5, 6];
 final _animationFrames1 = <int>[2, 3, 4, 3, 2, 1];
 final _animationFrames2 = <int>[2, 3, 4, 3, 2, 1, 0, 1];
 
@@ -153,6 +156,8 @@ class _FrameAnimationState extends State<FrameAnimation> {
 }
 
 final _speedProvider = StateProvider((ref) => 0);
+final _breatherProvider = StateProvider((ref) => false);
+Timer? _breatherTimer;
 
 class _IntSliderTab extends ConsumerWidget {
   // ignore: unused_field
@@ -164,6 +169,7 @@ class _IntSliderTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(ex.enableActionsProvider);
     final speed = ref.watch(_speedProvider);
+    final breather = ref.watch(_breatherProvider);
 
     final theme = Theme.of(context);
 
@@ -178,6 +184,19 @@ class _IntSliderTab extends ConsumerWidget {
             onChanged: enabled
                 ? (value) {
                     ref.read(_speedProvider.notifier).state = value;
+                    if (value == 0 && speed >= 2) {
+                      if (_breatherTimer != null) {
+                        _breatherTimer!.cancel();
+                      }
+                      ref.read(_breatherProvider.notifier).state = true;
+                      _breatherTimer = Timer(
+                        const Duration(milliseconds: 2400),
+                        () {
+                          _breatherTimer = null;
+                          ref.read(_breatherProvider.notifier).state = false;
+                        },
+                      );
+                    }
                   }
                 : null,
           ),
@@ -191,7 +210,14 @@ class _IntSliderTab extends ConsumerWidget {
               BlendMode.srcIn,
             ),
             child: speed == 0
-                ? const Icon(Icons.accessibility_new, size: 64)
+                ? breather
+                    ? FrameAnimation(
+                        enabled: enabled,
+                        images: _animationImages,
+                        frames: _animationFrames0,
+                        duration: const Duration(milliseconds: 400),
+                      )
+                    : const Icon(Icons.accessibility_new, size: 64)
                 : FrameAnimation(
                     enabled: enabled,
                     images: _animationImages,
