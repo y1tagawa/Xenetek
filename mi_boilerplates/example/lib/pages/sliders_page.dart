@@ -76,14 +76,13 @@ class SlidersPage extends ConsumerWidget {
 //<editor-fold>
 
 const _animationImages = <AssetImage>[
-  AssetImage('assets/walk64x64/walk64x64f1.png'),
-  AssetImage('assets/walk64x64/walk64x64f2.png'),
-  AssetImage('assets/walk64x64/walk64x64f3.png'),
-  AssetImage('assets/walk64x64/walk64x64f4.png'),
-  AssetImage('assets/walk64x64/walk64x64f5.png'),
+  AssetImage('assets/walk64x64/walk64x64_1.png'),
+  AssetImage('assets/walk64x64/walk64x64_2.png'),
+  AssetImage('assets/walk64x64/walk64x64_3.png'),
+  AssetImage('assets/walk64x64/walk64x64_4.png'),
 ];
 
-final _animationFrames = <int>[0, 1, 2, 3, 4, 3, 2, 1];
+final _animationFrames = <int>[0, 1, 2, 3, 2, 1];
 
 class FrameAnimation extends StatefulWidget {
   final List<ImageProvider> images;
