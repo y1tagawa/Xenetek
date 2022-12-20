@@ -55,7 +55,7 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 
 * リリースビルド
 * 回避策の実態コメント
-* snackbarのサンプル+toastの実験ページ
+* snack barのサンプル+toastの実験ページ
   * 実験中
 * embedded tabのもっとおもしろいやつ
 * ex_appbar整理
@@ -64,6 +64,8 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 * 3Dの数値モデラ
 * loadImage, loadImages
   * FutureProviderでハンドルできるやつ
+  * precacheImageも使ってみたがcontextが要るのでWidgetの中に入れねばならず、汎用性が無いのでいったん戻す。
+    ImageProvider.resolve→ImageStreamからasyncでロードするにはどうしたら良いのか。
 
 # 
 

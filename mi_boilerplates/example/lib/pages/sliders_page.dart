@@ -75,7 +75,7 @@ class SlidersPage extends ConsumerWidget {
 
 //<editor-fold>
 
-const _walkAnimationImages = <AssetImage>[
+const _animationImages = <AssetImage>[
   AssetImage('assets/walk64x64/walk64x64f1.png'),
   AssetImage('assets/walk64x64/walk64x64f2.png'),
   AssetImage('assets/walk64x64/walk64x64f3.png'),
@@ -83,7 +83,7 @@ const _walkAnimationImages = <AssetImage>[
   AssetImage('assets/walk64x64/walk64x64f5.png'),
 ];
 
-final _walkAnimationFrames = <int>[0, 1, 2, 3, 4, 3, 2, 1];
+final _animationFrames = <int>[0, 1, 2, 3, 4, 3, 2, 1];
 
 class FrameAnimation extends StatefulWidget {
   final List<ImageProvider> images;
@@ -193,8 +193,8 @@ class _IntSliderTab extends ConsumerWidget {
                 ? const Icon(Icons.accessibility_new, size: 64)
                 : FrameAnimation(
                     enabled: enabled,
-                    images: _walkAnimationImages,
-                    frames: _walkAnimationFrames,
+                    images: _animationImages,
+                    frames: _animationFrames,
                     duration: Duration(milliseconds: 1000 ~/ speed),
                   ),
           ),
