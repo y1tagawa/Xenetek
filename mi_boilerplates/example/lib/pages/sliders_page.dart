@@ -83,7 +83,7 @@ const _animationImages = <AssetImage>[
   AssetImage('assets/walk64x64/walk64x64_4.png'),
 ];
 
-final _animationFrames1 = <int>[2, 3, 2, 1];
+final _animationFrames1 = <int>[2, 3, 4, 3, 2, 1];
 final _animationFrames2 = <int>[2, 3, 4, 3, 2, 1, 0, 1];
 
 class FrameAnimation extends StatefulWidget {
@@ -196,7 +196,7 @@ class _IntSliderTab extends ConsumerWidget {
                     enabled: enabled,
                     images: _animationImages,
                     frames: speed == 1 ? _animationFrames1 : _animationFrames2,
-                    duration: Duration(milliseconds: 1000 ~/ speed),
+                    duration: Duration(milliseconds: 1000 ~/ (speed + 1)),
                   ),
           ),
         ),
