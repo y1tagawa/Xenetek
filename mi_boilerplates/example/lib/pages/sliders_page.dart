@@ -156,8 +156,7 @@ class _FrameAnimationState extends State<FrameAnimation> {
 }
 
 final _speedProvider = StateProvider((ref) => 0);
-final _breatherProvider = StateProvider((ref) => false);
-Timer? _breatherTimer;
+final _breatherProvider = StateProvider<Timer?>((ref) => null);
 
 class _IntSliderTab extends ConsumerWidget {
   // ignore: unused_field
@@ -184,16 +183,14 @@ class _IntSliderTab extends ConsumerWidget {
             onChanged: enabled
                 ? (value) {
                     ref.read(_speedProvider.notifier).state = value;
-                    if (value == 0 && speed >= 2) {
-                      if (_breatherTimer != null) {
-                        _breatherTimer!.cancel();
+                    if (value == 0) {
+                      if (breather != null) {
+                        breather.cancel();
                       }
-                      ref.read(_breatherProvider.notifier).state = true;
-                      _breatherTimer = Timer(
+                      ref.read(_breatherProvider.notifier).state = Timer(
                         const Duration(milliseconds: 2400),
                         () {
-                          _breatherTimer = null;
-                          ref.read(_breatherProvider.notifier).state = false;
+                          ref.read(_breatherProvider.notifier).state = null;
                         },
                       );
                     }
@@ -210,7 +207,7 @@ class _IntSliderTab extends ConsumerWidget {
               BlendMode.srcIn,
             ),
             child: speed == 0
-                ? breather
+                ? breather != null
                     ? FrameAnimation(
                         enabled: enabled,
                         images: _animationImages,
