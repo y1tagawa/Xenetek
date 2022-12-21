@@ -373,8 +373,6 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),

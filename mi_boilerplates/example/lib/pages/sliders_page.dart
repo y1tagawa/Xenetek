@@ -89,6 +89,8 @@ final _animationFrames0 = <int>[5, 6];
 final _animationFrames1 = <int>[2, 3, 4, 3, 2, 1];
 final _animationFrames2 = <int>[2, 3, 4, 3, 2, 1, 0, 1];
 
+// FrameAnimation
+
 class FrameAnimation extends StatefulWidget {
   final List<ImageProvider> images;
   final List<int> frames;
@@ -154,6 +156,8 @@ class _FrameAnimationState extends State<FrameAnimation> {
     return Image(image: widget.images[widget.frames[_frame]]);
   }
 }
+
+// _IntSliderTab
 
 final _speedProvider = StateProvider((ref) => 0);
 final _breatherProvider = StateProvider<Timer?>((ref) => null);

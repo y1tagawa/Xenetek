@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart' as ex;
@@ -36,9 +35,6 @@ class ProminentTopBarPage extends ConsumerWidget {
   );
   static const title = Text('Prominent top bar');
 
-  // ignore: unused_field
-  static final _logger = Logger((ProminentTopBarPage).toString());
-
   static const _tabs = <Widget>[
     mi.Tab(icon: Text('Dummy')),
     mi.Tab(icon: Text('Dummy')),
@@ -48,7 +44,6 @@ class ProminentTopBarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final enableActions = ref.watch(enableActionsProvider);
     final prominent = ref.watch(ex.prominentProvider);
     final tabbed = ref.watch(_tabbedProvider);
     final centerTitle = ref.watch(_centerTitleProvider);

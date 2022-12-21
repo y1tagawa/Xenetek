@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 extension BrightnessHelper on Brightness {
@@ -44,9 +43,6 @@ extension SwitchThemeDataHelper on SwitchThemeData {
 }
 
 extension ThemeDataHelper on ThemeData {
-  // ignore: unused_field
-  static final _logger = Logger('ThemeDataExtension');
-
   bool get isDark => brightness.isDark;
 
   /// [TextButton]の文字色

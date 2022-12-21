@@ -55,8 +55,6 @@ class AudioPlayerPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(ex.enableActionsProvider);
 
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),

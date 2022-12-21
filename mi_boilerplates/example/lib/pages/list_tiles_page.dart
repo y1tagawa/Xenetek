@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
@@ -24,9 +23,6 @@ bool _expanded = true;
 class ListTilesPage extends ConsumerWidget {
   static const icon = Icon(Icons.dns_outlined);
   static const title = Text('List tiles');
-
-  // ignore: unused_field
-  static final _logger = Logger((ListTilesPage).toString());
 
   const ListTilesPage({super.key});
 
