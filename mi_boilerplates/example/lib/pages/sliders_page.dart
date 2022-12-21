@@ -175,31 +175,39 @@ class _IntSliderTab extends ConsumerWidget {
     final breather = ref.watch(_breatherProvider);
 
     final theme = Theme.of(context);
+    final sliderTheme = SliderTheme.of(context);
 
     return Column(
       children: [
         ListTile(
           trailing: Text('x${speed.toStringAsFixed(1)}'),
-          title: mi.IntSlider(
-            min: 0,
-            max: 3,
-            value: speed,
-            onChanged: enabled
-                ? (value) {
-                    ref.read(_speedProvider.notifier).state = value;
-                    if (value == 0) {
-                      if (breather != null) {
-                        breather.cancel();
+          title: SliderTheme(
+            data: sliderTheme.copyWith(
+              tickMarkShape: RoundSliderTickMarkShape(
+                tickMarkRadius: sliderTheme.trackHeightValue * 2.0,
+              ),
+            ),
+            child: mi.IntSlider(
+              min: 0,
+              max: 3,
+              value: speed,
+              onChanged: enabled
+                  ? (value) {
+                      ref.read(_speedProvider.notifier).state = value;
+                      if (value == 0) {
+                        if (breather != null) {
+                          breather.cancel();
+                        }
+                        ref.read(_breatherProvider.notifier).state = Timer(
+                          const Duration(milliseconds: 2400),
+                          () {
+                            ref.read(_breatherProvider.notifier).state = null;
+                          },
+                        );
                       }
-                      ref.read(_breatherProvider.notifier).state = Timer(
-                        const Duration(milliseconds: 2400),
-                        () {
-                          ref.read(_breatherProvider.notifier).state = null;
-                        },
-                      );
                     }
-                  }
-                : null,
+                  : null,
+            ),
           ),
         ),
         const Divider(),

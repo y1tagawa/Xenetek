@@ -9,6 +9,12 @@ extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;
 }
 
+extension SliderThemeDataHelper on SliderThemeData {
+  // Null-safe value
+  // https://github.com/flutter/flutter/blob/6819f72a91553282103362cf65cd1d6c97aa479a/packages/flutter/lib/src/material/slider_theme.dart#L336
+  double get trackHeightValue => trackHeight ?? 2.0;
+}
+
 extension SwitchThemeDataHelper on SwitchThemeData {
   SwitchThemeData modifyWith({
     required Color thumbColor,

@@ -52,34 +52,35 @@ class GridsPage extends ConsumerWidget {
           children: [
             Expanded(
               child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 8.0,
-                    childAspectRatio: 1 / 1.5,
-                  ),
-                  itemCount: _imageUrls.length,
-                  itemBuilder: (context, index) {
-                    return Tooltip(
-                      message: 'PL. ${index + 1}',
-                      child: InkWell(
-                        onTap: () {
-                          _pageIndex = index;
-                          context.push('/grids/detail');
-                        },
-                        child: Hero(
-                          tag: 'plate${index + 1}',
-                          child: Image.network(
-                            _imageUrls[index],
-                            fit: BoxFit.fill,
-                            frameBuilder: (_, child, frame, __) => frame == null
-                                ? const Center(child: CircularProgressIndicator())
-                                : child,
-                          ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 8.0,
+                  crossAxisSpacing: 8.0,
+                  childAspectRatio: 1 / 1.5,
+                ),
+                itemCount: _imageUrls.length,
+                itemBuilder: (context, index) {
+                  return Tooltip(
+                    message: 'PL. ${index + 1}',
+                    child: InkWell(
+                      onTap: () {
+                        _pageIndex = index;
+                        context.push('/grids/detail');
+                      },
+                      child: Hero(
+                        tag: 'plate${index + 1}',
+                        child: Image.network(
+                          _imageUrls[index],
+                          fit: BoxFit.fill,
+                          frameBuilder: (_, child, frame, __) => frame == null
+                              ? const Center(child: CircularProgressIndicator())
+                              : child,
                         ),
                       ),
-                    );
-                  }),
+                    ),
+                  );
+                },
+              ),
             ),
             const ListTile(
               title: Text('From \'The Poetical Works of John Milton\' (1695).'),
