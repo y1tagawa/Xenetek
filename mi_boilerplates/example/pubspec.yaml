@@ -78,12 +78,13 @@ flutter:
     - assets/lottie_icon.png
     - assets/more_grid.png
     - assets/open_moji/
+    - assets/pandemonium.json
+    - assets/shore_lines.svg
+    - assets/stanford-bunny.obj
+    - assets/stanford-bunny.mtl
     - assets/walk64x64/
     - assets/worker_cat1.png
     - assets/worker_cat2.png
-    - assets/pandemonium.json
-    - assets/stanford-bunny.obj
-    - assets/stanford-bunny.mtl
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

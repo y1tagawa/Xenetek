@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
@@ -22,6 +25,10 @@ class SlidersPage extends ConsumerWidget {
     const mi.Tab(
       tooltip: 'Int slider',
       icon: Icon(Icons.linear_scale),
+    ),
+    const mi.Tab(
+      tooltip: 'Slider',
+      icon: icon,
     ),
     const mi.Tab(
       tooltip: ex.UnderConstruction.title,
@@ -56,6 +63,7 @@ class SlidersPage extends ConsumerWidget {
             child: TabBarView(
               children: [
                 _IntSliderTab(),
+                _SliderTab(),
                 ex.UnderConstruction(),
               ],
             ),
@@ -241,3 +249,88 @@ class _IntSliderTab extends ConsumerWidget {
 }
 
 //</editor-fold>
+
+//
+// Double slider tab
+//
+
+const _seaColor = mi.X11Colors.deepSkyBlue;
+const _landColor = mi.X11Colors.forestGreen;
+
+final _shoreLinesProvider = FutureProvider<String>((ref) async {
+  final svg = await File('assets/shore_lines.svg').readAsString();
+  return svg
+      .replaceAll('"fill:#00f;', '"fill:#${_seaColor.toHex()};')
+      .replaceAll('fill="#0f0"', 'fill="#${_landColor.toHex()}"');
+});
+
+final _seaLevelProvider = StateProvider((ref) => 0.0);
+
+class _SliderTab extends ConsumerWidget {
+  // ignore: unused_field
+  static final _logger = Logger((_SliderTab).toString());
+
+  const _SliderTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enabled = ref.watch(ex.enableActionsProvider);
+    final shoreLines = ref.watch(_shoreLinesProvider);
+    final seaLevel = ref.watch(_seaLevelProvider);
+
+    return Row(
+      children: [
+        Expanded(
+          child: shoreLines.when(
+            data: (data) {
+              final svg = seaLevel >= 0.0
+                  ? data
+                      .replaceAll(
+                          'stroke-width=".1"', 'stroke-width="${seaLevel.toStringAsFixed(2)}"')
+                      .replaceAll('stroke="#0f0"', 'stroke="#${_seaColor.toHex()}"')
+                  : data
+                      .replaceAll(
+                          'stroke-width=".1"', 'stroke-width="${(-seaLevel).toStringAsFixed(2)}"')
+                      .replaceAll('stroke="#0f0"', 'stroke="#${_landColor.toHex()}"');
+              final svgData = Uint8List.fromList(svg.codeUnits);
+              return SvgPicture.memory(
+                svgData,
+                width: 320,
+                height: 320,
+              );
+            },
+            error: (error, _) {
+              return Text(error.toString());
+            },
+            loading: () {
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
+        const VerticalDivider(),
+        Column(
+          children: [
+            Text((seaLevel * 10.0).toStringAsFixed(1)),
+            const Text('+'),
+            Expanded(
+              child: RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  min: -2.0,
+                  max: 2.0,
+                  value: seaLevel,
+                  onChanged: enabled
+                      ? (value) {
+                          ref.read(_seaLevelProvider.notifier).state = value;
+                        }
+                      : null,
+                ),
+              ),
+            ),
+            const Text('-'),
+          ],
+        ),
+      ],
+    );
+  }
+}
