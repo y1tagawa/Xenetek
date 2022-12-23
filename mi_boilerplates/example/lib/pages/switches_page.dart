@@ -17,48 +17,49 @@ class _SwitchItem {
   const _SwitchItem({required this.checkIcon, required this.uncheckIcon, required this.title});
 }
 
-const _switchItems = [
+final _switchItems = [
   _SwitchItem(
-    checkIcon: Icon(Icons.visibility_outlined),
-    uncheckIcon: Icon(Icons.disabled_visible_outlined),
-    title: Text('Eye health'),
+    checkIcon: const Icon(Icons.visibility_outlined),
+    uncheckIcon: mi.ImageIcon(image: Image.asset('assets/eye_close.png')),
+    //uncheckIcon: Icon(Icons.disabled_visible_outlined),
+    title: const Text('Eye health'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.hearing_outlined),
     uncheckIcon: mi.Scale(scaleX: -1, child: Icon(Icons.hearing_disabled_outlined)),
     title: Text('Ear health'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.cloud_outlined),
     uncheckIcon: Icon(Icons.cloud_circle_outlined),
     title: Text('Mental health'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.calendar_view_month_outlined),
     uncheckIcon: Icon(Icons.widgets_outlined),
     title: Text('Dental health'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.directions_run),
     uncheckIcon: Icon(Icons.airline_seat_flat_outlined),
     title: Text('Physical health'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.attach_money_outlined),
     uncheckIcon: Icon(Icons.money_off_outlined),
     title: Text('Money'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.air_outlined),
     uncheckIcon: Icon(Icons.thermostat),
     title: Text('Air conditioning'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.bathroom_outlined),
     uncheckIcon: Icon(Icons.format_color_reset_outlined),
     title: Text('Bath'),
   ),
-  _SwitchItem(
+  const _SwitchItem(
     checkIcon: Icon(Icons.hourglass_top_outlined),
     uncheckIcon: Icon(Icons.hourglass_empty_outlined),
     title: Text('Life time'),

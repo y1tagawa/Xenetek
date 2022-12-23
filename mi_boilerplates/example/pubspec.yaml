@@ -82,6 +82,7 @@ flutter:
     - assets/shore_lines.svg
     - assets/stanford-bunny.obj
     - assets/stanford-bunny.mtl
+    - assets/eye_close.png
     - assets/walk64x64/
     - assets/worker_cat1.png
     - assets/worker_cat2.png

@@ -254,17 +254,23 @@ class _IntSliderTab extends ConsumerWidget {
 // Double slider tab
 //
 
-const _seaColor = mi.X11Colors.deepSkyBlue;
-const _landColor = mi.X11Colors.forestGreen;
+Color _seaColor(double t) {
+  return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.aliceBlue),
+          HSLColor.fromColor(mi.X11Colors.deepSkyBlue), t)!
+      .toColor();
+}
+
+Color _landColor(double t) {
+  return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.saddleBrown),
+          HSLColor.fromColor(mi.X11Colors.forestGreen), t)!
+      .toColor();
+}
 
 final _shoreLinesProvider = FutureProvider<String>((ref) async {
-  final svg = await File('assets/shore_lines.svg').readAsString();
-  return svg
-      .replaceAll('"fill:#00f;', '"fill:#${_seaColor.toHex()};')
-      .replaceAll('fill="#0f0"', 'fill="#${_landColor.toHex()}"');
+  return await File('assets/shore_lines.svg').readAsString();
 });
 
-final _seaLevelProvider = StateProvider((ref) => 0.0);
+final _seaLevelProvider = StateProvider((ref) => 0.5);
 
 class _SliderTab extends ConsumerWidget {
   // ignore: unused_field
@@ -277,21 +283,26 @@ class _SliderTab extends ConsumerWidget {
     final enabled = ref.watch(ex.enableActionsProvider);
     final shoreLines = ref.watch(_shoreLinesProvider);
     final seaLevel = ref.watch(_seaLevelProvider);
+    final strokeWidth = (seaLevel - 0.5).abs() * 2.5;
 
     return Row(
       children: [
         Expanded(
           child: shoreLines.when(
             data: (data) {
-              final svg = seaLevel >= 0.0
-                  ? data
-                      .replaceAll(
-                          'stroke-width=".1"', 'stroke-width="${seaLevel.toStringAsFixed(2)}"')
-                      .replaceAll('stroke="#0f0"', 'stroke="#${_seaColor.toHex()}"')
-                  : data
-                      .replaceAll(
-                          'stroke-width=".1"', 'stroke-width="${(-seaLevel).toStringAsFixed(2)}"')
-                      .replaceAll('stroke="#0f0"', 'stroke="#${_landColor.toHex()}"');
+              final seaColor = _seaColor(seaLevel).toHex();
+              final landColor = _landColor(seaLevel).toHex();
+              final svg = (seaLevel >= 0.5
+                      ? data
+                          .replaceAll('stroke-width=".1"',
+                              'stroke-width="${strokeWidth.toStringAsFixed(2)}"')
+                          .replaceAll('stroke="#0f0"', 'stroke="#$seaColor"')
+                      : data
+                          .replaceAll('stroke-width=".1"',
+                              'stroke-width="${strokeWidth.toStringAsFixed(2)}"')
+                          .replaceAll('stroke="#0f0"', 'stroke="#$landColor"'))
+                  .replaceAll('"fill:#00f;', '"fill:#$seaColor;')
+                  .replaceAll('fill="#0f0"', 'fill="#$landColor"');
               final svgData = Uint8List.fromList(svg.codeUnits);
               return SvgPicture.memory(
                 svgData,
@@ -310,14 +321,14 @@ class _SliderTab extends ConsumerWidget {
         const VerticalDivider(),
         Column(
           children: [
-            Text((seaLevel * 10.0).toStringAsFixed(1)),
+            Text(seaLevel.toStringAsFixed(1)),
             const Text('+'),
             Expanded(
               child: RotatedBox(
                 quarterTurns: 3,
                 child: Slider(
-                  min: -2.0,
-                  max: 2.0,
+                  min: 0.0,
+                  max: 1.0,
                   value: seaLevel,
                   onChanged: enabled
                       ? (value) {
