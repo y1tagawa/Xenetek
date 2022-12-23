@@ -25,6 +25,7 @@ class KnightIndicator extends StatelessWidget {
   static const _kRBootIcon = mi.Scale(scaleX: -1, child: _kLBootIcon);
   static const kBootsIcon = mi.Row(spacing: 0, children: [_kRBootIcon, _kLBootIcon]);
   static const kShieldIcon = Icon(Icons.shield_outlined);
+  static const kWeaponIcon = Icon(Icons.colorize);
 
   static const _kFaceIcon = Icon(Icons.child_care_outlined);
   static const _kRHandIcon = mi.Scale(scale: 0.8, child: Icon(Icons.front_hand_outlined));
@@ -36,6 +37,7 @@ class KnightIndicator extends StatelessWidget {
     'Armour': kArmourIcon,
     'Gauntlets': kGauntletsIcon,
     'Helmet': kHelmetIcon,
+    'Weapon': kWeaponIcon,
     'Shield': kShieldIcon,
   };
 
@@ -73,8 +75,21 @@ class KnightIndicator extends StatelessWidget {
                 const mi.Translate(offset: Offset(0, -6), child: _kRGauntletIcon)
               else
                 const mi.Translate(offset: Offset(2, -6), child: _kRHandIcon),
-              if (equipped[1]) kArmourIcon else _kBlankIcon,
-              if (equipped[4])
+              Stack(
+                children: [
+                  _kBlankIcon,
+                  if (equipped[1]) kArmourIcon,
+                  if (equipped[4])
+                    const mi.Translate(
+                      offset: Offset(-12, 6),
+                      child: mi.Rotate(
+                        angleDegree: -30,
+                        child: kWeaponIcon,
+                      ),
+                    ),
+                ],
+              ),
+              if (equipped[5])
                 mi.Translate(offset: const Offset(-4, 0), child: shieldIcon_)
               else if (equipped[2])
                 const mi.Translate(offset: Offset(-1, -6), child: _kLGauntletIcon)

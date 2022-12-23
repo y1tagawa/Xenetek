@@ -376,9 +376,17 @@ class _StepperTab extends ConsumerWidget {
         isActive: enabled && index > 2,
       ),
       Step(
+        title: const Text('Weapon'),
+        content: const mi.Label(
+          icon: Text('Wield the weapon.'),
+          text: KnightIndicator.kWeaponIcon,
+        ),
+        isActive: enabled && index > 3,
+      ),
+      Step(
         title: const Text('Shield'),
         content: const mi.Label(
-          icon: Text('Have the shield.'),
+          icon: Text('Wield the shield.'),
           text: KnightIndicator.kShieldIcon,
         ),
         isActive: enabled && index > 3,
