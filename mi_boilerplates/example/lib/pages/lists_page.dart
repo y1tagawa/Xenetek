@@ -155,9 +155,11 @@ class ListsPage extends ConsumerWidget {
 //
 
 final _initOrder = List<int>.unmodifiable(mi.iota(_listItems.length));
+final _initFlags = List<bool>.filled(_listItems.length, false);
+
 final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
-final _alternativesProvider = StateProvider((ref) => List<bool>.filled(_listItems.length, false));
+final _flagsProvider = StateProvider((ref) => _initFlags);
 final _scrolledProvider = StateProvider((ref) => false);
 final _selectedProvider = StateProvider<int?>((ref) => null);
 
@@ -173,11 +175,10 @@ class _ReorderableListTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final enabled = ref.watch(ex.enableActionsProvider);
     final order = ref.watch(_orderProvider).value;
-    final alternatives = ref.watch(_alternativesProvider);
+    final flags = ref.watch(_flagsProvider);
     final scrolled = ref.watch(_scrolledProvider);
     final selected = ref.watch(_selectedProvider);
     final changed = order != _initOrder || scrolled || selected != null;
-    _logger.fine('order=$order');
 
     final theme = Theme.of(context);
 
@@ -190,6 +191,7 @@ class _ReorderableListTab extends ConsumerWidget {
               enabled: enabled && changed,
               onPressed: () {
                 _orderNotifier.value = _initOrder;
+                ref.read(_flagsProvider.notifier).state = _initFlags;
                 ref.read(_selectedProvider.notifier).state = null;
                 _scrollController.jumpTo(0);
               },
@@ -210,12 +212,12 @@ class _ReorderableListTab extends ConsumerWidget {
               },
               items: order.map((index) {
                 final item = _listItems[index];
-                final alternative = alternatives[index];
+                final flag = flags[index];
                 return Container(
                   width: kToolbarHeight,
                   height: kToolbarHeight,
                   alignment: Alignment.center,
-                  child: alternative ? item.alternativeIcon ?? item.icon : item.icon,
+                  child: flag ? item.alternativeIcon ?? item.icon : item.icon,
                 );
               }).toList(),
               child: mi.ButtonListTile(
@@ -240,7 +242,7 @@ class _ReorderableListTab extends ConsumerWidget {
             children: order.map(
               (index) {
                 final item = _listItems[index];
-                final alternative = alternatives[index];
+                final flag = flags[index];
                 // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
                 final key = Key(index.toString());
                 // widgetをDismissibleにすることで併用も可能なことが分かった。
@@ -251,15 +253,16 @@ class _ReorderableListTab extends ConsumerWidget {
                   },
                   background: ColoredBox(color: theme.backgroundColor),
                   child: ListTile(
-                    leading: alternative ? item.alternativeIcon ?? item.icon : item.icon,
-                    title: Text(alternative ? item.alternativeName ?? item.name : item.name),
+                    leading: flag ? item.alternativeIcon ?? item.icon : item.icon,
+                    title: Text(flag ? item.alternativeName ?? item.name : item.name),
                     selected: selected == index,
                     onTap: () {
                       ref.read(_selectedProvider.notifier).state = index;
                     },
                     onLongPress: () {
-                      ref.read(_alternativesProvider.notifier).state =
-                          alternatives.replaced(index, !alternatives[index]);
+                      if (item.alternativeIcon != null) {
+                        ref.read(_flagsProvider.notifier).state = flags.replaced(index, !flag);
+                      }
                     },
                   ),
                 );
