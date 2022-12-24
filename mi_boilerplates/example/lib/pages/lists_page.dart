@@ -61,6 +61,8 @@ final _listItems = <_ListItem>[
   _ListItem(
     icon: mi.Scale(scaleX: -1, child: openMojiSvgHorse),
     name: 'Horse',
+    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgHorseUnicorn),
+    alternativeName: 'Unicorn',
   ),
   _ListItem(
     icon: mi.Scale(scaleX: -1, child: openMojiSvgRam),
