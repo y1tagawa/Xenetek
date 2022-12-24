@@ -47,6 +47,8 @@ final _listItems = <_ListItem>[
   _ListItem(
     icon: mi.Scale(scaleX: -1, child: openMojiSvgRabbit),
     name: 'Rabbit',
+    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgHare),
+    alternativeName: 'Hare',
   ),
   _ListItem(
     icon: openMojiSvgDragon,
@@ -71,6 +73,7 @@ final _listItems = <_ListItem>[
   _ListItem(
     icon: mi.Scale(scaleX: -1, child: openMojiSvgRooster),
     name: 'Chicken',
+    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgWhiteRooster),
   ),
   _ListItem(
     icon: mi.Scale(scaleX: -1, child: openMojiSvgDog),
@@ -85,6 +88,7 @@ final _listItems = <_ListItem>[
   _ListItem(
     icon: mi.Scale(scaleX: -1, child: openMojiSvgCat),
     name: 'Cat',
+    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgBlackCat),
   ),
 ];
 

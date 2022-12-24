@@ -131,6 +131,8 @@ final openMojiSvgHamster = SvgPicture.asset('assets/open_moji/1F439.svg');
 final openMojiSvgRabbitFace = SvgPicture.asset('assets/open_moji/1F430.svg');
 // rabbit  (bunny, pet, rabbit)
 final openMojiSvgRabbit = SvgPicture.asset('assets/open_moji/1F407.svg');
+// rabbit  (bunny, pet, rabbit)
+final openMojiSvgHare = SvgPicture.asset('assets/open_moji/1F407_hare.svg');
 // chipmunk  (chipmunk, squirrel)
 final openMojiSvgChipmunk = SvgPicture.asset('assets/open_moji/1F43F.svg');
 // beaver  (beaver, dam)
@@ -165,6 +167,8 @@ final openMojiSvgTurkey = SvgPicture.asset('assets/open_moji/1F983.svg');
 final openMojiSvgChicken = SvgPicture.asset('assets/open_moji/1F414.svg');
 // rooster  (bird, rooster)
 final openMojiSvgRooster = SvgPicture.asset('assets/open_moji/1F413.svg');
+// rooster  (bird, rooster)
+final openMojiSvgWhiteRooster = SvgPicture.asset('assets/open_moji/1F413_white.svg');
 // hatching chick  (baby, bird, chick, hatching)
 final openMojiSvgHatchingChick = SvgPicture.asset('assets/open_moji/1F423.svg');
 // baby chick  (baby, bird, chick)
