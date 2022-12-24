@@ -251,18 +251,49 @@ class _IntSliderTab extends ConsumerWidget {
 //</editor-fold>
 
 //
-// Double slider tab
+// Slider tab
 //
 
-Color _seaColor(double t) {
+class _ShoreLinesClipper extends CustomClipper<Path> {
+  const _ShoreLinesClipper();
+
+  @override
+  Path getClip(Size size) {
+    // "m555 1200c-749-228-730-980 0.88-1200l1258 0.0434c761 235 722 985 0.4 1200l-1260-0.172z"
+    final path = Path();
+    path.moveTo(555, 1200);
+    path.relativeCubicTo(-749, -228, -730, -980, 0.88, -1200);
+    path.relativeLineTo(1258, 0.0434);
+    path.relativeCubicTo(761, 235, 722, 985, 0.4, 1200);
+    path.relativeLineTo(-1260, -0.172);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return false;
+  }
+}
+
+Color _iceColor(double t) {
+  if (t <= 0.6) {
+    return mi.X11Colors.aliceBlue;
+  }
   return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.aliceBlue),
-          HSLColor.fromColor(mi.X11Colors.deepSkyBlue), t)!
+          HSLColor.fromColor(mi.X11Colors.khaki), (t - 0.6) / 0.4)!
       .toColor();
 }
 
 Color _landColor(double t) {
   return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.saddleBrown),
           HSLColor.fromColor(mi.X11Colors.forestGreen), t)!
+      .toColor();
+}
+
+Color _seaColor(double t) {
+  return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.aliceBlue),
+          HSLColor.fromColor(mi.X11Colors.deepSkyBlue), t)!
       .toColor();
 }
 
@@ -283,31 +314,45 @@ class _SliderTab extends ConsumerWidget {
     final enabled = ref.watch(ex.enableActionsProvider);
     final shoreLines = ref.watch(_shoreLinesProvider);
     final seaLevel = ref.watch(_seaLevelProvider);
-    final strokeWidth = (seaLevel - 0.5).abs() * 2.5;
 
     return Row(
       children: [
         Expanded(
           child: shoreLines.when(
             data: (data) {
-              final seaColor = _seaColor(seaLevel).toHex();
+              final erosion_ = (seaLevel - 0.5).abs() * 100.0;
+              final erosion = erosion_.toStringAsFixed(2);
+              final iceColor = _iceColor(seaLevel).toHex();
               final landColor = _landColor(seaLevel).toHex();
-              final svg = (seaLevel >= 0.5
-                      ? data
-                          .replaceAll('stroke-width=".1"',
-                              'stroke-width="${strokeWidth.toStringAsFixed(2)}"')
-                          .replaceAll('stroke="#0f0"', 'stroke="#$seaColor"')
-                      : data
-                          .replaceAll('stroke-width=".1"',
-                              'stroke-width="${strokeWidth.toStringAsFixed(2)}"')
-                          .replaceAll('stroke="#0f0"', 'stroke="#$landColor"'))
-                  .replaceAll('"fill:#00f;', '"fill:#$seaColor;')
-                  .replaceAll('fill="#0f0"', 'fill="#$landColor"');
+              final seaColor_ = _seaColor(seaLevel);
+              final seaColor = seaColor_.toHex();
+              final svg = data
+                  .replaceAll(
+                      'fill="#ccc"',
+                      'fill="#$landColor" '
+                          'stroke="#${seaLevel >= 0.5 ? seaColor : landColor}" '
+                          'stroke-width="$erosion"')
+                  .replaceAll(
+                      'fill="#eee"',
+                      'fill="#$iceColor" '
+                          'stroke="#${seaLevel >= 0.5 ? seaColor : iceColor}" '
+                          'stroke-width="$erosion"');
               final svgData = Uint8List.fromList(svg.codeUnits);
-              return SvgPicture.memory(
-                svgData,
-                width: 320,
-                height: 320,
+              return FittedBox(
+                fit: BoxFit.contain,
+                child: ClipPath(
+                  clipper: const _ShoreLinesClipper(),
+                  child: Container(
+                    width: 2370,
+                    height: 1200,
+                    color: seaColor_,
+                    child: SvgPicture.memory(
+                      svgData,
+                      width: 2370,
+                      height: 1200,
+                    ),
+                  ),
+                ),
               );
             },
             error: (error, _) {
