@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:collection/collection.dart';
 import 'package:example/data/open_moji_svgs.dart';
 import 'package:example/pages/knight_indicator.dart';
 import 'package:flutter/material.dart';
@@ -13,42 +12,81 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'ex_app_bar.dart' as ex;
 import 'ex_widgets.dart' as ex;
 
-///
-/// Lists example page.
-///
+//
+// Lists example page.
+//
 
-final _listItems = <String, Widget>{
-  'Rat': mi.Scale(scaleX: -1, child: openMojiSvgRat),
-  'Cow': mi.Scale(scaleX: -1, child: openMojiSvgOx),
-  'Tiger': mi.Scale(scaleX: -1, child: openMojiSvgTiger),
-  'Rabbit': mi.Scale(scaleX: -1, child: openMojiSvgRabbit),
-  'Dragon': openMojiSvgDragon,
-  'Snake': openMojiSvgSnake,
-  'Horse': mi.Scale(scaleX: -1, child: openMojiSvgHorse),
-  'Sheep': mi.Scale(scaleX: -1, child: openMojiSvgRam),
-  'Monkey': mi.Scale(scaleX: -1, child: openMojiSvgMonkey),
-  'Chicken': mi.Scale(scaleX: -1, child: openMojiSvgRooster),
-  'Dog': mi.Scale(scaleX: -1, child: openMojiSvgDog),
-  'Boar': mi.Scale(scaleX: -1, child: openMojiSvgBoar),
-  'Cat': mi.Scale(scaleX: -1, child: openMojiSvgCat),
+class _ListItem {
+  final Widget icon;
+  final String name;
+  final Widget? alternativeIcon;
+  final String? alternativeName;
+  const _ListItem({
+    required this.icon,
+    required this.name,
+    this.alternativeIcon,
+    this.alternativeName,
+  });
+}
 
-  // 'Sun': const Icon(Icons.light_mode_outlined),
-  // 'Moon': const Icon(Icons.dark_mode_outlined),
-  // 'Earth': const Icon(Icons.landscape_outlined),
-  // 'Water': const Icon(Icons.water_drop_outlined),
-  // 'Phlogiston': const Icon(Icons.local_fire_department_outlined),
-  // 'Air': const Icon(Icons.air),
-  // 'Thunder': const Icon(Icons.trending_down_outlined),
-  // 'Cold': const Icon(Icons.ac_unit_outlined),
-  // 'Caloric': const Icon(Icons.hot_tub_outlined),
-  // 'Alchemy': const Icon(Icons.science_outlined),
-  // 'Weak force': const Icon(Icons.filter_vintage_outlined),
-  // 'Gravity': const Icon(Icons.cloud_download_outlined),
-  // 'Sorcery': const Icon(Icons.all_inclusive_outlined),
-  // 'Rune magic': const Icon(Icons.bluetooth),
-  // 'Chaos magic': const Icon(Icons.android),
-  // 'Weak force': const Icon(Icons.filter_vintage_outlined),
-};
+final _listItems = <_ListItem>[
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgRat),
+    name: 'Rat',
+    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgMouse),
+    alternativeName: 'Mouse',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgOx),
+    name: 'Cow',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgTiger),
+    name: 'Tiger',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgRabbit),
+    name: 'Rabbit',
+  ),
+  _ListItem(
+    icon: openMojiSvgDragon,
+    name: 'Dragon',
+  ),
+  _ListItem(
+    icon: openMojiSvgSnake,
+    name: 'Snake',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgHorse),
+    name: 'Horse',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgRam),
+    name: 'Sheep',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgMonkey),
+    name: 'Monkey',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgChicken),
+    name: 'Chicken',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgDog),
+    name: 'Dog',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgBoar),
+    name: 'Boar',
+    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgPig),
+    alternativeName: 'Pig',
+  ),
+  _ListItem(
+    icon: mi.Scale(scaleX: -1, child: openMojiSvgCat),
+    name: 'Cat',
+  ),
+];
 
 class ListsPage extends ConsumerWidget {
   static const icon = Icon(Icons.format_list_bulleted);
@@ -113,109 +151,14 @@ class ListsPage extends ConsumerWidget {
 }
 
 //
-// ListView tab.
-// TODO: AnimatedList
-//
-
-//
-// Dismissible list tab.
-//
-
-final _leftListProvider =
-    StateProvider((ref) => _listItems.keys.whereIndexed((index, key) => index % 2 == 0).toList());
-final _rightListProvider =
-    StateProvider((ref) => _listItems.keys.whereIndexed((index, key) => index % 2 == 1).toList());
-
-class _DismissibleListTab extends ConsumerWidget {
-  static final _logger = Logger((_DismissibleListTab).toString());
-
-  const _DismissibleListTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-    final enabled = ref.watch(ex.enableActionsProvider);
-
-    final theme = Theme.of(context);
-
-    void move(
-      StateProvider<List<String>> fromProvider,
-      int index,
-      StateProvider<List<String>> toProvider,
-    ) {
-      final from = ref.read(fromProvider).toList();
-      final to = ref.read(toProvider).toList();
-      to.add(from.removeAt(index));
-      ref.read(fromProvider.notifier).state = from;
-      ref.read(toProvider.notifier).state = to;
-    }
-
-    return Column(
-      children: [
-        ex.ResetButtonListTile(
-          enabled: enabled,
-          onPressed: () {
-            ref.invalidate(_leftListProvider);
-            ref.invalidate(_rightListProvider);
-          },
-        ),
-        const Divider(),
-        Expanded(
-          child: mi.Row(
-            flexes: const [1, 0, 1],
-            children: [
-              ListView(
-                children: ref.watch(_leftListProvider).mapIndexed((index, key) {
-                  return Dismissible(
-                    key: Key(key),
-                    direction: DismissDirection.startToEnd,
-                    onDismissed: (_) {
-                      move(_leftListProvider, index, _rightListProvider);
-                    },
-                    background: ColoredBox(color: theme.backgroundColor),
-                    child: ListTile(
-                      leading: _listItems[key],
-                      title: Text(key),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const VerticalDivider(),
-              ListView(
-                children: ref.watch(_rightListProvider).mapIndexed((index, key) {
-                  return Dismissible(
-                    key: Key(key),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) async {
-                      move(_rightListProvider, index, _leftListProvider);
-                    },
-                    background: ColoredBox(color: theme.backgroundColor),
-                    child: ListTile(
-                      leading: _listItems[key],
-                      title: Text(key),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
-//
 // Reorderable list tab.
 //
 
-final _initOrder = List<String>.unmodifiable(_listItems.keys);
-final _orderNotifier = ValueNotifier<List<String>>(_initOrder);
+final _initOrder = List<int>.unmodifiable(mi.iota(_listItems.length));
+final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
 final _scrolledProvider = StateProvider((ref) => false);
-final _selectedProvider = StateProvider<String?>((ref) => null);
+final _selectedProvider = StateProvider<int?>((ref) => null);
 
 final _scrollController = ScrollController();
 
@@ -253,7 +196,6 @@ class _ReorderableListTab extends ConsumerWidget {
               tooltip: '',
               offset: const Offset(0, kToolbarHeight),
               onSelected: (index) {
-                final key = order[index];
                 // ensureVisibleは当てにならない事があるようだ。そこでScrollControllerを使ってみる。
                 // https://stackoverflow.com/questions/49153087/flutter-scrolling-to-a-widget-in-listview
                 // TODO: リストビュー中央に寄せる・より確実に
@@ -262,15 +204,15 @@ class _ReorderableListTab extends ConsumerWidget {
                   duration: kTabScrollDuration,
                   curve: Curves.easeInOut,
                 );
-                ref.read(_selectedProvider.notifier).state = key;
+                ref.read(_selectedProvider.notifier).state = index;
               },
               items: order
-                  .mapIndexed(
-                    (index, key) => Container(
+                  .map(
+                    (index) => Container(
                       width: kToolbarHeight,
                       height: kToolbarHeight,
                       alignment: Alignment.center,
-                      child: _listItems[key]!,
+                      child: _listItems[index].icon,
                     ),
                   )
                   .toList(),
@@ -293,23 +235,23 @@ class _ReorderableListTab extends ConsumerWidget {
               ref.read(_scrolledProvider.notifier).state = (controller.offset != 0);
             },
             dragHandleColor: theme.unselectedIconColor,
-            children: order.mapIndexed(
-              (index, key) {
+            children: order.map(
+              (index) {
                 // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
-                final key_ = Key(key);
+                final key = Key(index.toString());
                 // widgetをDismissibleにすることで併用も可能なことが分かった。
                 return Dismissible(
-                  key: key_,
+                  key: key,
                   onDismissed: (direction) {
-                    _orderNotifier.value = order.removedAt(index);
+                    _orderNotifier.value = order.removed(index);
                   },
                   background: ColoredBox(color: theme.backgroundColor),
                   child: ListTile(
-                    leading: _listItems[key]!,
-                    title: Text(key),
-                    selected: selected == key,
+                    leading: _listItems[index].icon,
+                    title: Text(_listItems[index].name),
+                    selected: selected == index,
                     onTap: () {
-                      ref.read(_selectedProvider.notifier).state = key;
+                      ref.read(_selectedProvider.notifier).state = index;
                     },
                   ),
                 );
@@ -327,6 +269,8 @@ class _ReorderableListTab extends ConsumerWidget {
 //
 // Stepper tab.
 //
+
+//<editor-fold>
 
 final _stepIndexProvider = StateProvider((ref) => -1);
 
@@ -451,3 +395,5 @@ class _StepperTab extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>

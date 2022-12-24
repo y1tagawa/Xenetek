@@ -254,6 +254,8 @@ class _IntSliderTab extends ConsumerWidget {
 // Slider tab
 //
 
+//<editor-fold>
+
 class _ShoreLinesClipper extends CustomClipper<Path> {
   const _ShoreLinesClipper();
 
@@ -390,3 +392,5 @@ class _SliderTab extends ConsumerWidget {
     );
   }
 }
+
+//</editor-fold>
