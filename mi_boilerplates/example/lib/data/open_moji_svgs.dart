@@ -51,6 +51,8 @@ final openMojiSvgServiceDog = SvgPicture.asset('assets/open_moji/1F415-200D-1F9B
 final openMojiSvgPoodle = SvgPicture.asset('assets/open_moji/1F429.svg');
 // wolf  (face, wolf)
 final openMojiSvgWolf = SvgPicture.asset('assets/open_moji/1F43A.svg');
+// egg
+final openMojiSvgEgg = SvgPicture.asset('assets/open_moji/1F95A.svg');
 // fox  (face, fox)
 final openMojiSvgFox = SvgPicture.asset('assets/open_moji/1F98A.svg');
 // raccoon  (curious, raccoon, sly)
