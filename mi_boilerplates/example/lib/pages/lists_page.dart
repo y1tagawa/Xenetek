@@ -7,6 +7,7 @@ import 'package:example/pages/knight_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart' as ex;
@@ -114,6 +115,7 @@ final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
 final _scrolledProvider = StateProvider((ref) => false);
 final _selectedProvider = StateProvider<int?>((ref) => null);
+final _greenDragonProvider = StateProvider((ref) => false);
 
 final _scrollController = ScrollController();
 
@@ -153,6 +155,7 @@ class _ReorderableListTab extends ConsumerWidget {
     final scrolled = ref.watch(_scrolledProvider);
     final selected = ref.watch(_selectedProvider);
     final changed = order != _initOrder || scrolled || selected != null;
+    final greenDragon = ref.watch(_greenDragonProvider);
 
     final theme = Theme.of(context);
 
@@ -203,49 +206,68 @@ class _ReorderableListTab extends ConsumerWidget {
         ),
         const Divider(),
         Expanded(
-          child: mi.ReorderableListView(
-            enabled: enabled,
-            scrollController: _scrollController,
-            orderNotifier: _orderNotifier,
-            onScroll: (controller) {
-              ref.read(_scrolledProvider.notifier).state = (controller.offset != 0);
-            },
-            dragHandleColor: theme.unselectedIconColor,
-            children: order.map(
-              (index) {
-                final item = _items[index];
-                // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
-                final key = Key(index.toString());
-                // widgetをDismissibleにすることで併用も可能なことが分かった。
-                return Dismissible(
-                  key: key,
-                  onDismissed: (direction) {
-                    _orderNotifier.value = order.removed(index);
+          child: Stack(
+            children: [
+              mi.ReorderableListView(
+                enabled: enabled,
+                scrollController: _scrollController,
+                orderNotifier: _orderNotifier,
+                onScroll: (controller) {
+                  ref.read(_scrolledProvider.notifier).state = (controller.offset != 0);
+                },
+                dragHandleColor: theme.unselectedIconColor,
+                children: order.map(
+                  (index) {
+                    final item = _items[index];
+                    // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
+                    final key = Key(index.toString());
+                    // widgetをDismissibleにすることで併用も可能なことが分かった。
+                    return Dismissible(
+                      key: key,
+                      onDismissed: (direction) {
+                        _orderNotifier.value = order.removed(index);
+                      },
+                      background: ColoredBox(color: theme.backgroundColor),
+                      child: ListTile(
+                        leading: item.value,
+                        title: Text(item.key),
+                        selected: selected == index,
+                        onTap: () {
+                          ref.read(_selectedProvider.notifier).state = index;
+                        },
+                        onLongPress: () {
+                          // 置換リストにあったら置換
+                          _replace[item.key]?.let((toKey) {
+                            final i = order.indexOf(index);
+                            assert(i >= 0);
+                            final ii = _items.indexWhere((it) => it.key == toKey);
+                            assert(ii >= 0);
+                            _orderNotifier.value = order.replacedAt(i, ii);
+                            return;
+                          });
+                          if (!greenDragon && item.key == 'Dragon') {
+                            ref.read(_greenDragonProvider.notifier).state = true;
+                            Future.delayed(const Duration(seconds: 2), () {
+                              ref.read(_greenDragonProvider.notifier).state = false;
+                            });
+                          }
+                        },
+                      ),
+                    );
                   },
-                  background: ColoredBox(color: theme.backgroundColor),
-                  child: ListTile(
-                    leading: item.value,
-                    title: Text(item.key),
-                    selected: selected == index,
-                    onTap: () {
-                      ref.read(_selectedProvider.notifier).state = index;
-                    },
-                    onLongPress: () {
-                      // 置換リストにあったら置換
-                      _replace[item.key]?.let((toKey) {
-                        final i = order.indexOf(index);
-                        assert(i >= 0);
-                        final ii = _items.indexWhere((it) => it.key == toKey);
-                        assert(ii >= 0);
-                        _orderNotifier.value = order.replacedAt(i, ii);
-                        return;
-                      });
-                      // TODO: その他のイベント
-                    },
+                ).toList(),
+              ),
+              Visibility(
+                visible: greenDragon,
+                child: SizedBox.expand(
+                  child: Lottie.asset(
+                    'assets/lottie/green_dragon.json',
+                    fit: BoxFit.cover,
+                    repeat: false,
                   ),
-                );
-              },
-            ).toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ],

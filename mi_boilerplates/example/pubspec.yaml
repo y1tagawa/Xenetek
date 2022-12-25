@@ -76,6 +76,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/lottie_icon.png
+    - assets/lottie/
     - assets/more_grid.png
     - assets/open_moji/
     - assets/pandemonium.json
