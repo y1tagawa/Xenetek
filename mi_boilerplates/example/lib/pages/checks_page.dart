@@ -468,7 +468,7 @@ class _SnowyWindowState extends State<_SnowyWindow> {
 //</editor-fold>
 
 final _menuCheckListProvider =
-    StateProvider((ref) => List<bool>.filled(_menuItems.length, false).replaced(0, true));
+    StateProvider((ref) => List<bool>.filled(_menuItems.length, false).replacedAt(0, true));
 
 class _CheckMenuTab extends ConsumerWidget {
   // ignore: unused_field
@@ -517,7 +517,7 @@ class _CheckMenuTab extends ConsumerWidget {
               onSelected: (index) {
                 final checked = !menuCheckList[index];
                 ref.read(_menuCheckListProvider.notifier).state =
-                    menuCheckList.replaced(index, checked);
+                    menuCheckList.replacedAt(index, checked);
               },
               offset: const Offset(1, 0),
               child: ListTile(

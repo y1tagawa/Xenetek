@@ -55,7 +55,7 @@ extension ListHelper<T> on List<T> {
     return t;
   }
 
-  List<T> replaced(int index, T value) {
+  List<T> replacedAt(int index, T value) {
     final t = toList();
     t[index] = value;
     return t;

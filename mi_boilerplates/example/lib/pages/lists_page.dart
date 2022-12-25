@@ -16,83 +16,31 @@ import 'ex_widgets.dart' as ex;
 // Lists example page.
 //
 
-class _ListItem {
-  final Widget icon;
-  final String name;
-  final Widget? alternativeIcon;
-  final String? alternativeName;
-  const _ListItem({
-    required this.icon,
-    required this.name,
-    this.alternativeIcon,
-    this.alternativeName,
-  });
-}
-
-final _listItems = <_ListItem>[
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgRat),
-    name: 'Rat',
-    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgMouse),
-    alternativeName: 'Mouse',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgOx),
-    name: 'Cow',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgTiger),
-    name: 'Tiger',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgRabbit),
-    name: 'Rabbit',
-    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgHare),
-    alternativeName: 'Hare',
-  ),
-  _ListItem(
-    icon: openMojiSvgDragon,
-    name: 'Dragon',
-  ),
-  _ListItem(
-    icon: openMojiSvgSnake,
-    name: 'Snake',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgHorse),
-    name: 'Horse',
-    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgHorseUnicorn),
-    alternativeName: 'Unicorn',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgRam),
-    name: 'Sheep',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgMonkey),
-    name: 'Monkey',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgRooster),
-    name: 'Chicken',
-    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgWhiteRooster),
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgDog),
-    name: 'Dog',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgBoar),
-    name: 'Boar',
-    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgPig),
-    alternativeName: 'Pig',
-  ),
-  _ListItem(
-    icon: mi.Scale(scaleX: -1, child: openMojiSvgCat),
-    name: 'Cat',
-    alternativeIcon: mi.Scale(scaleX: -1, child: openMojiSvgBlackCat),
-  ),
-];
+final _listItems = <String, Widget>{
+  'Rat': mi.Scale(scaleX: -1, child: openMojiSvgRat),
+  'Cow': mi.Scale(scaleX: -1, child: openMojiSvgOx),
+  'Tiger': mi.Scale(scaleX: -1, child: openMojiSvgTiger),
+  'Rabbit': mi.Scale(scaleX: -1, child: openMojiSvgRabbit),
+  'Dragon': openMojiSvgDragon,
+  'Snake': openMojiSvgSnake,
+  'Horse': mi.Scale(scaleX: -1, child: openMojiSvgHorse),
+  'Sheep': mi.Scale(scaleX: -1, child: openMojiSvgRam),
+  'Monkey': mi.Scale(scaleX: -1, child: openMojiSvgMonkey),
+  'Chicken': mi.Scale(scaleX: -1, child: openMojiSvgRooster),
+  'Dog': mi.Scale(scaleX: -1, child: openMojiSvgDog),
+  'Boar': mi.Scale(scaleX: -1, child: openMojiSvgBoar),
+  'Cat': mi.Scale(scaleX: -1, child: openMojiSvgCat),
+  //
+  'Cat ': mi.Scale(scaleX: -1, child: openMojiSvgBlackCat),
+  'Bat': mi.Scale(scaleX: -1, child: openMojiSvgBat),
+  'Mouse': mi.Scale(scaleX: -1, child: openMojiSvgMouse),
+  'Hare': mi.Scale(scaleX: -1, child: openMojiSvgHare),
+  'Unicorn': mi.Scale(scaleX: -1, child: openMojiSvgHorseUnicorn),
+  'Pegasus': mi.Scale(scaleX: -1, child: openMojiSvgPegasus),
+  'Seahorse': mi.Scale(scaleX: -1, child: openMojiSvgSeaHorse),
+  'Chicken ': mi.Scale(scaleX: -1, child: openMojiSvgWhiteRooster),
+  'Pig': mi.Scale(scaleX: -1, child: openMojiSvgPig),
+}.entries.toList();
 
 class ListsPage extends ConsumerWidget {
   static const icon = Icon(Icons.format_list_bulleted);
@@ -105,10 +53,6 @@ class ListsPage extends ConsumerWidget {
       tooltip: 'Reorderable list',
       icon: Icon(Icons.low_priority),
     ),
-    // mi.MiTab(
-    //   tooltip: 'Dismissible list',
-    //   icon: Icon(Icons.segment),
-    // ),
     mi.Tab(
       tooltip: 'Stepper list',
       icon: Icon(Icons.onetwothree_outlined),
@@ -160,12 +104,9 @@ class ListsPage extends ConsumerWidget {
 // Reorderable list tab.
 //
 
-final _initOrder = List<int>.unmodifiable(mi.iota(_listItems.length));
-final _initFlags = List<bool>.filled(_listItems.length, false);
-
+final _initOrder = List<int>.unmodifiable(mi.iota(13));
 final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
-final _flagsProvider = StateProvider((ref) => _initFlags);
 final _scrolledProvider = StateProvider((ref) => false);
 final _selectedProvider = StateProvider<int?>((ref) => null);
 
@@ -181,12 +122,20 @@ class _ReorderableListTab extends ConsumerWidget {
     _logger.fine('[i] build');
     final enabled = ref.watch(ex.enableActionsProvider);
     final order = ref.watch(_orderProvider).value;
-    final flags = ref.watch(_flagsProvider);
     final scrolled = ref.watch(_scrolledProvider);
     final selected = ref.watch(_selectedProvider);
     final changed = order != _initOrder || scrolled || selected != null;
 
     final theme = Theme.of(context);
+
+    void replace(index, key) {
+      final i = order.indexOf(index);
+      assert(i >= 0);
+      final ii = _listItems.indexWhere((item) => item.key == key);
+      assert(ii >= 0);
+      _logger.fine('replace $i $ii');
+      _orderNotifier.value = order.replacedAt(i, ii);
+    }
 
     return Column(
       children: [
@@ -197,7 +146,6 @@ class _ReorderableListTab extends ConsumerWidget {
               enabled: enabled && changed,
               onPressed: () {
                 _orderNotifier.value = _initOrder;
-                ref.read(_flagsProvider.notifier).state = _initFlags;
                 ref.read(_selectedProvider.notifier).state = null;
                 _scrollController.jumpTo(0);
               },
@@ -218,12 +166,11 @@ class _ReorderableListTab extends ConsumerWidget {
               },
               items: order.map((index) {
                 final item = _listItems[index];
-                final flag = flags[index];
                 return Container(
                   width: kToolbarHeight,
                   height: kToolbarHeight,
                   alignment: Alignment.center,
-                  child: flag ? item.alternativeIcon ?? item.icon : item.icon,
+                  child: item.value,
                 );
               }).toList(),
               child: mi.ButtonListTile(
@@ -248,7 +195,6 @@ class _ReorderableListTab extends ConsumerWidget {
             children: order.map(
               (index) {
                 final item = _listItems[index];
-                final flag = flags[index];
                 // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
                 final key = Key(index.toString());
                 // widgetをDismissibleにすることで併用も可能なことが分かった。
@@ -259,15 +205,64 @@ class _ReorderableListTab extends ConsumerWidget {
                   },
                   background: ColoredBox(color: theme.backgroundColor),
                   child: ListTile(
-                    leading: flag ? item.alternativeIcon ?? item.icon : item.icon,
-                    title: Text(flag ? item.alternativeName ?? item.name : item.name),
+                    leading: item.value,
+                    title: Text(item.key),
                     selected: selected == index,
                     onTap: () {
                       ref.read(_selectedProvider.notifier).state = index;
                     },
                     onLongPress: () {
-                      if (item.alternativeIcon != null) {
-                        ref.read(_flagsProvider.notifier).state = flags.replaced(index, !flag);
+                      switch (item.key) {
+                        case 'Rat':
+                          replace(index, 'Bat');
+                          break;
+                        case 'Bat':
+                          replace(index, 'Mouse');
+                          break;
+                        case 'Mouse':
+                          replace(index, 'Rat');
+                          break;
+
+                        case 'Rabbit':
+                          replace(index, 'Hare');
+                          break;
+                        case 'Hare':
+                          replace(index, 'Rabbit');
+                          break;
+
+                        case 'Horse':
+                          replace(index, 'Pegasus');
+                          break;
+                        case 'Pegasus':
+                          replace(index, 'Seahorse');
+                          break;
+                        case 'Seahorse':
+                          replace(index, 'Unicorn');
+                          break;
+                        case 'Unicorn':
+                          replace(index, 'Horse');
+                          break;
+
+                        case 'Chicken':
+                          replace(index, 'Chicken ');
+                          break;
+                        case 'Chicken ':
+                          replace(index, 'Chicken');
+                          break;
+
+                        case 'Boar':
+                          replace(index, 'Pig');
+                          break;
+                        case 'Pig':
+                          replace(index, 'Boar');
+                          break;
+
+                        case 'Cat':
+                          replace(index, 'Cat ');
+                          break;
+                        case 'Cat ':
+                          replace(index, 'Cat');
+                          break;
                       }
                     },
                   ),

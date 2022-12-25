@@ -133,7 +133,7 @@ class SwitchesPage extends ConsumerWidget {
                       onChanged: enableActions
                           ? (value) {
                               ref.read(_switchProvider.notifier).state =
-                                  switches.replaced(index, value);
+                                  switches.replacedAt(index, value);
                             }
                           : null,
                     );

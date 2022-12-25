@@ -457,7 +457,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
             onPressed: enabled
                 ? (index) {
                     ref.read(_armourProvider.notifier).state =
-                        armour.replaced(index, !armour[index]);
+                        armour.replacedAt(index, !armour[index]);
                   }
                 : null,
             children: KnightIndicator.items.entries
@@ -477,7 +477,7 @@ class _ToggleButtonsTab extends ConsumerWidget {
               ToggleButtons(
                 color: theme.unselectedIconColor,
                 isSelected: List.filled(_shieldItems.length, false)
-                    .let((it) => shield != null ? it.replaced(shield, true) : it),
+                    .let((it) => shield != null ? it.replacedAt(shield, true) : it),
                 onPressed: enabled
                     ? (index) {
                         _logger.fine('$index $shield');
