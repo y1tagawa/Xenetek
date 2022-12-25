@@ -39,14 +39,12 @@ final _listItems = <String, Widget>{
   'Pegasus': mi.Scale(scaleX: -1, child: openMojiSvgPegasus),
   'Seahorse': mi.Scale(scaleX: -1, child: openMojiSvgSeaHorse),
   'Goat': mi.Scale(scaleX: -1, child: openMojiSvgGoat),
-  'Chicken ': mi.Scale(scaleX: -1, child: openMojiSvgRooster),
   'Egg': mi.Translate(
     offset: const Offset(0, 5),
     child: mi.Scale(scale: 0.5, child: openMojiSvgEgg),
   ),
   'Pig': mi.Scale(scaleX: -1, child: openMojiSvgPig),
-  'Cat ': mi.Scale(scaleX: -1, child: openMojiSvgBlackCat),
-  'Cat  ': mi.Scale(
+  'Cat ': mi.Scale(
     scaleX: -1,
     child: Container(
       width: 72,
@@ -145,14 +143,12 @@ class _ReorderableListTab extends ConsumerWidget {
     'Unicorn': 'Horse',
     'Sheep': 'Goat',
     'Goat': 'Sheep',
-    'Chicken': 'Chicken ',
-    'Chicken ': 'Egg',
+    'Chicken': 'Egg',
     'Egg': 'Chicken',
     'Boar': 'Pig',
     'Pig': 'Boar',
     'Cat': 'Cat ',
-    'Cat ': 'Cat  ',
-    'Cat  ': 'Cat',
+    'Cat ': 'Cat',
   };
 
   const _ReorderableListTab();
@@ -272,7 +268,7 @@ class _ReorderableListTab extends ConsumerWidget {
                 child: SizedBox.expand(
                   child: Lottie.asset(
                     'assets/lottie/green_dragon.json',
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                     repeat: false,
                   ),
                 ),
