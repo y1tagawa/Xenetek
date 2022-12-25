@@ -213,27 +213,30 @@ class _LottieTab extends ConsumerWidget {
             controller.forward();
           },
         ),
-        child: mi.AnimationControllerWidget(
-          callbackNotifier: _lottieCallbackNotifier,
-          builder: (_, controller, __) {
-            return ColorFiltered(
-              colorFilter: const ColorFilter.mode(
-                Colors.red,
-                BlendMode.srcIn,
-              ),
-              child: Lottie.network(
-                _lottieUrl,
-                controller: controller,
-                repeat: false,
-                onLoaded: (composition) {
-                  _logger.fine('onLoaded: ${composition.duration}');
-                  controller.duration = composition.duration;
-                  controller.reset();
-                  controller.forward();
-                },
-              ),
-            );
-          },
+        child: mi.Rotate(
+          angleDegree: -15,
+          child: mi.AnimationControllerWidget(
+            callbackNotifier: _lottieCallbackNotifier,
+            builder: (_, controller, __) {
+              return ColorFiltered(
+                colorFilter: const ColorFilter.mode(
+                  Colors.red,
+                  BlendMode.srcIn,
+                ),
+                child: Lottie.network(
+                  _lottieUrl,
+                  controller: controller,
+                  repeat: false,
+                  onLoaded: (composition) {
+                    _logger.fine('onLoaded: ${composition.duration}');
+                    controller.duration = composition.duration;
+                    controller.reset();
+                    controller.forward();
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ),
     ).also((_) {
