@@ -40,7 +40,7 @@ final _listItems = <String, Widget>{
   'Seahorse': mi.Scale(scaleX: -1, child: openMojiSvgSeaHorse),
   'Chicken ': mi.Scale(scaleX: -1, child: openMojiSvgWhiteRooster),
   'Pig': mi.Scale(scaleX: -1, child: openMojiSvgPig),
-}.entries.toList();
+};
 
 class ListsPage extends ConsumerWidget {
   static const icon = Icon(Icons.format_list_bulleted);
@@ -115,6 +115,26 @@ final _scrollController = ScrollController();
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
 
+  static final _items = _listItems.entries.toList();
+  // Long pressで起こす置換イベント
+  static final _replace = <String, String>{
+    'Rat': 'Bat',
+    'Bat': 'Mouse',
+    'Mouse': 'Rat',
+    'Rabbit': 'Hare',
+    'Hare': 'Rabbit',
+    'Horse': 'Pegasus',
+    'Pegasus': 'Seahorse',
+    'Seahorse': 'Unicorn',
+    'Unicorn': 'Horse',
+    'Chicken': 'Chicken ',
+    'Chicken ': 'Chicken',
+    'Boar': 'Pig',
+    'Pig': 'Boar',
+    'Cat': 'Cat ',
+    'Cat ': 'Cat',
+  };
+
   const _ReorderableListTab();
 
   @override
@@ -127,15 +147,6 @@ class _ReorderableListTab extends ConsumerWidget {
     final changed = order != _initOrder || scrolled || selected != null;
 
     final theme = Theme.of(context);
-
-    void replace(index, key) {
-      final i = order.indexOf(index);
-      assert(i >= 0);
-      final ii = _listItems.indexWhere((item) => item.key == key);
-      assert(ii >= 0);
-      _logger.fine('replace $i $ii');
-      _orderNotifier.value = order.replacedAt(i, ii);
-    }
 
     return Column(
       children: [
@@ -165,7 +176,7 @@ class _ReorderableListTab extends ConsumerWidget {
                 ref.read(_selectedProvider.notifier).state = index;
               },
               items: order.map((index) {
-                final item = _listItems[index];
+                final item = _items[index];
                 return Container(
                   width: kToolbarHeight,
                   height: kToolbarHeight,
@@ -194,7 +205,7 @@ class _ReorderableListTab extends ConsumerWidget {
             dragHandleColor: theme.unselectedIconColor,
             children: order.map(
               (index) {
-                final item = _listItems[index];
+                final item = _items[index];
                 // ReorderableListViewの要請により、各widgetにはListView内でユニークなキーを与える。
                 final key = Key(index.toString());
                 // widgetをDismissibleにすることで併用も可能なことが分かった。
@@ -212,58 +223,16 @@ class _ReorderableListTab extends ConsumerWidget {
                       ref.read(_selectedProvider.notifier).state = index;
                     },
                     onLongPress: () {
-                      switch (item.key) {
-                        case 'Rat':
-                          replace(index, 'Bat');
-                          break;
-                        case 'Bat':
-                          replace(index, 'Mouse');
-                          break;
-                        case 'Mouse':
-                          replace(index, 'Rat');
-                          break;
-
-                        case 'Rabbit':
-                          replace(index, 'Hare');
-                          break;
-                        case 'Hare':
-                          replace(index, 'Rabbit');
-                          break;
-
-                        case 'Horse':
-                          replace(index, 'Pegasus');
-                          break;
-                        case 'Pegasus':
-                          replace(index, 'Seahorse');
-                          break;
-                        case 'Seahorse':
-                          replace(index, 'Unicorn');
-                          break;
-                        case 'Unicorn':
-                          replace(index, 'Horse');
-                          break;
-
-                        case 'Chicken':
-                          replace(index, 'Chicken ');
-                          break;
-                        case 'Chicken ':
-                          replace(index, 'Chicken');
-                          break;
-
-                        case 'Boar':
-                          replace(index, 'Pig');
-                          break;
-                        case 'Pig':
-                          replace(index, 'Boar');
-                          break;
-
-                        case 'Cat':
-                          replace(index, 'Cat ');
-                          break;
-                        case 'Cat ':
-                          replace(index, 'Cat');
-                          break;
-                      }
+                      // 置換リストにあったら置換
+                      _replace[item.key]?.let((toKey) {
+                        final i = order.indexOf(index);
+                        assert(i >= 0);
+                        final ii = _items.indexWhere((it) => it.key == toKey);
+                        assert(ii >= 0);
+                        _orderNotifier.value = order.replacedAt(i, ii);
+                        return;
+                      });
+                      // TODO: その他のイベント
                     },
                   ),
                 );
