@@ -32,7 +32,6 @@ final _listItems = <String, Widget>{
   'Boar': mi.Scale(scaleX: -1, child: openMojiSvgBoar),
   'Cat': mi.Scale(scaleX: -1, child: openMojiSvgCat),
   //
-  'Cat ': mi.Scale(scaleX: -1, child: openMojiSvgBlackCat),
   'Bat': mi.Scale(scaleX: -1, child: openMojiSvgBat),
   'Mouse': mi.Scale(scaleX: -1, child: openMojiSvgMouse),
   'Hare': mi.Scale(scaleX: -1, child: openMojiSvgHare),
@@ -46,6 +45,16 @@ final _listItems = <String, Widget>{
     child: mi.Scale(scale: 0.5, child: openMojiSvgEgg),
   ),
   'Pig': mi.Scale(scaleX: -1, child: openMojiSvgPig),
+  'Cat ': mi.Scale(scaleX: -1, child: openMojiSvgBlackCat),
+  'Cat  ': mi.Scale(
+    scaleX: -1,
+    child: Container(
+      width: 72,
+      height: 72,
+      alignment: Alignment.center,
+      child: Image.asset('assets/worker_cat1.png'),
+    ),
+  ),
 };
 
 class ListsPage extends ConsumerWidget {
@@ -142,7 +151,8 @@ class _ReorderableListTab extends ConsumerWidget {
     'Boar': 'Pig',
     'Pig': 'Boar',
     'Cat': 'Cat ',
-    'Cat ': 'Cat',
+    'Cat ': 'Cat  ',
+    'Cat  ': 'Cat',
   };
 
   const _ReorderableListTab();
@@ -247,7 +257,7 @@ class _ReorderableListTab extends ConsumerWidget {
                           });
                           if (!greenDragon && item.key == 'Dragon') {
                             ref.read(_greenDragonProvider.notifier).state = true;
-                            Future.delayed(const Duration(seconds: 2), () {
+                            Future.delayed(const Duration(seconds: 3), () {
                               ref.read(_greenDragonProvider.notifier).state = false;
                             });
                           }
