@@ -21,42 +21,48 @@ import 'ex_widgets.dart' as ex;
 // Lists example page.
 //
 
+class _Icon extends StatelessWidget {
+  final bool mirror;
+  final Widget child;
+  const _Icon({this.mirror = false, required this.child});
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 72,
+      height: 72,
+      child: mirror ? mi.Scale(scaleX: -1, child: child) : child,
+    );
+  }
+}
+
 final _listItems = <String, Widget>{
-  'Rat': mi.Scale(scaleX: -1, child: openMojiSvgRat),
-  'Cow': mi.Scale(scaleX: -1, child: openMojiSvgOx),
-  'Tiger': mi.Scale(scaleX: -1, child: openMojiSvgTiger),
-  'Rabbit': mi.Scale(scaleX: -1, child: openMojiSvgRabbit),
-  'Dragon': openMojiSvgDragon,
-  'Snake': openMojiSvgSnake,
-  'Horse': mi.Scale(scaleX: -1, child: openMojiSvgHorse),
-  'Sheep': mi.Scale(scaleX: -1, child: openMojiSvgRam),
-  'Monkey': mi.Scale(scaleX: -1, child: openMojiSvgMonkey),
-  'Chicken': mi.Scale(scaleX: -1, child: openMojiSvgWhiteRooster),
-  'Dog': mi.Scale(scaleX: -1, child: openMojiSvgDog),
-  'Boar': mi.Scale(scaleX: -1, child: openMojiSvgBoar),
-  'Cat': mi.Scale(scaleX: -1, child: openMojiSvgCat),
+  'Rat': _Icon(mirror: true, child: openMojiSvgRat),
+  'Cow': _Icon(mirror: true, child: openMojiSvgOx),
+  'Tiger': _Icon(mirror: true, child: openMojiSvgTiger),
+  'Rabbit': _Icon(mirror: true, child: openMojiSvgRabbit),
+  'Dragon': _Icon(child: openMojiSvgDragon),
+  'Snake': _Icon(child: openMojiSvgSnake),
+  'Horse': _Icon(mirror: true, child: openMojiSvgHorse),
+  'Sheep': _Icon(mirror: true, child: openMojiSvgRam),
+  'Monkey': _Icon(mirror: true, child: openMojiSvgMonkey),
+  'Chicken': _Icon(mirror: true, child: openMojiSvgWhiteRooster),
+  'Dog': _Icon(mirror: true, child: openMojiSvgDog),
+  'Boar': _Icon(mirror: true, child: openMojiSvgBoar),
+  'Cat': _Icon(mirror: true, child: openMojiSvgCat),
   //
-  'Bat': mi.Scale(scaleX: -1, child: openMojiSvgBat),
-  'Mouse': mi.Scale(scaleX: -1, child: openMojiSvgMouse),
-  'Hare': mi.Scale(scaleX: -1, child: openMojiSvgHare),
-  'Unicorn': mi.Scale(scaleX: -1, child: openMojiSvgHorseUnicorn),
-  'Pegasus': mi.Scale(scaleX: -1, child: openMojiSvgPegasus),
-  'Seahorse': mi.Scale(scaleX: -1, child: openMojiSvgSeaHorse),
-  'Goat': mi.Scale(scaleX: -1, child: openMojiSvgGoat),
+  'Bat': _Icon(mirror: true, child: openMojiSvgBat),
+  'Mouse': _Icon(mirror: true, child: openMojiSvgMouse),
+  'Hare': _Icon(mirror: true, child: openMojiSvgHare),
+  'Unicorn': _Icon(mirror: true, child: openMojiSvgHorseUnicorn),
+  'Pegasus': _Icon(mirror: true, child: openMojiSvgPegasus),
+  'Seahorse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
+  'Goat': _Icon(mirror: true, child: openMojiSvgGoat),
   'Egg': mi.Translate(
     offset: const Offset(0, 5),
     child: mi.Scale(scale: 0.5, child: openMojiSvgEgg),
   ),
-  'Pig': mi.Scale(scaleX: -1, child: openMojiSvgPig),
-  'Cat ': mi.Scale(
-    scaleX: -1,
-    child: Container(
-      width: 72,
-      height: 72,
-      alignment: Alignment.center,
-      child: Image.asset('assets/worker_cat1.png'),
-    ),
-  ),
+  'Pig': _Icon(mirror: true, child: openMojiSvgPig),
+  'Cat ': _Icon(mirror: true, child: Image.asset('assets/worker_cat1.png')),
 };
 
 class ListsPage extends ConsumerWidget {
