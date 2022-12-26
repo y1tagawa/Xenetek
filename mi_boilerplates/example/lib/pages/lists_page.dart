@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:example/data/open_moji_svgs.dart';
 import 'package:example/pages/knight_indicator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -117,6 +121,8 @@ class ListsPage extends ConsumerWidget {
 // Reorderable list tab.
 //
 
+final _isDesktop = !kIsWeb && Platform.isWindows; // for now
+
 final _initOrder = List<int>.unmodifiable(mi.iota(13));
 final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
@@ -125,6 +131,7 @@ final _selectedProvider = StateProvider<int?>((ref) => null);
 final _greenDragonProvider = StateProvider((ref) => false);
 
 final _scrollController = ScrollController();
+final _player = AudioPlayer()..setReleaseMode(ReleaseMode.release);
 
 class _ReorderableListTab extends ConsumerWidget {
   static final _logger = Logger((_ReorderableListTab).toString());
@@ -164,6 +171,49 @@ class _ReorderableListTab extends ConsumerWidget {
     final greenDragon = ref.watch(_greenDragonProvider);
 
     final theme = Theme.of(context);
+
+    void play(String url) async {
+      if (_player.state == PlayerState.playing) {
+        await _player.stop();
+        await _player.release();
+      }
+      try {
+        await _player.play(UrlSource(url));
+      } catch (e) {
+        _logger.info('caught exception: $e');
+        rethrow;
+      }
+    }
+
+    void action(int index) {
+      final item = _items[index];
+      // 置換リストにあったら置換
+      _replace[item.key]?.let((toKey) {
+        final i = order.indexOf(index);
+        assert(i >= 0);
+        final ii = _items.indexWhere((it) => it.key == toKey);
+        assert(ii >= 0);
+        _orderNotifier.value = order.replacedAt(i, ii);
+        return;
+      });
+      // 他のアクション
+      switch (item.key) {
+        case 'Cow':
+          play('https://upload.wikimedia.org/wikipedia/commons/4/48/Mudchute_cow_1.ogg');
+          break;
+        case 'Dragon':
+          if (!greenDragon) {
+            ref.read(_greenDragonProvider.notifier).state = true;
+            Future.delayed(const Duration(seconds: 3), () {
+              ref.read(_greenDragonProvider.notifier).state = false;
+            });
+          }
+          break;
+        case 'Dog':
+          play('https://upload.wikimedia.org/wikipedia/commons/a/a2/Barking_of_a_dog.ogg');
+          break;
+      }
+    }
 
     return Column(
       children: [
@@ -237,27 +287,17 @@ class _ReorderableListTab extends ConsumerWidget {
                       child: ListTile(
                         leading: item.value,
                         title: Text(item.key),
+                        trailing: _isDesktop
+                            ? null
+                            : IconButton(
+                                onPressed: () => action(index),
+                                icon: const Icon(Icons.play_arrow_outlined),
+                              ),
                         selected: selected == index,
                         onTap: () {
                           ref.read(_selectedProvider.notifier).state = index;
                         },
-                        onLongPress: () {
-                          // 置換リストにあったら置換
-                          _replace[item.key]?.let((toKey) {
-                            final i = order.indexOf(index);
-                            assert(i >= 0);
-                            final ii = _items.indexWhere((it) => it.key == toKey);
-                            assert(ii >= 0);
-                            _orderNotifier.value = order.replacedAt(i, ii);
-                            return;
-                          });
-                          if (!greenDragon && item.key == 'Dragon') {
-                            ref.read(_greenDragonProvider.notifier).state = true;
-                            Future.delayed(const Duration(seconds: 3), () {
-                              ref.read(_greenDragonProvider.notifier).state = false;
-                            });
-                          }
-                        },
+                        onLongPress: _isDesktop ? () => action(index) : null,
                       ),
                     );
                   },
