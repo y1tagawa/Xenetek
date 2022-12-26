@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -288,8 +287,13 @@ Color _iceColor(double t) {
 }
 
 Color _landColor(double t) {
-  return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.saddleBrown),
-          HSLColor.fromColor(mi.X11Colors.forestGreen), t)!
+  if (t <= 0.6) {
+    return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.lightSlateGray),
+            HSLColor.fromColor(mi.X11Colors.darkOliveGreen), t / 0.6)!
+        .toColor();
+  }
+  return HSLColor.lerp(HSLColor.fromColor(mi.X11Colors.darkOliveGreen),
+          HSLColor.fromColor(mi.X11Colors.burlywood), (t - 0.6) / 0.4)!
       .toColor();
 }
 
@@ -300,7 +304,7 @@ Color _seaColor(double t) {
 }
 
 final _shoreLinesProvider = FutureProvider<String>((ref) async {
-  return await File('assets/shore_lines.svg').readAsString();
+  return await rootBundle.loadString('assets/shore_lines.svg');
 });
 
 final _seaLevelProvider = StateProvider((ref) => 0.5);
