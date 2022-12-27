@@ -142,6 +142,7 @@ final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
 final _scrolledProvider = StateProvider((ref) => false);
 final _selectedProvider = StateProvider<int?>((ref) => null);
+final _ghostScriptTigerProvider = StateProvider((ref) => false);
 final _greenDragonProvider = StateProvider((ref) => false);
 
 final _scrollController = ScrollController();
@@ -184,6 +185,7 @@ class _ReorderableListTab extends ConsumerWidget {
     final scrolled = ref.watch(_scrolledProvider);
     final selected = ref.watch(_selectedProvider);
     final changed = order != _initOrder || scrolled || selected != null;
+    final ghostScriptTiger = ref.watch(_ghostScriptTigerProvider);
     final greenDragon = ref.watch(_greenDragonProvider);
 
     final theme = Theme.of(context);
@@ -217,10 +219,18 @@ class _ReorderableListTab extends ConsumerWidget {
         case 'Cow':
           play('https://upload.wikimedia.org/wikipedia/commons/4/48/Mudchute_cow_1.ogg');
           break;
+        case 'Tiger':
+          if (!ghostScriptTiger) {
+            ref.read(_ghostScriptTigerProvider.notifier).state = true;
+            Future.delayed(const Duration(milliseconds: 1200), () {
+              ref.read(_ghostScriptTigerProvider.notifier).state = false;
+            });
+          }
+          break;
         case 'Dragon':
           if (!greenDragon) {
             ref.read(_greenDragonProvider.notifier).state = true;
-            Future.delayed(const Duration(seconds: 3), () {
+            Future.delayed(const Duration(milliseconds: 2400), () {
               ref.read(_greenDragonProvider.notifier).state = false;
             });
           }
@@ -324,6 +334,16 @@ class _ReorderableListTab extends ConsumerWidget {
                 child: SizedBox.expand(
                   child: Lottie.asset(
                     'assets/lottie/green_dragon.json',
+                    fit: BoxFit.contain,
+                    repeat: false,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: ghostScriptTiger,
+                child: SizedBox.expand(
+                  child: Lottie.asset(
+                    'assets/lottie/ghost_script_tiger.json',
                     fit: BoxFit.contain,
                     repeat: false,
                   ),

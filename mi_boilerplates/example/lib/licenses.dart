@@ -7,6 +7,10 @@ import 'package:flutter/foundation.dart';
 void addLicenses() {
   LicenseRegistry.addLicense(() {
     return Stream<LicenseEntry>.fromIterable(<LicenseEntry>[
+      const LicenseEntryWithLineBreaks(<String>['ghost_script_tiger.json'], '''
+GNU Affero General Public License 3.0 license\n
+https://www.gnu.org/licenses/agpl-3.0.html
+    '''),
       const LicenseEntryWithLineBreaks(<String>['open_moji_svgs'], '''
 CC BY-SA 4.0 license\n
 https://creativecommons.org/licenses/by-sa/4.0/

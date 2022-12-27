@@ -5,6 +5,9 @@
 
 All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
 
+ghost_script_tiger.json is generated from Ghostscript_Tiger.svg
+which is released under the GNU Affero General Public License 3.0.
+
 x11_colors uses material from the Wikipedia article "Web colors",
 https://en.wikipedia.org/wiki/Web_colors,
 which is released under the Creative Commons Attribution-Share-Alike License 3.0.
