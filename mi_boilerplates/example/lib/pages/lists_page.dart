@@ -55,6 +55,7 @@ final _listItems = <String, Widget>{
   'Bat': _Icon(mirror: true, child: openMojiSvgBat),
   'Mouse': _Icon(mirror: true, child: openMojiSvgMouse),
   'Hare': _Icon(mirror: true, child: openMojiSvgHare),
+  'Snake ': Image.asset('assets/snake.webp', width: 72, height: 72),
   'Invisible pink unicorn': _Icon(mirror: true, child: openMojiSvgInvisiblePinkUnicorn),
   'Pegasus': _Icon(mirror: true, child: openMojiSvgPegasus),
   'Seahorse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
@@ -153,11 +154,13 @@ class _ReorderableListTab extends ConsumerWidget {
 
   static final _items = _listItems.entries.toList();
   // Long pressで起こす置換イベント
-  static final _replace = <String, String>{
+  static final _replaceList = <String, String>{
     'Rat': 'Mouse',
     'Mouse': 'Rat',
     'Rabbit': 'Hare',
     'Hare': 'Rabbit',
+    'Snake': 'Snake ',
+    'Snake ': 'Snake',
     'Horse': 'Pegasus',
     'Pegasus': 'Seahorse',
     'Seahorse': 'Unicorn',
@@ -206,12 +209,23 @@ class _ReorderableListTab extends ConsumerWidget {
     void action(int index) {
       final item = _items[index];
       // 置換リストにあったら置換
-      _replace[item.key]?.let((toKey) {
+      _replaceList[item.key]?.let((toKey) {
         final i = order.indexOf(index);
         assert(i >= 0);
         final ii = _items.indexWhere((it) => it.key == toKey);
         assert(ii >= 0);
         _orderNotifier.value = order.replacedAt(i, ii);
+        // TODO: 一般化
+        if (item.key == 'Snake') {
+          Future.delayed(const Duration(milliseconds: 3000), () {
+            final order_ = ref.watch(_orderProvider).value;
+            final i = order_.indexWhere((it) => _items[it].key == 'Snake ');
+            if (i >= 0) {
+              final ii = _items.indexWhere((it) => it.key == 'Snake');
+              _orderNotifier.value = order_.replacedAt(i, ii);
+            }
+          });
+        }
         return;
       });
       // 他のアクション

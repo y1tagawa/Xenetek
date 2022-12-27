@@ -75,15 +75,16 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
+    - assets/eye_close.png
     - assets/lottie_icon.png
     - assets/lottie/
     - assets/more_grid.png
     - assets/open_moji/
     - assets/pandemonium.json
     - assets/shore_lines.svg
+    - assets/snake.webp
     - assets/stanford-bunny.obj
     - assets/stanford-bunny.mtl
-    - assets/eye_close.png
     - assets/walk64x64/
     - assets/worker_cat1.png
     - assets/worker_cat2.png
