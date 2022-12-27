@@ -75,12 +75,15 @@ final openMojiSvgLeopard = SvgPicture.asset('assets/open_moji/1F406.svg');
 final openMojiSvgHorseFace = SvgPicture.asset('assets/open_moji/1F434.svg');
 // horse  (equestrian, horse, racehorse, racing)
 final openMojiSvgHorse = SvgPicture.asset('assets/open_moji/1F40E.svg');
-// horse  (equestrian, horse, racehorse, racing)
+// horse  (equestrian, horse)
 final openMojiSvgPegasus = SvgPicture.asset('assets/open_moji/1F40E_pegasus.svg');
-// horse  (equestrian, horse, racehorse, racing)
+// horse  (equestrian, horse)
 final openMojiSvgSeaHorse = SvgPicture.asset('assets/open_moji/1F40E_sea_horse.svg');
-// horse  (equestrian, horse, racehorse, racing)
+// horse  (equestrian, horse)
 final openMojiSvgHorseUnicorn = SvgPicture.asset('assets/open_moji/1F40E_unicorn.svg');
+// horse  (equestrian, horse)
+final openMojiSvgInvisiblePinkUnicorn =
+    SvgPicture.asset('assets/open_moji/1F40E_invisible_pink_unicorn.svg');
 // unicorn  (face, unicorn)
 final openMojiSvgUnicorn = SvgPicture.asset('assets/open_moji/1F984.svg');
 // zebra  (stripe, zebra)

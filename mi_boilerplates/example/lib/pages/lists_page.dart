@@ -35,6 +35,8 @@ class _Icon extends StatelessWidget {
   }
 }
 
+const _threeWiseMonkeys = '\u{1F648}\u{1F64A}\u{1F649}';
+
 final _listItems = <String, Widget>{
   'Rat': _Icon(mirror: true, child: openMojiSvgRat),
   'Cow': _Icon(mirror: true, child: openMojiSvgOx),
@@ -53,10 +55,12 @@ final _listItems = <String, Widget>{
   'Bat': _Icon(mirror: true, child: openMojiSvgBat),
   'Mouse': _Icon(mirror: true, child: openMojiSvgMouse),
   'Hare': _Icon(mirror: true, child: openMojiSvgHare),
-  'Unicorn': _Icon(mirror: true, child: openMojiSvgHorseUnicorn),
+  'Invisible pink unicorn': _Icon(mirror: true, child: openMojiSvgInvisiblePinkUnicorn),
   'Pegasus': _Icon(mirror: true, child: openMojiSvgPegasus),
   'Seahorse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
+  'Unicorn': _Icon(mirror: true, child: openMojiSvgHorseUnicorn),
   'Goat': _Icon(mirror: true, child: openMojiSvgGoat),
+  _threeWiseMonkeys: _Icon(mirror: true, child: openMojiSvgMonkey),
   'Egg': SizedBox(
     width: 72,
     height: 72,
@@ -149,17 +153,19 @@ class _ReorderableListTab extends ConsumerWidget {
   static final _items = _listItems.entries.toList();
   // Long pressで起こす置換イベント
   static final _replace = <String, String>{
-    'Rat': 'Bat',
-    'Bat': 'Mouse',
+    'Rat': 'Mouse',
     'Mouse': 'Rat',
     'Rabbit': 'Hare',
     'Hare': 'Rabbit',
     'Horse': 'Pegasus',
     'Pegasus': 'Seahorse',
     'Seahorse': 'Unicorn',
-    'Unicorn': 'Horse',
+    'Unicorn': 'Invisible pink unicorn',
+    'Invisible pink unicorn': 'Horse',
     'Sheep': 'Goat',
     'Goat': 'Sheep',
+    'Monkey': _threeWiseMonkeys,
+    _threeWiseMonkeys: 'Monkey',
     'Chicken': 'Egg',
     'Egg': 'Chicken',
     'Boar': 'Pig',
