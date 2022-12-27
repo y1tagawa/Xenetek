@@ -57,9 +57,13 @@ final _listItems = <String, Widget>{
   'Pegasus': _Icon(mirror: true, child: openMojiSvgPegasus),
   'Seahorse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
   'Goat': _Icon(mirror: true, child: openMojiSvgGoat),
-  'Egg': mi.Translate(
-    offset: const Offset(0, 5),
-    child: mi.Scale(scale: 0.5, child: openMojiSvgEgg),
+  'Egg': SizedBox(
+    width: 72,
+    height: 72,
+    child: mi.Translate(
+      offset: const Offset(0, 5),
+      child: mi.Scale(scale: 0.5, child: openMojiSvgEgg),
+    ),
   ),
   'Pig': _Icon(mirror: true, child: openMojiSvgPig),
   'Cat ': _Icon(mirror: true, child: Image.asset('assets/worker_cat1.png')),
