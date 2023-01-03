@@ -152,14 +152,16 @@ class PageViewPage extends ConsumerWidget {
                                     alignment: Alignment.center,
                                     child: CircularProgressIndicator(),
                                   )
-                                : p
-                                        .extension(item.imageUrl)
-                                        .let((it) => it == '.jpg' || it == '.jpeg')
-                                    ? child
-                                    : ColoredBox(
-                                        color: Colors.white,
-                                        child: child,
-                                      ),
+                                : InteractiveViewer(
+                                    child: p
+                                            .extension(item.imageUrl)
+                                            .let((it) => it == '.jpg' || it == '.jpeg')
+                                        ? child
+                                        : ColoredBox(
+                                            color: Colors.white,
+                                            child: child,
+                                          ),
+                                  ),
                           ),
                         );
                       },
