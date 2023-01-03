@@ -373,7 +373,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
@@ -405,42 +405,39 @@ class HomePage extends ConsumerWidget {
           ],
         ),
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: SingleChildScrollView(
-          child: Center(
-            child: Wrap(
-              spacing: 2,
-              runSpacing: 8,
-              children: [
-                ..._pages
-                    .skip(1) // Home
-                    .whereNot((item) =>
-                        item.path.startsWith('/drawer/') ||
-                        item.path.startsWith('/grids/') ||
-                        item.path == '/settings')
-                    .map(
-                      (item) => TextButton(
-                        onPressed: () => context.push(item.path),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 76,
-                          height: 72,
-                          padding: const EdgeInsets.all(2),
-                          child: Column(
-                            children: [
-                              item.icon,
-                              DefaultTextStyle.merge(
-                                textAlign: TextAlign.center,
-                                child: item.title,
-                              ),
-                            ],
-                          ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Wrap(
+            spacing: 2,
+            runSpacing: 8,
+            children: [
+              ..._pages
+                  .skip(1) // Home
+                  .whereNot((item) =>
+                      item.path.startsWith('/drawer/') ||
+                      item.path.startsWith('/grids/') ||
+                      item.path == '/settings')
+                  .map(
+                    (item) => TextButton(
+                      onPressed: () => context.push(item.path),
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 76,
+                        height: 72,
+                        padding: const EdgeInsets.all(2),
+                        child: Column(
+                          children: [
+                            item.icon,
+                            DefaultTextStyle.merge(
+                              textAlign: TextAlign.center,
+                              child: item.title,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-              ],
-            ),
+                  ),
+            ],
           ),
         ),
       ),
