@@ -76,105 +76,102 @@ class PageViewPage extends ConsumerWidget {
     final pageItems = ref.watch(_pageItemsProvider);
     final pageIndex = ref.watch(_pageIndexProvider).value;
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 8),
-        child: pageItems.when(
-          data: (items) {
-            return mi.ExpandedColumn(
-              bottom: ListTile(
-                leading: IconButton(
-                  onPressed: enabled && pageIndex > 0
-                      ? () {
-                          _pageIndexNotifier.value = pageIndex - 1;
-                        }
-                      : null,
-                  icon: const Icon(Icons.arrow_back),
-                ),
-                trailing: IconButton(
-                  onPressed: enabled && pageIndex < items.length - 1
-                      ? () {
-                          _pageIndexNotifier.value = pageIndex + 1;
-                        }
-                      : null,
-                  icon: const Icon(Icons.arrow_forward),
-                ),
-                title: Center(child: Text('${pageIndex + 1} / ${items.length}')),
-                // title: mi.MiPageIndicator(
-                //   length: items.length,
-                //   index: pageIndex,
-                //   onSelected: (index) {
-                //     _pageIndexNotifier.value = index;
-                //   },
-                // ),
+      body: pageItems.when(
+        data: (items) {
+          return mi.ExpandedColumn(
+            bottom: ListTile(
+              leading: IconButton(
+                onPressed: enabled && pageIndex > 0
+                    ? () {
+                        _pageIndexNotifier.value = pageIndex - 1;
+                      }
+                    : null,
+                icon: const Icon(Icons.arrow_back),
               ),
-              child: mi.PageView.builder(
-                enabled: enabled,
-                initialPage: pageIndex,
-                pageNotifier: _pageIndexNotifier,
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return mi.ExpandedColumn(
-                    top: mi.GridPopupMenuButton(
-                      items: items
-                          .map(
-                            (item) => mi.GridItem(
-                              child: Text(item.name),
-                            ),
-                          )
-                          .toList(),
-                      offset: const Offset(1, kToolbarHeight),
-                      onSelected: (index) {
-                        ref.read(_pageIndexProvider.notifier).value = index;
+              trailing: IconButton(
+                onPressed: enabled && pageIndex < items.length - 1
+                    ? () {
+                        _pageIndexNotifier.value = pageIndex + 1;
+                      }
+                    : null,
+                icon: const Icon(Icons.arrow_forward),
+              ),
+              title: Center(child: Text('${pageIndex + 1} / ${items.length}')),
+              // title: mi.MiPageIndicator(
+              //   length: items.length,
+              //   index: pageIndex,
+              //   onSelected: (index) {
+              //     _pageIndexNotifier.value = index;
+              //   },
+              // ),
+            ),
+            child: mi.PageView.builder(
+              enabled: enabled,
+              initialPage: pageIndex,
+              pageNotifier: _pageIndexNotifier,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return mi.ExpandedColumn(
+                  top: mi.GridPopupMenuButton(
+                    items: items
+                        .map(
+                          (item) => mi.GridItem(
+                            child: Text(item.name),
+                          ),
+                        )
+                        .toList(),
+                    offset: const Offset(1, kToolbarHeight),
+                    onSelected: (index) {
+                      ref.read(_pageIndexProvider.notifier).value = index;
+                    },
+                    child: ListTile(
+                      title: Text(item.name),
+                      subtitle: item.description?.let((it) => Text(it)),
+                      trailing: const Icon(Icons.more_vert),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: LayoutBuilder(
+                      builder: (_, constraints) {
+                        return SizedBox(
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                          child: Image.network(
+                            item.imageUrl,
+                            fit: BoxFit.contain,
+                            frameBuilder: (_, child, frame, __) => frame == null
+                                ? const Align(
+                                    alignment: Alignment.center,
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : p
+                                        .extension(item.imageUrl)
+                                        .let((it) => it == '.jpg' || it == '.jpeg')
+                                    ? child
+                                    : ColoredBox(
+                                        color: Colors.white,
+                                        child: child,
+                                      ),
+                          ),
+                        );
                       },
-                      child: ListTile(
-                        title: Text(item.name),
-                        subtitle: item.description?.let((it) => Text(it)),
-                        trailing: const Icon(Icons.more_vert),
-                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LayoutBuilder(
-                        builder: (_, constraints) {
-                          return SizedBox(
-                            width: constraints.maxWidth,
-                            height: constraints.maxHeight,
-                            child: Image.network(
-                              item.imageUrl,
-                              fit: BoxFit.contain,
-                              frameBuilder: (_, child, frame, __) => frame == null
-                                  ? const Align(
-                                      alignment: Alignment.center,
-                                      child: CircularProgressIndicator(),
-                                    )
-                                  : p
-                                          .extension(item.imageUrl)
-                                          .let((it) => it == '.jpg' || it == '.jpeg')
-                                      ? child
-                                      : ColoredBox(
-                                          color: Colors.white,
-                                          child: child,
-                                        ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
-          error: (message, stackTrace) => Text(message.toString()),
-          loading: () => const CircularProgressIndicator(),
-        ),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+        error: (message, stackTrace) => Text(message.toString()),
+        loading: () => const CircularProgressIndicator(),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),
     ).also((_) {

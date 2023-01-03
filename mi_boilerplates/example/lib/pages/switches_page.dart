@@ -87,7 +87,7 @@ class SwitchesPage extends ConsumerWidget {
       ref.read(_switchProvider.notifier).state = List.filled(_switchItems.length, value);
     }
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: mi.ToggleIcon(
@@ -97,78 +97,75 @@ class SwitchesPage extends ConsumerWidget {
         ),
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: Column(
-          children: [
-            mi.Row(
-              flexes: const [1, 1],
+      body: Column(
+        children: [
+          mi.Row(
+            flexes: const [1, 1],
+            children: [
+              ex.ResetButtonListTile(
+                enabled: enableActions && switches.any((value) => !value),
+                onPressed: () => reset(true),
+              ),
+              ex.ClearButtonListTile(
+                enabled: enableActions && switches.any((value) => value),
+                onPressed: () => reset(false),
+              ),
+            ],
+          ),
+          const Divider(),
+          Expanded(
+            child: ListView(
+              children: _switchItems.mapIndexed(
+                (index, item) {
+                  final switchValue = switches[index];
+                  return SwitchListTile(
+                    value: switchValue,
+                    title: mi.Label(
+                      icon: mi.ToggleIcon(
+                        checked: switchValue,
+                        checkIcon: item.checkIcon,
+                        uncheckIcon: item.uncheckIcon,
+                      ),
+                      text: item.title,
+                    ),
+                    onChanged: enableActions
+                        ? (value) {
+                            ref.read(_switchProvider.notifier).state =
+                                switches.replacedAt(index, value);
+                          }
+                        : null,
+                  );
+                },
+              ).toList(),
+            ),
+          ),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Stack(
               children: [
-                ex.ResetButtonListTile(
-                  enabled: enableActions && switches.any((value) => !value),
-                  onPressed: () => reset(true),
+                AnimatedOpacity(
+                  opacity: myHp.toDouble() / _switchItems.length,
+                  duration: const Duration(milliseconds: 500),
+                  child: Icon(
+                    Icons.person_outline_outlined,
+                    size: 48,
+                    color: theme.disabledColor,
+                  ),
                 ),
-                ex.ClearButtonListTile(
-                  enabled: enableActions && switches.any((value) => value),
-                  onPressed: () => reset(false),
-                ),
+                AnimatedOpacity(
+                  opacity: myHp > 0 ? 0.0 : 1.0,
+                  duration: const Duration(milliseconds: 500),
+                  child: Icon(
+                    Icons.portrait_outlined,
+                    size: 48,
+                    color: theme.disabledColor,
+                  ),
+                )
               ],
             ),
-            const Divider(),
-            Expanded(
-              child: ListView(
-                children: _switchItems.mapIndexed(
-                  (index, item) {
-                    final switchValue = switches[index];
-                    return SwitchListTile(
-                      value: switchValue,
-                      title: mi.Label(
-                        icon: mi.ToggleIcon(
-                          checked: switchValue,
-                          checkIcon: item.checkIcon,
-                          uncheckIcon: item.uncheckIcon,
-                        ),
-                        text: item.title,
-                      ),
-                      onChanged: enableActions
-                          ? (value) {
-                              ref.read(_switchProvider.notifier).state =
-                                  switches.replacedAt(index, value);
-                            }
-                          : null,
-                    );
-                  },
-                ).toList(),
-              ),
-            ),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Stack(
-                children: [
-                  AnimatedOpacity(
-                    opacity: myHp.toDouble() / _switchItems.length,
-                    duration: const Duration(milliseconds: 500),
-                    child: Icon(
-                      Icons.person_outline_outlined,
-                      size: 48,
-                      color: theme.disabledColor,
-                    ),
-                  ),
-                  AnimatedOpacity(
-                    opacity: myHp > 0 ? 0.0 : 1.0,
-                    duration: const Duration(milliseconds: 500),
-                    child: Icon(
-                      Icons.portrait_outlined,
-                      size: 48,
-                      color: theme.disabledColor,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),
     );

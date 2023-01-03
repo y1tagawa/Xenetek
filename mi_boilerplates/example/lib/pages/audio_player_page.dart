@@ -55,72 +55,69 @@ class AudioPlayerPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(ex.enableActionsProvider);
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ..._audioItems.entries.map((item) {
-                final fileType = p.extension(item.value);
-                bool playable = true;
-                // switch (theme.platform) {
-                //   case TargetPlatform.windows:
-                //     if (fileType == '.mid' || fileType == '.ogg') {
-                //       playable = false;
-                //     }
-                //     break;
-                //   case TargetPlatform.android:
-                //     break;
-                //   default:
-                //     playable = false;
-                // }
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ..._audioItems.entries.map((item) {
+              final fileType = p.extension(item.value);
+              bool playable = true;
+              // switch (theme.platform) {
+              //   case TargetPlatform.windows:
+              //     if (fileType == '.mid' || fileType == '.ogg') {
+              //       playable = false;
+              //     }
+              //     break;
+              //   case TargetPlatform.android:
+              //     break;
+              //   default:
+              //     playable = false;
+              // }
 
-                return ListTile(
-                  enabled: enableActions && playable,
-                  leading: _audioFileTypes[fileType] ?? Text(fileType),
-                  title: Text(item.key),
-                  onTap: () async {
-                    if (_player.state == PlayerState.playing) {
-                      await _player.stop();
-                      await _player.release();
-                    }
-                    try {
-                      await _player.play(UrlSource(item.value));
-                    } catch (e) {
-                      _logger.info('caught exception: $e');
-                      rethrow;
-                    }
-                  },
-                );
-              }).toList(),
-              ListTile(
-                leading: const Icon(Icons.stop),
+              return ListTile(
+                enabled: enableActions && playable,
+                leading: _audioFileTypes[fileType] ?? Text(fileType),
+                title: Text(item.key),
                 onTap: () async {
-                  await _player.stop();
-                  await _player.release();
-                },
-              ),
-              mi.ButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                icon: const Icon(Icons.volume_up_outlined),
-                text: const Text('Notification sound Icon'),
-                onPressed: () async {
+                  if (_player.state == PlayerState.playing) {
+                    await _player.stop();
+                    await _player.release();
+                  }
                   try {
-                    await methodChannel.invokeMethod('playSoundAsync', 0);
-                  } on PlatformException catch (e) {
-                    _logger.fine(e.message);
+                    await _player.play(UrlSource(item.value));
+                  } catch (e) {
+                    _logger.info('caught exception: $e');
+                    rethrow;
                   }
                 },
-              ),
-            ],
-          ),
+              );
+            }).toList(),
+            ListTile(
+              leading: const Icon(Icons.stop),
+              onTap: () async {
+                await _player.stop();
+                await _player.release();
+              },
+            ),
+            mi.ButtonListTile(
+              enabled: enableActions,
+              alignment: MainAxisAlignment.start,
+              icon: const Icon(Icons.volume_up_outlined),
+              text: const Text('Notification sound Icon'),
+              onPressed: () async {
+                try {
+                  await methodChannel.invokeMethod('playSoundAsync', 0);
+                } on PlatformException catch (e) {
+                  _logger.fine(e.message);
+                }
+              },
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),

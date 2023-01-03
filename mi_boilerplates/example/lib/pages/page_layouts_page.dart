@@ -40,7 +40,7 @@ class PageLayoutsPage extends ConsumerWidget {
       length: _tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -50,14 +50,11 @@ class PageLayoutsPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              children: [
-                _ExpandedScrollViewTab(content: (SingleChildScrollView)),
-                _ExpandedScrollViewTab(content: (ListView)),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _ExpandedScrollViewTab(content: (SingleChildScrollView)),
+              _ExpandedScrollViewTab(content: (ListView)),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

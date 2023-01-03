@@ -67,43 +67,40 @@ class DialogsPage extends ConsumerWidget {
       });
     }
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              mi.ButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                text: const Text('Show OK dialog'),
-                onPressed: () {
-                  showInfoOk(context);
-                },
-              ),
-              mi.ButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                text: const Text('Show OK/Cancel dialog'),
-                onPressed: () {
-                  showWarningOkCancel(context);
-                },
-              ),
-              const Divider(),
-              if (ping != null)
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Center(
-                    child: Text(ping, style: const TextStyle(fontSize: 24)),
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            mi.ButtonListTile(
+              enabled: enableActions,
+              alignment: MainAxisAlignment.start,
+              text: const Text('Show OK dialog'),
+              onPressed: () {
+                showInfoOk(context);
+              },
+            ),
+            mi.ButtonListTile(
+              enabled: enableActions,
+              alignment: MainAxisAlignment.start,
+              text: const Text('Show OK/Cancel dialog'),
+              onPressed: () {
+                showWarningOkCancel(context);
+              },
+            ),
+            const Divider(),
+            if (ping != null)
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: Center(
+                  child: Text(ping, style: const TextStyle(fontSize: 24)),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),

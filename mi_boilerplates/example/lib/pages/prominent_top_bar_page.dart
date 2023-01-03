@@ -63,55 +63,52 @@ class ProminentTopBarPage extends ConsumerWidget {
     // https://en.wikipedia.org/wiki/100_Great_Paintings
     // 白は鳥獣戯画で
 
-    final body = SafeArea(
-      minimum: const EdgeInsets.all(8),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            CheckboxListTile(
-              value: prominent,
-              onChanged: (value) {
-                ref.read(ex.prominentProvider.notifier).state = value!;
-              },
-              title: const Text('Prominent'),
-            ),
-            CheckboxListTile(
-              value: tabbed,
-              onChanged: (value) {
-                ref.read(_tabbedProvider.notifier).state = value!;
-              },
-              title: const Text('Tabbed'),
-            ),
-            CheckboxListTile(
-              value: centerTitle,
-              onChanged: (value) {
-                ref.read(_centerTitleProvider.notifier).state = value!;
-              },
-              title: const Text('Center title'),
-            ),
-            const Divider(),
-            const Text('flexibleSpace'),
-            ..._images.map(
-              (image_) => RadioListTile<Widget?>(
-                  value: image_,
-                  groupValue: image,
-                  title: image_ != null
-                      ? SizedBox(
-                          //https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/list_tile.dart#L1094
-                          height: 48,
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            clipBehavior: Clip.hardEdge,
-                            child: image_,
-                          ),
-                        )
-                      : const Icon(Icons.block_outlined),
-                  onChanged: (value) {
-                    ref.read(_imageProvider.notifier).state = image_;
-                  }),
-            ),
-          ],
-        ),
+    final body = SingleChildScrollView(
+      child: Column(
+        children: [
+          CheckboxListTile(
+            value: prominent,
+            onChanged: (value) {
+              ref.read(ex.prominentProvider.notifier).state = value!;
+            },
+            title: const Text('Prominent'),
+          ),
+          CheckboxListTile(
+            value: tabbed,
+            onChanged: (value) {
+              ref.read(_tabbedProvider.notifier).state = value!;
+            },
+            title: const Text('Tabbed'),
+          ),
+          CheckboxListTile(
+            value: centerTitle,
+            onChanged: (value) {
+              ref.read(_centerTitleProvider.notifier).state = value!;
+            },
+            title: const Text('Center title'),
+          ),
+          const Divider(),
+          const Text('flexibleSpace'),
+          ..._images.map(
+            (image_) => RadioListTile<Widget?>(
+                value: image_,
+                groupValue: image,
+                title: image_ != null
+                    ? SizedBox(
+                        //https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/list_tile.dart#L1094
+                        height: 48,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          clipBehavior: Clip.hardEdge,
+                          child: image_,
+                        ),
+                      )
+                    : const Icon(Icons.block_outlined),
+                onChanged: (value) {
+                  ref.read(_imageProvider.notifier).state = image_;
+                }),
+          ),
+        ],
       ),
     );
 
@@ -120,7 +117,7 @@ class ProminentTopBarPage extends ConsumerWidget {
         length: _tabs.length,
         initialIndex: _tabIndex,
         builder: (context) {
-          return Scaffold(
+          return ex.Scaffold(
             appBar: ex.AppBar(
               prominent: prominent,
               icon: icon,
@@ -135,7 +132,7 @@ class ProminentTopBarPage extends ConsumerWidget {
         },
       );
     } else {
-      return Scaffold(
+      return ex.Scaffold(
         appBar: ex.AppBar(
           prominent: ref.watch(ex.prominentProvider),
           icon: icon,

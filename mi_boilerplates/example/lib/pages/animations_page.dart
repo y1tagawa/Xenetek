@@ -53,7 +53,7 @@ class AnimationsPage extends ConsumerWidget {
         _tabIndex = index;
       },
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
@@ -85,17 +85,14 @@ class AnimationsPage extends ConsumerWidget {
               tabs: tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 10),
-            child: TabBarView(
-              children: [
-                _AnimatedBuilderTab(),
-                _LottieTab(),
-                // _AnimatedOpacityTab(),
-                // _AnimationGifTab(),
-                _AnimatedIconsTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _AnimatedBuilderTab(),
+              _LottieTab(),
+              // _AnimatedOpacityTab(),
+              // _AnimationGifTab(),
+              _AnimatedIconsTab(),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

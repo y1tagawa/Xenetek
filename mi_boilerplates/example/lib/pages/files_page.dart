@@ -47,7 +47,7 @@ class FilesPage extends ConsumerWidget {
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -57,14 +57,11 @@ class FilesPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _PathsTab(),
-                ex.UnderConstruction(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _PathsTab(),
+              ex.UnderConstruction(),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

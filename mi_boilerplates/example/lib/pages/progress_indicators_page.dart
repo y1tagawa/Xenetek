@@ -38,7 +38,7 @@ class ProgressIndicatorsPage extends ConsumerWidget {
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -48,14 +48,11 @@ class ProgressIndicatorsPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _DeterminateTab(),
-                _IndeterminateTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _DeterminateTab(),
+              _IndeterminateTab(),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

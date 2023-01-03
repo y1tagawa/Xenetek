@@ -50,7 +50,7 @@ class TabViewPage extends ConsumerWidget {
         _logger.fine('[o] onIndexChanged');
       },
       builder: (BuildContext context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,

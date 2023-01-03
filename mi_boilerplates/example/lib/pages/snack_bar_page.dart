@@ -47,7 +47,7 @@ class SnackBarPage extends ConsumerWidget {
         _tabIndex = index;
       },
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -57,14 +57,11 @@ class SnackBarPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              children: [
-                _SnackBarTab(),
-                _ToastTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _SnackBarTab(),
+              _ToastTab(),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

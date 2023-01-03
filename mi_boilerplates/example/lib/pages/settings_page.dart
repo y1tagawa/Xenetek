@@ -151,142 +151,139 @@ class SettingsPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: ListView(
-          children: <Widget>[
-            // テーマ
-            Center(
-              child: Text('Theme', style: theme.textTheme.headline6),
+      body: ListView(
+        children: <Widget>[
+          // テーマ
+          Center(
+            child: Text('Theme', style: theme.textTheme.headline6),
+          ),
+          // primarySwatch
+          ListTile(
+            title: const Text('Primary swatch'),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: mi.ColorChip(color: primarySwatch),
             ),
-            // primarySwatch
-            ListTile(
-              title: const Text('Primary swatch'),
-              trailing: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: mi.ColorChip(color: primarySwatch),
-              ),
-              onTap: () async {
-                final ok = await _showColorSelectDialog(
-                  context: context,
-                  title: const Text('Primary swatch'),
-                  initialColor: primarySwatch,
-                  onChanged: (value) {
-                    ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
-                  },
-                );
-                if (ok) {
-                  await saveThemePreferences(ref);
-                }
-              },
+            onTap: () async {
+              final ok = await _showColorSelectDialog(
+                context: context,
+                title: const Text('Primary swatch'),
+                initialColor: primarySwatch,
+                onChanged: (value) {
+                  ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
+                },
+              );
+              if (ok) {
+                await saveThemePreferences(ref);
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('Secondary color'),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: mi.ColorChip(color: secondaryColor),
             ),
-            ListTile(
-              title: const Text('Secondary color'),
-              trailing: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: mi.ColorChip(color: secondaryColor),
-              ),
-              onTap: () async {
-                final ok = await _showColorSelectDialog(
-                  context: context,
-                  title: const Text('Secondary color'),
-                  initialColor: secondaryColor,
-                  nullable: true,
-                  onChanged: (value) {
-                    ref.read(secondaryColorProvider.notifier).state = value;
-                  },
-                );
-                if (ok) {
-                  await saveThemePreferences(ref);
-                }
-              },
+            onTap: () async {
+              final ok = await _showColorSelectDialog(
+                context: context,
+                title: const Text('Secondary color'),
+                initialColor: secondaryColor,
+                nullable: true,
+                onChanged: (value) {
+                  ref.read(secondaryColorProvider.notifier).state = value;
+                },
+              );
+              if (ok) {
+                await saveThemePreferences(ref);
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('Text color'),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: mi.ColorChip(color: textColor),
             ),
-            ListTile(
-              title: const Text('Text color'),
-              trailing: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: mi.ColorChip(color: textColor),
-              ),
-              onTap: () async {
-                final ok = await _showTextColorSelectDialog(
-                  context: context,
-                  title: const Text('Text color'),
-                  initialColor: textColor,
-                  nullable: true,
-                  onChanged: (value) {
-                    ref.read(textColorProvider.notifier).state = value;
-                  },
-                );
-                if (ok) {
-                  await saveThemePreferences(ref);
-                }
-              },
+            onTap: () async {
+              final ok = await _showTextColorSelectDialog(
+                context: context,
+                title: const Text('Text color'),
+                initialColor: textColor,
+                nullable: true,
+                onChanged: (value) {
+                  ref.read(textColorProvider.notifier).state = value;
+                },
+              );
+              if (ok) {
+                await saveThemePreferences(ref);
+              }
+            },
+          ),
+          ListTile(
+            title: const Text('Background color'),
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: mi.ColorChip(color: backgroundColor),
             ),
-            ListTile(
-              title: const Text('Background color'),
-              trailing: Padding(
-                padding: const EdgeInsets.only(right: 5),
-                child: mi.ColorChip(color: backgroundColor),
-              ),
-              onTap: () async {
-                final ok = await _showBackgroundColorSelectDialog(
-                  context: context,
-                  title: const Text('Background color'),
-                  initialColor: backgroundColor,
-                  nullable: true,
-                  onChanged: (value) {
-                    ref.read(backgroundColorProvider.notifier).state = value;
-                  },
-                );
-                if (ok) {
-                  await saveThemePreferences(ref);
-                }
-              },
-            ),
-            CheckboxListTile(
-              value: ref.watch(brightnessProvider).isDark,
-              title: const Text('Dark'),
-              onChanged: (value) async {
-                ref.read(brightnessProvider.notifier).state =
-                    value! ? Brightness.dark : Brightness.light;
-              },
-            ),
-            CheckboxListTile(
-              value: ref.watch(useM3Provider),
-              title: const Text('Use material 3'),
-              onChanged: (value) {
-                ref.read(useM3Provider.notifier).state = value!;
-              },
-            ),
-            CheckboxListTile(
-              value: ref.watch(modifyThemeProvider),
-              title: const Text('Modify theme'),
-              onChanged: (value) {
-                ref.read(modifyThemeProvider.notifier).state = value!;
-              },
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Reset preferences'),
-              trailing: const Icon(Icons.navigate_next),
-              onTap: () async {
-                final ok = await mi.showWarningOkCancelDialog(
-                  context: context,
-                  content: const Text('Are you sure to reset theme preferences?'),
-                );
-                if (ok) {
-                  await clearThemePreferences(ref);
-                }
-              },
-            ),
-          ],
-        ),
+            onTap: () async {
+              final ok = await _showBackgroundColorSelectDialog(
+                context: context,
+                title: const Text('Background color'),
+                initialColor: backgroundColor,
+                nullable: true,
+                onChanged: (value) {
+                  ref.read(backgroundColorProvider.notifier).state = value;
+                },
+              );
+              if (ok) {
+                await saveThemePreferences(ref);
+              }
+            },
+          ),
+          CheckboxListTile(
+            value: ref.watch(brightnessProvider).isDark,
+            title: const Text('Dark'),
+            onChanged: (value) async {
+              ref.read(brightnessProvider.notifier).state =
+                  value! ? Brightness.dark : Brightness.light;
+            },
+          ),
+          CheckboxListTile(
+            value: ref.watch(useM3Provider),
+            title: const Text('Use material 3'),
+            onChanged: (value) {
+              ref.read(useM3Provider.notifier).state = value!;
+            },
+          ),
+          CheckboxListTile(
+            value: ref.watch(modifyThemeProvider),
+            title: const Text('Modify theme'),
+            onChanged: (value) {
+              ref.read(modifyThemeProvider.notifier).state = value!;
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: const Text('Reset preferences'),
+            trailing: const Icon(Icons.navigate_next),
+            onTap: () async {
+              final ok = await mi.showWarningOkCancelDialog(
+                context: context,
+                content: const Text('Are you sure to reset theme preferences?'),
+              );
+              if (ok) {
+                await clearThemePreferences(ref);
+              }
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),
     ).also((_) {

@@ -44,40 +44,37 @@ class OverflowBarPage extends ConsumerWidget {
     final enableActions = ref.watch(ex.enableActionsProvider);
     final trollHp = ref.watch(_trollHpProvider);
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ex.ResetButtonListTile(
-                enabled: enableActions && trollHp < 100,
-                onPressed: () => ref.invalidate(_trollHpProvider),
-              ),
-              const Divider(),
-              Center(
-                child: Text(
-                  trollHp >= 0 ? '\u{1F9CC}' : '\u{1FAA6}',
-                  style: TextStyle(
-                    color: enableActions ? null : Theme.of(context).disabledColor,
-                    fontSize: trollHp > 0 ? trollHp.toDouble() + 18 : 18,
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ex.ResetButtonListTile(
+              enabled: enableActions && trollHp < 100,
+              onPressed: () => ref.invalidate(_trollHpProvider),
+            ),
+            const Divider(),
+            Center(
+              child: Text(
+                trollHp >= 0 ? '\u{1F9CC}' : '\u{1FAA6}',
+                style: TextStyle(
+                  color: enableActions ? null : Theme.of(context).disabledColor,
+                  fontSize: trollHp > 0 ? trollHp.toDouble() + 18 : 18,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: const Text(
-                  'OverflowBar lays out its children in a row unless they "overflow" the available '
-                  'horizontal space, in which case it lays them out in a column instead.',
-                ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: const Text(
+                'OverflowBar lays out its children in a row unless they "overflow" the available '
+                'horizontal space, in which case it lays them out in a column instead.',
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: OverflowBar(

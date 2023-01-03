@@ -41,7 +41,7 @@ class RadiosPage extends ConsumerWidget {
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -51,14 +51,11 @@ class RadiosPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _RadioButtonsTab(),
-                _RadioMenuTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _RadioButtonsTab(),
+              _RadioMenuTab(),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

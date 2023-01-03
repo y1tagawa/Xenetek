@@ -43,99 +43,96 @@ class ListTilesPage extends ConsumerWidget {
       ),
     );
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListTile(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ListTile(
+              enabled: enableActions,
+              selected: selected == 0,
+              onTap: () {
+                ref.read(_selectedProvider.notifier).state = 0;
+              },
+              title: const mi.Label(
+                icon: Icon(Icons.person_outline),
+                text: Text('ListTile'),
+              ),
+            ),
+            CheckboxListTile(
+              enabled: enableActions,
+              selected: selected == 1,
+              value: check,
+              onChanged: (value) {
+                ref.read(_checkProvider.notifier).state = value!;
+                ref.read(_selectedProvider.notifier).state = 1;
+              },
+              title: const mi.Label(
+                icon: Icon(Icons.person_outline),
+                text: Text('CheckboxListTile'),
+              ),
+            ),
+            RadioListTile<int>(
+              selected: selected == 2,
+              groupValue: radio,
+              toggleable: true,
+              value: 0,
+              onChanged: enableActions
+                  ? (_) {
+                      ref.read(_radioProvider.notifier).state = radio == 0 ? 1 : 0;
+                      ref.read(_selectedProvider.notifier).state = 2;
+                    }
+                  : null,
+              title: const mi.Label(
+                icon: Icon(Icons.person_outline),
+                text: Text('RadioListTile'),
+              ),
+            ),
+            SwitchListTile(
+              selected: selected == 3,
+              value: switch_,
+              onChanged: enableActions
+                  ? (value) {
+                      ref.read(_switchProvider.notifier).state = value;
+                      ref.read(_selectedProvider.notifier).state = 3;
+                    }
+                  : null,
+              title: const mi.Label(
+                icon: Icon(Icons.person_outline),
+                text: Text('SwitchListTile'),
+              ),
+            ),
+            if (themeAdjustment)
+              mi.ExpansionTile(
                 enabled: enableActions,
-                selected: selected == 0,
-                onTap: () {
-                  ref.read(_selectedProvider.notifier).state = 0;
+                title: const mi.Label(
+                  icon: Icon(Icons.person_outline),
+                  text: Text('mi.ExpansionTile'),
+                ),
+                initiallyExpanded: _expanded,
+                onExpansionChanged: (value) {
+                  _expanded = value;
                 },
+                dividerColor: Colors.transparent,
+                children: const [expansionTileChild],
+              )
+            else
+              ExpansionTile(
                 title: const mi.Label(
                   icon: Icon(Icons.person_outline),
-                  text: Text('ListTile'),
+                  text: Text('ExpansionTile'),
                 ),
-              ),
-              CheckboxListTile(
-                enabled: enableActions,
-                selected: selected == 1,
-                value: check,
-                onChanged: (value) {
-                  ref.read(_checkProvider.notifier).state = value!;
-                  ref.read(_selectedProvider.notifier).state = 1;
+                initiallyExpanded: _expanded,
+                onExpansionChanged: (value) {
+                  _expanded = value;
                 },
-                title: const mi.Label(
-                  icon: Icon(Icons.person_outline),
-                  text: Text('CheckboxListTile'),
-                ),
+                children: const [expansionTileChild],
               ),
-              RadioListTile<int>(
-                selected: selected == 2,
-                groupValue: radio,
-                toggleable: true,
-                value: 0,
-                onChanged: enableActions
-                    ? (_) {
-                        ref.read(_radioProvider.notifier).state = radio == 0 ? 1 : 0;
-                        ref.read(_selectedProvider.notifier).state = 2;
-                      }
-                    : null,
-                title: const mi.Label(
-                  icon: Icon(Icons.person_outline),
-                  text: Text('RadioListTile'),
-                ),
-              ),
-              SwitchListTile(
-                selected: selected == 3,
-                value: switch_,
-                onChanged: enableActions
-                    ? (value) {
-                        ref.read(_switchProvider.notifier).state = value;
-                        ref.read(_selectedProvider.notifier).state = 3;
-                      }
-                    : null,
-                title: const mi.Label(
-                  icon: Icon(Icons.person_outline),
-                  text: Text('SwitchListTile'),
-                ),
-              ),
-              if (themeAdjustment)
-                mi.ExpansionTile(
-                  enabled: enableActions,
-                  title: const mi.Label(
-                    icon: Icon(Icons.person_outline),
-                    text: Text('mi.ExpansionTile'),
-                  ),
-                  initiallyExpanded: _expanded,
-                  onExpansionChanged: (value) {
-                    _expanded = value;
-                  },
-                  dividerColor: Colors.transparent,
-                  children: const [expansionTileChild],
-                )
-              else
-                ExpansionTile(
-                  title: const mi.Label(
-                    icon: Icon(Icons.person_outline),
-                    text: Text('ExpansionTile'),
-                  ),
-                  initiallyExpanded: _expanded,
-                  onExpansionChanged: (value) {
-                    _expanded = value;
-                  },
-                  children: const [expansionTileChild],
-                ),
-            ],
-          ),
+          ],
         ),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),

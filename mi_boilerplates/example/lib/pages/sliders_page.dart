@@ -47,7 +47,7 @@ class SlidersPage extends ConsumerWidget {
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -57,15 +57,12 @@ class SlidersPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _IntSliderTab(),
-                _SliderTab(),
-                ex.UnderConstruction(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _IntSliderTab(),
+              _SliderTab(),
+              ex.UnderConstruction(),
+            ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );

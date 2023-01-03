@@ -28,24 +28,21 @@ class SvgPage extends ConsumerWidget {
       ),
     );
 
-    return Scaffold(
+    return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              FittedBox(
-                child: image,
-              ),
-              const Text(_mediaPageUrl),
-            ],
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            FittedBox(
+              child: image,
+            ),
+            const Text(_mediaPageUrl),
+          ],
         ),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),

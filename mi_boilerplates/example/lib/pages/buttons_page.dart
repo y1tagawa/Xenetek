@@ -79,7 +79,7 @@ class ButtonsPage extends ConsumerWidget {
         ref.read(_tabIndexProvider.notifier).state = value;
       },
       builder: (context) {
-        return Scaffold(
+        return ex.Scaffold(
           appBar: ex.AppBar(
             prominent: ref.watch(ex.prominentProvider),
             icon: icon,
@@ -97,30 +97,27 @@ class ButtonsPage extends ConsumerWidget {
               tabs: _tabs,
             ),
           ),
-          body: SafeArea(
-            minimum: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              children: [
-                Expanded(
-                  child: TabBarView(
-                    physics: enabled ? null : const NeverScrollableScrollPhysics(),
-                    children: const [
-                      _PushButtonsTab(),
-                      _DropdownButtonTab(),
-                      _ToggleButtonsTab(),
-                      _MonospaceTab(),
-                    ],
-                  ),
+          body: Column(
+            children: [
+              Expanded(
+                child: TabBarView(
+                  physics: enabled ? null : const NeverScrollableScrollPhysics(),
+                  children: const [
+                    _PushButtonsTab(),
+                    _DropdownButtonTab(),
+                    _ToggleButtonsTab(),
+                    _MonospaceTab(),
+                  ],
                 ),
-                mi.PageIndicator(
-                  index: tabIndex,
-                  length: _tabs.length,
-                  onSelected: (index) {
-                    DefaultTabController.of(context)?.index = index;
-                  },
-                ),
-              ],
-            ),
+              ),
+              mi.PageIndicator(
+                index: tabIndex,
+                length: _tabs.length,
+                onSelected: (index) {
+                  DefaultTabController.of(context)?.index = index;
+                },
+              ),
+            ],
           ),
           // FABはdisable禁止なので代わりに非表示にする。
           // https://material.io/design/interaction/states.html#disabled

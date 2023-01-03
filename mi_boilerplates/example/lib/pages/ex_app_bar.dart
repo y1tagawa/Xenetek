@@ -412,11 +412,9 @@ class Scaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return material.Scaffold(
       appBar: appBar,
-      body: InteractiveViewer(
-        child: SafeArea(
-          minimum: const EdgeInsets.all(8),
-          child: body,
-        ),
+      body: SafeArea(
+        minimum: const EdgeInsets.all(8),
+        child: body,
       ),
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
