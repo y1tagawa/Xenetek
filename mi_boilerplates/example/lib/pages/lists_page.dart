@@ -59,7 +59,7 @@ final _listItems = <String, Widget>{
   'Dark horse': _Icon(mirror: true, child: openMojiSvgDarkHorse),
   'Invisible pink unicorn': _Icon(mirror: true, child: openMojiSvgInvisiblePinkUnicorn),
   'Pegasus': _Icon(mirror: true, child: openMojiSvgPegasus),
-  'Seahorse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
+  'Sea horse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
   'Unicorn': _Icon(mirror: true, child: openMojiSvgHorseUnicorn),
   'Goat': _Icon(mirror: true, child: openMojiSvgGoat),
   _threeWiseMonkeys: _Icon(mirror: true, child: openMojiSvgMonkey),
@@ -159,12 +159,6 @@ class _ReorderableListTab extends ConsumerWidget {
     'Hare': 'Rabbit',
     'Snake': 'Snake ',
     'Snake ': 'Snake',
-    'Horse': 'Pegasus',
-    'Pegasus': 'Seahorse',
-    'Seahorse': 'Unicorn',
-    'Unicorn': 'Invisible pink unicorn',
-    'Invisible pink unicorn': 'Dark horse',
-    'Dark horse': 'Horse',
     'Sheep': 'Goat',
     'Goat': 'Sheep',
     'Monkey': _threeWiseMonkeys,
@@ -175,6 +169,15 @@ class _ReorderableListTab extends ConsumerWidget {
     'Pig': 'Boar',
     'Cat': 'Cat ',
     'Cat ': 'Cat',
+  };
+  // 馬s
+  static const _horses = <String>{
+    'Horse',
+    'Dark horse',
+    'Pegasus',
+    'Sea horse',
+    'Unicorn',
+    'Invisible pink unicorn',
   };
 
   const _ReorderableListTab();
@@ -205,13 +208,13 @@ class _ReorderableListTab extends ConsumerWidget {
       }
     }
 
-    void action(int index) {
+    void action(BuildContext context_, int index) async {
       final item = _items[index];
       // 置換リストにあったら置換
-      _replaceList[item.key]?.let((toKey) {
+      _replaceList[item.key]?.let((value) {
         final i = order.indexOf(index);
         assert(i >= 0);
-        final ii = _items.indexWhere((it) => it.key == toKey);
+        final ii = _items.indexWhere((it) => it.key == value);
         assert(ii >= 0);
         _orderNotifier.value = order.replacedAt(i, ii);
         // TODO: 一般化
@@ -227,6 +230,29 @@ class _ReorderableListTab extends ConsumerWidget {
         }
         return;
       });
+      //
+      if (_horses.contains(item.key)) {
+        final position = context_
+            .findRenderObject()
+            ?.getTransformTo(context.findRenderObject())
+            .getTranslation();
+        _logger.fine('pos=$position');
+        await showMenu<String>(
+          context: context_,
+          position: RelativeRect.fromLTRB(80, position?.y ?? 0, 100, 100),
+          initialValue: item.key,
+          items: _horses.map((it) => PopupMenuItem<String>(value: it, child: Text(it))).toList(),
+        ).then((value) {
+          if (value != null) {
+            final i = order.indexOf(index);
+            assert(i >= 0);
+            final ii = _items.indexWhere((it) => it.key == value);
+            assert(ii >= 0);
+            _orderNotifier.value = order.replacedAt(i, ii);
+          }
+        });
+        return;
+      }
       // 他のアクション
       switch (item.key) {
         case 'Cow':
@@ -323,20 +349,24 @@ class _ReorderableListTab extends ConsumerWidget {
                         _orderNotifier.value = order.removed(index);
                       },
                       background: ColoredBox(color: theme.backgroundColor),
-                      child: ListTile(
-                        leading: item.value,
-                        title: Text(item.key),
-                        trailing: _isDesktop
-                            ? null
-                            : IconButton(
-                                onPressed: () => action(index),
-                                icon: const Icon(Icons.play_arrow_outlined),
-                              ),
-                        selected: selected == index,
-                        onTap: () {
-                          ref.read(_selectedProvider.notifier).state = index;
+                      child: Builder(
+                        builder: (context) {
+                          return ListTile(
+                            leading: item.value,
+                            title: Text(item.key),
+                            trailing: _isDesktop
+                                ? null
+                                : IconButton(
+                                    onPressed: () => action(context, index),
+                                    icon: const Icon(Icons.play_arrow_outlined),
+                                  ),
+                            selected: selected == index,
+                            onTap: () {
+                              ref.read(_selectedProvider.notifier).state = index;
+                            },
+                            onLongPress: _isDesktop ? () => action(context, index) : null,
+                          );
                         },
-                        onLongPress: _isDesktop ? () => action(index) : null,
                       ),
                     );
                   },
