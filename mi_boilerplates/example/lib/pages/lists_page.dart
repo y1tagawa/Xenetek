@@ -38,10 +38,10 @@ class _Icon extends StatelessWidget {
 const _threeWiseMonkeys = '\u{1F648}\u{1F64A}\u{1F649}';
 
 final _listItems = <String, Widget>{
-  'Rat': _Icon(mirror: true, child: openMojiSvgRat),
+  'Mouse': _Icon(mirror: true, child: openMojiSvgMouse),
   'Cow': _Icon(mirror: true, child: openMojiSvgOx),
   'Tiger': _Icon(mirror: true, child: openMojiSvgTiger),
-  'Rabbit': _Icon(mirror: true, child: openMojiSvgRabbit),
+  'Rabbit': _Icon(mirror: true, child: openMojiSvgWhiteRabbit),
   'Dragon': _Icon(child: openMojiSvgDragon),
   'Snake': _Icon(child: openMojiSvgSnake),
   'Horse': _Icon(mirror: true, child: openMojiSvgHorse),
@@ -53,7 +53,7 @@ final _listItems = <String, Widget>{
   'Cat': _Icon(mirror: true, child: openMojiSvgCat),
   //
   'Bat': _Icon(mirror: true, child: openMojiSvgBat),
-  'Mouse': _Icon(mirror: true, child: openMojiSvgMouse),
+  'Rat': _Icon(mirror: true, child: openMojiSvgRat),
   'Hare': _Icon(mirror: true, child: openMojiSvgHare),
   'Snake ': Image.asset('assets/snake.webp', width: 72, height: 72),
   'Invisible pink unicorn': _Icon(mirror: true, child: openMojiSvgInvisiblePinkUnicorn),

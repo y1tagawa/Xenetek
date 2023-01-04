@@ -142,8 +142,10 @@ final openMojiSvgHamster = SvgPicture.asset('assets/open_moji/1F439.svg');
 final openMojiSvgRabbitFace = SvgPicture.asset('assets/open_moji/1F430.svg');
 // rabbit  (bunny, pet, rabbit)
 final openMojiSvgRabbit = SvgPicture.asset('assets/open_moji/1F407.svg');
-// rabbit  (bunny, pet, rabbit)
+// hare  (bunny, pet, rabbit)
 final openMojiSvgHare = SvgPicture.asset('assets/open_moji/1F407_hare.svg');
+// white rabbit  (bunny, pet, rabbit)
+final openMojiSvgWhiteRabbit = SvgPicture.asset('assets/open_moji/1F407_white_rabbit.svg');
 // chipmunk  (chipmunk, squirrel)
 final openMojiSvgChipmunk = SvgPicture.asset('assets/open_moji/1F43F.svg');
 // beaver  (beaver, dam)
