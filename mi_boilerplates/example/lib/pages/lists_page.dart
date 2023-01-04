@@ -208,15 +208,17 @@ class _ReorderableListTab extends ConsumerWidget {
       }
     }
 
+    void replace(int i, int j) {
+      assert(i >= 0);
+      assert(j >= 0);
+      _orderNotifier.value = order.replacedAt(i, j);
+    }
+
     void action(BuildContext context_, int index) async {
       final item = _items[index];
       // 置換リストにあったら置換
       _replaceList[item.key]?.let((value) {
-        final i = order.indexOf(index);
-        assert(i >= 0);
-        final ii = _items.indexWhere((it) => it.key == value);
-        assert(ii >= 0);
-        _orderNotifier.value = order.replacedAt(i, ii);
+        replace(order.indexOf(index), _items.indexWhere((it) => it.key == value));
         // TODO: 一般化
         if (item.key == 'Snake') {
           Future.delayed(const Duration(milliseconds: 3000), () {
@@ -239,17 +241,11 @@ class _ReorderableListTab extends ConsumerWidget {
         _logger.fine('pos=$position');
         await showMenu<String>(
           context: context_,
-          position: RelativeRect.fromLTRB(80, position?.y ?? 0, 100, 100),
+          position: RelativeRect.fromLTRB(88, position?.y ?? 0, 10, 10),
           initialValue: item.key,
           items: _horses.map((it) => PopupMenuItem<String>(value: it, child: Text(it))).toList(),
         ).then((value) {
-          if (value != null) {
-            final i = order.indexOf(index);
-            assert(i >= 0);
-            final ii = _items.indexWhere((it) => it.key == value);
-            assert(ii >= 0);
-            _orderNotifier.value = order.replacedAt(i, ii);
-          }
+          replace(order.indexOf(index), _items.indexWhere((it) => it.key == value));
         });
         return;
       }
