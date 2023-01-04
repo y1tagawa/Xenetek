@@ -75,6 +75,8 @@ final openMojiSvgLeopard = SvgPicture.asset('assets/open_moji/1F406.svg');
 final openMojiSvgHorseFace = SvgPicture.asset('assets/open_moji/1F434.svg');
 // horse  (equestrian, horse, racehorse, racing)
 final openMojiSvgHorse = SvgPicture.asset('assets/open_moji/1F40E.svg');
+// horse  (equestrian, horse, racehorse, racing)
+final openMojiSvgDarkHorse = SvgPicture.asset('assets/open_moji/1F40E_dark_horse.svg');
 // horse  (equestrian, horse)
 final openMojiSvgPegasus = SvgPicture.asset('assets/open_moji/1F40E_pegasus.svg');
 // horse  (equestrian, horse)
