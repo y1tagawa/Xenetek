@@ -179,6 +179,8 @@ class _ReorderableListTab extends ConsumerWidget {
     'Unicorn',
     'Invisible pink unicorn',
   };
+  static final _horsePopupMenuItems =
+      _horses.map((it) => PopupMenuItem<String>(value: it, child: Text(it))).toList();
 
   const _ReorderableListTab();
 
@@ -214,7 +216,7 @@ class _ReorderableListTab extends ConsumerWidget {
       _orderNotifier.value = order.replacedAt(i, j);
     }
 
-    void action(BuildContext context_, int index) async {
+    void action(int index) async {
       final item = _items[index];
       // 置換リストにあったら置換
       _replaceList[item.key]?.let((value) {
@@ -232,23 +234,6 @@ class _ReorderableListTab extends ConsumerWidget {
         }
         return;
       });
-      //
-      if (_horses.contains(item.key)) {
-        final position = context_
-            .findRenderObject()
-            ?.getTransformTo(context.findRenderObject())
-            .getTranslation();
-        _logger.fine('pos=$position');
-        await showMenu<String>(
-          context: context_,
-          position: RelativeRect.fromLTRB(88, position?.y ?? 0, 10, 10),
-          initialValue: item.key,
-          items: _horses.map((it) => PopupMenuItem<String>(value: it, child: Text(it))).toList(),
-        ).then((value) {
-          replace(order.indexOf(index), _items.indexWhere((it) => it.key == value));
-        });
-        return;
-      }
       // 他のアクション
       switch (item.key) {
         case 'Cow':
@@ -345,23 +330,29 @@ class _ReorderableListTab extends ConsumerWidget {
                         _orderNotifier.value = order.removed(index);
                       },
                       background: ColoredBox(color: theme.backgroundColor),
-                      child: Builder(
-                        builder: (context) {
-                          return ListTile(
-                            leading: item.value,
-                            title: Text(item.key),
-                            trailing: _isDesktop
-                                ? null
-                                : IconButton(
-                                    onPressed: () => action(context, index),
-                                    icon: const Icon(Icons.play_arrow_outlined),
-                                  ),
-                            selected: selected == index,
-                            onTap: () {
-                              ref.read(_selectedProvider.notifier).state = index;
-                            },
-                            onLongPress: _isDesktop ? () => action(context, index) : null,
-                          );
+                      child: ListTile(
+                        leading: _horses.contains(item.key)
+                            ? PopupMenuButton<String>(
+                                tooltip: '',
+                                itemBuilder: (_) => _horsePopupMenuItems,
+                                onSelected: (value) {
+                                  replace(
+                                    order.indexOf(index),
+                                    _items.indexWhere((it) => it.key == value),
+                                  );
+                                },
+                                child: item.value,
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  action(index);
+                                },
+                                child: item.value,
+                              ),
+                        title: Text(item.key),
+                        selected: selected == index,
+                        onTap: () {
+                          ref.read(_selectedProvider.notifier).state = index;
                         },
                       ),
                     );
