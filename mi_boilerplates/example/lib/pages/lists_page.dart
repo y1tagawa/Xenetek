@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:example/data/open_moji_svgs.dart';
 import 'package:example/pages/knight_indicator.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -22,15 +19,16 @@ import 'ex_widgets.dart' as ex;
 //
 
 class _Icon extends StatelessWidget {
-  final bool mirror;
+  final double scaleX;
+  final double scaleY;
   final Widget child;
-  const _Icon({this.mirror = false, required this.child});
+  const _Icon({this.scaleX = 1.0, this.scaleY = 1.0, required this.child});
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 72,
       height: 72,
-      child: mirror ? mi.Scale(scaleX: -1, child: child) : child,
+      child: mi.Scale(scaleX: scaleX, scaleY: scaleY, child: child),
     );
   }
 }
@@ -38,31 +36,36 @@ class _Icon extends StatelessWidget {
 const _threeWiseMonkeys = '\u{1F648}\u{1F64A}\u{1F649}';
 
 final _listItems = <String, Widget>{
-  'Mouse': _Icon(mirror: true, child: openMojiSvgMouse),
-  'Cow': _Icon(mirror: true, child: openMojiSvgOx),
-  'Tiger': _Icon(mirror: true, child: openMojiSvgTiger),
-  'Rabbit': _Icon(mirror: true, child: openMojiSvgWhiteRabbit),
+  'Rat': _Icon(scaleX: -0.7, scaleY: 0.7, child: openMojiSvgWhiteRat),
+  'Cow': _Icon(scaleX: -1, child: openMojiSvgOx),
+  'Tiger': _Icon(scaleX: -1, child: openMojiSvgTiger),
+  'Rabbit': _Icon(scaleX: -0.7, scaleY: 0.7, child: openMojiSvgWhiteRabbit),
   'Dragon': _Icon(child: openMojiSvgDragon),
-  'Snake': _Icon(child: openMojiSvgSnake),
-  'Horse': _Icon(mirror: true, child: openMojiSvgHorse),
-  'Sheep': _Icon(mirror: true, child: openMojiSvgRam),
-  'Monkey': _Icon(mirror: true, child: openMojiSvgMonkey),
-  'Chicken': _Icon(mirror: true, child: openMojiSvgWhiteRooster),
-  'Dog': _Icon(mirror: true, child: openMojiSvgDog),
-  'Boar': _Icon(mirror: true, child: openMojiSvgBoar),
-  'Cat': _Icon(mirror: true, child: openMojiSvgCat),
+  'Snake': _Icon(scaleX: 0.7, scaleY: 0.7, child: openMojiSvgSnake),
+  'Horse': _Icon(scaleX: -1, child: openMojiSvgHorse),
+  'Sheep': _Icon(scaleX: -1, child: openMojiSvgRam),
+  'Monkey': _Icon(scaleX: -1, child: openMojiSvgMonkey),
+  'Chicken': _Icon(scaleX: -1, child: openMojiSvgWhiteRooster),
+  'Dog': _Icon(scaleX: -1, child: openMojiSvgDog),
+  'Boar': _Icon(scaleX: -1, child: openMojiSvgBoar),
+  'Cat': _Icon(scaleX: -1, child: openMojiSvgCat),
   //
-  'Bat': _Icon(mirror: true, child: openMojiSvgBat),
-  'Rat': _Icon(mirror: true, child: openMojiSvgRat),
-  'Hare': _Icon(mirror: true, child: openMojiSvgHare),
-  'Snake ': Image.asset('assets/snake.webp', width: 72, height: 72),
-  'Dark horse': _Icon(mirror: true, child: openMojiSvgDarkHorse),
-  'Invisible pink unicorn': _Icon(mirror: true, child: openMojiSvgInvisiblePinkUnicorn),
-  'Pegasus': _Icon(mirror: true, child: openMojiSvgPegasus),
-  'Sea horse': _Icon(mirror: true, child: openMojiSvgSeaHorse),
-  'Unicorn': _Icon(mirror: true, child: openMojiSvgHorseUnicorn),
-  'Goat': _Icon(mirror: true, child: openMojiSvgGoat),
-  _threeWiseMonkeys: _Icon(mirror: true, child: openMojiSvgMonkey),
+  'Bat': _Icon(scaleX: -0.7, scaleY: 0.7, child: openMojiSvgBat),
+  'Mouse': _Icon(scaleX: -1, child: openMojiSvgMouse),
+  'Rat ': _Icon(scaleX: -1, child: openMojiSvgRat),
+  'Hare': _Icon(scaleX: -1, child: openMojiSvgHare),
+  'Snake ': _Icon(
+    scaleX: 0.7,
+    scaleY: 0.7,
+    child: Image.asset('assets/snake.webp', width: 72, height: 72),
+  ),
+  'Dark horse': _Icon(scaleX: -1, child: openMojiSvgDarkHorse),
+  'Invisible pink unicorn': _Icon(scaleX: -1, child: openMojiSvgInvisiblePinkUnicorn),
+  'Pegasus': _Icon(scaleX: -1, child: openMojiSvgPegasus),
+  'Sea horse': _Icon(scaleX: -1, child: openMojiSvgSeaHorse),
+  'Unicorn': _Icon(scaleX: -1, child: openMojiSvgHorseUnicorn),
+  'Goat': _Icon(scaleX: -1, child: openMojiSvgGoat),
+  _threeWiseMonkeys: _Icon(scaleX: -1, child: openMojiSvgMonkey),
   'Egg': SizedBox(
     width: 72,
     height: 72,
@@ -71,8 +74,8 @@ final _listItems = <String, Widget>{
       child: mi.Scale(scale: 0.5, child: openMojiSvgEgg),
     ),
   ),
-  'Pig': _Icon(mirror: true, child: openMojiSvgPig),
-  'Cat ': _Icon(mirror: true, child: Image.asset('assets/worker_cat1.png')),
+  'Pig': _Icon(scaleX: -1, child: openMojiSvgPig),
+  'Cat ': _Icon(scaleX: -1, child: Image.asset('assets/worker_cat1.png')),
 };
 
 class ListsPage extends ConsumerWidget {
@@ -134,8 +137,6 @@ class ListsPage extends ConsumerWidget {
 // Reorderable list tab.
 //
 
-final _isDesktop = !kIsWeb && Platform.isWindows; // for now
-
 final _initOrder = List<int>.unmodifiable(mi.iota(13));
 final _orderNotifier = ValueNotifier<List<int>>(_initOrder);
 final _orderProvider = ChangeNotifierProvider((ref) => _orderNotifier);
@@ -153,8 +154,8 @@ class _ReorderableListTab extends ConsumerWidget {
   static final _items = _listItems.entries.toList();
   // Long pressで起こす置換イベント
   static final _replaceList = <String, String>{
-    'Rat': 'Mouse',
-    'Mouse': 'Rat',
+    'Rat': 'Bat',
+    'Bat': 'Rat',
     'Rabbit': 'Hare',
     'Hare': 'Rabbit',
     'Snake': 'Snake ',
@@ -349,7 +350,9 @@ class _ReorderableListTab extends ConsumerWidget {
                                 },
                                 child: item.value,
                               ),
-                        title: Text(item.key),
+                        title: item.key == _threeWiseMonkeys
+                            ? Text(item.key, style: const TextStyle(fontSize: 24))
+                            : Text(item.key),
                         selected: selected == index,
                         onTap: () {
                           ref.read(_selectedProvider.notifier).state = index;

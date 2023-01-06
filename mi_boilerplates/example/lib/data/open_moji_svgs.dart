@@ -138,6 +138,8 @@ final openMojiSvgMouseFace = SvgPicture.asset('assets/open_moji/1F42D.svg');
 final openMojiSvgMouse = SvgPicture.asset('assets/open_moji/1F401.svg');
 // rat  (rat)
 final openMojiSvgRat = SvgPicture.asset('assets/open_moji/1F400.svg');
+// white rat  (rat)
+final openMojiSvgWhiteRat = SvgPicture.asset('assets/open_moji/1F400_white.svg');
 // hamster  (face, hamster, pet)
 final openMojiSvgHamster = SvgPicture.asset('assets/open_moji/1F439.svg');
 // rabbit face  (bunny, face, pet, rabbit)
