@@ -6,8 +6,6 @@
 // Parametric modeler
 //
 
-// https://api.flutter.dev/flutter/vector_math/vector_math-library.html
-
 import 'package:flutter/foundation.dart';
 import 'package:vector_math/vector_math_64.dart';
 
@@ -282,6 +280,8 @@ abstract class AbstractMesh {
 }
 
 /// 立方体生成用メッシュデータ
+///
+/// (-1,-1,-1)-(1,1,1)
 
 final _cubeVertices = <Vector3>[
   Vector3(1, 1, -1),
@@ -335,30 +335,42 @@ final _cubeFaces = <MeshFace>[
   ],
 ];
 
-MeshData _toCubeMeshData(Matrix4 matrix) {
+MeshData _toCubeMeshData(Matrix4 matrix, Vector3 scale) {
   return MeshData(
-    vertices: _cubeVertices.map((it) => matrix.transform3(it * 0.5)).toList(),
+    vertices: _cubeVertices
+        .map(
+          (it) => Vector3(
+            it.x * scale.x * 0.5,
+            it.y * scale.y * 0.5,
+            it.z * scale.z * 0.5,
+          ),
+        )
+        .toList(),
     normals: _cubeNormals.map((it) => matrix.rotated3(it)).toList(),
     faces: _cubeFaces,
     smooth: false,
   );
 }
 
-/// 立方体
+/// 直方体
 ///
-/// 指定のノード位置に立方体を生成する。
+/// 指定のノードを中心に直方体を生成する。
 
 class CubeMesh extends AbstractMesh {
   String path;
+  Vector3? _scale;
+  Vector3 get scale => _scale ?? Vector3(1, 1, 1);
+  set scale(Vector3 value) => _scale = value;
 
   CubeMesh({
     required this.path,
-  });
+    Vector3? scale,
+  }) : _scale = scale;
 
   @override
   MeshData toMeshData(Node rootNode) {
     final matrix = rootNode.find(toPath(path));
-    return _toCubeMeshData(matrix!.value);
+    return _toCubeMeshData(matrix!.value, scale);
   }
 
 //<editor-fold desc="Data Methods">
@@ -366,33 +378,40 @@ class CubeMesh extends AbstractMesh {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CubeMesh && runtimeType == other.runtimeType && path == other.path);
+      (other is CubeMesh &&
+          runtimeType == other.runtimeType &&
+          path == other.path &&
+          scale == other.scale);
 
   @override
-  int get hashCode => path.hashCode;
+  int get hashCode => path.hashCode ^ scale.hashCode;
 
   @override
   String toString() {
-    return 'CubeMesh{' ' path: $path,' '}';
+    return 'CubeMesh{' ' path: $path,' ' scale: $scale,' '}';
   }
 
   CubeMesh copyWith({
     String? path,
+    Vector3? scale,
   }) {
     return CubeMesh(
       path: path ?? this.path,
+      scale: scale ?? this.scale,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'path': path,
+      'scale': scale,
     };
   }
 
   factory CubeMesh.fromMap(Map<String, dynamic> map) {
     return CubeMesh(
       path: map['path'] as String,
+      scale: map['scale'] as Vector3,
     );
   }
 
