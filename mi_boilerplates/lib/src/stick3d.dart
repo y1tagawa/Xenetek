@@ -3,15 +3,23 @@
 // found in the LICENSE file.
 
 //
-// 3D stick figure representation
+// Parametric modeler
 //
+
+// https://api.flutter.dev/flutter/vector_math/vector_math-library.html
 
 import 'package:vector_math/vector_math.dart';
 
 class Node {
-  final Vector3 position;
-  final Matrix3 rotation;
-  final Map<String, Node> children;
+  Matrix4? _matrix;
+  Matrix4 get matrix => _matrix ?? Matrix4.identity();
+  set matrix(Matrix4 value) => _matrix = value;
+  Map<String, Node> children;
+
+  Node({
+    Matrix4? matrix,
+    this.children = const <String, Node>{},
+  }) : _matrix = matrix;
 
   /// [path]に対応する子ノードを検索する。
   Node? find({
@@ -27,131 +35,184 @@ class Node {
     return child.find(path: path.skip(1));
   }
 
-  /// [path]に対応する子ノード、またはそのプロパティを入れ替えたコピーを返す。
-  Node modified({
-    required Iterable<String> path,
-    Vector3? position,
-    Matrix3? rotation,
-    Map<String, Node>? children,
-  }) {
-    if (path.isEmpty) {
-      return copyWith(
-        position: position,
-        rotation: rotation,
-        children: children,
-      );
-    }
-
-    if (!this.children.containsKey(path.first)) {
-      throw Exception();
-    }
-
-    final children_ = <String, Node>{};
-    for (final key in this.children.keys) {
-      final child = this.children[key]!;
-      if (path.first == key) {
-        children_[key] = modified(
-          path: path.skip(1),
-          position: position,
-          rotation: rotation,
-          children: children,
-        );
-      }
-      // さもなくばそのまま残す。
-      children_[key] = child;
-    }
-    return copyWith(children: children_);
+  ///
+  Node copy() {
+    return Node(
+      matrix: _matrix,
+      children: <String, Node>{
+        for (var item in children.entries) item.key: item.value.copy(),
+      },
+    );
   }
 
-  Node added({
-    required Iterable<String> path,
-    required String key,
-    required Node child,
-  }) {
-    final node = find(path: path);
-    if (node == null) {
-      throw Exception(); // TODO:
-    }
-    if (node.children.containsKey(key)) {
-      throw Exception(); // TODO:
-    }
-    final children_ = {...node.children};
-    children_[key] = child;
-    return modified(path: path, children: children_);
-  }
-
-  Node removed({
-    required Iterable<String> path,
-    required String key,
-  }) {
-    final node = find(path: path);
-    if (node == null) {
-      throw Exception(); // TODO:
-    }
-    final children_ = {...node.children};
-    children_.remove(key);
-    return modified(path: path, children: children_);
-  }
-
-  // todo: rotated, positioned
 //<editor-fold desc="Data Methods">
-
-  const Node({
-    required this.position,
-    required this.rotation,
-    this.children = const <String, Node>{},
-  });
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Node &&
           runtimeType == other.runtimeType &&
-          position == other.position &&
-          rotation == other.rotation &&
+          _matrix == other._matrix &&
           children == other.children);
 
   @override
-  int get hashCode => position.hashCode ^ rotation.hashCode ^ children.hashCode;
+  int get hashCode => _matrix.hashCode ^ children.hashCode;
 
   @override
   String toString() {
-    return 'Node{'
-        ' position: $position,'
-        ' rotation: $rotation,'
-        ' children: $children,'
-        '}';
+    return 'Node{ _matrix: $_matrix, ' 'children: $children,' '}';
   }
 
   Node copyWith({
-    Vector3? position,
-    Matrix3? rotation,
+    Matrix4? matrix,
     Map<String, Node>? children,
   }) {
     return Node(
-      position: position ?? this.position,
-      rotation: rotation ?? this.rotation,
+      matrix: matrix ?? _matrix,
       children: children ?? this.children,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'position': position,
-      'rotation': rotation,
+      '_matrix': _matrix,
       'children': children,
     };
   }
 
   factory Node.fromMap(Map<String, dynamic> map) {
     return Node(
-      position: map['position'] as Vector3,
-      rotation: map['rotation'] as Matrix3,
+      matrix: map['_matrix'] as Matrix4,
       children: map['children'] as Map<String, Node>,
     );
   }
 
 //</editor-fold>
+}
+
+class MeshVertex {
+  int vertexIndex;
+  int normalIndex;
+  int textureVertexIndex;
+
+  MeshVertex({
+    this.vertexIndex = -1,
+    this.normalIndex = -1,
+    this.textureVertexIndex = -1,
+  });
+
+  //<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeshVertex &&
+          runtimeType == other.runtimeType &&
+          vertexIndex == other.vertexIndex &&
+          normalIndex == other.normalIndex &&
+          textureVertexIndex == other.textureVertexIndex);
+
+  @override
+  int get hashCode => vertexIndex.hashCode ^ normalIndex.hashCode ^ textureVertexIndex.hashCode;
+
+  @override
+  String toString() {
+    return 'MeshVertex{'
+        ' vertexIndex: $vertexIndex,'
+        ' normalIndex: $normalIndex,'
+        ' textureVertexIndex: $textureVertexIndex,'
+        '}';
+  }
+
+  MeshVertex copyWith({
+    int? vertexIndex,
+    int? normalIndex,
+    int? textureVertexIndex,
+  }) {
+    return MeshVertex(
+      vertexIndex: vertexIndex ?? this.vertexIndex,
+      normalIndex: normalIndex ?? this.normalIndex,
+      textureVertexIndex: textureVertexIndex ?? this.textureVertexIndex,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'vertexIndex': vertexIndex,
+      'normalIndex': normalIndex,
+      'textureVertexIndex': textureVertexIndex,
+    };
+  }
+
+  factory MeshVertex.fromMap(Map<String, dynamic> map) {
+    return MeshVertex(
+      vertexIndex: map['vertexIndex'] as int,
+      normalIndex: map['normalIndex'] as int,
+      textureVertexIndex: map['textureVertexIndex'] as int,
+    );
+  }
+
+//</editor-fold>
+}
+
+typedef MeshFace = List<MeshVertex>;
+
+class MeshData {
+  final List<Vector3> vertices;
+  final List<MeshFace> faces;
+
+  MeshData({
+    this.vertices = const <Vector3>[],
+    this.faces = const <MeshFace>[],
+  });
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeshData &&
+          runtimeType == other.runtimeType &&
+          vertices == other.vertices &&
+          faces == other.faces);
+
+  @override
+  int get hashCode => vertices.hashCode ^ faces.hashCode;
+
+  @override
+  String toString() {
+    return 'Mesh{ vertices: $vertices, faces: $faces,}';
+  }
+
+  MeshData copyWith({
+    List<Vector3>? vertices,
+    List<MeshFace>? faces,
+  }) {
+    return MeshData(
+      vertices: vertices ?? this.vertices,
+      faces: faces ?? this.faces,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'vertices': vertices,
+      'faces': faces,
+    };
+  }
+
+  factory MeshData.fromMap(Map<String, dynamic> map) {
+    return MeshData(
+      vertices: map['vertices'] as List<Vector3>,
+      faces: map['faces'] as List<MeshFace>,
+    );
+  }
+
+//</editor-fold>
+}
+
+abstract class AbstractMesh {
+  MeshData toMeshData();
 }
 
 //
@@ -161,118 +222,3 @@ class Node {
 //   * Yを次の曲げ軸とする。（股の左右開閉軸、肩の前後振り軸、椎骨の左右曲げ軸）
 //   * Zを捻り軸、肢の伸びる方向とする。
 //
-
-extension NodeHelper on Node {
-  /// 肢、指等を生成する。
-  /// https://motto-kansetsu.com/finger/index.html
-  /// https://motto-kansetsu.com/finger/index.html
-  // shoulder.added(['elbow': z*0.3, 'hand': z*0.3])
-  // ->
-
-  Node addLimb(
-    Iterable<MapEntry<String, Vector3>> descending,
-  ) {
-    assert(descending.isNotEmpty);
-
-    Node child_(
-      Vector3 position,
-      Iterable<MapEntry<String, Vector3>> descending,
-    ) {
-      if (descending.isEmpty) {
-        return Node(
-          position: position,
-          rotation: Matrix3.identity(),
-          children: {},
-        );
-      }
-
-      final key = descending.first.key;
-      final position_ = descending.first.value;
-      return Node(
-        position: position,
-        rotation: Matrix3.identity(),
-        children: {
-          key: child_(position_, descending.skip(1)),
-        },
-      );
-    }
-
-    final key = descending.first.key;
-    final position = descending.first.value;
-    return added(
-      path: [],
-      key: key,
-      child: child_(position, descending.skip(1)),
-    );
-  }
-}
-
-//
-// モデル
-//
-
-class Mesh {
-  final String? materialName;
-  const Mesh({
-    this.materialName,
-  });
-  // TBD
-}
-
-abstract class MeshBuilder {
-  const MeshBuilder();
-
-  List<Mesh> build();
-}
-
-class Model {
-  final String? objectName;
-  final List<MeshBuilder> meshBuilders;
-
-  const Model({
-    this.objectName,
-    this.meshBuilders = const [],
-  });
-
-  List<Mesh> build() {
-    //TODO
-    throw UnimplementedError();
-  }
-
-//<editor-fold desc="Data Methods">
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Model &&
-          runtimeType == other.runtimeType &&
-          objectName == other.objectName &&
-          meshBuilders == other.meshBuilders);
-
-  @override
-  int get hashCode => objectName.hashCode ^ meshBuilders.hashCode;
-
-  @override
-  String toString() {
-    return 'Model{ objectName: $objectName, meshBuilders: $meshBuilders,}';
-  }
-
-  Model copyWith({
-    String? objectName,
-    List<MeshBuilder>? meshBuilders,
-  }) {
-    return Model(
-      objectName: objectName ?? this.objectName,
-      meshBuilders: meshBuilders ?? this.meshBuilders,
-    );
-  }
-
-  factory Model.fromMap(Map<String, dynamic> map) {
-    return Model(
-      objectName: map['objectName'] as String,
-      meshBuilders: map['meshBuilders'] as List<MeshBuilder>,
-    );
-  }
-
-//</editor-fold>
-}
