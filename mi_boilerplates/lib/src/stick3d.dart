@@ -15,7 +15,10 @@ final x_ = Vector3(1, 0, 0);
 final y_ = Vector3(0, 1, 0);
 final z_ = Vector3(0, 0, 1);
 
-// Node
+/// ノード
+///
+/// モデルの制御点（関節）を定義する。
+/// [matrix]は親ノードからの相対的な変換を表す。
 
 class Node {
   Matrix4? _matrix;
@@ -50,7 +53,7 @@ class Node {
 
   Node copy() {
     return Node(
-      matrix: _matrix,
+      matrix: matrix,
       children: <String, Node>{
         for (var item in children.entries) item.key: item.value.copy(),
       },
@@ -64,7 +67,7 @@ class Node {
       identical(this, other) ||
       (other is Node &&
           runtimeType == other.runtimeType &&
-          _matrix == other._matrix &&
+          matrix == other.matrix &&
           children == other.children);
 
   @override
@@ -80,21 +83,21 @@ class Node {
     Map<String, Node>? children,
   }) {
     return Node(
-      matrix: matrix ?? _matrix,
+      matrix: matrix ?? this.matrix,
       children: children ?? this.children,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      '_matrix': _matrix,
+      'matrix': matrix,
       'children': children,
     };
   }
 
   factory Node.fromMap(Map<String, dynamic> map) {
     return Node(
-      matrix: map['_matrix'] as Matrix4,
+      matrix: map['matrix'] as Matrix4,
       children: map['children'] as Map<String, Node>,
     );
   }
@@ -102,7 +105,11 @@ class Node {
 //</editor-fold>
 }
 
-// Mesh data
+/// メッシュ頂点データ
+///
+/// 大体Wavefront .objの頂点データ。ただし、
+/// - インデックスは0から。
+/// - 省略時は-1。
 
 class MeshVertex {
   int vertexIndex;
@@ -171,6 +178,10 @@ class MeshVertex {
 }
 
 typedef MeshFace = List<MeshVertex>;
+
+/// メッシュデータ
+///
+/// 大体Wavefront .objみたいなやつ。
 
 class MeshData {
   List<Vector3> vertices;
@@ -256,7 +267,12 @@ class MeshData {
 //</editor-fold>
 }
 
-// Abstract mesh
+// Print to Wavefront .obj
+String toWavefrontObj(List<MeshData> meshList) {
+  return ''; //TODO
+}
+
+/// メッシュの基底クラス
 
 abstract class AbstractMesh {
   @protected
@@ -265,9 +281,7 @@ abstract class AbstractMesh {
   MeshData toMeshData(Node rootNode);
 }
 
-//
-// Cube
-//
+/// 立方体生成用メッシュデータ
 
 final _cubeVertices = <Vector3>[
   Vector3(1, 1, -1),
@@ -323,12 +337,16 @@ final _cubeFaces = <MeshFace>[
 
 MeshData _toCubeMeshData(Matrix4 matrix) {
   return MeshData(
-    vertices: _cubeVertices,
-    normals: _cubeNormals,
+    vertices: _cubeVertices.map((it) => matrix.transform3(it * 0.5)).toList(),
+    normals: _cubeNormals.map((it) => matrix.rotated3(it)).toList(),
     faces: _cubeFaces,
     smooth: false,
   );
 }
+
+/// 立方体
+///
+/// 指定のノード位置に立方体を生成する。
 
 class CubeMesh extends AbstractMesh {
   String path;
