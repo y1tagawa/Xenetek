@@ -600,24 +600,14 @@ MeshData _toCubeMeshData({
   Vector3 scale = Vector3.one,
 }) {
   return MeshData(
-    vertices: _cubeVertices
-        .map(
-          (it) => matrix.transformed(
-            Vector3(
-              it.x * scale.x * 0.5,
-              it.y * scale.y * 0.5,
-              it.z * scale.z * 0.5,
-            ),
-          ),
-        )
-        .toList(),
+    vertices: _cubeVertices.map((it) => matrix.transformed(it * scale * 0.5)).toList(),
     normals: _cubeNormals.map((it) => matrix.rotated(it)).toList(),
     faces: _cubeFaces,
     smooth: false,
   );
 }
 
-///
+/// MeshData集積
 ///
 
 List<MeshData> toMeshData({
