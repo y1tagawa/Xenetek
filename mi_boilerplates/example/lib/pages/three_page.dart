@@ -134,7 +134,7 @@ void _setup() {
   var root = mi.Node();
   _meshes.clear();
   root.children['n1'] = mi.Node(matrix: Matrix4.translation(-mi.z_ * 2.0));
-  _meshes.add(mi.CubeMesh(path: 'n1'));
+  _meshes.add(mi.CubeMesh(center: 'n1'));
 
   _rootNode = root;
 }

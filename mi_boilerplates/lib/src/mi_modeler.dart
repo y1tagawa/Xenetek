@@ -3,12 +3,195 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:vector_math/vector_math_64.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
+import 'package:vector_math/vector_math_64.dart' as vm;
 
-// TODO: immutable
-final x_ = Vector3(1, 0, 0);
-final y_ = Vector3(0, 1, 0);
-final z_ = Vector3(0, 0, 1);
+/// vector_mathのVector3の代わり
+///
+/// vector_mathのVector3はimmutableにできないので
+
+class Vector3 {
+  static const unitX = Vector3(1, 0, 0);
+  static const unitY = Vector3(0, 1, 0);
+  static const unitZ = Vector3(0, 0, 1);
+  static const zero = Vector3(0, 0, 0);
+  static const one = Vector3(1, 1, 1);
+
+  final double x;
+  final double y;
+  final double z;
+
+  Vector3 operator -() => Vector3(-x, -y, -z);
+  Vector3 operator +(Vector3 other) => Vector3(x + other.x, y + other.y, z + other.z);
+  Vector3 operator -(Vector3 other) => Vector3(x - other.x, y - other.y, z - other.z);
+  Vector3 operator *(dynamic other) {
+    switch (other.runtimeType) {
+      case double:
+        return (other as double).let((it) => Vector3(x * it, y * it, z * it));
+      case Vector3:
+        return (other as Vector3).let((it) => Vector3(x * it.x, y * it.y, z * it.z));
+    }
+    throw UnimplementedError();
+  }
+
+  Vector3.fromVmVector(vm.Vector3 value)
+      : x = value.x,
+        y = value.y,
+        z = value.z;
+  vm.Vector3 toVmVector() => vm.Vector3(x, y, z);
+
+  //<editor-fold desc="Data Methods">
+
+  const Vector3(this.x, this.y, this.z);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Vector3 &&
+          runtimeType == other.runtimeType &&
+          x == other.x &&
+          y == other.y &&
+          z == other.z);
+
+  @override
+  int get hashCode => x.hashCode ^ y.hashCode ^ z.hashCode;
+
+  @override
+  String toString() {
+    return 'Vector3{' ' x: $x,' ' y: $y,' ' z: $z,' '}';
+  }
+
+  Vector3 copyWith({
+    double? x,
+    double? y,
+    double? z,
+  }) {
+    return Vector3(x ?? this.x, y ?? this.y, z ?? this.z);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'x': x,
+      'y': y,
+      'z': z,
+    };
+  }
+
+  factory Vector3.fromMap(Map<String, dynamic> map) {
+    return Vector3(
+      map['x'] as double,
+      map['y'] as double,
+      map['z'] as double,
+    );
+  }
+
+//</editor-fold>
+}
+
+/// vector_mathのMatrix4の代わり
+///
+/// vector_mathのMatrix4はimmutableにできないので
+
+class Matrix4 {
+  static const identity = Matrix4._(<double>[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+  static const zero = Matrix4._(<double>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+
+  final List<double> elements;
+
+  Matrix4 operator *(Matrix4 other) {
+    return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
+  }
+
+  Vector3 rotated(Vector3 value) {
+    return Vector3.fromVmVector(toVmMatrix().rotated3(value.toVmVector()));
+  }
+
+  Vector3 transformed(Vector3 value) {
+    return Vector3.fromVmVector(toVmMatrix().transform3(value.toVmVector()));
+  }
+
+  Matrix4.fromList(this.elements) : assert(elements.length == 16);
+
+  Matrix4.fromVmMatrix(vm.Matrix4 value) : elements = value.storage;
+  vm.Matrix4 toVmMatrix() {
+    assert(elements.length == 16);
+    return vm.Matrix4(
+      elements[0],
+      elements[1],
+      elements[2],
+      elements[3],
+      elements[4],
+      elements[5],
+      elements[6],
+      elements[7],
+      elements[8],
+      elements[9],
+      elements[10],
+      elements[11],
+      elements[12],
+      elements[13],
+      elements[14],
+      elements[15],
+    );
+  }
+
+  // todo その他のコンストラクタ
+
+  //<editor-fold desc="Data Methods">
+
+  const Matrix4._(this.elements);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Matrix4 && runtimeType == other.runtimeType && elements == other.elements);
+
+  @override
+  int get hashCode => elements.hashCode;
+
+  @override
+  String toString() {
+    return 'Matrix4{' ' elements: $elements,' '}';
+  }
+
+  Matrix4 copyWith({
+    List<double>? elements,
+  }) {
+    return Matrix4._(
+      elements ?? this.elements,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'elements': elements,
+    };
+  }
+
+  factory Matrix4.fromMap(Map<String, dynamic> map) {
+    final elements = map['elements'] as List<double>;
+    if (elements.length != 16) {
+      throw const FormatException();
+    }
+    return Matrix4._(elements);
+  }
+
+//</editor-fold>
+}
+
+/// ノード検索結果
+
+class NodeFind {
+  final Node node;
+  final Matrix4 matrix;
+  final Node? parent;
+
+  const NodeFind({
+    required this.node,
+    required this.matrix,
+    required this.parent,
+  });
+}
 
 /// ノード
 ///
@@ -16,46 +199,36 @@ final z_ = Vector3(0, 0, 1);
 /// [matrix]は親ノードからの相対的な変換を表す。
 
 class Node {
-  Matrix4? _matrix;
-  Matrix4 get matrix => _matrix ?? Matrix4.identity();
-  set matrix(Matrix4 value) => _matrix = value;
-  Map<String, Node> children;
+  final Matrix4 matrix;
+  final Map<String, Node> children;
 
-  Node({
-    Matrix4? matrix,
-    this.children,
-  }) : _matrix = matrix;
-
-  MapEntry<Node, Matrix4>? _find(
+  NodeFind? _find(
     Iterable<String> path,
     Matrix4 matrix,
+    Node? parent,
   ) {
     if (path.isEmpty) {
-      return MapEntry(this, matrix);
+      return NodeFind(node: this, matrix: matrix, parent: parent);
     }
     final child = children[path.first];
     if (child == null) {
       return null;
     }
-    return child._find(path.skip(1), this.matrix * matrix);
+    return child._find(path.skip(1), this.matrix * matrix, this);
   }
 
-  MapEntry<Node, Matrix4>? find(
+  NodeFind? find(
     Iterable<String> path,
   ) {
-    return _find(path, Matrix4.identity());
-  }
-
-  Node copy() {
-    return Node(
-      matrix: matrix,
-      children: <String, Node>{
-        for (var item in children.entries) item.key: item.value.copy(),
-      },
-    );
+    return _find(path, Matrix4.identity, null);
   }
 
 //<editor-fold desc="Data Methods">
+
+  const Node({
+    required this.matrix,
+    required this.children,
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -66,11 +239,11 @@ class Node {
           children == other.children);
 
   @override
-  int get hashCode => _matrix.hashCode ^ children.hashCode;
+  int get hashCode => matrix.hashCode ^ children.hashCode;
 
   @override
   String toString() {
-    return 'Node{ _matrix: $_matrix, ' 'children: $children,' '}';
+    return 'Node{' ' matrix: $matrix,' ' children: $children,' '}';
   }
 
   Node copyWith({
@@ -104,14 +277,14 @@ class Node {
 ///
 /// 大体Wavefront .objの頂点データ。ただし、
 /// - インデックスは0から。
-/// - 省略時は-1。
+/// - 省略されたインデックスは-1。
 
 class MeshVertex {
-  int vertexIndex;
-  int textureVertexIndex;
-  int normalIndex;
+  final int vertexIndex;
+  final int textureVertexIndex;
+  final int normalIndex;
 
-  MeshVertex(
+  const MeshVertex(
     this.vertexIndex,
     int? textureVertexIndex,
     int? normalIndex,
@@ -179,13 +352,13 @@ typedef MeshFace = List<MeshVertex>;
 /// 大体Wavefront .objみたいなやつ。
 
 class MeshData {
-  List<Vector3> vertices;
-  List<Vector3> normals;
-  List<Vector3> textureVertices;
-  List<MeshFace> faces;
-  bool smooth;
+  final List<Vector3> vertices;
+  final List<Vector3> normals;
+  final List<Vector3> textureVertices;
+  final List<MeshFace> faces;
+  final bool smooth;
 
-  MeshData({
+  const MeshData({
     this.vertices = const <Vector3>[],
     this.normals = const <Vector3>[],
     this.textureVertices = const <Vector3>[],
@@ -273,6 +446,8 @@ abstract class Mesh {
   @protected
   List<String> toPath(String path) => path.split('.');
 
+  const Mesh();
+
   MeshData toMeshData(Node rootNode);
 }
 
@@ -280,7 +455,7 @@ abstract class Mesh {
 ///
 /// (-1,-1,-1)-(1,1,1)
 
-final _cubeVertices = <Vector3>[
+const _cubeVertices = <Vector3>[
   Vector3(1, 1, -1),
   Vector3(1, -1, -1),
   Vector3(1, 1, 1),
@@ -291,9 +466,16 @@ final _cubeVertices = <Vector3>[
   Vector3(-1, -1, 1),
 ];
 
-final _cubeNormals = <Vector3>[y_, z_, -x_, -y_, x_, -z_];
+final _cubeNormals = <Vector3>[
+  Vector3.unitY,
+  Vector3.unitZ,
+  -Vector3.unitX,
+  -Vector3.unitY,
+  Vector3.unitX,
+  -Vector3.unitZ,
+];
 
-final _cubeFaces = <MeshFace>[
+const _cubeFaces = <MeshFace>[
   <MeshVertex>[
     MeshVertex(0, -1, 0),
     MeshVertex(4, -1, 0),
@@ -332,7 +514,10 @@ final _cubeFaces = <MeshFace>[
   ],
 ];
 
-MeshData _toCubeMeshData(Matrix4 matrix, Vector3 scale) {
+MeshData _toCubeMeshData({
+  required Matrix4 matrix,
+  Vector3 scale = Vector3.one,
+}) {
   return MeshData(
     vertices: _cubeVertices
         .map(
@@ -343,7 +528,7 @@ MeshData _toCubeMeshData(Matrix4 matrix, Vector3 scale) {
           ),
         )
         .toList(),
-    normals: _cubeNormals.map((it) => matrix.rotated3(it)).toList(),
+    normals: _cubeNormals.map((it) => matrix.rotated(it)).toList(),
     faces: _cubeFaces,
     smooth: false,
   );
@@ -354,20 +539,18 @@ MeshData _toCubeMeshData(Matrix4 matrix, Vector3 scale) {
 /// 指定のノードを中心に直方体を生成する。
 
 class CubeMesh extends Mesh {
-  String path;
-  Vector3? _scale;
-  Vector3 get scale => _scale ?? Vector3(1, 1, 1);
-  set scale(Vector3 value) => _scale = value;
+  final String center;
+  final Vector3 scale;
 
-  CubeMesh({
-    required this.path,
-    Vector3? scale,
-  }) : _scale = scale;
+  const CubeMesh({
+    required this.center,
+    this.scale = Vector3.one,
+  });
 
   @override
   MeshData toMeshData(Node rootNode) {
-    final matrix = rootNode.find(toPath(path));
-    return _toCubeMeshData(matrix!.value, scale);
+    final find = rootNode.find(toPath(center));
+    return _toCubeMeshData(matrix: find!.matrix, scale: scale);
   }
 
 //<editor-fold desc="Data Methods">
@@ -377,15 +560,15 @@ class CubeMesh extends Mesh {
       identical(this, other) ||
       (other is CubeMesh &&
           runtimeType == other.runtimeType &&
-          path == other.path &&
+          center == other.center &&
           scale == other.scale);
 
   @override
-  int get hashCode => path.hashCode ^ scale.hashCode;
+  int get hashCode => center.hashCode ^ scale.hashCode;
 
   @override
   String toString() {
-    return 'CubeMesh{' ' path: $path,' ' scale: $scale,' '}';
+    return 'CubeMesh{' ' path: $center,' ' scale: $scale,' '}';
   }
 
   CubeMesh copyWith({
@@ -393,21 +576,21 @@ class CubeMesh extends Mesh {
     Vector3? scale,
   }) {
     return CubeMesh(
-      path: path ?? this.path,
+      center: path ?? this.center,
       scale: scale ?? this.scale,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'path': path,
+      'path': center,
       'scale': scale,
     };
   }
 
   factory CubeMesh.fromMap(Map<String, dynamic> map) {
     return CubeMesh(
-      path: map['path'] as String,
+      center: map['path'] as String,
       scale: map['scale'] as Vector3,
     );
   }
