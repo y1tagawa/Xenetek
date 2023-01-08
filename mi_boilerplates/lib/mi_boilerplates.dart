@@ -13,6 +13,7 @@ export 'src/mi_color_grid.dart';
 export 'src/mi_dialogs.dart';
 export 'src/mi_list_tiles.dart';
 export 'src/mi_menus.dart';
+export 'src/mi_modeler.dart';
 export 'src/mi_page_view.dart';
 export 'src/mi_reorderable_list.dart';
 export 'src/mi_tabs.dart';

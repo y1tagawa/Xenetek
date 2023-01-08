@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//
-// Parametric modeler
-//
-
 import 'package:flutter/foundation.dart';
 import 'package:vector_math/vector_math_64.dart';
 
+// TODO: immutable
 final x_ = Vector3(1, 0, 0);
 final y_ = Vector3(0, 1, 0);
 final z_ = Vector3(0, 0, 1);
@@ -26,7 +23,7 @@ class Node {
 
   Node({
     Matrix4? matrix,
-    this.children = const <String, Node>{},
+    this.children,
   }) : _matrix = matrix;
 
   MapEntry<Node, Matrix4>? _find(
@@ -272,7 +269,7 @@ String toWavefrontObj(List<MeshData> meshList) {
 
 /// メッシュの基底クラス
 
-abstract class AbstractMesh {
+abstract class Mesh {
   @protected
   List<String> toPath(String path) => path.split('.');
 
@@ -356,7 +353,7 @@ MeshData _toCubeMeshData(Matrix4 matrix, Vector3 scale) {
 ///
 /// 指定のノードを中心に直方体を生成する。
 
-class CubeMesh extends AbstractMesh {
+class CubeMesh extends Mesh {
   String path;
   Vector3? _scale;
   Vector3 get scale => _scale ?? Vector3(1, 1, 1);

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:example/pages/ex_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,8 +28,8 @@ class ThreePage extends ConsumerWidget {
       icon: Icon(Icons.cruelty_free_outlined),
     ),
     mi.Tab(
-      tooltip: UnderConstruction.title,
-      icon: UnderConstruction.icon,
+      tooltip: 'Modeler',
+      icon: icon,
     ),
   ];
 
@@ -59,7 +58,7 @@ class ThreePage extends ConsumerWidget {
           body: const TabBarView(
             children: [
               _BunnyTab(),
-              UnderConstruction(),
+              _ModelerTab(),
             ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
@@ -117,6 +116,43 @@ class _BunnyTab extends ConsumerWidget {
               },
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+//
+// Modeler tab
+//
+
+mi.Node? _rootNode;
+
+final _meshes = <mi.Mesh>[];
+
+void _setup() {
+  var root = mi.Node();
+  _meshes.clear();
+  root.children['n1'] = mi.Node(matrix: Matrix4.translation(-mi.z_ * 2.0));
+  _meshes.add(mi.CubeMesh(path: 'n1'));
+
+  _rootNode = root;
+}
+
+class _ModelerTab extends ConsumerWidget {
+  static final _logger = Logger((_ModelerTab).toString());
+
+  const _ModelerTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      children: [
+        mi.ButtonListTile(
+          text: const Text('Model'),
+          onPressed: () {
+            _setup();
+          },
         ),
       ],
     );
