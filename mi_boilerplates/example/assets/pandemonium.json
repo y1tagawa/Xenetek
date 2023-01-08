@@ -103,8 +103,10 @@
     "referenceUrl": "https://en.wikipedia.org/wiki/Baal_Berith"
   },
   "Bifrons": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Bifrons.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Bifrons_(demon)"
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Janus%2C_the_Roman_god_%281878%29.jpg/480px-Janus%2C_the_Roman_god_%281878%29.jpg",
+    "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/8/81/Bifrons.png",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Bifrons_(demon)",
+    "description": "Janus, 1878, Woodcut engraving from the the book \"Der Olymp oder die Mythologie der Griechen und Römer (The Olympus or the Mythology of the Greeks and Romans)\", published by August Heinrich Petiscus in C.F. Amelang's Verlag, Leipzig (1878, 18th edition)."
   },
   "Buer": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Buer-blog.jpg",
@@ -126,19 +128,21 @@
     "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Decarabia"
   },
   "Demiurge": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Musei_Vaticani_Leontocephaline11042017_B.jpg/218px-Musei_Vaticani_Leontocephaline11042017_B.jpg",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Phanes.jpg/324px-Phanes.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Demiurge",
-    "note": "Image is referencing to 'https://commons.wikimedia.org/wiki/Category:Leontocephaline'."
+    "description": "Phanes, Francesco de' Rossi, 16C.",
+    "note": "Images are referencing to 'https://commons.wikimedia.org/wiki/Category:Phanes_(deity)'."
   },
   "Demogorgon": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Phanes.jpg/324px-Phanes.jpg",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Hendrick_Goltzius_-_Demogorgon_in_the_Cave_of_Eternity_-_1952.204_-_Cleveland_Museum_of_Art.tif/lossy-page1-584px-Hendrick_Goltzius_-_Demogorgon_in_the_Cave_of_Eternity_-_1952.204_-_Cleveland_Museum_of_Art.tif.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Engraving_of_a_marble_relief_of_Phanes.jpg/314px-Engraving_of_a_marble_relief_of_Phanes.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Demogorgon",
-    "note": "Images are referencing to 'https://commons.wikimedia.org/wiki/Category:Phanes_(deity)'."
+    "description": "Demogorgon in the Cave of Eternity, Hendrick Goltzius, c. 1588"
   },
   "Eurynome": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Ill_dict_infernal_p0270-254_eurynome_demon.jpg/418px-Ill_dict_infernal_p0270-254_eurynome_demon.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Eurynomos_(daemon)"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Eurynomos_(daemon)",
+    "description": "Eurynome. Illustration du Dictionnaire infernal de Jacques Auguste Simon Collin de Plancy par Louis Le Breton, 6eme édition, 1863."
   },
   "Flauros": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ill_dict_infernal_p0294-278_flauros_demon.jpg/428px-Ill_dict_infernal_p0294-278_flauros_demon.jpg",
@@ -214,9 +218,15 @@
     "referenceUrl": "https://en.wikipedia.org/wiki/Pseudomonarchia_Daemonum#Pruflas",
     "description": "Prince/Duke"
   },
+  "Rebis": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Rebis_Theoria_Philosophiae_Hermeticae_1617.jpg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Rebis",
+    "description": "from Theoria Philosophiae Hermeticae (1617) by Heinrich Nollius"
+  },
   "Satan": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Two_Eminent_Devils._Satan_and_Beelzebub.jpg/317px-Two_Eminent_Devils._Satan_and_Beelzebub.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/GustaveDoreParadiseLostSatanProfile.jpg/423px-GustaveDoreParadiseLostSatanProfile.jpg",
+    "description": "Original stipple engraving of \"The life of Milton: in three parts. To which are added, Conjectures on the origin of Paradise lost: with an appendix. By William Hayley, Esq.\" Vol.2. By Hayley, William (1745-1820).",
     "referenceUrl": "https://en.wikipedia.org/wiki/Satan"
   },
   "Shax": {
