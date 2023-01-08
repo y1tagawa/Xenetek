@@ -223,11 +223,17 @@ class Node {
     return _find(path, Matrix4.identity, null);
   }
 
-//<editor-fold desc="Data Methods">
+  Node put(String key, Node child) {
+    final children_ = {...children};
+    children_[key] = child;
+    return copyWith(children: children_);
+  }
+
+  //<editor-fold desc="Data Methods">
 
   const Node({
-    required this.matrix,
-    required this.children,
+    this.matrix = Matrix4.identity,
+    this.children = const <String, Node>{},
   });
 
   @override

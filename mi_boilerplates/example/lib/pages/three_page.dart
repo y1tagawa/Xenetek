@@ -131,10 +131,15 @@ mi.Node? _rootNode;
 final _meshes = <mi.Mesh>[];
 
 void _setup() {
-  var root = mi.Node();
+  var root = const mi.Node();
   _meshes.clear();
-  root.children['n1'] = mi.Node(matrix: Matrix4.translation(-mi.z_ * 2.0));
-  _meshes.add(mi.CubeMesh(center: 'n1'));
+  root = root.put(
+    'n1',
+    mi.Node(
+      matrix: Matrix4.translation(-mi.z_ * 2.0),
+    ),
+  );
+  _meshes.add(const mi.CubeMesh(center: 'n1'));
 
   _rootNode = root;
 }
