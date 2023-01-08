@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
 import 'package:vector_math/vector_math_64.dart' as vm;
@@ -33,6 +35,8 @@ class Vector3 {
     }
     throw UnimplementedError();
   }
+
+  Vector3 normalized() => Vector3.fromVmVector(toVmVector().normalized());
 
   Vector3.fromVmVector(vm.Vector3 value)
       : x = value.x,
@@ -133,6 +137,32 @@ class Matrix4 {
       elements[14],
       elements[15],
     );
+  }
+
+  static Matrix4 rotation(Vector3 axis, double angle) {
+    // https://w3e.kanazawa-it.ac.jp/math/physics/category/physical_math/linear_algebra/henkan-tex.cgi?target=/math/physics/category/physical_math/linear_algebra/rodrigues_rotation_matrix.html
+    final n = axis.normalized();
+    final c = math.cos(angle), c1 = 1.0 - c;
+    final s = math.sin(angle);
+    final elements = <double>[
+      n.x * n.x * c1 + c,
+      n.x * n.y * c1 - n.z * s,
+      n.x * n.z * c1 + n.y * s,
+      0,
+      n.x * n.y * c1 + n.z * s,
+      n.y * n.y * c1 + c,
+      n.y * n.z * c1 - n.x * s,
+      0,
+      n.x * n.z * c1 - n.y * s,
+      n.y * n.z * c1 + n.x * s,
+      n.z * n.z * c1 + c,
+      0,
+      0,
+      0,
+      0,
+      1,
+    ];
+    return Matrix4.fromList(elements);
   }
 
   static Matrix4 translation(Vector3 translation) {
