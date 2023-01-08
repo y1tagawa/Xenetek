@@ -4,7 +4,6 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
 import 'package:vector_math/vector_math_64.dart' as vm;
 
@@ -233,6 +232,8 @@ class NodeFind {
 /// [matrix]は親ノードからの相対的な変換を表す。
 
 class Node {
+  static List<String> splitPath(String path) => path.split('.');
+
   final Matrix4 matrix;
   final Map<String, Node> children;
 
@@ -251,10 +252,14 @@ class Node {
     return child._find(path.skip(1), this.matrix * matrix, this);
   }
 
-  NodeFind? find(
-    Iterable<String> path,
-  ) {
-    return _find(path, Matrix4.identity, null);
+  NodeFind? find(dynamic path) {
+    switch (path.runtimeType) {
+      case Iterable<String>:
+        return _find(path, Matrix4.identity, null);
+      case String:
+        return _find(splitPath(path), Matrix4.identity, null);
+    }
+    throw UnimplementedError();
   }
 
   Node put(String key, Node child) {
@@ -476,16 +481,49 @@ class MeshData {
 }
 
 // Print to Wavefront .obj
-String toWavefrontObj(List<MeshData> meshList) {
-  return ''; //TODO
+
+void toWavefrontObj(List<MeshData> meshDataList, StringSink sink) {
+  int vertexIndex = 1;
+  int textureVertexIndex = 1;
+  int normalIndex = 1;
+  for (final meshData in meshDataList) {
+    for (final vertex in meshData.vertices) {
+      sink.writeln('v ${vertex.x} ${vertex.y} ${vertex.z}');
+    }
+    for (final textureVertex in meshData.textureVertices) {
+      sink.writeln('vt ${textureVertex.x} ${textureVertex.y} ${textureVertex.z}');
+    }
+    for (final normal in meshData.normals) {
+      sink.writeln('vn ${normal.x} ${normal.y} ${normal.z}');
+    }
+    for (final face in meshData.faces) {
+      assert(face.length >= 3);
+      sink.write('f');
+      for (final vertex in face) {
+        assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < meshData.vertices.length);
+        sink.write(' ${vertex.vertexIndex + vertexIndex}');
+        if (vertex.normalIndex >= 0) {
+          sink.write('/');
+          if (vertex.textureVertexIndex >= 0) {
+            assert(vertex.textureVertexIndex < meshData.textureVertices.length);
+            sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
+          }
+          sink.write('/');
+          assert(vertex.normalIndex < meshData.normals.length);
+          sink.write('${vertex.normalIndex + normalIndex}');
+        }
+      }
+      sink.writeln();
+    }
+    vertexIndex += meshData.vertices.length;
+    textureVertexIndex += meshData.textureVertices.length;
+    normalIndex += meshData.normals.length;
+  }
 }
 
 /// メッシュの基底クラス
 
 abstract class Mesh {
-  @protected
-  List<String> toPath(String path) => path.split('.');
-
   const Mesh();
 
   MeshData toMeshData(Node rootNode);
@@ -574,6 +612,20 @@ MeshData _toCubeMeshData({
   );
 }
 
+///
+///
+
+List<MeshData> toMeshData({
+  required Node rootNode,
+  required Iterable<Mesh> meshes,
+}) {
+  final result = <MeshData>[];
+  for (final mesh in meshes) {
+    result.add(mesh.toMeshData(rootNode));
+  }
+  return result;
+}
+
 /// 直方体
 ///
 /// 指定のノードを中心に直方体を生成する。
@@ -589,7 +641,7 @@ class CubeMesh extends Mesh {
 
   @override
   MeshData toMeshData(Node rootNode) {
-    final find = rootNode.find(toPath(center));
+    final find = rootNode.find(center);
     return _toCubeMeshData(matrix: find!.matrix, scale: scale);
   }
 

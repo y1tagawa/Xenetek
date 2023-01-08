@@ -126,6 +126,11 @@ class _BunnyTab extends ConsumerWidget {
 // Modeler tab
 //
 
+const _unitX = mi.Vector3.unitX;
+const _unitY = mi.Vector3.unitY;
+const _unitZ = mi.Vector3.unitZ;
+const _identity = mi.Matrix4.identity;
+
 mi.Node? _rootNode;
 
 final _meshes = <mi.Mesh>[];
@@ -136,7 +141,7 @@ void _setup() {
   root = root.put(
     'n1',
     mi.Node(
-      matrix: mi.Matrix4.translation(-mi.Vector3.unitZ * 2.0),
+      matrix: mi.Matrix4.translation(-_unitZ * 2.0),
     ),
   );
   _meshes.add(const mi.CubeMesh(center: 'n1'));
