@@ -135,6 +135,10 @@ class Matrix4 {
     );
   }
 
+  static Matrix4 translation(Vector3 translation) {
+    return Matrix4.fromVmMatrix(vm.Matrix4.translation(translation.toVmVector()));
+  }
+
   // todo その他のコンストラクタ
 
   //<editor-fold desc="Data Methods">

@@ -136,7 +136,7 @@ void _setup() {
   root = root.put(
     'n1',
     mi.Node(
-      matrix: Matrix4.translation(-mi.z_ * 2.0),
+      matrix: mi.Matrix4.translation(-mi.Vector3.unitZ * 2.0),
     ),
   );
   _meshes.add(const mi.CubeMesh(center: 'n1'));
