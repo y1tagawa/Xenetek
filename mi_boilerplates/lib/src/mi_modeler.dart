@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
 import 'package:vector_math/vector_math_64.dart' as vm;
 
@@ -232,6 +233,8 @@ class NodeFind {
 /// [matrix]は親ノードからの相対的な変換を表す。
 
 class Node {
+  static final _logger = Logger((Node).toString());
+
   static List<String> splitPath(String path) => path.split('.');
 
   final Matrix4 matrix;
@@ -243,7 +246,7 @@ class Node {
     Node? parent,
   ) {
     if (path.isEmpty) {
-      return NodeFind(node: this, matrix: matrix, parent: parent);
+      return NodeFind(node: this, matrix: this.matrix * matrix, parent: parent);
     }
     final child = children[path.first];
     if (child == null) {
@@ -599,10 +602,12 @@ MeshData _toCubeMeshData({
   return MeshData(
     vertices: _cubeVertices
         .map(
-          (it) => Vector3(
-            it.x * scale.x * 0.5,
-            it.y * scale.y * 0.5,
-            it.z * scale.z * 0.5,
+          (it) => matrix.transformed(
+            Vector3(
+              it.x * scale.x * 0.5,
+              it.y * scale.y * 0.5,
+              it.z * scale.z * 0.5,
+            ),
           ),
         )
         .toList(),

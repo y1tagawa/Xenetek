@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
+import 'package:path_provider/path_provider.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 
 import 'ex_app_bar.dart' as ex;
 
@@ -135,19 +139,28 @@ mi.Node? _rootNode;
 
 final _meshes = <mi.Mesh>[];
 
-void _setup() {
+void _setup(StringSink sink) {
   var root = const mi.Node();
   _meshes.clear();
   root = root.put(
     'n1',
     mi.Node(
-      matrix: mi.Matrix4.translation(-_unitZ * 2.0),
+      matrix: mi.Matrix4.rotation(_unitX, vm.radians(45.0)),
     ),
   );
   _meshes.add(const mi.CubeMesh(center: 'n1'));
-
   _rootNode = root;
+
+  final meshDataList = <mi.MeshData>[];
+  for (final mesh in _meshes) {
+    meshDataList.add(mesh.toMeshData(root));
+  }
+  mi.toWavefrontObj(meshDataList, sink);
 }
+
+final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
+  return await getApplicationDocumentsDirectory();
+});
 
 class _ModelerTab extends ConsumerWidget {
   static final _logger = Logger((_ModelerTab).toString());
@@ -156,12 +169,19 @@ class _ModelerTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final documentsDirectory = ref.watch(_documentsDirectoryProvider);
+
     return Column(
       children: [
         mi.ButtonListTile(
+          enabled: documentsDirectory.hasValue,
           text: const Text('Model'),
           onPressed: () {
-            _setup();
+            final file = File('${documentsDirectory.value!.path}/temp.obj');
+            _logger.fine('output file path=${file.path}');
+            final sink = file.openWrite();
+            _setup(sink);
+            sink.close();
           },
         ),
       ],
