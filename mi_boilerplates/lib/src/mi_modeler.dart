@@ -32,6 +32,8 @@ class Vector3 {
     switch (other.runtimeType) {
       case double:
         return (other as double).let((it) => Vector3(x * it, y * it, z * it));
+      case int:
+        return (other as int).toDouble().let((it) => Vector3(x * it, y * it, z * it));
       case Vector3:
         return (other as Vector3).let((it) => Vector3(x * it.x, y * it.y, z * it.z));
       default:
@@ -177,6 +179,7 @@ class Matrix4 {
     final elements_ = identity.elements.toList();
     switch (scale.runtimeType) {
       case double:
+      case int:
         elements_[0] *= scale;
         elements_[5] *= scale;
         elements_[10] *= scale;
@@ -526,16 +529,16 @@ abstract class Mesh {
 /// 多面体メッシュの基底クラス
 
 abstract class AbstractPolyhedralMesh extends Mesh {
-  final String center;
+  final String origin;
   MeshData get data;
 
   const AbstractPolyhedralMesh({
-    required this.center,
+    required this.origin,
   });
 
   @override
   MeshData toMeshData(Node root) {
-    final find = root.find(center)!;
+    final find = root.find(origin)!;
     return data.transformedBy(find.matrix);
   }
 }
@@ -665,19 +668,19 @@ final _cubeMeshData = MeshData(
 
 /// 直方体
 ///
-/// 指定のノードを中心に直方体を生成する。
+/// [origin]を上面中心として直方体を生成する。
 
-class CubeMesh extends AbstractPolyhedralMesh {
+class BoxMesh extends AbstractPolyhedralMesh {
   final dynamic scale;
 
-  const CubeMesh({
-    required super.center,
+  const BoxMesh({
+    required super.origin,
     this.scale = Vector3.one,
   });
 
   @override
   MeshData get data => _cubeMeshData.transformedBy(
-        Matrix4.scale(Vector3.one * scale) * Matrix4.translation(Vector3.unitY * -0.5),
+        Matrix4.scale(Vector3.one * scale),
       );
 
 //<editor-fold desc="Data Methods">
@@ -685,44 +688,42 @@ class CubeMesh extends AbstractPolyhedralMesh {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CubeMesh &&
+      (other is BoxMesh &&
           runtimeType == other.runtimeType &&
-          center == other.center &&
+          origin == other.origin &&
           scale == other.scale);
 
   @override
-  int get hashCode => center.hashCode ^ scale.hashCode;
+  int get hashCode => origin.hashCode ^ scale.hashCode;
 
   @override
   String toString() {
-    return 'CubeMesh{' ' path: $center,' ' scale: $scale,' '}';
+    return 'CubeMesh{' ' path: $origin,' ' scale: $scale,' '}';
   }
 
-  CubeMesh copyWith({
+  BoxMesh copyWith({
     String? path,
     Vector3? scale,
   }) {
-    return CubeMesh(
-      center: path ?? this.center,
+    return BoxMesh(
+      origin: path ?? this.origin,
       scale: scale ?? this.scale,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'path': center,
+      'path': origin,
       'scale': scale,
     };
   }
 
-  factory CubeMesh.fromMap(Map<String, dynamic> map) {
-    return CubeMesh(
-      center: map['path'] as String,
+  factory BoxMesh.fromMap(Map<String, dynamic> map) {
+    return BoxMesh(
+      origin: map['path'] as String,
       scale: map['scale'] as Vector3,
     );
   }
 
 //</editor-fold>
 }
-
-///
