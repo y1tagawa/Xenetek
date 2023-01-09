@@ -523,6 +523,23 @@ abstract class Mesh {
   MeshData toMeshData(Node root);
 }
 
+/// 多面体メッシュの基底クラス
+
+abstract class AbstractPolyhedralMesh extends Mesh {
+  final String center;
+  MeshData get data;
+
+  const AbstractPolyhedralMesh({
+    required this.center,
+  });
+
+  @override
+  MeshData toMeshData(Node root) {
+    final find = root.find(center)!;
+    return data.transformedBy(find.matrix);
+  }
+}
+
 /// MeshData集積
 
 List<MeshData> toMeshData({
@@ -594,7 +611,6 @@ const _cubeVertices = <Vector3>[
   Vector3(-1, 1, 1),
   Vector3(-1, -1, 1),
 ];
-
 final _cubeNormals = <Vector3>[
   Vector3.unitY,
   Vector3.unitZ,
@@ -603,7 +619,6 @@ final _cubeNormals = <Vector3>[
   Vector3.unitX,
   -Vector3.unitZ,
 ];
-
 const _cubeFaces = <MeshFace>[
   <MeshVertex>[
     MeshVertex(0, -1, 0),
@@ -642,44 +657,26 @@ const _cubeFaces = <MeshFace>[
     MeshVertex(1, -1, 5),
   ],
 ];
-
 final _cubeMeshData = MeshData(
   vertices: _cubeVertices,
   normals: _cubeNormals,
   faces: _cubeFaces,
 );
 
-MeshData _toCubeMeshData({
-  required Matrix4 matrix,
-  Vector3 scale = Vector3.one,
-}) {
-  return MeshData(
-    vertices: _cubeVertices.map((it) => matrix.transformed(it * scale * 0.5)).toList(),
-    normals: _cubeNormals.map((it) => matrix.rotated(it)).toList(),
-    faces: _cubeFaces,
-    smooth: false,
-  );
-}
-
 /// 直方体
 ///
 /// 指定のノードを中心に直方体を生成する。
 
-class CubeMesh extends Mesh {
-  final String center;
+class CubeMesh extends AbstractPolyhedralMesh {
   final dynamic scale;
 
   const CubeMesh({
-    required this.center,
+    required super.center,
     this.scale = Vector3.one,
   });
 
   @override
-  MeshData toMeshData(Node root) {
-    final find = root.find(center);
-    final matrix = find!.matrix * Matrix4.scale(Vector3.one * 0.5 * scale);
-    return _cubeMeshData.transformedBy(matrix);
-  }
+  MeshData get data => _cubeMeshData.transformedBy(Matrix4.scale(Vector3.one * 0.5 * scale));
 
 //<editor-fold desc="Data Methods">
 
