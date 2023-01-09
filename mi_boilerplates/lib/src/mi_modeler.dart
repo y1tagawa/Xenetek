@@ -26,14 +26,17 @@ class Vector3 {
   Vector3 operator -() => Vector3(-x, -y, -z);
   Vector3 operator +(Vector3 other) => Vector3(x + other.x, y + other.y, z + other.z);
   Vector3 operator -(Vector3 other) => Vector3(x - other.x, y - other.y, z - other.z);
+
+  /// 要素ごとのスカラ積
   Vector3 operator *(dynamic other) {
     switch (other.runtimeType) {
       case double:
         return (other as double).let((it) => Vector3(x * it, y * it, z * it));
       case Vector3:
         return (other as Vector3).let((it) => Vector3(x * it.x, y * it.y, z * it.z));
+      default:
+        throw UnimplementedError();
     }
-    throw UnimplementedError();
   }
 
   Vector3 normalized() => Vector3.fromVmVector(toVmVector().normalized());
@@ -102,6 +105,7 @@ class Matrix4 {
 
   final List<double> elements;
 
+  /// 行列積
   Matrix4 operator *(Matrix4 other) {
     return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
   }
@@ -167,6 +171,24 @@ class Matrix4 {
 
   static Matrix4 translation(Vector3 translation) {
     return Matrix4.fromVmMatrix(vm.Matrix4.translation(translation.toVmVector()));
+  }
+
+  static Matrix4 scale(dynamic scale) {
+    final elements_ = identity.elements.toList();
+    switch (scale.runtimeType) {
+      case double:
+        elements_[0] *= scale;
+        elements_[5] *= scale;
+        elements_[10] *= scale;
+        return Matrix4._(elements_);
+      case Vector3:
+        elements_[0] *= scale.x;
+        elements_[5] *= scale.y;
+        elements_[10] *= scale.z;
+        return Matrix4._(elements_);
+      default:
+        throw UnimplementedError();
+    }
   }
 
   // todo その他のコンストラクタ
@@ -261,8 +283,9 @@ class Node {
         return _find(path, Matrix4.identity, null);
       case String:
         return _find(splitPath(path), Matrix4.identity, null);
+      default:
+        throw UnimplementedError();
     }
-    throw UnimplementedError();
   }
 
   Node put(String key, Node child) {
@@ -414,6 +437,15 @@ class MeshData {
     this.smooth = false,
   });
 
+  MeshData transformedBy(Matrix4 matrix) {
+    return MeshData(
+      vertices: vertices.map((it) => matrix.transformed(it)).toList(),
+      normals: normals.map((it) => matrix.rotated(it)).toList(),
+      faces: faces,
+      smooth: false,
+    );
+  }
+
 //<editor-fold desc="Data Methods">
 
   @override
@@ -483,9 +515,33 @@ class MeshData {
 //</editor-fold>
 }
 
-// Print to Wavefront .obj
+/// メッシュの基底クラス
 
-void toWavefrontObj(List<MeshData> meshDataList, StringSink sink) {
+abstract class Mesh {
+  const Mesh();
+
+  MeshData toMeshData(Node root);
+}
+
+/// MeshData集積
+
+List<MeshData> toMeshData({
+  required Node root,
+  required Iterable<Mesh> meshes,
+}) {
+  final result = <MeshData>[];
+  for (final mesh in meshes) {
+    result.add(mesh.toMeshData(root));
+  }
+  return result;
+}
+
+/// Wavefront .obj出力
+
+void toWavefrontObj(
+  List<MeshData> meshDataList,
+  StringSink sink,
+) {
   int vertexIndex = 1;
   int textureVertexIndex = 1;
   int normalIndex = 1;
@@ -522,14 +578,6 @@ void toWavefrontObj(List<MeshData> meshDataList, StringSink sink) {
     textureVertexIndex += meshData.textureVertices.length;
     normalIndex += meshData.normals.length;
   }
-}
-
-/// メッシュの基底クラス
-
-abstract class Mesh {
-  const Mesh();
-
-  MeshData toMeshData(Node rootNode);
 }
 
 /// 立方体生成用メッシュデータ
@@ -595,6 +643,12 @@ const _cubeFaces = <MeshFace>[
   ],
 ];
 
+final _cubeMeshData = MeshData(
+  vertices: _cubeVertices,
+  normals: _cubeNormals,
+  faces: _cubeFaces,
+);
+
 MeshData _toCubeMeshData({
   required Matrix4 matrix,
   Vector3 scale = Vector3.one,
@@ -605,20 +659,6 @@ MeshData _toCubeMeshData({
     faces: _cubeFaces,
     smooth: false,
   );
-}
-
-/// MeshData集積
-///
-
-List<MeshData> toMeshData({
-  required Node rootNode,
-  required Iterable<Mesh> meshes,
-}) {
-  final result = <MeshData>[];
-  for (final mesh in meshes) {
-    result.add(mesh.toMeshData(rootNode));
-  }
-  return result;
 }
 
 /// 直方体
@@ -635,15 +675,10 @@ class CubeMesh extends Mesh {
   });
 
   @override
-  MeshData toMeshData(Node rootNode) {
-    final find = rootNode.find(center);
-    switch (scale.runtimeType) {
-      case double:
-        return _toCubeMeshData(matrix: find!.matrix, scale: Vector3.one * scale);
-      case Vector3:
-        return _toCubeMeshData(matrix: find!.matrix, scale: scale);
-    }
-    throw UnimplementedError();
+  MeshData toMeshData(Node root) {
+    final find = root.find(center);
+    final matrix = find!.matrix * Matrix4.scale(Vector3.one * 0.5 * scale);
+    return _cubeMeshData.transformedBy(matrix);
   }
 
 //<editor-fold desc="Data Methods">
@@ -691,10 +726,4 @@ class CubeMesh extends Mesh {
 //</editor-fold>
 }
 
-//
-// * 右手座標系とする。X+右、Y+上、Z+手前のイメージ
-// * 関節の回転軸は原則として：
-//   * Xを主要な曲げ軸とする。（肘や指の折れ軸、股の前後振り軸、肩の開き軸、椎骨の前後曲げ軸）
-//   * Yを次の曲げ軸とする。（股の左右開閉軸、肩の前後振り軸、椎骨の左右曲げ軸）
-//   * Zを捻り軸、肢の伸びる方向とする。
-//
+///
