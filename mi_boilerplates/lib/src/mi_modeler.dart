@@ -627,7 +627,7 @@ List<MeshData> toMeshData({
 
 class CubeMesh extends Mesh {
   final String center;
-  final Vector3 scale;
+  final dynamic scale;
 
   const CubeMesh({
     required this.center,
@@ -637,7 +637,13 @@ class CubeMesh extends Mesh {
   @override
   MeshData toMeshData(Node rootNode) {
     final find = rootNode.find(center);
-    return _toCubeMeshData(matrix: find!.matrix, scale: scale);
+    switch (scale.runtimeType) {
+      case double:
+        return _toCubeMeshData(matrix: find!.matrix, scale: Vector3.one * scale);
+      case Vector3:
+        return _toCubeMeshData(matrix: find!.matrix, scale: scale);
+    }
+    throw UnimplementedError();
   }
 
 //<editor-fold desc="Data Methods">

@@ -135,6 +135,10 @@ const _unitY = mi.Vector3.unitY;
 const _unitZ = mi.Vector3.unitZ;
 const _identity = mi.Matrix4.identity;
 
+mi.Matrix4 _rotation(mi.Vector3 axis, double angleDegree) =>
+    mi.Matrix4.rotation(axis, vm.radians(angleDegree));
+mi.Matrix4 _translation(mi.Vector3 translation) => mi.Matrix4.translation(translation);
+
 mi.Node? _rootNode;
 
 final _meshes = <mi.Mesh>[];
@@ -142,13 +146,21 @@ final _meshes = <mi.Mesh>[];
 void _setup(StringSink sink) {
   var root = const mi.Node();
   _meshes.clear();
-  root = root.put(
-    'n1',
-    mi.Node(
-      matrix: mi.Matrix4.rotation(_unitX, vm.radians(45.0)),
-    ),
+  var n3 = mi.Node(
+    matrix: _translation(_unitY * 1.2) * _rotation(_unitX, 30.0),
   );
+  var n2 = mi.Node(
+    matrix: _translation(_unitY * 1.2) * _rotation(_unitX, 30.0),
+    children: {'n3': n3},
+  );
+  var n1 = mi.Node(
+    matrix: _identity,
+    children: {'n2': n2},
+  );
+  root = root.put('n1', n1);
   _meshes.add(const mi.CubeMesh(center: 'n1'));
+  _meshes.add(const mi.CubeMesh(center: 'n1.n2', scale: 0.5));
+  _meshes.add(const mi.CubeMesh(center: 'n1.n2.n3', scale: 0.3));
   _rootNode = root;
 
   final meshDataList = <mi.MeshData>[];
