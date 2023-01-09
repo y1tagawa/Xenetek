@@ -599,17 +599,17 @@ void toWavefrontObj(
 
 /// 立方体生成用メッシュデータ
 ///
-/// (-1,-1,-1)-(1,1,1)
+/// (-0.5,0,-0.5)-(0.5,1,0.5)
 
 const _cubeVertices = <Vector3>[
-  Vector3(1, 1, -1),
-  Vector3(1, -1, -1),
-  Vector3(1, 1, 1),
-  Vector3(1, -1, 1),
-  Vector3(-1, 1, -1),
-  Vector3(-1, -1, -1),
-  Vector3(-1, 1, 1),
-  Vector3(-1, -1, 1),
+  Vector3(0.5, 1, -0.5),
+  Vector3(0.5, 0, -0.5),
+  Vector3(0.5, 1, 0.5),
+  Vector3(0.5, 0, 0.5),
+  Vector3(-0.5, 1, -0.5),
+  Vector3(-0.5, 0, -0.5),
+  Vector3(-0.5, 1, 0.5),
+  Vector3(-0.5, 0, 0.5),
 ];
 final _cubeNormals = <Vector3>[
   Vector3.unitY,
@@ -676,7 +676,9 @@ class CubeMesh extends AbstractPolyhedralMesh {
   });
 
   @override
-  MeshData get data => _cubeMeshData.transformedBy(Matrix4.scale(Vector3.one * 0.5 * scale));
+  MeshData get data => _cubeMeshData.transformedBy(
+        Matrix4.scale(Vector3.one * scale) * Matrix4.translation(Vector3.unitY * -0.5),
+      );
 
 //<editor-fold desc="Data Methods">
 
