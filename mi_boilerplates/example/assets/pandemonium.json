@@ -88,6 +88,11 @@
     "referenceUrl": "https://en.wikipedia.org/wiki/Beleth",
     "description": "A.k.a. Byleth"
   },
+  "Belial": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Beliar.jpg/640px-Beliar.jpg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Belial",
+    "description": "Belial in Holzschnitt, Augsburg 1473 (aus \"Lexikon der Monster, Geister und Dämonen\" von Felix Bormann)"
+  },
   "Belphegor": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Flipart-Oudry-La_Fontaine-Belph%C3%A9gor_1.jpg/345px-Flipart-Oudry-La_Fontaine-Belph%C3%A9gor_1.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Belphegor"
@@ -122,6 +127,11 @@
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/8/84/Caim_in_human_form.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Caim",
     "description": "A.k.a. Caym"
+  },
+  "Chemosh": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Chemosh",
+    "description": "No image available."
   },
   "Decarabia": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Pentagram_and_human_body_%28Agrippa%29.jpg/473px-Pentagram_and_human_body_%28Agrippa%29.jpg",
@@ -213,6 +223,11 @@
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/84/Paimon.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Paimon"
   },
+  "Pazuzu": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Pazuzu",
+    "description": "No image available."
+  },
   "Pruflas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Ill_dict_infernal_p0578_pruflas.jpg/423px-Ill_dict_infernal_p0578_pruflas.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Pseudomonarchia_Daemonum#Pruflas",
@@ -252,6 +267,7 @@
   },
   "": {
     "imageUrl": "",
-    "referenceUrl": ""
+    "referenceUrl": "",
+    "description": ""
   }
 }
