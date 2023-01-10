@@ -297,6 +297,16 @@ class Node {
     return copyWith(children: children_);
   }
 
+  Node putDescendants(Iterable<MapEntry<String, Matrix4>> descendants) {
+    if (descendants.isEmpty) {
+      return this;
+    }
+    return put(
+      descendants.first.key,
+      Node(matrix: descendants.first.value).putDescendants(descendants.skip(1)),
+    );
+  }
+
   //<editor-fold desc="Data Methods">
 
   const Node({

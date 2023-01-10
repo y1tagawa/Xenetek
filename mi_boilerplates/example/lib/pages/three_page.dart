@@ -147,20 +147,29 @@ final _meshes = <mi.Mesh>[];
 void _setup(StringSink sink) {
   var root = const mi.Node();
   _meshes.clear();
-  var n3 = mi.Node(
-    matrix: _translation(_y * 2) * _rotation(_x, 45.0),
+  // var n3 = mi.Node(
+  //   matrix: _translation(_y * 2) * _rotation(_x, 45.0),
+  // );
+  // var n2 = mi.Node(
+  //   matrix: _translation(_y * 2) * _rotation(_x, 45.0),
+  //   children: {'n3': n3},
+  // );
+  // var n1 = mi.Node(
+  //   matrix: _identity,
+  //   children: {'n2': n2},
+  // );
+  // root = root.put('n1', n1);
+
+  root = root.putDescendants(
+    <String, mi.Matrix4>{
+      'n1': _identity,
+      'n2': _translation(_y * 2) * _rotation(_x, 45.0),
+      'n3': _translation(_y * 2) * _rotation(_x, 45.0),
+    }.entries,
   );
-  var n2 = mi.Node(
-    matrix: _translation(_y * 2) * _rotation(_x, 45.0),
-    children: {'n3': n3},
-  );
-  var n1 = mi.Node(
-    matrix: _identity,
-    children: {'n2': n2},
-  );
-  root = root.put('n1', n1);
-  _meshes.add(mi.BoxMesh(origin: 'n1', scale: _y * 2 + _xz));
-  _meshes.add(mi.BoxMesh(origin: 'n1.n2', scale: _y * 2 + _xz));
+
+  _meshes.add(mi.BoxMesh(origin: 'n1', scale: _y * 1.5 + _xz));
+  _meshes.add(mi.BoxMesh(origin: 'n1.n2', scale: _y * 1.5 + _xz));
   _meshes.add(const mi.BoxMesh(origin: 'n1.n2.n3', scale: 0.3));
   _rootNode = root;
 
@@ -188,7 +197,7 @@ class _ModelerTab extends ConsumerWidget {
       children: [
         mi.ButtonListTile(
           enabled: documentsDirectory.hasValue,
-          text: const Text('Model'),
+          text: const Text('Write'),
           onPressed: () {
             final file = File('${documentsDirectory.value!.path}/temp.obj');
             _logger.fine('output file path=${file.path}');
