@@ -526,23 +526,6 @@ abstract class Mesh {
   MeshData toMeshData(Node root);
 }
 
-/// 多面体メッシュの基底クラス
-
-abstract class AbstractPolyhedralMesh extends Mesh {
-  final String origin;
-  MeshData get data;
-
-  const AbstractPolyhedralMesh({
-    required this.origin,
-  });
-
-  @override
-  MeshData toMeshData(Node root) {
-    final find = root.find(origin)!;
-    return data.transformedBy(find.matrix);
-  }
-}
-
 /// MeshData集積
 
 List<MeshData> toMeshData({
@@ -670,18 +653,20 @@ final _cubeMeshData = MeshData(
 ///
 /// [origin]を上面中心として直方体を生成する。
 
-class BoxMesh extends AbstractPolyhedralMesh {
+class BoxMesh extends Mesh {
+  final String origin;
   final dynamic scale;
 
   const BoxMesh({
-    required super.origin,
+    required this.origin,
     this.scale = Vector3.one,
   });
 
   @override
-  MeshData get data => _cubeMeshData.transformedBy(
-        Matrix4.scale(Vector3.one * scale),
-      );
+  MeshData toMeshData(Node root) {
+    final find = root.find(origin)!;
+    return _cubeMeshData.transformedBy(find.matrix * Matrix4.scale(Vector3.one * scale));
+  }
 
 //<editor-fold desc="Data Methods">
 
