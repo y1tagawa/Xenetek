@@ -120,7 +120,7 @@ class Label extends StatelessWidget {
   final TextDirection iconPosition;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onHover;
-  final double? spacing;
+  final double spacing;
   final Widget? text;
   final String? tooltip;
 
@@ -131,7 +131,7 @@ class Label extends StatelessWidget {
     this.iconPosition = TextDirection.ltr,
     this.onTap,
     this.onHover,
-    this.spacing,
+    this.spacing = 8.0,
     this.text,
     this.tooltip,
   }) : assert(icon != null || text != null);
@@ -141,52 +141,40 @@ class Label extends StatelessWidget {
     final theme = Theme.of(context);
     final textColor = enabled ? null : theme.disabledColor;
 
-    Widget icon_ = icon ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
+    Widget widget = icon ?? SizedBox.square(dimension: IconTheme.of(context).size ?? 24);
 
     if (text != null) {
-      final spacing_ = spacing ?? 8.0;
-      final spacer = spacing_ > 0.0 ? SizedBox(width: spacing_) : null;
-      icon_ = Row(
+      widget = Row(
+        spacing: spacing,
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: iconPosition == TextDirection.rtl
-            ? [
-                if (spacer != null) spacer,
-                text!,
-                if (spacer != null) spacer,
-                icon_,
-              ]
-            : [
-                icon_,
-                if (spacer != null) spacer,
-                text!,
-                if (spacer != null) spacer,
-              ],
+        children:
+            iconPosition == TextDirection.rtl ? <Widget>[text!, widget] : <Widget>[widget, text!],
       );
     }
 
-    icon_ = DefaultTextColor(
+    widget = DefaultTextColor(
       color: textColor,
-      child: icon_,
+      child: widget,
     );
 
     if (onTap != null || onHover != null) {
-      icon_ = InkWell(
+      widget = InkWell(
         onTap: enabled ? onTap : null,
         onHover: onHover,
-        child: IgnorePointer(child: icon_),
+        child: IgnorePointer(child: widget),
       );
     }
 
     if (tooltip != null) {
-      icon_ = Tooltip(
+      widget = Tooltip(
         message: tooltip ?? '',
-        child: icon_,
+        child: widget,
       );
     }
 
-    return icon_;
+    return widget;
   }
 }
 
@@ -201,7 +189,7 @@ class ColorChip extends StatelessWidget {
   final ValueChanged<bool>? onHover;
   final double? size;
   final double margin;
-  final double? spacing;
+  final double spacing;
   final Widget? text;
   final String? tooltip;
 
@@ -212,8 +200,8 @@ class ColorChip extends StatelessWidget {
     this.onTap,
     this.onHover,
     this.size,
-    this.margin = 2,
-    this.spacing,
+    this.margin = 2.0,
+    this.spacing = 8.0,
     this.tooltip,
     this.text,
   });

@@ -147,18 +147,6 @@ final _meshes = <mi.Mesh>[];
 void _setup(StringSink sink) {
   var root = const mi.Node();
   _meshes.clear();
-  // var n3 = mi.Node(
-  //   matrix: _translation(_y * 2) * _rotation(_x, 45.0),
-  // );
-  // var n2 = mi.Node(
-  //   matrix: _translation(_y * 2) * _rotation(_x, 45.0),
-  //   children: {'n3': n3},
-  // );
-  // var n1 = mi.Node(
-  //   matrix: _identity,
-  //   children: {'n2': n2},
-  // );
-  // root = root.put('n1', n1);
 
   root = root.putDescendants(
     <String, mi.Matrix4>{
