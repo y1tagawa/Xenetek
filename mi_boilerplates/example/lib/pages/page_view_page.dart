@@ -10,6 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path/path.dart' as p;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'ex_app_bar.dart' as ex;
 
@@ -118,24 +119,45 @@ class PageViewPage extends ConsumerWidget {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
+                final uri = item.referenceUrl?.let((it) => Uri.tryParse(it));
                 return mi.ExpandedColumn(
-                  top: mi.GridPopupMenuButton(
-                    items: items
-                        .map(
-                          (item) => mi.GridItem(
-                            child: Text(item.name),
+                  top: mi.Row(
+                    flexes: const [1, 0],
+                    children: [
+                      Tooltip(
+                        message: item.referenceUrl ?? '',
+                        child: ListTile(
+                          title: Text(item.name),
+                          subtitle: item.description?.let(
+                            (it) => Text(
+                              it,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        )
-                        .toList(),
-                    offset: const Offset(1, kToolbarHeight),
-                    onSelected: (index) {
-                      ref.read(_pageIndexProvider.notifier).value = index;
-                    },
-                    child: ListTile(
-                      title: Text(item.name),
-                      subtitle: item.description?.let((it) => Text(it)),
-                      trailing: const Icon(Icons.more_vert),
-                    ),
+                          onTap: enabled && uri != null
+                              ? () {
+                                  _logger.fine('uri=$uri');
+                                  launchUrl(uri);
+                                }
+                              : null,
+                        ),
+                      ),
+                      mi.GridPopupMenuButton(
+                        tooltip: '',
+                        items: items
+                            .map(
+                              (item) => mi.GridItem(
+                                child: Text(item.name),
+                              ),
+                            )
+                            .toList(),
+                        offset: const Offset(1, kToolbarHeight),
+                        onSelected: (index) {
+                          ref.read(_pageIndexProvider.notifier).value = index;
+                        },
+                      ),
+                    ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(10),
