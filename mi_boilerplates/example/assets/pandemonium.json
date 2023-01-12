@@ -75,30 +75,46 @@
     "referenceUrl": "https://en.wikipedia.org/wiki/Azazel",
     "description": "A modern interpretation of Azazel as a Satanic, goatlike demon, from Collin de Plancy's Dictionnaire Infernal (Paris,1825)"
   },
+  "Baal Berith": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Berith.png/439px-Berith.png",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Baal_Berith",
+    "description": "Berith, an illustration from the \"Dictionnaire Infernal\" by Jacques Collin de Plancy."
+  },
   "Baal-zephon": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Baalzephon.png/203px-Baalzephon.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Baal-zephon"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Baal-zephon",
+    "description": "Une illustration pour l’article Baalzephon dans le Dictionnaire infernal par Collin de Plancy."
   },
   "Bael": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Ba%C3%ABl.png/429px-Ba%C3%ABl.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Bael_(demon)"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Bael_(demon)",
+    "description": "Une illustration pour l’article Baël dans le Dictionnaire infernal par Collin de Plancy."
   },
   "Balam": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Balan_%28Demon%29.png/410px-Balan_%28Demon%29.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Balam"
+    "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Balam",
+    "description": "Balan, an illustration from the \"Dictionnaire Infernal\" by en:Jacques Collin de Plancy."
   },
   "Barbatos": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Ill_dict_infernal_p0093-79_barbatos.jpg/433px-Ill_dict_infernal_p0093-79_barbatos.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Barbatos"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Barbatos",
+    "description": "Barbatos. Illustration du Dictionnaire infernal de Jacques Auguste Simon Collin de Plancy par Louis Le Breton, 6eme édition, 1863."
+  },
+  "Beelzebub": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Beelzebub_and_them_with_him.jpg",
+    "imageUrl2": "https://commons.wikimedia.org/wiki/File:Beelzebub.png",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Beelzebub",
+    "description": "\"Beelzebub and them that are with him shoot arrows.\" an illustration from the Henry Altemus edition of The Pilgrim's Progress by John Bunyan, published in 1678. Illustrations by Fred Barnard, J.D. Linton, W. Small, etc. Engraved by Dalziel Brothers."
   },
   "Behemoth": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/William_Blake_-_Behemoth_and_Leviathan_-_Google_Art_Project.jpg/358px-William_Blake_-_Behemoth_and_Leviathan_-_Google_Art_Project.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Behemoth"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Behemoth",
+    "description": "Behemoth and Leviathan, William Blake, 1826"
   },
   "Beleth": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Byleth.png/300px-Byleth.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/Beleth",
-    "description": "A.k.a. Byleth"
+    "description": "Byleth, an illustration from the \"Dictionnaire Infernal\" by Jacques Collin de Plancy."
   },
   "Belial": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Beliar.jpg/640px-Beliar.jpg",
@@ -107,17 +123,8 @@
   },
   "Belphegor": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Flipart-Oudry-La_Fontaine-Belph%C3%A9gor_1.jpg/345px-Flipart-Oudry-La_Fontaine-Belph%C3%A9gor_1.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Belphegor"
-  },
-  "Beelzebub": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Beelzebub_and_them_with_him.jpg",
-    "imageUrl2": "https://commons.wikimedia.org/wiki/File:Beelzebub.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Beelzebub",
-    "description": "A.k.a. Belzebuth"
-  },
-  "Baal Berith": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Berith.png/439px-Berith.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Baal_Berith"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Belphegor",
+    "description": "Gravure réalisée par Jean-Jacques Flipart d'après un dessin de Jean-Baptiste Oudry représentant la fable Belphégor de Jean de La Fontaine (fable 27 du livre XII)."
   },
   "Bifrons": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Janus%2C_the_Roman_god_%281878%29.jpg/480px-Janus%2C_the_Roman_god_%281878%29.jpg",
@@ -127,18 +134,19 @@
   },
   "Buer": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Buer-blog.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Buer_(demon)"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Buer_(demon)",
+    "description": "Buer es un presidente del infierno y un demonio de segundo orden que manda 50 legiones."
   },
   "Caacrinolaas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Caacrinolaas.png/416px-Caacrinolaas.png",
     "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Glasya-Labolas",
-    "description": "A.k.a Glasya-Labolas"
+    "description": "Caacrinolaas, an illustration from the \"Dictionnaire Infernal\" by Jacques Collin de Plancy"
   },
   "Caim": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/13/Caim_in_bird_form.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/8/84/Caim_in_human_form.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Caim",
-    "description": "A.k.a. Caym"
+    "description": "The demon Caim in bird form from Collin de Plancy's Dictionnaire Infernal, 1863 edition."
   },
   "Chemosh": {
     "referenceUrl": "https://en.wikipedia.org/wiki/Chemosh"
@@ -150,7 +158,8 @@
   },
   "Decarabia": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Pentagram_and_human_body_%28Agrippa%29.jpg/473px-Pentagram_and_human_body_%28Agrippa%29.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Decarabia"
+    "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Decarabia",
+    "description": "Image of a human body in a pentagram from Heinrich Cornelius Agrippa's Libri tres de occulta philosophia. Symbols of the sun and moon are in center, while the other five classical \"planets\" are around the edge."
   },
   "Demiurge": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Phanes.jpg/324px-Phanes.jpg",
@@ -173,68 +182,87 @@
   },
   "Flauros": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ill_dict_infernal_p0294-278_flauros_demon.jpg/428px-Ill_dict_infernal_p0294-278_flauros_demon.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Flauros"
+    "referenceUrl": "https://en.wikipedia.org/wiki/List_of_demons_in_the_Ars_Goetia#Flauros",
+    "description": "Flauros. Illustration du Dictionnaire infernal de Jacques Auguste Simon Collin de Plancy par Louis Le Breton, 6eme édition, 1863."
   },
   "Foras": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Ill_dict_infernal_p0296-280_forcas_demon.jpg/426px-Ill_dict_infernal_p0296-280_forcas_demon.jpg",
     "referenceUrl": "https://en.wikipedia.org/wiki/Foras",
-    "description": "A.k.a Forcas"
+    "description": "Illustration du Dictionnaire infernal de Jacques Auguste Simon Collin de Plancy par Louis Le Breton, 6eme édition, 1863."
   },
   "Furfur": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Ill_dict_infernal_p0306-290_furfur_demon.jpg/418px-Ill_dict_infernal_p0306-290_furfur_demon.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Furfur"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Furfur",
+    "description": "Furfur. Illustration du Dictionnaire infernal de Jacques Auguste Simon Collin de Plancy par Louis Le Breton, 6eme édition, 1863."
   },
   "Gaap": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/Gaap.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Gaap"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Gaap",
+    "description": "Imagem de Gaap conforme o Dictionaire Infernnale."
   },
   "Gemory": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Ill_dict_infernal_p0323-307_gomory_demon.jpg/401px-Ill_dict_infernal_p0323-307_gomory_demon.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Gemory"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Gemory",
+    "description": "Gremory, from Dictionnaire Infernal, 6th edition. The Fifty-sixth Spirit is Gremory, or Gamori. He is a Duke Strong and Powerful, and appeareth in the Form of a Beautiful woman, with a Duchess's Crown tied about her waist, and riding on a Great Camel. His Office is to tell of all things Past, Present, and to Come; and of Treasures Hid, and what they lie in; and to procure the Love of Women both Young and Old. He governeth 26 Legions of Spirits"
   },
   "Ipos": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Ip%C3%A8s.png/416px-Ip%C3%A8s.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Ipos"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Ipos",
+    "description": "Une illustration pour l’article Ipès dans le Dictionnaire infernal par Collin de Plancy."
   },
   "Leonard": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Ill_dict_infernal_p0420_leonard.jpg/412px-Ill_dict_infernal_p0420_leonard.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Leonard_(demon)"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Leonard_(demon)",
+    "description": "Leonard. Illustration du Dictionnaire infernal de Jacques Auguste Simon Collin de Plancy par Louis Le Breton, 6eme édition, 1863."
   },
   "Leviathan": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Leviathan_by_Thomas_Hobbes.jpg/301px-Leviathan_by_Thomas_Hobbes.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Destruction_of_Leviathan.png/380px-Destruction_of_Leviathan.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Leviathan"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Leviathan",
+    "description": "The frontispiece of the book Leviathan by Thomas Hobbes; engraving by Abraham Bosse"
   },
   "Lucifer": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Lucifer_%28the_morning_star%29._Engraving_by_G.H._Frezza%2C_1704%2C_Wellcome_V0035916.jpg/586px-Lucifer_%28the_morning_star%29._Engraving_by_G.H._Frezza%2C_1704%2C_Wellcome_V0035916.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Ill_dict_infernal_p0433_lucifer.jpg/405px-Ill_dict_infernal_p0433_lucifer.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Lucifer"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Lucifer",
+    "description": "Lucifer (the morning star). Engraving by G.H. Frezza, 1704"
   },
-  "Naberius": {
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Naberius_Cerbere.jpg/515px-Naberius_Cerbere.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Naberius"
+  "Lucifuge Rofocale": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/A_bibliographical%2C_antiquarian_and_picturesque_tour_in_France_and_Germany_%281821%29_%2814594715768%29.jpg/419px-A_bibliographical%2C_antiquarian_and_picturesque_tour_in_France_and_Germany_%281821%29_%2814594715768%29.jpg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Grand_Grimoire",
+    "description": "Frontispiece for an edition of The Grand Grimorie, showing a goat-footed devil. Dibdin, Thomas Frognall, 1821"
   },
   "Malphas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Malthas.jpg/451px-Malthas.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Malphas"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Malphas",
+    "description": ""
   },
   "Mammon": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Mammon_and_His_Slave.jpg/640px-Mammon_and_His_Slave.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Ill_dict_infernal_p0455_mammon.jpg/426px-Ill_dict_infernal_p0455_mammon.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Mammon"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Mammon",
+    "description": ""
   },
   "Marchosias": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Marchocias.jpg/418px-Marchocias.jpg",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Marchosias"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Marchosias",
+    "description": ""
   },
   "Moloch": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Ill_dict_infernal_p0486_moloch.jpg/418px-Ill_dict_infernal_p0486_moloch.jpg",
     "imageUrl2": "https://upload.wikimedia.org/wikipedia/commons/9/98/Moloch_the_god.gif",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Moloch"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Moloch",
+    "description": ""
+  },
+  "Naberius": {
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Naberius_Cerbere.jpg/515px-Naberius_Cerbere.jpg",
+    "referenceUrl": "https://en.wikipedia.org/wiki/Naberius",
+    "description": ""
   },
   "Orobas": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Orobas.png/419px-Orobas.png",
-    "referenceUrl": "https://en.wikipedia.org/wiki/Orobas"
+    "referenceUrl": "https://en.wikipedia.org/wiki/Orobas",
+    "description": ""
   },
   "Paimon": {
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/84/Paimon.jpg",

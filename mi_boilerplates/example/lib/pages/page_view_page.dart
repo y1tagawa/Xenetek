@@ -124,24 +124,27 @@ class PageViewPage extends ConsumerWidget {
                   top: mi.Row(
                     flexes: const [1, 0],
                     children: [
-                      Tooltip(
-                        message: item.referenceUrl ?? '',
-                        child: ListTile(
-                          title: Text(item.name),
-                          subtitle: item.description?.let(
-                            (it) => Text(
+                      ListTile(
+                        title: Tooltip(
+                          message: item.referenceUrl ?? '',
+                          child: Text(item.name),
+                        ),
+                        subtitle: (item.description ?? '').let(
+                          (it) => Tooltip(
+                            message: it,
+                            child: Text(
                               it,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          onTap: enabled && uri != null
-                              ? () {
-                                  _logger.fine('uri=$uri');
-                                  launchUrl(uri);
-                                }
-                              : null,
                         ),
+                        onTap: enabled && uri != null
+                            ? () {
+                                _logger.fine('uri=$uri');
+                                launchUrl(uri);
+                              }
+                            : null,
                       ),
                       mi.GridPopupMenuButton(
                         tooltip: '',
