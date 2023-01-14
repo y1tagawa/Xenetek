@@ -178,9 +178,9 @@ class PageViewPage extends ConsumerWidget {
                                     child: CircularProgressIndicator(),
                                   )
                                 : InteractiveViewer(
-                                    child: p
-                                            .extension(item.imageUrl)
-                                            .let((it) => it == '.jpg' || it == '.jpeg')
+                                    child: p.extension(item.imageUrl).let(
+                                              (it) => it == '.jpg' || it == '.jpeg' || it.isEmpty,
+                                            )
                                         ? child
                                         : ColoredBox(
                                             color: Colors.white,
