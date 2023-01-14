@@ -179,7 +179,11 @@ class PageViewPage extends ConsumerWidget {
                                   )
                                 : InteractiveViewer(
                                     child: p.extension(item.imageUrl).let(
-                                              (it) => it == '.jpg' || it == '.jpeg' || it.isEmpty,
+                                              (it) =>
+                                                  it == '.jpg' ||
+                                                  it == '.jpeg' ||
+                                                  it == '.gif' ||
+                                                  it.isEmpty,
                                             )
                                         ? child
                                         : ColoredBox(

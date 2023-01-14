@@ -93,7 +93,7 @@ class OverflowBarPage extends ConsumerWidget {
               child: mi.Label(
                 icon: theme.platform == TargetPlatform.android
                     ? SizedBox.square(
-                        dimension: i * 12 + 24,
+                        dimension: i * 12 + 48,
                         child: _goatSvg,
                       )
                     : DefaultTextStyle(
