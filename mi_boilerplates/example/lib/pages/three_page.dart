@@ -78,6 +78,8 @@ class ThreePage extends ConsumerWidget {
 // Bunny tab
 //
 
+//<editor-fold>
+
 extension ColorHelper on Color {
   static const _k = 1.0 / 255.0;
   cube.Vector3 toVector() => cube.Vector3(red * _k, green * _k, blue * _k);
@@ -126,9 +128,13 @@ class _BunnyTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Modeler tab
 //
+
+//<editor-fold>
 
 const _x = mi.Vector3.unitX;
 const _y = mi.Vector3.unitY;
@@ -172,29 +178,63 @@ final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
   return await getApplicationDocumentsDirectory();
 });
 
-class _ModelerTab extends ConsumerWidget {
+class _ModelerTab extends ConsumerStatefulWidget {
   static final _logger = Logger((_ModelerTab).toString());
 
   const _ModelerTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _ModelerTabState();
+}
+
+class _ModelerTabState extends ConsumerState<ConsumerStatefulWidget> {
+  static final _logger = Logger((_ModelerTabState).toString());
+
+  void _update() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final documentsDirectory = ref.watch(_documentsDirectoryProvider);
+    final tempFilePath = '${documentsDirectory.value!.path}/temp.obj';
+    _logger.fine('temp file path=$tempFilePath');
 
     return Column(
       children: [
         mi.ButtonListTile(
           enabled: documentsDirectory.hasValue,
-          text: const Text('Write'),
+          text: const Text('Update'),
           onPressed: () {
-            final file = File('${documentsDirectory.value!.path}/temp.obj');
-            _logger.fine('output file path=${file.path}');
+            final file = File(tempFilePath);
             final sink = file.openWrite();
             _setup(sink);
             sink.close();
+            _update();
           },
+        ),
+        Expanded(
+          child: Center(
+            child: cube.Cube(
+              onSceneCreated: (cube.Scene scene) {
+                final model = cube.Object(
+                  fileName: tempFilePath,
+                  isAsset: false,
+                  lighting: true,
+                );
+                scene.world.add(model);
+                scene.camera = cube.Camera(
+                  position: cube.Vector3(-0.05, 0.3, 1.5),
+                  target: cube.Vector3(-0.05, 0.3, 0),
+                  fov: 35.0,
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
   }
 }
+
+//</editor-fold>
