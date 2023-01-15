@@ -178,24 +178,15 @@ final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
   return await getApplicationDocumentsDirectory();
 });
 
-class _ModelerTab extends ConsumerStatefulWidget {
+final _updateProvider = StateProvider((ref) => false);
+
+class _ModelerTab extends ConsumerWidget {
   static final _logger = Logger((_ModelerTab).toString());
 
   const _ModelerTab();
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ModelerTabState();
-}
-
-class _ModelerTabState extends ConsumerState<ConsumerStatefulWidget> {
-  static final _logger = Logger((_ModelerTabState).toString());
-
-  void _update() {
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final documentsDirectory = ref.watch(_documentsDirectoryProvider);
     final tempFilePath = '${documentsDirectory.value!.path}/temp.obj';
     _logger.fine('temp file path=$tempFilePath');
@@ -210,7 +201,7 @@ class _ModelerTabState extends ConsumerState<ConsumerStatefulWidget> {
             final sink = file.openWrite();
             _setup(sink);
             sink.close();
-            _update();
+            ref.watch(_updateProvider.notifier).update((state) => !state);
           },
         ),
         Expanded(
