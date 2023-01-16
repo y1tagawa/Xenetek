@@ -227,6 +227,7 @@ class _SwitchesTab extends ConsumerWidget {
 
 final _cupertinoSwitchProvider = StateProvider((ref) => false);
 final _switchThemeDataProvider = StateProvider<SwitchThemeData?>((ref) => null);
+final _activeColorProvider = StateProvider((ref) => 0.0);
 final _switchValueProvider = StateProvider((ref) => true);
 
 class _SwitchThemeTab extends ConsumerWidget {
@@ -234,10 +235,13 @@ class _SwitchThemeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(ex.enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
     final cupertino = ref.watch(_cupertinoSwitchProvider);
+    final activeColor = ref.watch(_activeColorProvider);
     final data = ref.watch(_switchThemeDataProvider);
     final value = ref.watch(_switchValueProvider);
+
+    final theme = Theme.of(context);
 
     void onChanged(bool value) {
       ref.read(_switchValueProvider.notifier).state = value;
@@ -246,25 +250,44 @@ class _SwitchThemeTab extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          SwitchListTile(
+          ListTile(
             title: const Text('Style'),
-            value: cupertino,
-            onChanged: (value) {
-              ref.read(_cupertinoSwitchProvider.notifier).state = value;
-            },
+            trailing: ToggleButtons(
+              onPressed: enabled
+                  ? (int index) {
+                      ref.read(_cupertinoSwitchProvider.notifier).state = index == 0;
+                    }
+                  : null,
+              isSelected: <bool>[cupertino, !cupertino],
+              children: const [
+                mi.SizedCenter(width: 80, child: Text('Cupertino')),
+                mi.SizedCenter(width: 80, child: Text('Material')),
+              ],
+            ),
+          ),
+          ListTile(
+            title: const Text('Color'),
+            trailing: SizedBox(
+              width: 160,
+              child: Slider(
+                value: activeColor,
+                onChanged: (value) {
+                  ref.read(_activeColorProvider.notifier).state = value;
+                },
+              ),
+            ),
           ),
           const Divider(),
-          cupertino ? const Text('Cupertino') : const Text('Material'),
           SwitchTheme(
             data: SwitchTheme.of(context),
             child: cupertino
                 ? CupertinoSwitch(
                     value: value,
-                    onChanged: onChanged,
+                    onChanged: enabled ? onChanged : null,
                   )
                 : Switch(
                     value: value,
-                    onChanged: onChanged,
+                    onChanged: enabled ? onChanged : null,
                   ),
           ),
         ],

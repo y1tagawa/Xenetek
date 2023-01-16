@@ -565,6 +565,30 @@ class Row extends StatelessWidget {
   }
 }
 
+/// [SizedBox] * [Center]
+
+class SizedCenter extends StatelessWidget {
+  final double? width;
+  final double? height;
+  final Widget? child;
+
+  const SizedCenter({
+    super.key,
+    this.width,
+    this.height,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      height: height,
+      child: child != null ? Center(child: child) : null,
+    );
+  }
+}
+
 /// タブまたは[Scaffold.body]中の頻出コード
 ///
 /// [Column]で‘Vertical viewport was given unbounded height’エラーを避けるため。
