@@ -3,12 +3,74 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import 'ex_app_bar.dart' as ex;
 import 'ex_widgets.dart' as ex;
+
+class SwitchesPage extends ConsumerWidget {
+  static const icon = Icon(Icons.toggle_on_outlined);
+  static const title = Text('Switches');
+
+  static final _logger = Logger((SwitchesPage).toString());
+
+  static const _tabs = <Widget>[
+    mi.Tab(
+      tooltip: 'Switches',
+      icon: icon,
+    ),
+    mi.Tab(
+      tooltip: 'Switch theme',
+      icon: Icon(Icons.tune),
+    ),
+  ];
+
+  const SwitchesPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(ex.enableActionsProvider);
+
+    return mi.DefaultTabController(
+      length: _tabs.length,
+      initialIndex: 0,
+      builder: (context) {
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
+            icon: icon,
+            title: title,
+            bottom: ex.TabBar(
+              enabled: enabled,
+              tabs: _tabs,
+            ),
+          ),
+          body: const TabBarView(
+            children: [
+              _SwitchesTab(),
+              _SwitchThemeTab(),
+            ],
+          ),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
+        );
+      },
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//
+// Switches tab
+//
+
+//<editor-fold>
 
 class _SwitchItem {
   final Widget checkIcon;
@@ -68,11 +130,8 @@ final _switchItems = [
 
 final _switchProvider = StateProvider((ref) => List.filled(_switchItems.length, true));
 
-class SwitchesPage extends ConsumerWidget {
-  static const icon = Icon(Icons.toggle_on_outlined);
-  static const title = Text('Switches');
-
-  const SwitchesPage({super.key});
+class _SwitchesTab extends ConsumerWidget {
+  const _SwitchesTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -87,87 +146,129 @@ class SwitchesPage extends ConsumerWidget {
       ref.read(_switchProvider.notifier).state = List.filled(_switchItems.length, value);
     }
 
-    return ex.Scaffold(
-      appBar: ex.AppBar(
-        prominent: ref.watch(ex.prominentProvider),
-        icon: mi.ToggleIcon(
-          checked: enableActions,
-          checkIcon: icon,
-          uncheckIcon: const Icon(Icons.toggle_off_outlined),
+    return Column(
+      children: [
+        mi.Row(
+          flexes: const [1, 1],
+          children: [
+            ex.ResetButtonListTile(
+              enabled: enableActions && switches.any((value) => !value),
+              onPressed: () => reset(true),
+            ),
+            ex.ClearButtonListTile(
+              enabled: enableActions && switches.any((value) => value),
+              onPressed: () => reset(false),
+            ),
+          ],
         ),
-        title: title,
-      ),
-      body: Column(
-        children: [
-          mi.Row(
-            flexes: const [1, 1],
+        const Divider(),
+        Expanded(
+          child: ListView(
+            children: _switchItems.mapIndexed(
+              (index, item) {
+                final switchValue = switches[index];
+                return SwitchListTile(
+                  value: switchValue,
+                  title: mi.Label(
+                    icon: mi.ToggleIcon(
+                      checked: switchValue,
+                      checkIcon: item.checkIcon,
+                      uncheckIcon: item.uncheckIcon,
+                    ),
+                    text: item.title,
+                  ),
+                  onChanged: enableActions
+                      ? (value) {
+                          ref.read(_switchProvider.notifier).state =
+                              switches.replacedAt(index, value);
+                        }
+                      : null,
+                );
+              },
+            ).toList(),
+          ),
+        ),
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Stack(
             children: [
-              ex.ResetButtonListTile(
-                enabled: enableActions && switches.any((value) => !value),
-                onPressed: () => reset(true),
+              AnimatedOpacity(
+                opacity: myHp.toDouble() / _switchItems.length,
+                duration: const Duration(milliseconds: 500),
+                child: Icon(
+                  Icons.person_outline_outlined,
+                  size: 48,
+                  color: theme.disabledColor,
+                ),
               ),
-              ex.ClearButtonListTile(
-                enabled: enableActions && switches.any((value) => value),
-                onPressed: () => reset(false),
-              ),
+              AnimatedOpacity(
+                opacity: myHp > 0 ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 500),
+                child: Icon(
+                  Icons.portrait_outlined,
+                  size: 48,
+                  color: theme.disabledColor,
+                ),
+              )
             ],
           ),
-          const Divider(),
-          Expanded(
-            child: ListView(
-              children: _switchItems.mapIndexed(
-                (index, item) {
-                  final switchValue = switches[index];
-                  return SwitchListTile(
-                    value: switchValue,
-                    title: mi.Label(
-                      icon: mi.ToggleIcon(
-                        checked: switchValue,
-                        checkIcon: item.checkIcon,
-                        uncheckIcon: item.uncheckIcon,
-                      ),
-                      text: item.title,
-                    ),
-                    onChanged: enableActions
-                        ? (value) {
-                            ref.read(_switchProvider.notifier).state =
-                                switches.replacedAt(index, value);
-                          }
-                        : null,
-                  );
-                },
-              ).toList(),
-            ),
+        ),
+      ],
+    );
+  }
+}
+
+//</editor-fold>
+
+//
+// Switch theme tab
+//
+
+final _cupertinoSwitchProvider = StateProvider((ref) => false);
+final _switchThemeDataProvider = StateProvider<SwitchThemeData?>((ref) => null);
+final _switchValueProvider = StateProvider((ref) => true);
+
+class _SwitchThemeTab extends ConsumerWidget {
+  const _SwitchThemeTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enableActions = ref.watch(ex.enableActionsProvider);
+    final cupertino = ref.watch(_cupertinoSwitchProvider);
+    final data = ref.watch(_switchThemeDataProvider);
+    final value = ref.watch(_switchValueProvider);
+
+    void onChanged(bool value) {
+      ref.read(_switchValueProvider.notifier).state = value;
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Style'),
+            value: cupertino,
+            onChanged: (value) {
+              ref.read(_cupertinoSwitchProvider.notifier).state = value;
+            },
           ),
           const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Stack(
-              children: [
-                AnimatedOpacity(
-                  opacity: myHp.toDouble() / _switchItems.length,
-                  duration: const Duration(milliseconds: 500),
-                  child: Icon(
-                    Icons.person_outline_outlined,
-                    size: 48,
-                    color: theme.disabledColor,
+          cupertino ? const Text('Cupertino') : const Text('Material'),
+          SwitchTheme(
+            data: SwitchTheme.of(context),
+            child: cupertino
+                ? CupertinoSwitch(
+                    value: value,
+                    onChanged: onChanged,
+                  )
+                : Switch(
+                    value: value,
+                    onChanged: onChanged,
                   ),
-                ),
-                AnimatedOpacity(
-                  opacity: myHp > 0 ? 0.0 : 1.0,
-                  duration: const Duration(milliseconds: 500),
-                  child: Icon(
-                    Icons.portrait_outlined,
-                    size: 48,
-                    color: theme.disabledColor,
-                  ),
-                )
-              ],
-            ),
           ),
         ],
       ),
-      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }
