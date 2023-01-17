@@ -225,14 +225,41 @@ class _SwitchesTab extends ConsumerWidget {
 // Switch theme tab
 //
 
+class _HueSlider extends StatelessWidget {
+  final ValueChanged<HSVColor>? onChanged;
+  final HSVColor hsvColor;
+
+  const _HueSlider.fromHsvColor({
+    super.key,
+    this.onChanged,
+    required this.hsvColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Slider(
+      value: hsvColor.hue,
+      min: 0.0,
+      max: 360.0,
+      onChanged: onChanged != null
+          ? (value) {
+              onChanged!(
+                HSVColor.fromAHSV(
+                  hsvColor.alpha,
+                  value,
+                  hsvColor.saturation,
+                  hsvColor.value,
+                ),
+              );
+            }
+          : null,
+    );
+  }
+}
+
 final _cupertinoProvider = StateProvider((ref) => false);
-final _switchThemeDataProvider = StateProvider<SwitchThemeData?>((ref) => null);
-final _thumbHueProvider = StateProvider<double?>((ref) => null);
-late double _thumbSaturation;
-late double _thumbValue;
-final _trackHueProvider = StateProvider<double?>((ref) => null);
-late double _trackSaturation;
-late double _trackValue;
+final _thumbHueProvider = StateProvider<HSVColor?>((ref) => null);
+final _trackHueProvider = StateProvider<HSVColor?>((ref) => null);
 final _switchValueProvider = StateProvider((ref) => true);
 
 class _SwitchThemeTab extends ConsumerWidget {
@@ -246,7 +273,6 @@ class _SwitchThemeTab extends ConsumerWidget {
     final cupertino = ref.watch(_cupertinoProvider);
     final thumbHue = ref.watch(_thumbHueProvider);
     final trackHue = ref.watch(_trackHueProvider);
-    final data = ref.watch(_switchThemeDataProvider);
     final value = ref.watch(_switchValueProvider);
 
     final theme = Theme.of(context);
@@ -260,12 +286,8 @@ class _SwitchThemeTab extends ConsumerWidget {
           theme.switchTheme.trackColor?.resolve(<MaterialState>{MaterialState.selected}) ??
               theme.foregroundColor,
         );
-        ref.read(_thumbHueProvider.notifier).state = thumbHsv.hue;
-        _thumbSaturation = thumbHsv.saturation;
-        _thumbValue = thumbHsv.value;
-        ref.read(_trackHueProvider.notifier).state = trackHsv.hue;
-        _trackSaturation = trackHsv.saturation;
-        _trackValue = trackHsv.value;
+        ref.read(_thumbHueProvider.notifier).state = thumbHsv;
+        ref.read(_trackHueProvider.notifier).state = trackHsv;
       });
     }
 
@@ -295,11 +317,9 @@ class _SwitchThemeTab extends ConsumerWidget {
             title: const Text('Thumb color'),
             trailing: thumbHue != null
                 ? SizedBox(
-                    width: 160,
-                    child: Slider(
-                      value: thumbHue,
-                      min: 0.0,
-                      max: 360.0,
+                    width: 140,
+                    child: _HueSlider.fromHsvColor(
+                      hsvColor: thumbHue,
                       onChanged: (value) {
                         ref.read(_thumbHueProvider.notifier).state = value;
                       },
@@ -311,11 +331,9 @@ class _SwitchThemeTab extends ConsumerWidget {
             title: const Text('Track color'),
             trailing: trackHue != null
                 ? SizedBox(
-                    width: 160,
-                    child: Slider(
-                      value: trackHue,
-                      min: 0.0,
-                      max: 360.0,
+                    width: 140,
+                    child: _HueSlider.fromHsvColor(
+                      hsvColor: trackHue,
                       onChanged: (value) {
                         ref.read(_trackHueProvider.notifier).state = value;
                       },
@@ -326,24 +344,12 @@ class _SwitchThemeTab extends ConsumerWidget {
           const Divider(),
           if (thumbHue != null)
             mi.run(() {
-              final thumbColor = HSVColor.fromAHSV(
-                1.0,
-                thumbHue,
-                _thumbSaturation,
-                _thumbValue,
-              ).toColor();
-              final trackColor = HSVColor.fromAHSV(
-                1.0,
-                trackHue!,
-                _trackSaturation,
-                _trackValue,
-              ).toColor();
               return SwitchTheme(
                 data: SwitchTheme.of(context).copyWith(
-                  thumbColor: MaterialStateProperty.resolveWith(
-                      (states) => states.contains(MaterialState.disabled) ? null : thumbColor),
-                  trackColor: MaterialStateProperty.resolveWith(
-                      (states) => states.contains(MaterialState.disabled) ? null : trackColor),
+                  thumbColor: MaterialStateProperty.resolveWith((states) =>
+                      states.contains(MaterialState.disabled) ? null : thumbHue.toColor()),
+                  trackColor: MaterialStateProperty.resolveWith((states) =>
+                      states.contains(MaterialState.disabled) ? null : trackHue!.toColor()),
                 ),
                 child: cupertino
                     ? CupertinoSwitch(
