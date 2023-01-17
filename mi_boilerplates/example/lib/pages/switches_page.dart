@@ -225,23 +225,49 @@ class _SwitchesTab extends ConsumerWidget {
 // Switch theme tab
 //
 
-final _cupertinoSwitchProvider = StateProvider((ref) => false);
+final _cupertinoProvider = StateProvider((ref) => false);
 final _switchThemeDataProvider = StateProvider<SwitchThemeData?>((ref) => null);
-final _activeColorProvider = StateProvider((ref) => 0.0);
+final _thumbHueProvider = StateProvider<double?>((ref) => null);
+late double _thumbSaturation;
+late double _thumbValue;
+final _trackHueProvider = StateProvider<double?>((ref) => null);
+late double _trackSaturation;
+late double _trackValue;
 final _switchValueProvider = StateProvider((ref) => true);
 
 class _SwitchThemeTab extends ConsumerWidget {
+  static final _logger = Logger((SwitchesPage).toString());
+
   const _SwitchThemeTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(ex.enableActionsProvider);
-    final cupertino = ref.watch(_cupertinoSwitchProvider);
-    final activeColor = ref.watch(_activeColorProvider);
+    final cupertino = ref.watch(_cupertinoProvider);
+    final thumbHue = ref.watch(_thumbHueProvider);
+    final trackHue = ref.watch(_trackHueProvider);
     final data = ref.watch(_switchThemeDataProvider);
     final value = ref.watch(_switchValueProvider);
 
     final theme = Theme.of(context);
+    if (thumbHue == null || trackHue == null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        final thumbHsv = HSVColor.fromColor(
+          theme.switchTheme.thumbColor?.resolve(<MaterialState>{MaterialState.selected}) ??
+              theme.foregroundColor,
+        );
+        final trackHsv = HSVColor.fromColor(
+          theme.switchTheme.trackColor?.resolve(<MaterialState>{MaterialState.selected}) ??
+              theme.foregroundColor,
+        );
+        ref.read(_thumbHueProvider.notifier).state = thumbHsv.hue;
+        _thumbSaturation = thumbHsv.saturation;
+        _thumbValue = thumbHsv.value;
+        ref.read(_trackHueProvider.notifier).state = trackHsv.hue;
+        _trackSaturation = trackHsv.saturation;
+        _trackValue = trackHsv.value;
+      });
+    }
 
     void onChanged(bool value) {
       ref.read(_switchValueProvider.notifier).state = value;
@@ -255,7 +281,7 @@ class _SwitchThemeTab extends ConsumerWidget {
             trailing: ToggleButtons(
               onPressed: enabled
                   ? (int index) {
-                      ref.read(_cupertinoSwitchProvider.notifier).state = index == 0;
+                      ref.read(_cupertinoProvider.notifier).state = index == 0;
                     }
                   : null,
               isSelected: <bool>[cupertino, !cupertino],
@@ -266,30 +292,70 @@ class _SwitchThemeTab extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Text('Color'),
-            trailing: SizedBox(
-              width: 160,
-              child: Slider(
-                value: activeColor,
-                onChanged: (value) {
-                  ref.read(_activeColorProvider.notifier).state = value;
-                },
-              ),
-            ),
+            title: const Text('Thumb color'),
+            trailing: thumbHue != null
+                ? SizedBox(
+                    width: 160,
+                    child: Slider(
+                      value: thumbHue,
+                      min: 0.0,
+                      max: 360.0,
+                      onChanged: (value) {
+                        ref.read(_thumbHueProvider.notifier).state = value;
+                      },
+                    ),
+                  )
+                : null,
+          ),
+          ListTile(
+            title: const Text('Track color'),
+            trailing: trackHue != null
+                ? SizedBox(
+                    width: 160,
+                    child: Slider(
+                      value: trackHue,
+                      min: 0.0,
+                      max: 360.0,
+                      onChanged: (value) {
+                        ref.read(_trackHueProvider.notifier).state = value;
+                      },
+                    ),
+                  )
+                : null,
           ),
           const Divider(),
-          SwitchTheme(
-            data: SwitchTheme.of(context),
-            child: cupertino
-                ? CupertinoSwitch(
-                    value: value,
-                    onChanged: enabled ? onChanged : null,
-                  )
-                : Switch(
-                    value: value,
-                    onChanged: enabled ? onChanged : null,
-                  ),
-          ),
+          if (thumbHue != null)
+            mi.run(() {
+              final thumbColor = HSVColor.fromAHSV(
+                1.0,
+                thumbHue,
+                _thumbSaturation,
+                _thumbValue,
+              ).toColor();
+              final trackColor = HSVColor.fromAHSV(
+                1.0,
+                trackHue!,
+                _trackSaturation,
+                _trackValue,
+              ).toColor();
+              return SwitchTheme(
+                data: SwitchTheme.of(context).copyWith(
+                  thumbColor: MaterialStateProperty.resolveWith(
+                      (states) => states.contains(MaterialState.disabled) ? null : thumbColor),
+                  trackColor: MaterialStateProperty.resolveWith(
+                      (states) => states.contains(MaterialState.disabled) ? null : trackColor),
+                ),
+                child: cupertino
+                    ? CupertinoSwitch(
+                        value: value,
+                        onChanged: enabled ? onChanged : null,
+                      )
+                    : Switch(
+                        value: value,
+                        onChanged: enabled ? onChanged : null,
+                      ),
+              );
+            }),
         ],
       ),
     );
