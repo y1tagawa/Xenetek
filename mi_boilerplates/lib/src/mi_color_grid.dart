@@ -13,6 +13,7 @@ class ColorGrid extends StatelessWidget {
   static const double kItemSize = 40.0;
 
   final List<Color?> colors;
+  final Icon? nullIcon;
   final List<String?>? tooltips;
   final double? itemSize;
   final ValueChanged<int>? onChanged;
@@ -20,6 +21,7 @@ class ColorGrid extends StatelessWidget {
   const ColorGrid({
     super.key,
     required this.colors,
+    this.nullIcon,
     this.tooltips,
     this.itemSize,
     this.onChanged,
@@ -39,7 +41,11 @@ class ColorGrid extends StatelessWidget {
             },
             child: mi.run(
               () {
-                Widget item = mi.ColorChip(color: colors[i], size: itemSize_);
+                Widget item = mi.ColorChip(
+                  color: colors[i],
+                  nullIcon: nullIcon,
+                  size: itemSize_,
+                );
                 if (tooltips != null && i < tooltips!.length && tooltips![i] != null) {
                   item = Tooltip(
                     message: tooltips![i],
@@ -102,6 +108,7 @@ class ColorGridHelper {
     required BuildContext context,
     Widget? title,
     Color? initialColor,
+    Icon? nullIcon,
     ValueChanged<Color?>? onChanged,
     double? width,
     double? height,
@@ -112,7 +119,10 @@ class ColorGridHelper {
     return await showDialog<bool>(
       context: context,
       builder: (context) => mi.OkCancelDialog<bool>(
-        icon: mi.ColorChip(color: color),
+        icon: mi.ColorChip(
+          color: color,
+          nullIcon: nullIcon,
+        ),
         title: title,
         getValue: (ok) => ok,
         content: SizedBox(

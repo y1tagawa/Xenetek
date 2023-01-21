@@ -22,6 +22,7 @@ Future<bool> _showColorSelectDialog({
     context: context,
     title: title,
     initialColor: initialColor,
+    nullIcon: _nullIcon,
     onChanged: onChanged,
     builder: (_, onChanged) {
       return ColorGrid(
@@ -62,6 +63,7 @@ Future<bool> _showTextColorSelectDialog({
     context: context,
     title: title,
     initialColor: initialColor,
+    nullIcon: _nullIcon,
     onChanged: (color) {
       onChanged?.call(color);
     },
@@ -108,6 +110,7 @@ Future<bool> _showBackgroundColorSelectDialog({
     context: context,
     title: title,
     initialColor: initialColor,
+    nullIcon: _nullIcon,
     onChanged: (color) {
       onChanged?.call(color);
     },
@@ -130,6 +133,8 @@ Future<bool> _showBackgroundColorSelectDialog({
 ///
 /// Exampleアプリの設定ページ
 ///
+
+const _nullIcon = Icon(Icons.block);
 
 class SettingsPage extends ConsumerWidget {
   static const icon = Icon(Icons.settings_outlined);
@@ -188,7 +193,7 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Secondary color'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: secondaryColor),
+              child: mi.ColorChip(color: secondaryColor, nullIcon: _nullIcon),
             ),
             onTap: () async {
               final ok = await _showColorSelectDialog(
@@ -209,7 +214,7 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Text color'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: textColor),
+              child: mi.ColorChip(color: textColor, nullIcon: _nullIcon),
             ),
             onTap: () async {
               final ok = await _showTextColorSelectDialog(
@@ -230,7 +235,7 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Background color'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: backgroundColor),
+              child: mi.ColorChip(color: backgroundColor, nullIcon: _nullIcon),
             ),
             onTap: () async {
               final ok = await _showBackgroundColorSelectDialog(

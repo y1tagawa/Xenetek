@@ -216,10 +216,12 @@ class ColorChip extends StatelessWidget {
     return Label(
       enabled: enabled,
       icon: color == null
-          ? IconTheme(
-              data: IconTheme.of(context).copyWith(size: size_),
-              child: nullIcon ?? const Icon(Icons.block),
-            )
+          ? nullIcon == null
+              ? SizedBox.square(dimension: size_)
+              : IconTheme(
+                  data: IconTheme.of(context).copyWith(size: size_),
+                  child: nullIcon!,
+                )
           : Container(
               padding: EdgeInsets.all(margin),
               width: size_,
