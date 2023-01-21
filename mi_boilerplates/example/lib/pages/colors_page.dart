@@ -25,6 +25,10 @@ class ColorsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     mi.Tab(
+      tooltip: 'Gradients',
+      icon: Icon(Icons.gradient),
+    ),
+    mi.Tab(
       tooltip: 'Theme & color scheme',
       icon: Icon(Icons.schema_outlined),
     ),
@@ -58,6 +62,7 @@ class ColorsPage extends ConsumerWidget {
           ),
           body: const TabBarView(
             children: [
+              _GradientTab(),
               _ColorSchemeTab(),
               _ColorGridTab(),
             ],
@@ -74,6 +79,8 @@ class ColorsPage extends ConsumerWidget {
 //
 //　Theme and color scheme tab.
 //
+
+//<editor-fold>
 
 final _colorSchemeItems = <String, Color Function(ThemeData)>{
   'primary': (theme) => theme.colorScheme.primary,
@@ -277,9 +284,13 @@ class _ColorSchemeTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Color grid tab.
 //
+
+//<editor-fold>
 
 final _selectedColorProvider2 = StateProvider<Color?>((ref) => null);
 
@@ -317,3 +328,49 @@ class _ColorGridTab extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>
+
+//
+// Color grid tab.
+//
+
+//<editor-fold>
+
+const _gradientColors = <Color>[Colors.red, Colors.green, Colors.blue, Colors.black, Colors.white];
+const _gradientStops = <double>[0.0, 0.33, 0.67, 0.67, 1.0];
+
+final _gradientItems = <String, Gradient>{
+  'RGB': const LinearGradient(colors: _gradientColors, stops: _gradientStops),
+};
+
+class _GradientTab extends ConsumerWidget {
+  static final _logger = Logger((_GradientTab).toString());
+
+  const _GradientTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    return mi.ExpandedColumn(
+      child: ListView(
+        children: _gradientItems.entries.map((item) {
+          return ListTile(
+            title: Text(item.key),
+            subtitle: Container(
+              height: kToolbarHeight * 0.5,
+              decoration: BoxDecoration(
+                gradient: item.value,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//</editor-fold>
