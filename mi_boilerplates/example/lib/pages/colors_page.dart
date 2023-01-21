@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -390,40 +391,17 @@ class _GradientTab extends ConsumerWidget {
     //final gradientImage = ref.watch(_gradientImageProvider);
     final gradientColor = ref.watch(_gradientColorProvider);
 
-    Future<ui.Image> getGradientImage(Gradient gradient) async {
-      final pictureRecorder = ui.PictureRecorder();
-      final canvas = ui.Canvas(pictureRecorder);
-      final paint = ui.Paint()..shader = gradient.createShader(const Rect.fromLTWH(0, 0, 100, 1));
-      canvas.drawPaint(paint);
-      final picture = pictureRecorder.endRecording();
-      final image = await picture.toImage(100, 1);
-      return image;
-    }
-
-    Future<Color> getGradientColor(Gradient gradient, double position) async {
-      final image = await getGradientImage(gradient);
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-      final index = (image.width * position).toInt() * 4;
-      return Color.fromARGB(
-        byteData!.getUint8(index + 3),
-        byteData.getUint8(index),
-        byteData.getUint8(index + 1),
-        byteData.getUint8(index + 2),
-      );
-    }
-
     Future<void> update() async {
       final gradient = _gradientItems[colorSpace].value;
 
-      final image = await getGradientImage(gradient);
+      final image = await gradient.toImage();
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       ref.read(_gradientImageProvider.notifier).state =
           Image.memory(Uint8List.view(byteData!.buffer));
+      image.dispose();
 
-      final color = await getGradientColor(
-        _gradientItems[colorSpace].value,
-        position,
-      );
+      final colors = await gradient.toColors();
+      final color = colors[math.min((position * colors.length).toInt(), colors.length - 1)];
       ref.read(_gradientColorProvider.notifier).state = color;
     }
 
@@ -455,10 +433,13 @@ class _GradientTab extends ConsumerWidget {
           }),
           const Divider(),
           ListTile(
-            leading: mi.ColorChip(
-              enabled: enabled,
-              color: gradientColor,
-              size: 48,
+            leading: ClipOval(
+              child: mi.ColorChip(
+                enabled: enabled,
+                color: gradientColor,
+                margin: 0,
+                size: 36,
+              ),
             ),
             title: Slider(
               value: position,
