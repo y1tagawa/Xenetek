@@ -31,16 +31,16 @@ class ColorsPage extends ConsumerWidget {
 
   static const _tabs = <Widget>[
     mi.Tab(
-      tooltip: 'Gradients',
-      icon: Icon(Icons.gradient),
-    ),
-    mi.Tab(
       tooltip: 'Theme & color scheme',
       icon: Icon(Icons.schema_outlined),
     ),
     mi.Tab(
       tooltip: 'Color grid',
       icon: Icon(Icons.grid_on_outlined),
+    ),
+    mi.Tab(
+      tooltip: 'Gradients',
+      icon: Icon(Icons.gradient),
     ),
   ];
 
@@ -68,9 +68,9 @@ class ColorsPage extends ConsumerWidget {
           ),
           body: const TabBarView(
             children: [
-              _GradientTab(),
               _ColorSchemeTab(),
               _ColorGridTab(),
+              _GradientTab(),
             ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
@@ -395,10 +395,13 @@ class _GradientTab extends ConsumerWidget {
       final gradient = _gradientItems[colorSpace].value;
 
       final image = await gradient.toImage();
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      ref.read(_gradientImageProvider.notifier).state =
-          Image.memory(Uint8List.view(byteData!.buffer));
-      image.dispose();
+      try {
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        ref.read(_gradientImageProvider.notifier).state =
+            Image.memory(Uint8List.view(byteData!.buffer));
+      } finally {
+        image.dispose();
+      }
 
       final colors = await gradient.toColors();
       final color = colors[math.min((position * colors.length).toInt(), colors.length - 1)];

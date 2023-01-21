@@ -17,7 +17,12 @@ extension GradientHelper on Gradient {
     final paint = ui.Paint()..shader = createShader(Rect.fromLTWH(0, 0, width.toDouble(), 1));
     canvas.drawPaint(paint);
     final picture = pictureRecorder.endRecording();
-    return await picture.toImage(width, 1);
+    try {
+      final image = await picture.toImage(width, 1);
+      return image;
+    } finally {
+      picture.dispose();
+    }
   }
 
   Future<List<Color>> toColors({
@@ -25,17 +30,20 @@ extension GradientHelper on Gradient {
     bool growable = false,
   }) async {
     final image = await toImage(width: length);
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    final colors = List.generate(length, (index) {
-      final i = index * 4;
-      return Color.fromARGB(
-        byteData!.getUint8(i + 3),
-        byteData.getUint8(i),
-        byteData.getUint8(i + 1),
-        byteData.getUint8(i + 2),
-      );
-    }, growable: growable);
-    image.dispose();
-    return colors;
+    try {
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final colors = List.generate(length, (index) {
+        final i = index * 4;
+        return Color.fromARGB(
+          byteData!.getUint8(i + 3),
+          byteData.getUint8(i),
+          byteData.getUint8(i + 1),
+          byteData.getUint8(i + 2),
+        );
+      }, growable: growable);
+      return colors;
+    } finally {
+      image.dispose();
+    }
   }
 }
