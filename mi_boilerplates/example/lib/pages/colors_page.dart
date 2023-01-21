@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:gradients/gradients.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -360,10 +364,15 @@ const _hsbColors = <Color>[
 const _stops = <double>[0.0, 0.25, 0.5, 0.75, 0.75, 1.0];
 
 final _gradientItems = <String, Gradient>{
-  'RGB': LinearGradient(colors: _rgbColors, stops: _stops),
   // https://pub.dev/packages/gradients
   'HSV': LinearGradientPainter(colors: _hsbColors, stops: _stops, colorSpace: ColorSpace.hsb),
-};
+  'RGB': LinearGradient(colors: _rgbColors, stops: _stops),
+}.entries.toList();
+
+final _positionProvider = StateProvider((ref) => 0.0);
+final _colorSpaceProvider = StateProvider((ref) => 0);
+final _gradientImageProvider = StateProvider<Image?>((ref) => null);
+final _gradientColorProvider = StateProvider<Color?>((ref) => null);
 
 class _GradientTab extends ConsumerWidget {
   static final _logger = Logger((_GradientTab).toString());
@@ -374,19 +383,97 @@ class _GradientTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
+    final enabled = ref.watch(ex.enableActionsProvider);
+    final position = ref.watch(_positionProvider);
+    final colorSpace = ref.watch(_colorSpaceProvider);
+
+    //final gradientImage = ref.watch(_gradientImageProvider);
+    final gradientColor = ref.watch(_gradientColorProvider);
+
+    Future<ui.Image> getGradientImage(Gradient gradient) async {
+      final pictureRecorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(pictureRecorder);
+      final paint = ui.Paint()..shader = gradient.createShader(const Rect.fromLTWH(0, 0, 100, 1));
+      canvas.drawPaint(paint);
+      final picture = pictureRecorder.endRecording();
+      final image = await picture.toImage(100, 1);
+      return image;
+    }
+
+    Future<Color> getGradientColor(Gradient gradient, double position) async {
+      final image = await getGradientImage(gradient);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      final index = (image.width * position).toInt() * 4;
+      return Color.fromARGB(
+        byteData!.getUint8(index + 3),
+        byteData.getUint8(index),
+        byteData.getUint8(index + 1),
+        byteData.getUint8(index + 2),
+      );
+    }
+
+    Future<void> update() async {
+      final gradient = _gradientItems[colorSpace].value;
+
+      final image = await getGradientImage(gradient);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ref.read(_gradientImageProvider.notifier).state =
+          Image.memory(Uint8List.view(byteData!.buffer));
+
+      final color = await getGradientColor(
+        _gradientItems[colorSpace].value,
+        position,
+      );
+      ref.read(_gradientColorProvider.notifier).state = color;
+    }
+
+    if (gradientColor == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await update();
+      });
+    }
+
     return mi.ExpandedColumn(
       child: ListView(
-        children: _gradientItems.entries.map((item) {
-          return ListTile(
-            title: Text(item.key),
-            subtitle: Container(
-              height: kToolbarHeight * 0.5,
-              decoration: BoxDecoration(
-                gradient: item.value,
+        children: [
+          ..._gradientItems.mapIndexed((index, item) {
+            return ListTile(
+              enabled: enabled,
+              title: Text(item.key),
+              selected: colorSpace == index,
+              subtitle: Container(
+                height: kToolbarHeight * 0.5,
+                decoration: BoxDecoration(
+                  gradient: item.value,
+                ),
               ),
+              onTap: () async {
+                ref.read(_colorSpaceProvider.notifier).state = index;
+                await update();
+              },
+            );
+          }),
+          const Divider(),
+          ListTile(
+            leading: mi.ColorChip(
+              enabled: enabled,
+              color: gradientColor,
+              size: 48,
             ),
-          );
-        }).toList(),
+            title: Slider(
+              value: position,
+              min: 0.0,
+              max: 1.0,
+              onChanged: enabled
+                  ? (position) async {
+                      ref.read(_positionProvider.notifier).state = position;
+                      await update();
+                    }
+                  : null,
+            ),
+          ),
+          //if (gradientImage != null) gradientImage,
+        ],
       ),
     ).also((_) {
       _logger.fine('[o] build');

@@ -180,11 +180,12 @@ class Label extends StatelessWidget {
 
 /// カラーチップ
 ///
-/// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[Icons.block]を表示する。
+/// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[nullIcon]を表示する。
 
 class ColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
+  final Icon? nullIcon;
   final VoidCallback? onTap;
   final ValueChanged<bool>? onHover;
   final double? size;
@@ -197,6 +198,7 @@ class ColorChip extends StatelessWidget {
     super.key,
     this.enabled = true,
     required this.color,
+    this.nullIcon,
     this.onTap,
     this.onHover,
     this.size,
@@ -214,9 +216,9 @@ class ColorChip extends StatelessWidget {
     return Label(
       enabled: enabled,
       icon: color == null
-          ? Icon(
-              Icons.block,
-              size: size_,
+          ? IconTheme(
+              data: IconTheme.of(context).copyWith(size: size_),
+              child: nullIcon ?? const Icon(Icons.block),
             )
           : Container(
               padding: EdgeInsets.all(margin),
