@@ -92,6 +92,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.16.0"
+  color_models:
+    dependency: transitive
+    description:
+      name: color_models
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.3"
   crypto:
     dependency: transitive
     description:
@@ -132,6 +139,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_color_models:
+    dependency: transitive
+    description:
+      name: flutter_color_models
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.3+2"
   flutter_cube:
     dependency: "direct main"
     description:
@@ -191,6 +205,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.1.5"
+  gradients:
+    dependency: "direct main"
+    description:
+      name: gradients
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1+2"
   hooks_riverpod:
     dependency: "direct main"
     description:
@@ -275,6 +296,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  num_utilities:
+    dependency: transitive
+    description:
+      name: num_utilities
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
   path:
     dependency: "direct main"
     description:
@@ -366,6 +394,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.3"
+  powers:
+    dependency: transitive
+    description:
+      name: powers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0+2"
   process:
     dependency: transitive
     description:

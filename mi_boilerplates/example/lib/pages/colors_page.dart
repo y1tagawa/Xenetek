@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:gradients/gradients.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
@@ -337,11 +338,31 @@ class _ColorGridTab extends ConsumerWidget {
 
 //<editor-fold>
 
-const _gradientColors = <Color>[Colors.red, Colors.green, Colors.blue, Colors.black, Colors.white];
-const _gradientStops = <double>[0.0, 0.33, 0.67, 0.67, 1.0];
+final _rgbColors = <Color>[
+  const HSVColor.fromAHSV(1.0, 0.0, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 120.0, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 240.0, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 359.9, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 0.0, 0.0, 0.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 0.0, 0.0, 1.0).toColor(),
+];
+
+// Hueでループさせようとすると、HsbColorでないと上手くいかない。
+const _hsbColors = <Color>[
+  HsbColor(0.0, 100.0, 100.0),
+  HsbColor(120.0, 100.0, 100.0),
+  HsbColor(240.0, 100.0, 100.0),
+  HsbColor(360.0, 100.0, 100.0),
+  HsbColor(0.0, 0.0, 0.0),
+  HsbColor(0.0, 0.0, 100.0),
+];
+
+const _stops = <double>[0.0, 0.25, 0.5, 0.75, 0.75, 1.0];
 
 final _gradientItems = <String, Gradient>{
-  'RGB': const LinearGradient(colors: _gradientColors, stops: _gradientStops),
+  'RGB': LinearGradient(colors: _rgbColors, stops: _stops),
+  // https://pub.dev/packages/gradients
+  'HSV': LinearGradientPainter(colors: _hsbColors, stops: _stops, colorSpace: ColorSpace.hsb),
 };
 
 class _GradientTab extends ConsumerWidget {
