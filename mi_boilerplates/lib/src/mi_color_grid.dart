@@ -67,6 +67,7 @@ class TabbedColorGrid extends StatelessWidget {
   final int initialTabIndex;
   final List<Widget> tabs;
   final List<List<Color?>> colors;
+  final Icon? nullIcon;
   final List<List<String>?>? tooltips;
   final void Function(int tabIndex, int colorIndex)? onChanged;
 
@@ -75,6 +76,7 @@ class TabbedColorGrid extends StatelessWidget {
     this.initialTabIndex = 0,
     required this.tabs,
     required this.colors,
+    this.nullIcon,
     this.tooltips,
     this.onChanged,
   }) : assert(tabs.length == colors.length);
@@ -89,6 +91,7 @@ class TabbedColorGrid extends StatelessWidget {
             (tabIndex, colors_) => SingleChildScrollView(
               child: ColorGrid(
                 colors: colors_,
+                nullIcon: nullIcon,
                 tooltips: tooltips?.let((it) => tabIndex < it.length ? it[tabIndex] : null),
                 onChanged: (colorIndex) {
                   onChanged?.call(tabIndex, colorIndex);

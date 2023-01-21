@@ -9,6 +9,7 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 class ColorGrid extends StatelessWidget {
   final int initialTabIndex;
+  final Icon? nullIcon;
   final bool nullable;
   final void Function(Color?)? onChanged;
 
@@ -21,6 +22,7 @@ class ColorGrid extends StatelessWidget {
   const ColorGrid({
     super.key,
     this.initialTabIndex = 0,
+    this.nullIcon,
     this.onChanged,
     this.nullable = false,
   });
@@ -43,6 +45,7 @@ class ColorGrid extends StatelessWidget {
       initialTabIndex: initialTabIndex,
       tabs: _tabs,
       colors: colors,
+      nullIcon: nullIcon,
       tooltips: tooltips,
       onChanged: (tabIndex, colorIndex) {
         onChanged?.call(colors[tabIndex][colorIndex]);

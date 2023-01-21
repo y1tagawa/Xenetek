@@ -11,6 +11,8 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import '../main.dart';
 import 'ex_app_bar.dart' as ex;
 
+const _nullIcon = Icon(Icons.block);
+
 Future<bool> _showColorSelectDialog({
   required BuildContext context,
   Widget? title,
@@ -71,6 +73,7 @@ Future<bool> _showTextColorSelectDialog({
       return SingleChildScrollView(
         child: mi.ColorGrid(
           colors: colors,
+          nullIcon: _nullIcon,
           tooltips: tooltips,
           onChanged: (index) => onChanged_?.call(colors[index]),
         ),
@@ -118,6 +121,7 @@ Future<bool> _showBackgroundColorSelectDialog({
       return SingleChildScrollView(
         child: mi.ColorGrid(
           colors: colors,
+          nullIcon: _nullIcon,
           tooltips: tooltips,
           onChanged: (index) => onChanged_?.call(colors[index]),
         ),
@@ -133,8 +137,6 @@ Future<bool> _showBackgroundColorSelectDialog({
 ///
 /// Exampleアプリの設定ページ
 ///
-
-const _nullIcon = Icon(Icons.block);
 
 class SettingsPage extends ConsumerWidget {
   static const icon = Icon(Icons.settings_outlined);
