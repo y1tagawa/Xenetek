@@ -26,13 +26,13 @@ extension GradientHelper on Gradient {
   }
 
   Future<List<Color>> toColors({
-    int length = 100,
+    int resolution = 100,
     bool growable = false,
   }) async {
-    final image = await toImage(width: length);
+    final image = await toImage(width: resolution);
     try {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-      final colors = List.generate(length, (index) {
+      final colors = List.generate(resolution, (index) {
         final i = index * 4;
         return Color.fromARGB(
           byteData!.getUint8(i + 3),
