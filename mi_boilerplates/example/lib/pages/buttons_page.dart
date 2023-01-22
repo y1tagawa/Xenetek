@@ -282,10 +282,10 @@ class _PushButtonsTab extends ConsumerWidget {
 // Stream tab.
 //
 
-final _streamController = StreamController<int>();
+final _streamController = StreamController<FutureOr<int>>();
 final _streamProvider = StreamProvider<int>((ref) async* {
   await for (final value in _streamController.stream) {
-    yield value;
+    yield await value;
   }
 });
 
