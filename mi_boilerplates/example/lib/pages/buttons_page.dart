@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
@@ -44,8 +45,12 @@ class ButtonsPage extends ConsumerWidget {
       tooltip: 'Push buttons',
       icon: Text(
         '[OK]',
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
       ),
+    ),
+    mi.Tab(
+      tooltip: 'Stream',
+      icon: Icon(Icons.add),
     ),
     mi.Tab(
       tooltip: 'Dropdown button',
@@ -104,6 +109,7 @@ class ButtonsPage extends ConsumerWidget {
                   physics: enabled ? null : const NeverScrollableScrollPhysics(),
                   children: const [
                     _PushButtonsTab(),
+                    _StreamTab(),
                     _DropdownButtonTab(),
                     _ToggleButtonsTab(),
                     _MonospaceTab(),
@@ -121,12 +127,26 @@ class ButtonsPage extends ConsumerWidget {
           ),
           // FABはdisable禁止なので代わりに非表示にする。
           // https://material.io/design/interaction/states.html#disabled
-          floatingActionButton: (enabled && tabIndex == 0)
-              ? FloatingActionButton(
+          floatingActionButton: mi.run(() {
+            switch (tabIndex) {
+              case 0: // Push buttons tab
+                return FloatingActionButton(
                   onPressed: enabled ? () => _ping(ref) : null,
                   child: const Icon(Icons.notifications_outlined),
-                )
-              : null,
+                );
+              case 1: // Stream tab
+                return FloatingActionButton(
+                  onPressed: enabled
+                      ? () {
+                          _logger.fine('sending id:$_nextId');
+                          _streamController.sink.add(_nextId++);
+                        }
+                      : null,
+                  child: const Icon(Icons.add),
+                );
+            }
+            return null;
+          }),
           bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
@@ -139,8 +159,10 @@ class ButtonsPage extends ConsumerWidget {
 //</editor-fold>
 
 //
-// Push buttons tab
+// Push buttons tab.
 //
+
+//<editor-fold>
 
 class _PushButtonsTab extends ConsumerWidget {
   static final _logger = Logger((_PushButtonsTab).toString());
@@ -205,7 +227,7 @@ class _PushButtonsTab extends ConsumerWidget {
           mi.ButtonListTile(
             enabled: enabled,
             alignment: MainAxisAlignment.start,
-            leading: const Icon(Icons.mode_standby),
+            leading: const Icon(Icons.notifications_outlined),
             text: const Text('ListTile'),
             onPressed: () => _ping(ref),
           ),
@@ -245,6 +267,59 @@ class _PushButtonsTab extends ConsumerWidget {
               },
               child: const Text('Toast'),
             ),
+          ),
+        ],
+      ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//</editor-fold>
+
+//
+// Stream tab.
+//
+
+final _streamController = StreamController<int>();
+final _streamProvider = StreamProvider<int>((ref) async* {
+  await for (final value in _streamController.stream) {
+    yield value;
+  }
+});
+
+int _nextId = 1;
+
+class _StreamTab extends ConsumerWidget {
+  static final _logger = Logger((_StreamTab).toString());
+
+  const _StreamTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+    final enabled = ref.watch(ex.enableActionsProvider);
+    final id = ref.watch(_streamProvider);
+
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          id.when(
+            data: (id) {
+              _logger.fine('received id:$id');
+              return Column(
+                children: [
+                  const Text('Data received'),
+                  Text('$id', style: const TextStyle(fontSize: 15)),
+                ],
+              );
+            },
+            error: (error, _) => Text(error.toString()),
+            loading: () => const CircularProgressIndicator(),
           ),
         ],
       ),
