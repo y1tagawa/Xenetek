@@ -11,6 +11,7 @@ export 'src/mi_animation_controller.dart';
 export 'src/mi_app_bar.dart';
 export 'src/mi_bottom_navigation_bar.dart';
 export 'src/mi_color_grid.dart';
+export 'src/mi_color_slider.dart';
 export 'src/mi_dialogs.dart';
 export 'src/mi_list_tiles.dart';
 export 'src/mi_menus.dart';
