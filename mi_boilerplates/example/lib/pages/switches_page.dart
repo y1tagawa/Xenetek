@@ -253,11 +253,19 @@ class _GradientSliderTrackShape extends RectangularSliderTrackShape {
   }
 }
 
+/// [ColorSlider]の状態変数
+///
+/// [gradient]中の位置[position]の色をプロパティとしてとるウィジェット[ColorSlider]の状態変数。
+/// 初期化に非同期処理が必要なので、値でなくFutureとして生成する。
+/// [ColorSliderValue]をプロバイダ化する場合は下のように、StreamController<FutureOr<ColorSliderValue>>
+/// を生成し、StreamProvider<ColorSliderValue>にすればなんとかなる。
+
 class ColorSliderValue {
   final Gradient gradient;
   final double position;
   final List<Color> colors;
 
+  /// Futureを生成する（まあ一種の）コンストラクタ
   static Future<ColorSliderValue> fromGradient({
     required Gradient gradient,
     int resolution = 100,
@@ -270,6 +278,7 @@ class ColorSliderValue {
     );
   }
 
+  /// [position]に対応する色
   Color? get color {
     final n = colors.length;
     return colors[math.min((position * n).toInt(), n - 1)];
@@ -317,6 +326,7 @@ class ColorSliderValue {
 //</editor-fold>
 }
 
+/// [Gradient]中のある色を採るスライダ
 class ColorSlider extends StatelessWidget {
   final ColorSliderValue value;
   final ValueChanged<ColorSliderValue>? onChanged;
