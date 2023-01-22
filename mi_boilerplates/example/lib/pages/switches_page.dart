@@ -229,30 +229,6 @@ class _SwitchesTab extends ConsumerWidget {
 // Switch theme tab
 //
 
-class _GradientSliderTrackShape extends RectangularSliderTrackShape {
-  final Gradient gradient;
-  const _GradientSliderTrackShape({
-    required this.gradient,
-  }) : super();
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset offset, {
-    required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
-    required Animation<double> enableAnimation,
-    required TextDirection textDirection,
-    required Offset thumbCenter,
-    bool isDiscrete = false,
-    bool isEnabled = false,
-    double additionalActiveTrackHeight = 2,
-  }) {
-    // TODO: implement paint
-    //super.paint(context, offset, parentBox, sliderTheme, enableAnimation, textDirection, thumbCenter, isDiscrete, isEnabled, additionalActiveTrackHeight);
-  }
-}
-
 final _streamController = StreamController<FutureOr<mi.ColorSliderValue>>()
   ..sink.add(mi.ColorSliderValue.fromGradient(gradient: _gradient, position: 0.0));
 

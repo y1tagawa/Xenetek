@@ -12,8 +12,40 @@ import 'package:mi_boilerplates/mi_boilerplates.dart';
 ///
 /// [gradient]中の位置[position]の色をプロパティとしてとるウィジェット[ColorSlider]の状態変数。
 /// 初期化に非同期処理が必要なので、値でなくFutureとして生成する。
-/// [ColorSliderValue]をプロバイダ化する場合は下のように、StreamController<FutureOr<ColorSliderValue>>
-/// を生成し、StreamProvider<ColorSliderValue>にすればなんとかなる。
+/// [ColorSliderValue]をプロバイダ化する場合、下のように、[FutureOr]の[StreamController]を生成し、
+/// [StreamProvider]にすればなんとかなる。
+///
+/// ```dart
+/// // StreamController生成、初期値のFutureを入れる
+/// final _streamController = StreamController<FutureOr<ColorSliderValue>>()
+///   ..sink.add(ColorSliderValue.fromGradient(gradient: _gradient, position: 0.0));
+///
+/// // StreamProviderでプロバイダ化
+/// final _streamProvider = StreamProvider<ColorSliderValue>((ref) async* {
+///   // ストリームをawaitし...
+///   await for (final value in _streamController.stream) {
+///     // さらにFutureOrをawait
+///     yield await value;
+///   }
+/// });
+///     :
+///   // build()中に、StreamProviderをwatchして...
+///   final asyncValue = ref.watch(_streamProvider);
+///     :
+///   // AsyncValueの状態に応じてColorSliderを構築
+///   asyncValue.when(
+///     data: (value) => ColorSlider(
+///       value: value,
+///       onChanged: (value) {
+///         // 値が変化したらストリームに追加すると、自動的にプロバイダ更新
+///         _streamController.sink.add(value);
+///       },
+///     ),
+///     error: (error, _) => Text(error.toString()),
+///     loading: () => const CircularProgressIndicator(),
+///   ),
+///     :
+/// ```
 
 class ColorSliderValue {
   final Gradient gradient;
@@ -79,6 +111,31 @@ class ColorSliderValue {
   }
 
 //</editor-fold>
+}
+
+/// TODO:
+class _ColorSliderTrackShape extends RectangularSliderTrackShape {
+  final Gradient gradient;
+  const _ColorSliderTrackShape({
+    required this.gradient,
+  }) : super();
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+    double additionalActiveTrackHeight = 2,
+  }) {
+    // TODO: implement paint
+    //super.paint(context, offset, parentBox, sliderTheme, enableAnimation, textDirection, thumbCenter, isDiscrete, isEnabled, additionalActiveTrackHeight);
+  }
 }
 
 /// [Gradient]中のある色を採るスライダ
