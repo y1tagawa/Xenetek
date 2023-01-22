@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gradients/gradients.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
@@ -225,41 +229,145 @@ class _SwitchesTab extends ConsumerWidget {
 // Switch theme tab
 //
 
-class _HueSlider extends StatelessWidget {
-  final ValueChanged<HSVColor>? onChanged;
-  final HSVColor hsvColor;
+class _GradientSliderTrackShape extends RectangularSliderTrackShape {
+  final Gradient gradient;
+  const _GradientSliderTrackShape({
+    required this.gradient,
+  }) : super();
 
-  const _HueSlider.fromHsvColor({
+  @override
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required TextDirection textDirection,
+    required Offset thumbCenter,
+    bool isDiscrete = false,
+    bool isEnabled = false,
+    double additionalActiveTrackHeight = 2,
+  }) {
+    // TODO: implement paint
+    //super.paint(context, offset, parentBox, sliderTheme, enableAnimation, textDirection, thumbCenter, isDiscrete, isEnabled, additionalActiveTrackHeight);
+  }
+}
+
+class ColorSliderValue {
+  final Gradient gradient;
+  final double position;
+  final List<Color> colors;
+
+  static Future<ColorSliderValue> fromGradient({
+    required Gradient gradient,
+    int resolution = 100,
+    required double position,
+  }) async {
+    return ColorSliderValue._(
+      gradient: gradient,
+      position: position,
+      colors: await gradient.toColors(resolution: resolution),
+    );
+  }
+
+  Color? get color {
+    final n = colors.length;
+    return colors[math.min((position * n).toInt(), n - 1)];
+  }
+
+//<editor-fold desc="Data Methods">
+
+  const ColorSliderValue._({
+    required this.gradient,
+    required this.position,
+    required this.colors,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ColorSliderValue &&
+          runtimeType == other.runtimeType &&
+          gradient == other.gradient &&
+          position == other.position &&
+          colors == other.colors);
+
+  @override
+  int get hashCode => gradient.hashCode ^ position.hashCode ^ colors.hashCode;
+
+  @override
+  String toString() {
+    return 'ColorSliderValue{'
+        ' gradient: $gradient,'
+        ' position: $position,'
+        ' colors: $colors,'
+        '}';
+  }
+
+  ColorSliderValue copyWith({
+    double? position,
+  }) {
+    return ColorSliderValue._(
+      gradient: gradient,
+      position: position ?? this.position,
+      colors: colors,
+    );
+  }
+
+//</editor-fold>
+}
+
+class ColorSlider extends StatelessWidget {
+  final ColorSliderValue value;
+  final ValueChanged<ColorSliderValue>? onChanged;
+
+  const ColorSlider({
     super.key,
+    required this.value,
     this.onChanged,
-    required this.hsvColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Slider(
-      value: hsvColor.hue,
-      min: 0.0,
-      max: 360.0,
+      thumbColor: value.color,
+      value: value.position,
       onChanged: onChanged != null
-          ? (value) {
-              onChanged!(
-                HSVColor.fromAHSV(
-                  hsvColor.alpha,
-                  value,
-                  hsvColor.saturation,
-                  hsvColor.value,
-                ),
-              );
+          ? (position) {
+              onChanged?.call(value.copyWith(position: position));
             }
           : null,
     );
   }
 }
 
+final _streamController = StreamController<FutureOr<ColorSliderValue>>()
+  ..sink.add(ColorSliderValue.fromGradient(gradient: _gradient, position: 0.0));
+
+final _streamProvider = StreamProvider<ColorSliderValue>((ref) async* {
+  await for (final value in _streamController.stream) {
+    yield await value;
+  }
+});
+
+//
+
+const _hsbColors = <Color>[
+  HsbColor(0.0, 100.0, 100.0),
+  HsbColor(120.0, 100.0, 100.0),
+  HsbColor(240.0, 100.0, 100.0),
+  HsbColor(360.0, 100.0, 100.0),
+  HsbColor(0.0, 0.0, 0.0),
+  HsbColor(0.0, 0.0, 100.0),
+];
+
+const _gradient = LinearGradientPainter(colors: _hsbColors, colorSpace: ColorSpace.hsb);
+
+//
+
 final _cupertinoProvider = StateProvider((ref) => false);
-final _thumbHueProvider = StateProvider<HSVColor?>((ref) => null);
-final _trackHueProvider = StateProvider<HSVColor?>((ref) => null);
+final _thumbColorProvider = StateProvider<double>((ref) => 0.0);
+final _trackColorProvider = StateProvider<double>((ref) => 0.0);
 final _switchValueProvider = StateProvider((ref) => true);
 
 class _SwitchThemeTab extends ConsumerWidget {
@@ -271,25 +379,11 @@ class _SwitchThemeTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(ex.enableActionsProvider);
     final cupertino = ref.watch(_cupertinoProvider);
-    final thumbHue = ref.watch(_thumbHueProvider);
-    final trackHue = ref.watch(_trackHueProvider);
+    final thumbColor = ref.watch(_thumbColorProvider);
+    final trackColor = ref.watch(_trackColorProvider);
     final value = ref.watch(_switchValueProvider);
 
-    final theme = Theme.of(context);
-    if (thumbHue == null || trackHue == null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        final thumbHsv = HSVColor.fromColor(
-          theme.switchTheme.thumbColor?.resolve(<MaterialState>{MaterialState.selected}) ??
-              theme.foregroundColor,
-        );
-        final trackHsv = HSVColor.fromColor(
-          theme.switchTheme.trackColor?.resolve(<MaterialState>{MaterialState.selected}) ??
-              theme.foregroundColor,
-        );
-        ref.read(_thumbHueProvider.notifier).state = thumbHsv;
-        ref.read(_trackHueProvider.notifier).state = trackHsv;
-      });
-    }
+    final colorSliderValue = ref.watch(_streamProvider);
 
     void onChanged(bool value) {
       ref.read(_switchValueProvider.notifier).state = value;
@@ -314,14 +408,32 @@ class _SwitchThemeTab extends ConsumerWidget {
             ),
           ),
           ListTile(
-            title: const Text('Thumb color'),
-            trailing: thumbHue != null
+            title: const Text('Test'),
+            trailing: enabled
                 ? SizedBox(
                     width: 140,
-                    child: _HueSlider.fromHsvColor(
-                      hsvColor: thumbHue,
+                    child: colorSliderValue.when(
+                      data: (value) => ColorSlider(
+                        value: value,
+                        onChanged: (value) {
+                          _streamController.sink.add(value);
+                        },
+                      ),
+                      error: (error, _) => Text(error.toString()),
+                      loading: () => const CircularProgressIndicator(),
+                    ),
+                  )
+                : null,
+          ),
+          ListTile(
+            title: const Text('Thumb color'),
+            trailing: enabled
+                ? SizedBox(
+                    width: 140,
+                    child: Slider(
+                      value: thumbColor,
                       onChanged: (value) {
-                        ref.read(_thumbHueProvider.notifier).state = value;
+                        ref.read(_thumbColorProvider.notifier).state = value;
                       },
                     ),
                   )
@@ -329,39 +441,39 @@ class _SwitchThemeTab extends ConsumerWidget {
           ),
           ListTile(
             title: const Text('Track color'),
-            trailing: trackHue != null
+            trailing: enabled
                 ? SizedBox(
                     width: 140,
-                    child: _HueSlider.fromHsvColor(
-                      hsvColor: trackHue,
-                      onChanged: (value) {
-                        ref.read(_trackHueProvider.notifier).state = value;
+                    child: Slider(
+                      value: trackColor,
+                      onChanged: (value) async {
+                        ref.read(_trackColorProvider.notifier).state = value;
+                        final colors = await _gradient.toColors(resolution: 100);
+                        final thumbColor_ =
+                            colors[math.min((value * colors.length).toInt(), colors.length - 1)];
                       },
                     ),
                   )
                 : null,
           ),
           const Divider(),
-          if (thumbHue != null)
-            mi.run(() {
-              return SwitchTheme(
-                data: SwitchTheme.of(context).copyWith(
-                  thumbColor: MaterialStateProperty.resolveWith((states) =>
-                      states.contains(MaterialState.disabled) ? null : thumbHue.toColor()),
-                  trackColor: MaterialStateProperty.resolveWith((states) =>
-                      states.contains(MaterialState.disabled) ? null : trackHue!.toColor()),
+          SwitchTheme(
+            data: SwitchTheme.of(context).copyWith(
+                // thumbColor: MaterialStateProperty.resolveWith((states) =>
+                //     states.contains(MaterialState.disabled) ? null : thumbColor.toColor()),
+                // trackColor: MaterialStateProperty.resolveWith((states) =>
+                //     states.contains(MaterialState.disabled) ? null : trackColor!.toColor()),
                 ),
-                child: cupertino
-                    ? CupertinoSwitch(
-                        value: value,
-                        onChanged: enabled ? onChanged : null,
-                      )
-                    : Switch(
-                        value: value,
-                        onChanged: enabled ? onChanged : null,
-                      ),
-              );
-            }),
+            child: cupertino
+                ? CupertinoSwitch(
+                    value: value,
+                    onChanged: enabled ? onChanged : null,
+                  )
+                : Switch(
+                    value: value,
+                    onChanged: enabled ? onChanged : null,
+                  ),
+          ),
         ],
       ),
     );
