@@ -297,41 +297,41 @@ class _SwitchThemeTab extends ConsumerWidget {
           ),
           ListTile(
             title: const Text('Thumb color'),
-            trailing: enabled
-                ? SizedBox(
-                    width: 140,
-                    child: thumbColor.when(
-                      data: (value) => mi.ColorSlider(
-                        value: value,
-                        trackHeight: 8,
-                        onChanged: (value) {
+            trailing: SizedBox(
+              width: 140,
+              child: thumbColor.when(
+                data: (value) => mi.ColorSlider(
+                  value: value,
+                  trackHeight: 8,
+                  onChanged: enabled
+                      ? (value) {
                           _thumbColorController.sink.add(value);
-                        },
-                      ),
-                      error: (error, _) => Text(error.toString()),
-                      loading: () => const CircularProgressIndicator(),
-                    ),
-                  )
-                : null,
+                        }
+                      : null,
+                ),
+                error: (error, _) => Text(error.toString()),
+                loading: () => const CircularProgressIndicator(),
+              ),
+            ),
           ),
           ListTile(
             title: const Text('Track color'),
-            trailing: enabled
-                ? SizedBox(
-                    width: 140,
-                    child: trackColor.when(
-                      data: (value) => mi.ColorSlider(
-                        value: value,
-                        trackHeight: 8,
-                        onChanged: (value) {
+            trailing: SizedBox(
+              width: 140,
+              child: trackColor.when(
+                data: (value) => mi.ColorSlider(
+                  value: value,
+                  trackHeight: 8,
+                  onChanged: enabled
+                      ? (value) {
                           _trackColorController.sink.add(value);
-                        },
-                      ),
-                      error: (error, _) => Text(error.toString()),
-                      loading: () => const CircularProgressIndicator(),
-                    ),
-                  )
-                : null,
+                        }
+                      : null,
+                ),
+                error: (error, _) => Text(error.toString()),
+                loading: () => const CircularProgressIndicator(),
+              ),
+            ),
           ),
           const Divider(),
           SwitchTheme(

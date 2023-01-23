@@ -116,6 +116,7 @@ class ColorSliderValue {
 // トラックに[gradient]を描画する
 class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
   final Gradient gradient;
+
   const _ColorSliderTrackShape({
     required this.gradient,
   }) : super();
@@ -172,7 +173,7 @@ class ColorSlider extends StatelessWidget {
     return SliderTheme(
       data: SliderTheme.of(context).copyWith(
         trackHeight: trackHeight,
-        trackShape: _ColorSliderTrackShape(gradient: value.gradient),
+        trackShape: onChanged != null ? _ColorSliderTrackShape(gradient: value.gradient) : null,
       ),
       child: Slider(
         thumbColor: value.color,
