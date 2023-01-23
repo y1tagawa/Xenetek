@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:gradients/gradients.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 //
@@ -66,6 +68,33 @@ class ResetButtonListTile extends StatelessWidget {
   }
 }
 
+/// [StreamController]と[StreamProvider]の組み合わせ
+///
+/// 非同期に更新される状態変数をプロバイダ化するための頻出コード
+
+class StreamProviderCoordinator<T> {
+  final StreamController<FutureOr<T>> controller;
+  final StreamProvider<T> provider;
+
+  factory StreamProviderCoordinator.fromFuture(Future<T> future) {
+    final controller = StreamController<FutureOr<T>>()..sink.add(future);
+    final provider = StreamProvider<T>((ref) async* {
+      await for (final value in controller.stream) {
+        yield await value;
+      }
+    });
+    return StreamProviderCoordinator._(
+      controller: controller,
+      provider: provider,
+    );
+  }
+
+  StreamProviderCoordinator._({
+    required this.controller,
+    required this.provider,
+  });
+}
+
 /// Color slider
 
 class ColorSlider extends mi.ColorSlider {
@@ -78,7 +107,12 @@ class ColorSlider extends mi.ColorSlider {
     HsbColor(0.0, 0.0, 100.0),
   ];
 
-  static const gradient = LinearGradientPainter(colors: _hsbColors, colorSpace: ColorSpace.hsb);
+  static const _gradient = LinearGradientPainter(colors: _hsbColors, colorSpace: ColorSpace.hsb);
+
+  static StreamProviderCoordinator<mi.ColorSliderValue> coordinatorFromPosition(double position) {
+    return StreamProviderCoordinator.fromFuture(
+        mi.ColorSliderValue.fromGradient(gradient: _gradient, position: position));
+  }
 
   const ColorSlider({
     super.key,
