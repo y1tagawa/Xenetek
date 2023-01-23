@@ -227,24 +227,32 @@ class _SwitchesTab extends ConsumerWidget {
 // Switch theme tab
 //
 
-final _thumbColorController = StreamController<FutureOr<mi.ColorSliderValue>>()
-  ..sink.add(mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 1.0));
+// TODO: activeColors
 
-final _thumbColorProvider = StreamProvider<mi.ColorSliderValue>((ref) async* {
-  await for (final value in _thumbColorController.stream) {
-    yield await value;
+class _StreamControllerProvider<T> {
+  final StreamController<FutureOr<T>> controller;
+  final StreamProvider<T> provider;
+
+  factory _StreamControllerProvider.fromFuture(Future<T> future) {
+    final controller = StreamController<FutureOr<T>>()..sink.add(future);
+    final provider = StreamProvider<T>((ref) async* {
+      await for (final value in controller.stream) {
+        yield await value;
+      }
+    });
+    return _StreamControllerProvider._(
+      controller: controller,
+      provider: provider,
+    );
   }
-});
 
-final _trackColorController = StreamController<FutureOr<mi.ColorSliderValue>>()
-  ..sink.add(mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 0.0));
+  _StreamControllerProvider._({required this.controller, required this.provider});
+}
 
-final _trackColorProvider = StreamProvider<mi.ColorSliderValue>((ref) async* {
-  await for (final value in _trackColorController.stream) {
-    yield await value;
-  }
-});
-
+final _thumbColor = _StreamControllerProvider.fromFuture(
+    mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 1.0));
+final _trackColor = _StreamControllerProvider.fromFuture(
+    mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 0.0));
 final _cupertinoProvider = StateProvider((ref) => false);
 final _switchValueProvider = StateProvider((ref) => true);
 
@@ -257,8 +265,8 @@ class _SwitchThemeTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(ex.enableActionsProvider);
     final cupertino = ref.watch(_cupertinoProvider);
-    final thumbColor = ref.watch(_thumbColorProvider);
-    final trackColor = ref.watch(_trackColorProvider);
+    final thumbColor = ref.watch(_thumbColor.provider);
+    final trackColor = ref.watch(_trackColor.provider);
     final value = ref.watch(_switchValueProvider);
 
     void onChanged(bool value) {
@@ -288,12 +296,11 @@ class _SwitchThemeTab extends ConsumerWidget {
             trailing: SizedBox(
               width: 140,
               child: thumbColor.when(
-                data: (value) => mi.ColorSlider(
+                data: (value) => ex.ColorSlider(
                   value: value,
-                  trackHeight: 8,
                   onChanged: enabled
                       ? (value) {
-                          _thumbColorController.sink.add(value);
+                          _thumbColor.controller.sink.add(value);
                         }
                       : null,
                 ),
@@ -307,12 +314,12 @@ class _SwitchThemeTab extends ConsumerWidget {
             trailing: SizedBox(
               width: 140,
               child: trackColor.when(
-                data: (value) => mi.ColorSlider(
+                data: (value) => ex.ColorSlider(
                   value: value,
                   trackHeight: 8,
                   onChanged: enabled
                       ? (value) {
-                          _trackColorController.sink.add(value);
+                          _trackColor.controller.sink.add(value);
                         }
                       : null,
                 ),
