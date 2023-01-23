@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gradients/gradients.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
@@ -28,7 +27,7 @@ class SwitchesPage extends ConsumerWidget {
     ),
     mi.Tab(
       tooltip: 'Switch theme',
-      icon: Icon(Icons.tune),
+      icon: Icon(Icons.more_horiz),
     ),
   ];
 
@@ -228,19 +227,8 @@ class _SwitchesTab extends ConsumerWidget {
 // Switch theme tab
 //
 
-const _hsbColors = <Color>[
-  HsbColor(0.0, 100.0, 100.0),
-  HsbColor(120.0, 100.0, 100.0),
-  HsbColor(240.0, 100.0, 100.0),
-  HsbColor(360.0, 100.0, 100.0),
-  HsbColor(0.0, 0.0, 0.0),
-  HsbColor(0.0, 0.0, 100.0),
-];
-
-const _gradient = LinearGradientPainter(colors: _hsbColors, colorSpace: ColorSpace.hsb);
-
 final _thumbColorController = StreamController<FutureOr<mi.ColorSliderValue>>()
-  ..sink.add(mi.ColorSliderValue.fromGradient(gradient: _gradient, position: 0.0));
+  ..sink.add(mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 1.0));
 
 final _thumbColorProvider = StreamProvider<mi.ColorSliderValue>((ref) async* {
   await for (final value in _thumbColorController.stream) {
@@ -249,7 +237,7 @@ final _thumbColorProvider = StreamProvider<mi.ColorSliderValue>((ref) async* {
 });
 
 final _trackColorController = StreamController<FutureOr<mi.ColorSliderValue>>()
-  ..sink.add(mi.ColorSliderValue.fromGradient(gradient: _gradient, position: 0.0));
+  ..sink.add(mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 0.0));
 
 final _trackColorProvider = StreamProvider<mi.ColorSliderValue>((ref) async* {
   await for (final value in _trackColorController.stream) {
@@ -334,23 +322,25 @@ class _SwitchThemeTab extends ConsumerWidget {
             ),
           ),
           const Divider(),
-          SwitchTheme(
-            data: SwitchTheme.of(context).copyWith(
-              thumbColor: MaterialStateProperty.resolveWith((states) =>
-                  states.contains(MaterialState.disabled) ? null : thumbColor.value?.color),
-              trackColor: MaterialStateProperty.resolveWith((states) =>
-                  states.contains(MaterialState.disabled) ? null : trackColor.value?.color),
-            ),
-            child: cupertino
-                ? CupertinoSwitch(
-                    value: value,
-                    onChanged: enabled ? onChanged : null,
-                  )
-                : Switch(
+          cupertino
+              ? CupertinoSwitch(
+                  value: value,
+                  thumbColor: thumbColor.value?.color,
+                  trackColor: trackColor.value?.color,
+                  onChanged: enabled ? onChanged : null,
+                )
+              : SwitchTheme(
+                  data: SwitchTheme.of(context).copyWith(
+                    thumbColor: MaterialStateProperty.resolveWith((states) =>
+                        states.contains(MaterialState.disabled) ? null : thumbColor.value?.color),
+                    trackColor: MaterialStateProperty.resolveWith((states) =>
+                        states.contains(MaterialState.disabled) ? null : trackColor.value?.color),
+                  ),
+                  child: Switch(
                     value: value,
                     onChanged: enabled ? onChanged : null,
                   ),
-          ),
+                ),
         ],
       ),
     );

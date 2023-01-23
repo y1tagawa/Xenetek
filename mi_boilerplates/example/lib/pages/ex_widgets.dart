@@ -5,6 +5,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:gradients/gradients.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 //
@@ -63,6 +64,28 @@ class ResetButtonListTile extends StatelessWidget {
       text: text ?? const Text('Reset'),
     );
   }
+}
+
+/// Color slider
+
+class ColorSlider extends mi.ColorSlider {
+  static const _hsbColors = <Color>[
+    HsbColor(0.0, 100.0, 100.0),
+    HsbColor(120.0, 100.0, 100.0),
+    HsbColor(240.0, 100.0, 100.0),
+    HsbColor(360.0, 100.0, 100.0),
+    HsbColor(0.0, 0.0, 0.0),
+    HsbColor(0.0, 0.0, 100.0),
+  ];
+
+  static const gradient = LinearGradientPainter(colors: _hsbColors, colorSpace: ColorSpace.hsb);
+
+  const ColorSlider({
+    super.key,
+    required super.value,
+    super.onChanged,
+    super.trackHeight = 8.0,
+  });
 }
 
 /// Under construction
