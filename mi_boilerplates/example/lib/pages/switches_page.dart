@@ -299,10 +299,11 @@ class _SwitchThemeTab extends ConsumerWidget {
             title: const Text('Test'),
             trailing: enabled
                 ? SizedBox(
-                    width: 140,
+                    width: 180,
                     child: colorSliderValue.when(
                       data: (value) => mi.ColorSlider(
                         value: value,
+                        trackHeight: 8,
                         onChanged: (value) {
                           _streamController.sink.add(value);
                         },
@@ -317,7 +318,7 @@ class _SwitchThemeTab extends ConsumerWidget {
             title: const Text('Thumb color'),
             trailing: enabled
                 ? SizedBox(
-                    width: 140,
+                    width: 120,
                     child: Slider(
                       value: thumbColor,
                       onChanged: (value) {

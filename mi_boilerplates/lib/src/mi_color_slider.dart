@@ -114,7 +114,7 @@ class ColorSliderValue {
 }
 
 /// TODO:
-class _ColorSliderTrackShape extends RectangularSliderTrackShape {
+class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
   final Gradient gradient;
   const _ColorSliderTrackShape({
     required this.gradient,
@@ -133,8 +133,24 @@ class _ColorSliderTrackShape extends RectangularSliderTrackShape {
     bool isEnabled = false,
     double additionalActiveTrackHeight = 2,
   }) {
-    // TODO: implement paint
-    //super.paint(context, offset, parentBox, sliderTheme, enableAnimation, textDirection, thumbCenter, isDiscrete, isEnabled, additionalActiveTrackHeight);
+    final trackRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isDiscrete: isDiscrete,
+      isEnabled: isEnabled,
+    );
+    final radius = trackRect.height * 0.5;
+    context.canvas.drawRRect(
+      RRect.fromLTRBR(
+        trackRect.left - radius,
+        trackRect.top,
+        trackRect.right + radius,
+        trackRect.bottom,
+        Radius.circular(radius),
+      ),
+      Paint()..shader = gradient.createShader(trackRect),
+    );
   }
 }
 
@@ -142,23 +158,31 @@ class _ColorSliderTrackShape extends RectangularSliderTrackShape {
 class ColorSlider extends StatelessWidget {
   final ColorSliderValue value;
   final ValueChanged<ColorSliderValue>? onChanged;
+  final double trackHeight;
 
   const ColorSlider({
     super.key,
     required this.value,
     this.onChanged,
+    this.trackHeight = 8.0,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Slider(
-      thumbColor: value.color,
-      value: value.position,
-      onChanged: onChanged != null
-          ? (position) {
-              onChanged?.call(value.copyWith(position: position));
-            }
-          : null,
+    return SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        trackHeight: trackHeight,
+        trackShape: _ColorSliderTrackShape(gradient: value.gradient),
+      ),
+      child: Slider(
+        thumbColor: value.color,
+        value: value.position,
+        onChanged: onChanged != null
+            ? (position) {
+                onChanged?.call(value.copyWith(position: position));
+              }
+            : null,
+      ),
     );
   }
 }
