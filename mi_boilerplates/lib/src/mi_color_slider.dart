@@ -113,7 +113,7 @@ class ColorSliderValue {
 //</editor-fold>
 }
 
-/// TODO:
+// トラックに[gradient]を描画する
 class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
   final Gradient gradient;
   const _ColorSliderTrackShape({
@@ -158,13 +158,13 @@ class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
 class ColorSlider extends StatelessWidget {
   final ColorSliderValue value;
   final ValueChanged<ColorSliderValue>? onChanged;
-  final double trackHeight;
+  final double? trackHeight;
 
   const ColorSlider({
     super.key,
     required this.value,
     this.onChanged,
-    this.trackHeight = 8.0,
+    this.trackHeight,
   });
 
   @override
