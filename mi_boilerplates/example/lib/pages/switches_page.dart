@@ -229,29 +229,36 @@ class _SwitchesTab extends ConsumerWidget {
 
 // TODO: activeColors
 
-class _StreamControllerProvider<T> {
+/// [StreamController]と[StreamProvider]の組み合わせ
+///
+/// 非同期に更新される状態変数をプロバイダ化するための頻出コード
+
+class StreamProviderCoordinator<T> {
   final StreamController<FutureOr<T>> controller;
   final StreamProvider<T> provider;
 
-  factory _StreamControllerProvider.fromFuture(Future<T> future) {
+  factory StreamProviderCoordinator.fromFuture(Future<T> future) {
     final controller = StreamController<FutureOr<T>>()..sink.add(future);
     final provider = StreamProvider<T>((ref) async* {
       await for (final value in controller.stream) {
         yield await value;
       }
     });
-    return _StreamControllerProvider._(
+    return StreamProviderCoordinator._(
       controller: controller,
       provider: provider,
     );
   }
 
-  _StreamControllerProvider._({required this.controller, required this.provider});
+  StreamProviderCoordinator._({
+    required this.controller,
+    required this.provider,
+  });
 }
 
-final _thumbColor = _StreamControllerProvider.fromFuture(
+final _thumbColorCoordinator = StreamProviderCoordinator.fromFuture(
     mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 1.0));
-final _trackColor = _StreamControllerProvider.fromFuture(
+final _trackColorCoordinator = StreamProviderCoordinator.fromFuture(
     mi.ColorSliderValue.fromGradient(gradient: ex.ColorSlider.gradient, position: 0.0));
 final _cupertinoProvider = StateProvider((ref) => false);
 final _switchValueProvider = StateProvider((ref) => true);
@@ -265,8 +272,8 @@ class _SwitchThemeTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(ex.enableActionsProvider);
     final cupertino = ref.watch(_cupertinoProvider);
-    final thumbColor = ref.watch(_thumbColor.provider);
-    final trackColor = ref.watch(_trackColor.provider);
+    final thumbColor = ref.watch(_thumbColorCoordinator.provider);
+    final trackColor = ref.watch(_trackColorCoordinator.provider);
     final value = ref.watch(_switchValueProvider);
 
     void onChanged(bool value) {
@@ -300,7 +307,7 @@ class _SwitchThemeTab extends ConsumerWidget {
                   value: value,
                   onChanged: enabled
                       ? (value) {
-                          _thumbColor.controller.sink.add(value);
+                          _thumbColorCoordinator.controller.sink.add(value);
                         }
                       : null,
                 ),
@@ -319,7 +326,7 @@ class _SwitchThemeTab extends ConsumerWidget {
                   trackHeight: 8,
                   onChanged: enabled
                       ? (value) {
-                          _trackColor.controller.sink.add(value);
+                          _trackColorCoordinator.controller.sink.add(value);
                         }
                       : null,
                 ),
