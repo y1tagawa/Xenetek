@@ -148,11 +148,11 @@ mi.Matrix4 _translation(mi.Vector3 translation) => mi.Matrix4.translation(transl
 
 mi.Node? _rootNode;
 
-final _meshes = <mi.Mesh>[];
+final _shapes = <mi.Shape>[];
 
 void _setup(StringSink sink) {
   var root = const mi.Node();
-  _meshes.clear();
+  _shapes.clear();
 
   root = root.putDescendants(
     <String, mi.Matrix4>{
@@ -162,14 +162,14 @@ void _setup(StringSink sink) {
     }.entries,
   );
 
-  _meshes.add(mi.BoxMesh(origin: 'n1', scale: _y * 1.5 + _xz));
-  _meshes.add(mi.BoxMesh(origin: 'n1.n2', scale: _y * 1.5 + _xz));
-  _meshes.add(const mi.BoxMesh(origin: 'n1.n2.n3', scale: 0.3));
+  _shapes.add(mi.Cuboid(origin: 'n1', scale: _y * 1.5 + _xz));
+  _shapes.add(mi.Cuboid(origin: 'n1.n2', scale: _y * 1.5 + _xz));
+  _shapes.add(const mi.Cuboid(origin: 'n1.n2.n3', scale: 0.3));
   _rootNode = root;
 
   final meshDataList = <mi.MeshData>[];
-  for (final mesh in _meshes) {
-    meshDataList.add(mesh.toMeshData(root));
+  for (final shape in _shapes) {
+    meshDataList.add(shape.toMeshData(root));
   }
   mi.toWavefrontObj(meshDataList, sink);
 }

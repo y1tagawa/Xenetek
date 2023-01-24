@@ -530,8 +530,8 @@ class MeshData {
 
 /// メッシュの基底クラス
 
-abstract class Mesh {
-  const Mesh();
+abstract class Shape {
+  const Shape();
 
   MeshData toMeshData(Node root);
 }
@@ -540,11 +540,11 @@ abstract class Mesh {
 
 List<MeshData> toMeshData({
   required Node root,
-  required Iterable<Mesh> meshes,
+  required Iterable<Shape> shapes,
 }) {
   final result = <MeshData>[];
-  for (final mesh in meshes) {
-    result.add(mesh.toMeshData(root));
+  for (final shape in shapes) {
+    result.add(shape.toMeshData(root));
   }
   return result;
 }
@@ -663,11 +663,11 @@ final _cubeMeshData = MeshData(
 ///
 /// [origin]を上面中心として直方体を生成する。
 
-class BoxMesh extends Mesh {
+class Cuboid extends Shape {
   final String origin;
   final dynamic scale;
 
-  const BoxMesh({
+  const Cuboid({
     required this.origin,
     this.scale = Vector3.one,
   });
@@ -683,7 +683,7 @@ class BoxMesh extends Mesh {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is BoxMesh &&
+      (other is Cuboid &&
           runtimeType == other.runtimeType &&
           origin == other.origin &&
           scale == other.scale);
@@ -696,11 +696,11 @@ class BoxMesh extends Mesh {
     return 'CubeMesh{' ' path: $origin,' ' scale: $scale,' '}';
   }
 
-  BoxMesh copyWith({
+  Cuboid copyWith({
     String? path,
     Vector3? scale,
   }) {
-    return BoxMesh(
+    return Cuboid(
       origin: path ?? this.origin,
       scale: scale ?? this.scale,
     );
@@ -713,8 +713,8 @@ class BoxMesh extends Mesh {
     };
   }
 
-  factory BoxMesh.fromMap(Map<String, dynamic> map) {
-    return BoxMesh(
+  factory Cuboid.fromMap(Map<String, dynamic> map) {
+    return Cuboid(
       origin: map['path'] as String,
       scale: map['scale'] as Vector3,
     );
