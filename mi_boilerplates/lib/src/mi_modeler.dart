@@ -129,11 +129,11 @@ class Matrix4 {
     return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
   }
 
-  Vector3 rotated(Vector3 value) {
+  Vector3 rotate(Vector3 value) {
     return Vector3.fromVmVector(toVmMatrix().rotated3(value.toVmVector()));
   }
 
-  Vector3 transformed(Vector3 value) {
+  Vector3 transform(Vector3 value) {
     return Vector3.fromVmVector(toVmMatrix().transform3(value.toVmVector()));
   }
 
@@ -481,12 +481,29 @@ class MeshData {
   });
 
   MeshData transformedBy(Matrix4 matrix) {
-    return MeshData(
-      vertices: vertices.map((it) => matrix.transformed(it)).toList(),
-      normals: normals.map((it) => matrix.rotated(it)).toList(),
-      faces: faces,
-      smooth: false,
+    return copyWith(
+      vertices: vertices.map((it) => matrix.transform(it)).toList(),
+      normals: normals.map((it) => matrix.rotate(it)).toList(),
     );
+  }
+
+  //
+
+  static List<Vector3> xzCircle({
+    required double radius,
+    required int division,
+    Matrix4 matrix = Matrix4.identity,
+  }) {
+    final vertices = <Vector3>[];
+    for (int i = 0; i < division; ++i) {
+      final t = i * math.pi * 2.0 / division;
+      vertices.add(matrix.transform(Vector3(math.cos(t), 0, math.sin(t))));
+    }
+    return vertices;
+  }
+
+  MeshData addVertices(List<Vector3> vertices) {
+    return copyWith(vertices: [...this.vertices, ...vertices]);
   }
 
 //<editor-fold desc="Data Methods">
@@ -558,7 +575,7 @@ class MeshData {
 //</editor-fold>
 }
 
-/// メッシュの基底クラス
+/// 多面体の基底クラス
 
 abstract class Shape {
   const Shape();
@@ -598,6 +615,7 @@ void toWavefrontObj(
     for (final normal in meshData.normals) {
       sink.writeln('vn ${normal.x} ${normal.y} ${normal.z}');
     }
+    sink.writeln('s ${meshData.smooth ? 1 : 0}');
     for (final face in meshData.faces) {
       assert(face.length >= 3);
       sink.write('f');
