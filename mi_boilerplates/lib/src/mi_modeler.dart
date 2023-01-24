@@ -23,6 +23,8 @@ class Vector3 {
   final double y;
   final double z;
 
+  double get length => math.sqrt(x * x + y * y + z * z);
+
   Vector3 operator -() => Vector3(-x, -y, -z);
   Vector3 operator +(Vector3 other) => Vector3(x + other.x, y + other.y, z + other.z);
   Vector3 operator -(Vector3 other) => Vector3(x - other.x, y - other.y, z - other.z);
@@ -107,6 +109,21 @@ class Matrix4 {
 
   final List<double> elements;
 
+  /// 併進成分
+  Vector3 get position {
+    return Vector3(elements[3], elements[7], elements[11]);
+  }
+
+  /// 回転成分
+  Matrix4 get rotation {
+    return Matrix4.fromList(<double>[
+      elements[0], elements[1], elements[2], 0, //
+      elements[4], elements[5], elements[6], 0, //
+      elements[8], elements[9], elements[10], 0, //
+      0, 0, 0, 1
+    ]);
+  }
+
   /// 行列積
   Matrix4 operator *(Matrix4 other) {
     return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
@@ -145,7 +162,7 @@ class Matrix4 {
     );
   }
 
-  static Matrix4 rotation(Vector3 axis, double angle) {
+  static Matrix4 fromRotation(Vector3 axis, double angle) {
     // https://w3e.kanazawa-it.ac.jp/math/physics/category/physical_math/linear_algebra/henkan-tex.cgi?target=/math/physics/category/physical_math/linear_algebra/rodrigues_rotation_matrix.html
     final n = axis.normalized();
     final c = math.cos(angle), c1 = 1.0 - c;
@@ -154,28 +171,25 @@ class Matrix4 {
       n.x * n.x * c1 + c,
       n.x * n.y * c1 - n.z * s,
       n.x * n.z * c1 + n.y * s,
-      0,
+      0, //
       n.x * n.y * c1 + n.z * s,
       n.y * n.y * c1 + c,
       n.y * n.z * c1 - n.x * s,
-      0,
+      0, //
       n.x * n.z * c1 - n.y * s,
       n.y * n.z * c1 + n.x * s,
       n.z * n.z * c1 + c,
-      0,
-      0,
-      0,
-      0,
-      1,
+      0, //
+      0, 0, 0, 1
     ];
     return Matrix4.fromList(elements);
   }
 
-  static Matrix4 translation(Vector3 translation) {
-    return Matrix4.fromVmMatrix(vm.Matrix4.translation(translation.toVmVector()));
+  static Matrix4 fromPosition(Vector3 position) {
+    return Matrix4.fromVmMatrix(vm.Matrix4.translation(position.toVmVector()));
   }
 
-  static Matrix4 scale(dynamic scale) {
+  static Matrix4 fromScale(dynamic scale) {
     final elements_ = identity.elements.toList();
     switch (scale.runtimeType) {
       case double:
@@ -305,6 +319,22 @@ class Node {
       descendants.first.key,
       Node(matrix: descendants.first.value).putDescendants(descendants.skip(1)),
     );
+  }
+
+  Vector3? _getPosition(Iterable<String> path) {
+    final find_ = find(path);
+    return find_?.matrix.position;
+  }
+
+  Vector3? getPosition(dynamic path) {
+    switch (path.runtimeType) {
+      case Iterable<String>:
+        return _getPosition(path);
+      case String:
+        return _getPosition(splitPath(path));
+      default:
+        throw UnimplementedError();
+    }
   }
 
   //<editor-fold desc="Data Methods">
@@ -593,7 +623,7 @@ void toWavefrontObj(
   }
 }
 
-/// 立方体生成用メッシュデータ
+/// 立方体メッシュデータ
 ///
 /// (-0.5,0,-0.5)-(0.5,1,0.5)
 
@@ -663,11 +693,11 @@ final _cubeMeshData = MeshData(
 ///
 /// [origin]を上面中心として直方体を生成する。
 
-class Cuboid extends Shape {
+class Cube extends Shape {
   final String origin;
   final dynamic scale;
 
-  const Cuboid({
+  const Cube({
     required this.origin,
     this.scale = Vector3.one,
   });
@@ -675,7 +705,7 @@ class Cuboid extends Shape {
   @override
   MeshData toMeshData(Node root) {
     final find = root.find(origin)!;
-    return _cubeMeshData.transformedBy(find.matrix * Matrix4.scale(Vector3.one * scale));
+    return _cubeMeshData.transformedBy(find.matrix * Matrix4.fromScale(Vector3.one * scale));
   }
 
 //<editor-fold desc="Data Methods">
@@ -683,7 +713,7 @@ class Cuboid extends Shape {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Cuboid &&
+      (other is Cube &&
           runtimeType == other.runtimeType &&
           origin == other.origin &&
           scale == other.scale);
@@ -696,27 +726,155 @@ class Cuboid extends Shape {
     return 'CubeMesh{' ' path: $origin,' ' scale: $scale,' '}';
   }
 
-  Cuboid copyWith({
-    String? path,
+  Cube copyWith({
+    String? origin,
     Vector3? scale,
   }) {
-    return Cuboid(
-      origin: path ?? this.origin,
+    return Cube(
+      origin: origin ?? this.origin,
       scale: scale ?? this.scale,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'path': origin,
+      'origin': origin,
       'scale': scale,
     };
   }
 
-  factory Cuboid.fromMap(Map<String, dynamic> map) {
-    return Cuboid(
-      origin: map['path'] as String,
+  factory Cube.fromMap(Map<String, dynamic> map) {
+    return Cube(
+      origin: map['origin'] as String,
       scale: map['scale'] as Vector3,
+    );
+  }
+
+//</editor-fold>
+}
+
+/// 円筒メッシュデータ生成
+///
+/// (-0.5,0,-0.5)-(0.5,1,0.5)
+/// TODO: 底面形状ドーム、平面、その他。ドームのためにあとでScaleはできない。
+
+MeshData _tubeMeshData({
+  required double radius,
+  required double length,
+  required int baseDivision,
+  required int radiusDivision,
+  required int lengthDivision,
+}) {
+  throw UnimplementedError();
+}
+
+/// 円筒
+///
+/// [origin]を上面中心として円筒を生成する。
+
+class Tube extends Shape {
+  final String origin;
+  final double radius;
+  final double length;
+  final int baseDivision;
+  final int radiusDivision;
+  final int lengthDivision;
+
+  const Tube({
+    required this.origin,
+    this.radius = 0.5,
+    this.length = 1.0,
+    this.baseDivision = 8,
+    this.radiusDivision = 1,
+    this.lengthDivision = 1,
+  })  : assert(baseDivision >= 3),
+        assert(radiusDivision >= 1),
+        assert(lengthDivision >= 1);
+
+  @override
+  MeshData toMeshData(Node root) {
+    final find = root.find(origin)!;
+    return _tubeMeshData(
+      radius: radius,
+      length: length,
+      baseDivision: baseDivision,
+      radiusDivision: radiusDivision,
+      lengthDivision: lengthDivision,
+    ).transformedBy(find.matrix);
+  }
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Tube &&
+          runtimeType == other.runtimeType &&
+          origin == other.origin &&
+          radius == other.radius &&
+          length == other.length &&
+          baseDivision == other.baseDivision &&
+          radiusDivision == other.radiusDivision &&
+          lengthDivision == other.lengthDivision);
+
+  @override
+  int get hashCode =>
+      origin.hashCode ^
+      radius.hashCode ^
+      length.hashCode ^
+      baseDivision.hashCode ^
+      radiusDivision.hashCode ^
+      lengthDivision.hashCode;
+
+  @override
+  String toString() {
+    return 'Tube{'
+        ' origin: $origin,'
+        ' radius: $radius,'
+        ' length: $length,'
+        ' baseDivision: $baseDivision,'
+        ' radiusDivision: $radiusDivision,'
+        ' lengthDivision: $lengthDivision,'
+        '}';
+  }
+
+  Tube copyWith({
+    String? origin,
+    double? radius,
+    double? length,
+    int? baseDivision,
+    int? radiusDivision,
+    int? lengthDivision,
+  }) {
+    return Tube(
+      origin: origin ?? this.origin,
+      radius: radius ?? this.radius,
+      length: length ?? this.length,
+      baseDivision: baseDivision ?? this.baseDivision,
+      radiusDivision: radiusDivision ?? this.radiusDivision,
+      lengthDivision: lengthDivision ?? this.lengthDivision,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'origin': origin,
+      'radius': radius,
+      'length': length,
+      'baseDivision': baseDivision,
+      'radiusDivision': radiusDivision,
+      'lengthDivision': lengthDivision,
+    };
+  }
+
+  factory Tube.fromMap(Map<String, dynamic> map) {
+    return Tube(
+      origin: map['origin'] as String,
+      radius: map['radius'] as double,
+      length: map['length'] as double,
+      baseDivision: map['baseDivision'] as int,
+      radiusDivision: map['radiusDivision'] as int,
+      lengthDivision: map['lengthDivision'] as int,
     );
   }
 

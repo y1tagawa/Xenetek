@@ -143,8 +143,8 @@ const _identity = mi.Matrix4.identity;
 final _xz = _x + _z;
 
 mi.Matrix4 _rotation(mi.Vector3 axis, double angleDegree) =>
-    mi.Matrix4.rotation(axis, vm.radians(angleDegree));
-mi.Matrix4 _translation(mi.Vector3 translation) => mi.Matrix4.translation(translation);
+    mi.Matrix4.fromRotation(axis, vm.radians(angleDegree));
+mi.Matrix4 _position(mi.Vector3 position) => mi.Matrix4.fromPosition(position);
 
 mi.Node? _rootNode;
 
@@ -157,14 +157,14 @@ void _setup(StringSink sink) {
   root = root.putDescendants(
     <String, mi.Matrix4>{
       'n1': _identity,
-      'n2': _translation(_y * 2) * _rotation(_x, 45.0),
-      'n3': _translation(_y * 2) * _rotation(_x, 45.0),
+      'n2': _position(_y * 2) * _rotation(_x, 45.0),
+      'n3': _position(_y * 2) * _rotation(_x, 45.0),
     }.entries,
   );
 
-  _shapes.add(mi.Cuboid(origin: 'n1', scale: _y * 1.5 + _xz));
-  _shapes.add(mi.Cuboid(origin: 'n1.n2', scale: _y * 1.5 + _xz));
-  _shapes.add(const mi.Cuboid(origin: 'n1.n2.n3', scale: 0.3));
+  _shapes.add(mi.Cube(origin: 'n1', scale: _y * 1.5 + _xz));
+  _shapes.add(mi.Cube(origin: 'n1.n2', scale: _y * 1.5 + _xz));
+  _shapes.add(const mi.Cube(origin: 'n1.n2.n3', scale: 0.3));
   _rootNode = root;
 
   final meshDataList = <mi.MeshData>[];
