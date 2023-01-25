@@ -816,12 +816,20 @@ MeshData _tubeMeshData({
   final logger = Logger('_tubeMeshData');
 
   var data = const MeshData();
-  const index0 = 0;
+
+  // 底面
   final circle = MeshData.xzCircle(radius: radius, division: baseDivision);
-  data = data.addVertices(circle);
-  final index1 = data.vertices.length;
-  data = data.addVertices(circle.transformed(Matrix4.fromPosition(Vector3.unitY * length)));
-  data = data.addTube(index0, index1, circle.length);
+  var matrix0 = Matrix4.identity;
+  var index0 = data.vertices.length;
+  data = data.addVertices(circle.transformed(matrix0));
+  // 中間
+  for (int i = 1; i <= lengthDivision; ++i) {
+    final index1 = data.vertices.length;
+    final matrix1 = Matrix4.fromPosition(Vector3.unitY * (i * length / lengthDivision));
+    data = data.addVertices(circle.transformed(matrix1)).addTube(index0, index1, circle.length);
+    index0 = index1;
+    matrix0 = matrix1;
+  }
   return data;
 }
 
