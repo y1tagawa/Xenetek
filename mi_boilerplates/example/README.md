@@ -45,6 +45,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## TODO
 
+* layered architectureのサンプル
 * Material designのanatomy的な設定箇所の説明図
 * M2AppBar上用のデフォルトテーマ
   * 淡色AppBar

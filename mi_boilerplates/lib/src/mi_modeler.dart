@@ -503,8 +503,47 @@ class MeshData {
     return vertices;
   }
 
-  /// 二つの頂点インデックスリストを閉曲線とみなし、それらを繋いだ面リストを生成する。
-  /// ただしテクスチャ頂点、法線は定義しない。
+  /// 頂点と閉曲線を結ぶ盃状の面リストを生成する。
+  MeshData addCup(int index0, int index1, int length) {
+    assert(index0 >= 0 && index0 <= vertices.length);
+    assert(index1 >= 0 && index1 + length <= vertices.length);
+    final faces = <MeshFace>[];
+    for (int i = 0; i < length - 1; ++i) {
+      faces.add(<MeshVertex>[
+        MeshVertex(index0, -1, -1),
+        MeshVertex(index1 + i, -1, -1),
+        MeshVertex(index1 + i + 1, -1, -1),
+      ]);
+    }
+    faces.add(<MeshVertex>[
+      MeshVertex(index0, -1, -1),
+      MeshVertex(index1 + length - 1, -1, -1),
+      MeshVertex(index1, -1, -1),
+    ]);
+    return addFaces(faces);
+  }
+
+  /// 閉曲線と頂点を結ぶ冠状の面リストを生成する。
+  MeshData addCap(int index0, int length, index1) {
+    assert(index0 >= 0 && index0 + length <= vertices.length);
+    assert(index1 >= 0 && index1 <= vertices.length);
+    final faces = <MeshFace>[];
+    for (int i = 0; i < length - 1; ++i) {
+      faces.add(<MeshVertex>[
+        MeshVertex(index0 + i, -1, -1),
+        MeshVertex(index1, -1, -1),
+        MeshVertex(index0 + i + 1, -1, -1),
+      ]);
+    }
+    faces.add(<MeshVertex>[
+      MeshVertex(index0 + length - 1, -1, -1),
+      MeshVertex(index1, -1, -1),
+      MeshVertex(index0, -1, -1),
+    ]);
+    return addFaces(faces);
+  }
+
+  /// 二つの閉曲線の間を結ぶ帯状の面リストを生成する。
   MeshData addTube(int index0, int index1, int length) {
     assert(index0 >= 0 && index0 + length <= vertices.length);
     assert(index1 >= 0 && index1 + length <= vertices.length);
