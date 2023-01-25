@@ -43,7 +43,13 @@ class Vector3 {
     }
   }
 
-  Vector3 normalized() => Vector3.fromVmVector(toVmVector().normalized());
+  Vector3 normalized() {
+    return Vector3.fromVmVector(toVmVector().normalized());
+  }
+
+  Vector3 transformed(Matrix4 matrix) {
+    return Vector3.fromVmVector(matrix.toVmMatrix().transform3(toVmVector()));
+  }
 
   Vector3.fromVmVector(vm.Vector3 value)
       : x = value.x,
@@ -99,6 +105,12 @@ class Vector3 {
 //</editor-fold>
 }
 
+extension Vector3ListHelper on List<Vector3> {
+  List<Vector3> transformed(Matrix4 matrix) {
+    return map((value) => value.transformed(matrix)).toList();
+  }
+}
+
 /// vector_mathのMatrix4の代わり
 ///
 /// vector_mathのMatrix4はimmutableにできないので
@@ -127,14 +139,6 @@ class Matrix4 {
   /// 行列積
   Matrix4 operator *(Matrix4 other) {
     return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
-  }
-
-  Vector3 rotate(Vector3 value) {
-    return Vector3.fromVmVector(toVmMatrix().rotated3(value.toVmVector()));
-  }
-
-  Vector3 transform(Vector3 value) {
-    return Vector3.fromVmVector(toVmMatrix().transform3(value.toVmVector()));
   }
 
   Matrix4.fromList(this.elements) : assert(elements.length == 16);
@@ -208,7 +212,7 @@ class Matrix4 {
     }
   }
 
-  // todo その他のコンストラクタ
+  // todo その他のコンストラクタ（LookAtとか）
 
   //<editor-fold desc="Data Methods">
 
@@ -459,6 +463,8 @@ class MeshVertex {
 //</editor-fold>
 }
 
+/// メッシュ面データ
+
 typedef MeshFace = List<MeshVertex>;
 
 /// メッシュデータ
@@ -480,30 +486,54 @@ class MeshData {
     this.smooth = false,
   });
 
-  MeshData transformedBy(Matrix4 matrix) {
+  MeshData transformed(Matrix4 matrix) {
     return copyWith(
-      vertices: vertices.map((it) => matrix.transform(it)).toList(),
-      normals: normals.map((it) => matrix.rotate(it)).toList(),
+      vertices: vertices.transformed(matrix),
+      normals: normals.transformed(matrix.rotation),
     );
   }
 
-  //
-
-  static List<Vector3> xzCircle({
-    required double radius,
-    required int division,
-    Matrix4 matrix = Matrix4.identity,
-  }) {
+  /// XZ平面上の円（近似多角形）頂点リスト生成
+  static List<Vector3> xzCircle({required double radius, required int division}) {
     final vertices = <Vector3>[];
     for (int i = 0; i < division; ++i) {
       final t = i * math.pi * 2.0 / division;
-      vertices.add(matrix.transform(Vector3(math.cos(t), 0, math.sin(t))));
+      vertices.add(Vector3(math.cos(t), 0, math.sin(t)));
     }
     return vertices;
   }
 
+  /// 二つの頂点インデックスリストを閉曲線とみなし、それらを繋いだ面リストを生成する。
+  /// ただしテクスチャ頂点、法線は定義しない。
+  MeshData addTube(int index0, int index1, int length) {
+    assert(index0 >= 0 && index0 + length <= vertices.length);
+    assert(index1 >= 0 && index1 + length <= vertices.length);
+    final faces = <MeshFace>[];
+    for (int i = 0; i < length - 1; ++i) {
+      faces.add(<MeshVertex>[
+        MeshVertex(index0 + i, -1, -1),
+        MeshVertex(index1 + i, -1, -1),
+        MeshVertex(index1 + i + 1, -1, -1),
+        MeshVertex(index0 + i + 1, -1, -1),
+      ]);
+    }
+    faces.add(<MeshVertex>[
+      MeshVertex(index0 + length - 1, -1, -1),
+      MeshVertex(index1 + length - 1, -1, -1),
+      MeshVertex(index1, -1, -1),
+      MeshVertex(index0, -1, -1),
+    ]);
+    return addFaces(faces);
+  }
+
+  /// 頂点リスト追加
   MeshData addVertices(List<Vector3> vertices) {
-    return copyWith(vertices: [...this.vertices, ...vertices]);
+    return copyWith(vertices: <Vector3>[...this.vertices, ...vertices]);
+  }
+
+  /// 面リスト追加
+  MeshData addFaces(List<MeshFace> faces) {
+    return copyWith(faces: <MeshFace>[...this.faces, ...faces]);
   }
 
 //<editor-fold desc="Data Methods">
@@ -723,7 +753,7 @@ class Cube extends Shape {
   @override
   MeshData toMeshData(Node root) {
     final find = root.find(origin)!;
-    return _cubeMeshData.transformedBy(find.matrix * Matrix4.fromScale(Vector3.one * scale));
+    return _cubeMeshData.transformed(find.matrix * Matrix4.fromScale(Vector3.one * scale));
   }
 
 //<editor-fold desc="Data Methods">
@@ -771,7 +801,7 @@ class Cube extends Shape {
 //</editor-fold>
 }
 
-/// 円筒メッシュデータ生成
+/// 積み上げ式円筒メッシュデータ生成
 ///
 /// (-0.5,0,-0.5)-(0.5,1,0.5)
 /// TODO: 底面形状ドーム、平面、その他。ドームのためにあとでScaleはできない。
@@ -783,7 +813,16 @@ MeshData _tubeMeshData({
   required int radiusDivision,
   required int lengthDivision,
 }) {
-  throw UnimplementedError();
+  final logger = Logger('_tubeMeshData');
+
+  var data = const MeshData();
+  const index0 = 0;
+  final circle = MeshData.xzCircle(radius: radius, division: baseDivision);
+  data = data.addVertices(circle);
+  final index1 = data.vertices.length;
+  data = data.addVertices(circle.transformed(Matrix4.fromPosition(Vector3.unitY * length)));
+  data = data.addTube(index0, index1, circle.length);
+  return data;
 }
 
 /// 円筒
@@ -818,7 +857,7 @@ class Tube extends Shape {
       baseDivision: baseDivision,
       radiusDivision: radiusDivision,
       lengthDivision: lengthDivision,
-    ).transformedBy(find.matrix);
+    ).transformed(find.matrix);
   }
 
 //<editor-fold desc="Data Methods">

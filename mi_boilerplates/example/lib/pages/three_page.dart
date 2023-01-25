@@ -162,9 +162,12 @@ void _setup(StringSink sink) {
     }.entries,
   );
 
-  _shapes.add(mi.Cube(origin: 'n1', scale: _y * 1.5 + _xz));
-  _shapes.add(mi.Cube(origin: 'n1.n2', scale: _y * 1.5 + _xz));
-  _shapes.add(const mi.Cube(origin: 'n1.n2.n3', scale: 0.3));
+  // _shapes.add(mi.Cube(origin: 'n1', scale: _y * 1.5 + _xz));
+  // _shapes.add(mi.Cube(origin: 'n1.n2', scale: _y * 1.5 + _xz));
+  // _shapes.add(const mi.Cube(origin: 'n1.n2.n3', scale: 0.3));
+  _shapes.add(const mi.Tube(origin: 'n1', length: 1.5));
+  _shapes.add(const mi.Tube(origin: 'n1.n2', length: 1.5));
+  _shapes.add(const mi.Tube(origin: 'n1.n2.n3', radius: 0.3, length: 0.5));
   _rootNode = root;
 
   final meshDataList = <mi.MeshData>[];
@@ -188,42 +191,48 @@ class _ModelerTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final documentsDirectory = ref.watch(_documentsDirectoryProvider);
-    final tempFilePath = '${documentsDirectory.value!.path}/temp.obj';
-    _logger.fine('temp file path=$tempFilePath');
+    return documentsDirectory.when(
+      data: (data) {
+        final tempFilePath = '${documentsDirectory.value!.path}/temp.obj';
+        _logger.fine('temp file path=$tempFilePath');
 
-    return Column(
-      children: [
-        mi.ButtonListTile(
-          enabled: documentsDirectory.hasValue,
-          text: const Text('Update'),
-          onPressed: () {
-            final file = File(tempFilePath);
-            final sink = file.openWrite();
-            _setup(sink);
-            sink.close();
-            ref.watch(_updateProvider.notifier).update((state) => !state);
-          },
-        ),
-        Expanded(
-          child: Center(
-            child: cube.Cube(
-              onSceneCreated: (cube.Scene scene) {
-                final model = cube.Object(
-                  fileName: tempFilePath,
-                  isAsset: false,
-                  lighting: true,
-                );
-                scene.world.add(model);
-                scene.camera = cube.Camera(
-                  position: cube.Vector3(-0.05, 0.3, 1.5),
-                  target: cube.Vector3(-0.05, 0.3, 0),
-                  fov: 35.0,
-                );
+        return Column(
+          children: [
+            mi.ButtonListTile(
+              enabled: documentsDirectory.hasValue,
+              text: const Text('Update'),
+              onPressed: () {
+                final file = File(tempFilePath);
+                final sink = file.openWrite();
+                _setup(sink);
+                sink.close();
+                ref.watch(_updateProvider.notifier).update((state) => !state);
               },
             ),
-          ),
-        ),
-      ],
+            Expanded(
+              child: Center(
+                child: cube.Cube(
+                  onSceneCreated: (cube.Scene scene) {
+                    final model = cube.Object(
+                      fileName: tempFilePath,
+                      isAsset: false,
+                      lighting: true,
+                    );
+                    scene.world.add(model);
+                    scene.camera = cube.Camera(
+                      position: cube.Vector3(-0.05, 0.3, 1.5),
+                      target: cube.Vector3(-0.05, 0.3, 0),
+                      fov: 35.0,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      error: (error, _) => Text(error.toString()),
+      loading: () => const CircularProgressIndicator(),
     );
   }
 }
