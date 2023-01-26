@@ -503,7 +503,66 @@ class MeshData {
     return vertices;
   }
 
-  /// 頂点と閉曲線を結ぶ盃状の面リストを生成する。
+  /// Y軸中心
+  MeshData addBowl1({
+    required double radius,
+    double endAngle = math.pi * 0.5,
+    required List<Vector3> points,
+    required int latDivision,
+    Matrix4 matrix = Matrix4.identity,
+  }) {
+    assert(latDivision >= 1);
+    final xzRadius = (Vector3.unitX + Vector3.unitZ) * radius;
+    final yRadius = Vector3.unitY * radius;
+    // 頂点
+    MeshData data = this;
+    int index0 = vertices.length;
+    final index1 = index0 + 1;
+    final t = 1 * endAngle / latDivision;
+    data = data
+        .addVertices([
+          yRadius,
+          ...(points
+              .transformed(Matrix4.fromScale(xzRadius * math.sin(t)))
+              .transformed(Matrix4.fromPosition(yRadius * math.cos(t))))
+        ].transformed(matrix))
+        .addCup(index0, index1, latDivision);
+    index0 = index1;
+    // 経線
+    for (int i = 2; i <= latDivision; ++i) {
+      final index1 = vertices.length;
+      final t = i * endAngle / latDivision;
+      data = data
+          .addVertices(points
+              .transformed(Matrix4.fromScale(xzRadius * math.sin(t)))
+              .transformed(Matrix4.fromPosition(yRadius * math.cos(t)))
+              .transformed(matrix))
+          .addTube(index0, index1, latDivision);
+      index0 = index1;
+    }
+    return data;
+  }
+
+  /// Y軸中心の下半球状の面リスト追加
+  MeshData addBowl({
+    required double radius,
+    double endAngle = math.pi * 0.5,
+    required int latDivision,
+    required int longDivision,
+    Matrix4 matrix = Matrix4.identity,
+  }) {
+    assert(latDivision >= 2);
+    assert(longDivision >= 3);
+    return addBowl1(
+      radius: radius,
+      endAngle: endAngle,
+      points: xzCircle(radius: radius, division: longDivision),
+      latDivision: latDivision,
+      matrix: matrix,
+    );
+  }
+
+  /// 頂点と閉曲線間の盃状の面リスト追加
   MeshData addCup(int index0, int index1, int length) {
     assert(index0 >= 0 && index0 <= vertices.length);
     assert(index1 >= 0 && index1 + length <= vertices.length);
@@ -523,7 +582,7 @@ class MeshData {
     return addFaces(faces);
   }
 
-  /// 閉曲線と頂点を結ぶ冠状の面リストを生成する。
+  /// 閉曲線と頂点間の冠状の面リスト追加
   MeshData addCap(int index0, int length, index1) {
     assert(index0 >= 0 && index0 + length <= vertices.length);
     assert(index1 >= 0 && index1 <= vertices.length);
@@ -543,7 +602,7 @@ class MeshData {
     return addFaces(faces);
   }
 
-  /// 二つの閉曲線の間を結ぶ帯状の面リストを生成する。
+  /// 二つの閉曲線間の帯状の面リスト追加
   MeshData addTube(int index0, int index1, int length) {
     assert(index0 >= 0 && index0 + length <= vertices.length);
     assert(index1 >= 0 && index1 + length <= vertices.length);
@@ -714,6 +773,8 @@ void toWavefrontObj(
 ///
 /// (-0.5,0,-0.5)-(0.5,1,0.5)
 
+//<editor-fold>
+
 const _cubeVertices = <Vector3>[
   Vector3(0.5, 1, -0.5),
   Vector3(0.5, 0, -0.5),
@@ -724,6 +785,7 @@ const _cubeVertices = <Vector3>[
   Vector3(-0.5, 1, 0.5),
   Vector3(-0.5, 0, 0.5),
 ];
+
 final _cubeNormals = <Vector3>[
   Vector3.unitY,
   Vector3.unitZ,
@@ -732,6 +794,7 @@ final _cubeNormals = <Vector3>[
   Vector3.unitX,
   -Vector3.unitZ,
 ];
+
 const _cubeFaces = <MeshFace>[
   <MeshVertex>[
     MeshVertex(0, -1, 0),
@@ -770,11 +833,14 @@ const _cubeFaces = <MeshFace>[
     MeshVertex(1, -1, 5),
   ],
 ];
+
 final _cubeMeshData = MeshData(
   vertices: _cubeVertices,
   normals: _cubeNormals,
   faces: _cubeFaces,
 );
+
+//</editor-fold>
 
 /// 直方体
 ///
@@ -848,7 +914,7 @@ class Cube extends Shape {
 MeshData _tubeMeshData({
   required double radius,
   required double length,
-  required int baseDivision,
+  required int longDivision,
   required int radiusDivision,
   required int lengthDivision,
 }) {
@@ -857,7 +923,7 @@ MeshData _tubeMeshData({
   var data = const MeshData();
 
   // 底面
-  final circle = MeshData.xzCircle(radius: radius, division: baseDivision);
+  final circle = MeshData.xzCircle(radius: radius, division: longDivision);
   var matrix0 = Matrix4.identity;
   var index0 = data.vertices.length;
   data = data.addVertices(circle.transformed(matrix0));
@@ -880,7 +946,7 @@ class Tube extends Shape {
   final String origin;
   final double radius;
   final double length;
-  final int baseDivision;
+  final int longDivision;
   final int radiusDivision;
   final int lengthDivision;
 
@@ -888,10 +954,10 @@ class Tube extends Shape {
     required this.origin,
     this.radius = 0.5,
     this.length = 1.0,
-    this.baseDivision = 8,
+    this.longDivision = 8,
     this.radiusDivision = 1,
     this.lengthDivision = 1,
-  })  : assert(baseDivision >= 3),
+  })  : assert(longDivision >= 3),
         assert(radiusDivision >= 1),
         assert(lengthDivision >= 1);
 
@@ -901,7 +967,7 @@ class Tube extends Shape {
     return _tubeMeshData(
       radius: radius,
       length: length,
-      baseDivision: baseDivision,
+      longDivision: longDivision,
       radiusDivision: radiusDivision,
       lengthDivision: lengthDivision,
     ).transformed(find.matrix);
@@ -917,7 +983,7 @@ class Tube extends Shape {
           origin == other.origin &&
           radius == other.radius &&
           length == other.length &&
-          baseDivision == other.baseDivision &&
+          longDivision == other.longDivision &&
           radiusDivision == other.radiusDivision &&
           lengthDivision == other.lengthDivision);
 
@@ -926,7 +992,7 @@ class Tube extends Shape {
       origin.hashCode ^
       radius.hashCode ^
       length.hashCode ^
-      baseDivision.hashCode ^
+      longDivision.hashCode ^
       radiusDivision.hashCode ^
       lengthDivision.hashCode;
 
@@ -936,7 +1002,7 @@ class Tube extends Shape {
         ' origin: $origin,'
         ' radius: $radius,'
         ' length: $length,'
-        ' baseDivision: $baseDivision,'
+        ' longDivision: $longDivision,'
         ' radiusDivision: $radiusDivision,'
         ' lengthDivision: $lengthDivision,'
         '}';
@@ -946,7 +1012,7 @@ class Tube extends Shape {
     String? origin,
     double? radius,
     double? length,
-    int? baseDivision,
+    int? longDivision,
     int? radiusDivision,
     int? lengthDivision,
   }) {
@@ -954,7 +1020,7 @@ class Tube extends Shape {
       origin: origin ?? this.origin,
       radius: radius ?? this.radius,
       length: length ?? this.length,
-      baseDivision: baseDivision ?? this.baseDivision,
+      longDivision: longDivision ?? this.longDivision,
       radiusDivision: radiusDivision ?? this.radiusDivision,
       lengthDivision: lengthDivision ?? this.lengthDivision,
     );
@@ -965,7 +1031,7 @@ class Tube extends Shape {
       'origin': origin,
       'radius': radius,
       'length': length,
-      'baseDivision': baseDivision,
+      'longDivision': longDivision,
       'radiusDivision': radiusDivision,
       'lengthDivision': lengthDivision,
     };
@@ -976,7 +1042,7 @@ class Tube extends Shape {
       origin: map['origin'] as String,
       radius: map['radius'] as double,
       length: map['length'] as double,
-      baseDivision: map['baseDivision'] as int,
+      longDivision: map['longDivision'] as int,
       radiusDivision: map['radiusDivision'] as int,
       lengthDivision: map['lengthDivision'] as int,
     );

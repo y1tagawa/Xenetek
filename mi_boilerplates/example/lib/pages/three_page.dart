@@ -165,7 +165,7 @@ void _setup(StringSink sink) {
   // _shapes.add(mi.Cube(origin: 'n1', scale: _y * 1.5 + _xz));
   // _shapes.add(mi.Cube(origin: 'n1.n2', scale: _y * 1.5 + _xz));
   // _shapes.add(const mi.Cube(origin: 'n1.n2.n3', scale: 0.3));
-  _shapes.add(const mi.Tube(origin: 'n1', length: 1.5, baseDivision: 16, lengthDivision: 8));
+  _shapes.add(const mi.Tube(origin: 'n1', length: 1.5, longDivision: 16, lengthDivision: 8));
   _shapes.add(const mi.Tube(origin: 'n1.n2', length: 1.5));
   _shapes.add(const mi.Tube(origin: 'n1.n2.n3', radius: 0.3, length: 0.5));
   _rootNode = root;
