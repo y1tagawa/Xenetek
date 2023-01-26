@@ -25,6 +25,7 @@ import 'pages/embedded_tab_view_page.dart';
 import 'pages/ex_app_bar.dart' as ex;
 import 'pages/files_page.dart';
 import 'pages/grids_page.dart';
+import 'pages/layered_architecture_page.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
 import 'pages/overflow_bar_page.dart';
@@ -126,6 +127,12 @@ final _pages = <_PageItem>[
     title: GridsPage.title,
     path: '/grids/detail',
     builder: (_, __) => const GridDetailPage(),
+  ),
+  _PageItem(
+    icon: LayeredArchitecturePage.icon,
+    title: LayeredArchitecturePage.title,
+    path: '/layered_architecture',
+    builder: (_, __) => const LayeredArchitecturePage(),
   ),
   _PageItem(
     icon: ListsPage.icon,
