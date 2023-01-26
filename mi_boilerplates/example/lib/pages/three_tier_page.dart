@@ -11,7 +11,9 @@ import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'ex_app_bar.dart' as ex;
 
 //
-// Layered architecture example
+// Three-tier architecture example.
+//
+// TODO: エラーハンドリング
 //
 
 // インフラストラクチャ層
@@ -83,7 +85,12 @@ class SampleState {
 // サービスロジックの群れ。
 // インフラストラクチャと通信するため、やっぱり非同期になる。
 
+/// サンプルサービス
+///
+/// サンプルDBをオープン、初期値を取得、以後リクエストに応じて更新、
+/// DB更新ごとにStreamProviderを通して通知する。
 class SampleService {
+  /// サービス初期化
   static SampleService _createInstance() {
     final valueStream = StreamController<int>();
     final provider = StreamProvider<SampleState>(
@@ -105,9 +112,12 @@ class SampleService {
     );
   }
 
-  static final _instance = _createInstance();
+  static SampleService? _instance;
 
-  static SampleService get instance => _instance;
+  static SampleService get instance {
+    _instance ??= _createInstance();
+    return _instance!;
+  }
 
   final StreamController<int> _valueStream;
   final StreamProvider<SampleState> provider;
@@ -128,13 +138,13 @@ class SampleService {
 //
 // ビューの群れ。
 
-class LayeredArchitecturePage extends ConsumerWidget {
-  static const icon = Icon(Icons.layers_outlined);
-  static const title = Text('Layered architecture');
+class ThreeTierPage extends ConsumerWidget {
+  static const icon = Icon(Icons.architecture);
+  static const title = Text('3.T.A.');
 
-  static final _logger = Logger((LayeredArchitecturePage).toString());
+  static final _logger = Logger((ThreeTierPage).toString());
 
-  const LayeredArchitecturePage({super.key});
+  const ThreeTierPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
