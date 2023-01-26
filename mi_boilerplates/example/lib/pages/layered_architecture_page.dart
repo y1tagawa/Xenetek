@@ -1,6 +1,8 @@
 // Copyright 2022 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -12,14 +14,25 @@ import 'ex_app_bar.dart' as ex;
 // Layered architecture example
 //
 
+// インフラストラクチャ層
 //
-// Repository
-//
+// （しばしば非同期的にしかアクセスできない）リソースへのAPI。
+// データベースやデバイス、ネットワークリソースなど。
 
-//
-// View state
-//
+late int _lastValue;
 
+// 非同期的な初期化
+Future<void> _initValue() async {
+  _lastValue = 0;
+}
+
+Future<int> _nextValue() async {
+  return _lastValue++;
+}
+
+/// View state
+///
+/// ドメインとビュー間のプロトコル。
 class SampleState {
   final int value;
 
@@ -65,30 +78,55 @@ class SampleState {
   //</editor-fold>
 }
 
+// ドメイン層
 //
-// Service logic
-//
+// サービスロジックの群れ。
+// インフラストラクチャと通信するため、やっぱり非同期になる。
 
-class SampleService extends StateNotifier<SampleState> {
-  static final _instance = SampleService._();
-
-  factory SampleService.instance() => _instance;
-
-  void plusOne() {
-    _instance.state = _instance.state.copyWith(
-      value: _instance.state.value + 1,
+class SampleService {
+  static SampleService _createInstance() {
+    final valueStream = StreamController<int>();
+    final provider = StreamProvider<SampleState>(
+      (ref) async* {
+        // 非同期的にリソースを初期化し...
+        await _initValue();
+        // 必要なら初期状態をゲットしてリスナに通知
+        valueStream.add(await _nextValue());
+        // 以後状態が変わるごとにリスナに通知
+        // TODO: 自動的に値が変わる場合(カメラ画像とか)
+        await for (final value in valueStream.stream) {
+          yield SampleState(value: value);
+        }
+      },
+    );
+    return SampleService._(
+      valueStream: valueStream,
+      provider: provider,
     );
   }
 
-  SampleService._() : super(const SampleState(value: 0));
+  static final _instance = _createInstance();
+
+  static SampleService get instance => _instance;
+
+  final StreamController<int> _valueStream;
+  final StreamProvider<SampleState> provider;
+
+  const SampleService._({
+    required valueStream,
+    required this.provider,
+  }) : _valueStream = valueStream;
+
+  // 次の値を要求
+  Future<bool> requestNextValue() async {
+    _valueStream.sink.add(await _nextValue());
+    return true; // OK
+  }
 }
 
-final _sampleServiceProvider =
-    StateNotifierProvider<SampleService, SampleState>((ref) => SampleService.instance());
-
+// プレゼンテーション層
 //
-// View
-//
+// ビューの群れ。
 
 class LayeredArchitecturePage extends ConsumerWidget {
   static const icon = Icon(Icons.layers_outlined);
@@ -104,7 +142,7 @@ class LayeredArchitecturePage extends ConsumerWidget {
 
     final enabled = ref.watch(ex.enableActionsProvider);
 
-    final value = ref.watch(_sampleServiceProvider).value;
+    final value = ref.watch(SampleService.instance.provider);
 
     return ex.Scaffold(
       appBar: ex.AppBar(
@@ -112,13 +150,20 @@ class LayeredArchitecturePage extends ConsumerWidget {
         icon: icon,
         title: title,
       ),
-      body: Column(
-        children: [
-          Text(value.toString()),
-        ],
+      body: Center(
+        child: value.when(
+          data: (data) {
+            return Text(data.value.toString());
+          },
+          error: (error, _) => Text(error.toString()),
+          loading: () => const CircularProgressIndicator(),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => SampleService.instance().plusOne(),
+        onPressed: () async {
+          // 非同期的にサービスロジックを呼び出す。
+          await SampleService.instance.requestNextValue();
+        },
         child: const Icon(Icons.add),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),
