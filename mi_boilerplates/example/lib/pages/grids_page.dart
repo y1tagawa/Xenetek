@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Grids example page.
@@ -40,54 +40,52 @@ class GridsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     //final enableActions = ref.watch(enableActionsProvider);
 
-    return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+    return ex.Scaffold(
+      appBar: ex.AppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          children: [
-            Expanded(
-              child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 8.0,
-                    childAspectRatio: 1 / 1.5,
-                  ),
-                  itemCount: _imageUrls.length,
-                  itemBuilder: (context, index) {
-                    return Tooltip(
-                      message: 'PL. ${index + 1}',
-                      child: InkWell(
-                        onTap: () {
-                          _pageIndex = index;
-                          context.push('/grids/detail');
-                        },
-                        child: Hero(
-                          tag: 'plate${index + 1}',
-                          child: Image.network(
-                            _imageUrls[index],
-                            fit: BoxFit.fill,
-                            frameBuilder: (_, child, frame, __) => frame == null
-                                ? const Center(child: CircularProgressIndicator())
-                                : child,
-                          ),
-                        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: 8.0,
+                crossAxisSpacing: 8.0,
+                childAspectRatio: 1 / 1.5,
+              ),
+              itemCount: _imageUrls.length,
+              itemBuilder: (context, index) {
+                return Tooltip(
+                  message: 'PL. ${index + 1}',
+                  child: InkWell(
+                    onTap: () {
+                      _pageIndex = index;
+                      context.push('/grids/detail');
+                    },
+                    child: Hero(
+                      tag: 'plate${index + 1}',
+                      child: Image.network(
+                        _imageUrls[index],
+                        fit: BoxFit.fill,
+                        frameBuilder: (_, child, frame, __) => frame == null
+                            ? const Center(child: CircularProgressIndicator())
+                            : child,
                       ),
-                    );
-                  }),
+                    ),
+                  ),
+                );
+              },
             ),
-            const ListTile(
-              title: Text('From \'The Poetical Works of John Milton\' (1695).'),
-            ),
-          ],
-        ),
+          ),
+          const ListTile(
+            title: Text('From \'The Poetical Works of John Milton\' (1695).'),
+          ),
+        ],
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }
@@ -101,9 +99,9 @@ class GridDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+    return ex.Scaffold(
+      appBar: ex.AppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: GridsPage.icon,
         title: Text('PL. ${_pageIndex + 1}'),
       ),
@@ -130,7 +128,7 @@ class GridDetailPage extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

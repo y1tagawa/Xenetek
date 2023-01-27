@@ -4,10 +4,10 @@
 
 import 'package:flutter/material.dart';
 
-import '../mi_boilerplates.dart';
+import '../mi_boilerplates.dart' as mi;
 
 /// const版 Transform.rotate
-class MiRotate extends StatelessWidget {
+class Rotate extends StatelessWidget {
   final double? angle;
   // toRadian()はconstにならないので度でも受けられるようにしておく。
   final double? angleDegree;
@@ -17,7 +17,7 @@ class MiRotate extends StatelessWidget {
   final FilterQuality? filterQuality;
   final Widget? child;
 
-  const MiRotate({
+  const Rotate({
     super.key,
     this.angle,
     this.angleDegree,
@@ -31,7 +31,7 @@ class MiRotate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: angle ?? angleDegree! * DoubleHelper.degreeToRadian,
+      angle: angle ?? angleDegree!.toRadian(),
       alignment: alignment,
       origin: origin,
       transformHitTests: transformHitTests,
@@ -42,7 +42,7 @@ class MiRotate extends StatelessWidget {
 }
 
 /// const版 Transform.scale
-class MiScale extends StatelessWidget {
+class Scale extends StatelessWidget {
   final double? scale;
   final double? scaleX;
   final double? scaleY;
@@ -52,7 +52,7 @@ class MiScale extends StatelessWidget {
   final FilterQuality? filterQuality;
   final Widget? child;
 
-  const MiScale({
+  const Scale({
     super.key,
     this.scale,
     this.scaleX,
@@ -80,13 +80,13 @@ class MiScale extends StatelessWidget {
 }
 
 /// const版 Transform.translate
-class MiTranslate extends StatelessWidget {
+class Translate extends StatelessWidget {
   final Offset offset;
   final bool transformHitTests;
   final FilterQuality? filterQuality;
   final Widget? child;
 
-  const MiTranslate({
+  const Translate({
     super.key,
     required this.offset,
     this.transformHitTests = true,

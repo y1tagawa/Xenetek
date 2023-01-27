@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 class RadiosPage extends ConsumerWidget {
   static const icon = Icon(Icons.radio_button_checked_outlined);
@@ -18,15 +19,13 @@ class RadiosPage extends ConsumerWidget {
   static final _logger = Logger((RadiosPage).toString());
 
   static final _tabs = <Widget>[
-    const MiTab(
-      tooltip: 'Radios',
+    const mi.Tab(
+      tooltip: 'Radio buttons',
       icon: icon,
     ),
-    MiTab(
-      tooltip: 'Toggle buttons',
-      icon: MiImageIcon(
-        image: Image.asset('assets/more_grid.png'),
-      ),
+    const mi.Tab(
+      tooltip: 'Radio menu',
+      icon: Icon(Icons.more_vert),
     ),
   ];
 
@@ -36,32 +35,29 @@ class RadiosPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _RadiosTab(),
-                _ToggleButtonsTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _RadioButtonsTab(),
+              _RadioMenuTab(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -74,98 +70,85 @@ class RadiosPage extends ConsumerWidget {
 // Radios tab
 //
 
-enum _Class { fighter, cleric, mage, thief }
+//<editor-fold>
 
-class _RadioItem {
-  final Widget Function(bool checked) iconBuilder;
-  final Widget text;
-  const _RadioItem({required this.iconBuilder, required this.text});
-}
-
-final _radioItems = <_Class, _RadioItem>{
-  _Class.fighter: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.shield_outlined),
-    text: const Text('Fighter'),
-  ),
-  _Class.cleric: _RadioItem(
-    iconBuilder: (checked) => const Icon(Icons.emergency_outlined),
-    text: const Text('Cleric'),
-  ),
-  _Class.mage: _RadioItem(
-    //iconBuilder: (_) => const Icon(Icons.auto_fix_normal_outlined),
-    iconBuilder: (_) => MiImageIcon(
-      image: Image.asset('assets/mage_hat.png'),
-    ),
-    text: const Text('Mage'),
-  ),
-  _Class.thief: _RadioItem(
-    iconBuilder: (checked) => MiToggleIcon(
-      checked: checked,
-      checkIcon: const Icon(Icons.lock_open),
-      uncheckIcon: const Icon(Icons.lock_outlined),
-    ),
-    text: const Text('Thief'),
-  ),
+final _radioItems = <String, Widget Function(bool checked)>{
+  'Fighter': (_) => const Icon(Icons.shield_outlined),
+  'Cleric': (_) => const Icon(Icons.emergency_outlined),
+  'Mage': (_) => mi.FlickWand(callbackNotifier: _flickNotifier),
+  'Thief': (checked) => mi.ToggleIcon(
+        checked: checked,
+        checkIcon: const Icon(Icons.lock_open),
+        uncheckIcon: const Icon(Icons.lock_outlined),
+      ),
 };
 
-final _radioIndexProvider = StateProvider((ref) => _Class.fighter);
+final _radioProvider = StateProvider((ref) => _radioItems.keys.first);
+final _flickNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
-class _RadiosTab extends ConsumerWidget {
+class _RadioButtonsTab extends ConsumerWidget {
   // ignore: unused_field
-  static final _logger = Logger((_RadiosTab).toString());
+  static final _logger = Logger((_RadioButtonsTab).toString());
 
-  const _RadiosTab();
+  const _RadioButtonsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
-    final radioIndex = ref.watch(_radioIndexProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
+    final radioKey = ref.watch(_radioProvider);
 
-    return Column(
-      children: [
-        Flexible(
-          child: ListView(
-            shrinkWrap: true,
-            children: _radioItems.keys.map(
-              (key) {
-                final item = _radioItems[key]!;
-                return MiRadioListTile<_Class>(
-                  enabled: enableActions,
-                  value: key,
-                  groupValue: radioIndex,
-                  title: MiIcon(
-                    icon: item.iconBuilder(key == radioIndex),
-                    text: item.text,
-                  ),
-                  onChanged: (value) {
-                    ref.read(_radioIndexProvider.notifier).state = value!;
-                  },
-                );
-              },
-            ).toList(),
-          ),
-        ),
-        const Divider(),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: IconTheme(
-            data: IconThemeData(
-              color: Theme.of(context).disabledColor,
-              size: 60,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ..._radioItems.entries.map(
+            (item) {
+              return RadioListTile<String>(
+                value: item.key,
+                groupValue: radioKey,
+                title: mi.Label(
+                  icon: item.value(item.key == radioKey),
+                  text: Text(item.key),
+                ),
+                onChanged: enableActions
+                    ? (value) {
+                        ref.read(_radioProvider.notifier).state = value!;
+                        if (value == 'Mage') {
+                          _flickNotifier.add((controller) {
+                            controller.reset();
+                            controller.forward();
+                          });
+                        }
+                      }
+                    : null,
+              );
+            },
+          ).toList(),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: IconTheme(
+              data: IconThemeData(
+                color: Theme.of(context).disabledColor,
+                size: 60,
+              ),
+              child: mi.Fade(
+                child: _radioItems[radioKey]!.call(false),
+              ),
             ),
-            child: MiFade(
-              child: _radioItems[radioIndex]!.iconBuilder(false),
-            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
+//</editor-fold>
+
 //
-// Toggle buttons tab
+// Radio menu tab
 //
+
+//<editor-fold>
 
 // https://lottiefiles.com/301-search-location
 const _rippleLottieUrl =
@@ -173,99 +156,115 @@ const _rippleLottieUrl =
 // https://lottiefiles.com/94-soda-loader
 const _sodaLottieUrl = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
 
-const _toggleItems = <Widget>[
-  Text('Soda'),
-  Text('Mint'),
-  Text('Lemon'),
-  Text('Orange'),
-  Text('Straw\nberry'),
-  Text('Grape'),
-  Text('Milk'),
-  Text('Cola'),
-];
+const _menuItems = <String, Color>{
+  'Soda': Colors.blue,
+  'Mint': Colors.green,
+  'Lemon': Colors.yellow,
+  'Orange': Colors.orange,
+  'Strawberry': Colors.red,
+  'Grape': Colors.purple,
+  'Milk': Color(0xFFEEEEEE),
+  'Cola': Colors.brown,
+};
 
-const _toggleItemColors = <Color>[
-  Colors.blue,
-  Colors.green,
-  Colors.yellow,
-  Colors.orange,
-  Colors.red,
-  Colors.purple,
-  Color(0xFFEEEEEE),
-  Colors.brown,
-];
+final _menuIndexProvider = StateProvider<int?>((ref) => 0);
 
-final _toggleIndexProvider = StateProvider((ref) => 0);
+class _RadioMenuTab extends ConsumerWidget {
+  // ignore: unused_field
+  static final _logger = Logger((_RadioMenuTab).toString());
 
-class _ToggleButtonsTab extends ConsumerWidget {
-  static final _logger = Logger((_toggleIndexProvider).toString());
-
-  const _ToggleButtonsTab();
+  const _RadioMenuTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
-    final toggleIndex = ref.watch(_toggleIndexProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
+    final menuIndex = ref.watch(_menuIndexProvider);
 
-    return MiDefaultTabController(
-      length: _toggleItems.length,
-      initialIndex: toggleIndex,
-      builder: (context) {
-        return Column(
+    return Column(
+      children: [
+        mi.Row(
+          flexes: const [1, 1],
           children: [
-            MiRadioToggleButtons(
-              enabled: enableActions,
-              initiallySelected: toggleIndex,
-              split: MediaQuery.of(context).orientation == Orientation.landscape ? null : 3,
-              renderBorder: false,
-              onPressed: (index) {
-                ref.read(_toggleIndexProvider.notifier).state = index;
-                DefaultTabController.of(context)?.index = index;
+            ex.ClearButtonListTile(
+              enabled: enabled && menuIndex != null,
+              onPressed: () {
+                ref.read(_menuIndexProvider.notifier).state = null;
               },
-              children: _toggleItems,
             ),
-            const Divider(),
-            Expanded(
-              child: TabBarView(
-                children: _toggleItemColors.mapIndexed(
-                  (index, color) {
-                    final url = index == 6 ? _rippleLottieUrl : _sodaLottieUrl;
-                    return Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.all(1),
-                        child: ColoredBox(
-                          color: color.withAlpha(128),
-                          child: MiAnimationController(
-                            builder: (_, controller, __) {
-                              return Lottie.network(
-                                url,
-                                controller: controller,
-                                repeat: true,
-                                onLoaded: (composition) {
-                                  _logger.fine('onLoaded: ${composition.duration}');
-                                  controller.duration = composition.duration;
-                                  controller.reset();
-                                  controller.forward();
-                                },
-                              );
-                            },
-                            onCompleted: (controller) {
-                              controller.reset();
-                              controller.forward();
-                            },
-                          ),
-                        ),
+            PopupMenuButton<int?>(
+              enabled: enabled,
+              tooltip: '',
+              initialValue: menuIndex,
+              itemBuilder: (context) {
+                return [
+                  ..._menuItems.entries.mapIndexed(
+                    (index, item) => mi.RadioPopupMenuItem<int?>(
+                      value: index,
+                      checked: index == menuIndex,
+                      child: mi.Label(
+                        icon: mi.ColorChip(color: item.value),
+                        text: Text(item.key),
                       ),
-                    );
-                  },
-                ).toList(),
+                    ),
+                  ),
+                ];
+              },
+              onSelected: (index) {
+                ref.read(_menuIndexProvider.notifier).state = index!;
+              },
+              offset: const Offset(1, 0),
+              child: ListTile(
+                enabled: enabled,
+                title: menuIndex != null
+                    ? _menuItems.keys.skip(menuIndex).first.let(
+                          (it) => Center(
+                            child: Text(it),
+                          ),
+                        )
+                    : null,
+                trailing: const Icon(Icons.more_vert),
               ),
             ),
           ],
-        );
-      },
+        ),
+        const Divider(),
+        if (menuIndex != null) ...[
+          Container(
+            width: 120,
+            height: 120,
+            padding: const EdgeInsets.all(1),
+            color: Colors.white,
+            child: ColoredBox(
+              color: _menuItems.values.skip(menuIndex).first.withAlpha(128),
+              child: mi.AnimationControllerWidget(
+                builder: (_, controller, __) {
+                  return Lottie.network(
+                    menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,
+                    controller: controller,
+                    repeat: true,
+                    onLoaded: (composition) {
+                      _logger.fine('onLoaded: ${composition.duration}');
+                      controller.duration = composition.duration;
+                      controller.reset();
+                      controller.forward();
+                    },
+                  );
+                },
+                onEnd: (controller) {
+                  controller.reset();
+                  controller.forward();
+                },
+              ),
+            ),
+          ),
+          const Text(
+            'Animations by LottieFiles\nfrom lottiefiles.com.',
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ],
     );
   }
 }
+
+//</editor-fold>

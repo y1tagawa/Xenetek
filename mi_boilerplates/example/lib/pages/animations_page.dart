@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../data/open_moji_svgs.dart';
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Animations example page.
@@ -31,40 +31,40 @@ class AnimationsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
 
     final tabs = <Widget>[
-      const MiTab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
-      MiTab(
-        icon: MiImageIcon(
+      const mi.Tab(icon: Icon(Icons.refresh), tooltip: 'Animated builder'),
+      mi.Tab(
+        icon: mi.ImageIcon(
           image: Image.asset('assets/lottie_icon.png'),
         ),
         tooltip: 'Lottie',
       ),
       // const MiTab(icon: Icon(Icons.pets), tooltip: 'Animated opacity'),
       // const MiTab(icon: Icon(Icons.bedroom_baby_outlined), tooltip: 'Animation GIF'),
-      const MiTab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
+      const mi.Tab(icon: Icon(Icons.play_arrow), tooltip: 'Animated icons'),
     ];
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
         _tabIndex = index;
       },
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
-            icon: MiAnimationController(
+            icon: mi.AnimationControllerWidget(
               duration: const Duration(seconds: 120),
               builder: (_, controller, __) {
                 _logger.fine(controller.value);
                 return AnimatedBuilder(
                   animation: controller,
                   builder: (context, _) {
-                    return MiRotate(
+                    return mi.Rotate(
                       angleDegree: controller.value * 360,
                       child: icon,
                     );
@@ -74,30 +74,27 @@ class AnimationsPage extends ConsumerWidget {
               onInitialized: (controller) {
                 controller.forward();
               },
-              onCompleted: (controller) {
+              onEnd: (controller) {
                 controller.reset();
                 controller.forward();
               },
             ),
             title: _title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enableActions,
               tabs: tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 10),
-            child: TabBarView(
-              children: [
-                _AnimatedBuilderTab(),
-                _LottieTab(),
-                // _AnimatedOpacityTab(),
-                // _AnimationGifTab(),
-                _AnimatedIconsTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _AnimatedBuilderTab(),
+              _LottieTab(),
+              // _AnimatedOpacityTab(),
+              // _AnimationGifTab(),
+              _AnimatedIconsTab(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((it) {
@@ -113,6 +110,10 @@ class AnimationsPage extends ConsumerWidget {
 //   https://api.flutter.dev/flutter/animation/AnimationController-class.html
 //
 
+//<editor-fold>
+
+final _pingCallbackNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
+
 class _AnimatedBuilderTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedBuilderTab).toString());
 
@@ -123,53 +124,59 @@ class _AnimatedBuilderTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return Center(
-      child: MiAnimationController(
-        duration: const Duration(milliseconds: 800),
-        builder: (_, controller, __) => AnimatedBuilder(
-          animation: controller,
-          builder: (_, __) {
-            final t = controller.value;
-            _logger.fine(t);
-            return SizedBox.square(
-              dimension: 120,
-              child: Stack(
-                fit: StackFit.expand,
-                alignment: Alignment.center,
-                children: [
-                  // dispenser
-                  Transform.rotate(
-                    angle: (360.0 * Curves.bounceOut.transform(t)).toRadian(),
-                    child: const Icon(
-                      Icons.refresh,
-                      size: 60,
-                    ),
-                  ),
-                  // star
-                  if (t != 0.0 && t < 0.99)
-                    Transform.translate(
-                      offset: Offset(400.0 * t, 400.0 * t * t),
-                      child: const Icon(
-                        Icons.star,
-                        size: 24,
-                        color: Colors.orange,
-                      ),
-                    ),
-                ],
-              ),
-            );
+      child: InkWell(
+        onTap: () => _pingCallbackNotifier.add(
+          (controller) {
+            controller.reset();
+            controller.forward();
           },
         ),
-        onTap: (controller) {
-          _logger.fine('tap');
-          controller.reset();
-          controller.forward();
-        },
+        child: mi.AnimationControllerWidget(
+          callbackNotifier: _pingCallbackNotifier,
+          duration: const Duration(milliseconds: 800),
+          builder: (_, controller, __) => AnimatedBuilder(
+            animation: controller,
+            builder: (_, __) {
+              final t = controller.value;
+              _logger.fine(t);
+              return SizedBox.square(
+                dimension: 120,
+                child: Stack(
+                  fit: StackFit.expand,
+                  alignment: Alignment.center,
+                  children: [
+                    // dispenser
+                    Transform.rotate(
+                      angle: (360.0 * Curves.bounceOut.transform(t)).toRadian(),
+                      child: const Icon(
+                        Icons.refresh,
+                        size: 60,
+                      ),
+                    ),
+                    // star
+                    if (t != 0.0 && t < 0.99)
+                      Transform.translate(
+                        offset: Offset(400.0 * t, 400.0 * t * t),
+                        child: const Icon(
+                          Icons.star,
+                          size: 24,
+                          color: Colors.orange,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
       ),
     ).also((_) {
       _logger.fine('[o] build');
     });
   }
 }
+
+//</editor-fold>
 
 //
 // Lottie tab
@@ -178,9 +185,13 @@ class _AnimatedBuilderTab extends ConsumerWidget {
 // https://pub.dev/packages/lottie
 //
 
+//<editor-fold>
+
 //// https://lottiefiles.com/99-bell
 // https://lottiefiles.com/11458-empty
 const _lottieUrl = 'https://assets3.lottiefiles.com/packages/lf20_tDw3lP/empty_03.json';
+
+final _lottieCallbackNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
 class _LottieTab extends ConsumerWidget {
   static final _logger = Logger((_LottieTab).toString());
@@ -192,30 +203,38 @@ class _LottieTab extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return Center(
-      child: MiAnimationController(
-        builder: (_, controller, __) {
-          return ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Colors.red,
-              BlendMode.srcIn,
-            ),
-            child: Lottie.network(
-              _lottieUrl,
-              controller: controller,
-              repeat: false,
-              onLoaded: (composition) {
-                _logger.fine('onLoaded: ${composition.duration}');
-                controller.duration = composition.duration;
-                controller.reset();
-                controller.forward();
-              },
-            ),
-          );
-        },
-        onTap: (controller) {
-          controller.reset();
-          controller.forward();
-        },
+      child: InkWell(
+        onTap: () => _lottieCallbackNotifier.add(
+          (controller) {
+            controller.reset();
+            controller.forward();
+          },
+        ),
+        child: mi.Rotate(
+          angleDegree: -15,
+          child: mi.AnimationControllerWidget(
+            callbackNotifier: _lottieCallbackNotifier,
+            builder: (_, controller, __) {
+              return ColorFiltered(
+                colorFilter: const ColorFilter.mode(
+                  Colors.red,
+                  BlendMode.srcIn,
+                ),
+                child: Lottie.network(
+                  _lottieUrl,
+                  controller: controller,
+                  repeat: false,
+                  onLoaded: (composition) {
+                    _logger.fine('onLoaded: ${composition.duration}');
+                    controller.duration = composition.duration;
+                    controller.reset();
+                    controller.forward();
+                  },
+                ),
+              );
+            },
+          ),
+        ),
       ),
     ).also((_) {
       _logger.fine('[o] build');
@@ -223,9 +242,13 @@ class _LottieTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Animation GIF tab
 //
+
+//<editor-fold>
 
 const _imageUrl =
     'https://upload.wikimedia.org/wikipedia/commons/d/dd/Muybridge_race_horse_animated.gif';
@@ -250,9 +273,13 @@ class _AnimationGifTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Animated opacity tab
 //
+
+//<editor-fold>
 
 final _opaqueProvider = StateProvider((ref) => false);
 
@@ -305,9 +332,13 @@ class _AnimatedOpacityTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Animated icons catalogue tab
 //
+
+//<editor-fold>
 
 const _animatedIcons = <AnimatedIconData>[
   AnimatedIcons.arrow_menu,
@@ -341,7 +372,12 @@ const _animatedIconNames = [
   'view_list',
 ];
 
-final _animatedIconDirections = List<bool>.generate(_animatedIcons.length, (_) => true);
+final _iconAnimationCallbackNotifiers = List.generate(
+  _animatedIcons.length,
+  (index) => mi.SinkNotifier<mi.AnimationControllerCallback>(),
+);
+
+final _animatedIconDirections = List.filled(_animatedIcons.length, true);
 
 class _AnimatedIconsTab extends ConsumerWidget {
   static final _logger = Logger((_AnimatedIconsTab).toString());
@@ -360,27 +396,32 @@ class _AnimatedIconsTab extends ConsumerWidget {
       runSpacing: 8,
       children: [
         ..._animatedIcons.mapIndexed(
-          (index, data) => MiAnimationController(
-            builder: (_, controller, __) {
-              return Tooltip(
-                message: _animatedIconNames[index],
-                child: AnimatedIcon(
-                  icon: data,
-                  progress: controller,
-                  size: 48,
-                  color: theme.colorScheme.background,
-                ),
-              );
-            },
-            onTap: (controller) {
-              final direction = _animatedIconDirections[index];
-              if (direction) {
-                controller.forward(from: controller.value);
-              } else {
-                controller.reverse(from: controller.value);
-              }
-              _animatedIconDirections[index] = !direction;
-            },
+          (index, data) => InkWell(
+            onTap: () => _iconAnimationCallbackNotifiers[index].add(
+              (controller) {
+                final direction = _animatedIconDirections[index];
+                if (direction) {
+                  controller.forward(from: controller.value);
+                } else {
+                  controller.reverse(from: controller.value);
+                }
+                _animatedIconDirections[index] = !direction;
+              },
+            ),
+            child: mi.AnimationControllerWidget(
+              callbackNotifier: _iconAnimationCallbackNotifiers[index],
+              builder: (_, controller, __) {
+                return Tooltip(
+                  message: _animatedIconNames[index],
+                  child: AnimatedIcon(
+                    icon: data,
+                    progress: controller,
+                    size: 48,
+                    color: theme.colorScheme.background,
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -389,3 +430,5 @@ class _AnimatedIconsTab extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Dialogs example page.
@@ -38,71 +38,72 @@ class DialogsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
     final ping = ref.watch(_pingProvider);
 
     void showInfoOk(BuildContext context) {
-      showInfoOkDialog(
+      mi
+          .showInfoOkDialog(
         context: context,
         title: const Text('This is an OK dialog example.'),
         content: const Text('That is not dead which can eternal lie. '
             'And with strange aeons even death may die.'),
-      ).then((_) {
+      )
+          .then((_) {
         _ping(ref, 'OK');
       });
     }
 
     void showWarningOkCancel(BuildContext context) {
-      showWarningOkCancelDialog(
+      mi
+          .showWarningOkCancelDialog(
         context: context,
         title: const Text('This is an OK/Cancel dialog example.'),
         content: const Text('One short sleepe past, wee wake eternally, '
             'And death shall be no more; death, thou shalt die.'),
-      ).then((value) {
+      )
+          .then((value) {
         _ping(ref, value ? 'OK' : 'CANCEL');
       });
     }
 
-    return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+    return ex.Scaffold(
+      appBar: ex.AppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              MiButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                text: const Text('Show OK dialog'),
-                onPressed: () {
-                  showInfoOk(context);
-                },
-              ),
-              MiButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                text: const Text('Show OK/Cancel dialog'),
-                onPressed: () {
-                  showWarningOkCancel(context);
-                },
-              ),
-              const Divider(),
-              if (ping != null)
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Center(
-                    child: Text(ping, style: const TextStyle(fontSize: 24)),
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            mi.ButtonListTile(
+              enabled: enableActions,
+              alignment: MainAxisAlignment.start,
+              text: const Text('Show OK dialog'),
+              onPressed: () {
+                showInfoOk(context);
+              },
+            ),
+            mi.ButtonListTile(
+              enabled: enableActions,
+              alignment: MainAxisAlignment.start,
+              text: const Text('Show OK/Cancel dialog'),
+              onPressed: () {
+                showWarningOkCancel(context);
+              },
+            ),
+            const Divider(),
+            if (ping != null)
+              Padding(
+                padding: const EdgeInsets.all(4),
+                child: Center(
+                  child: Text(ping, style: const TextStyle(fontSize: 24)),
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

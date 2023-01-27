@@ -34,8 +34,10 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
   カスタムウィジェットでは、デフォルトのコードで一貫した設定がされてないところを、テーマの色から設定するだけにする。
 
 * CheckboxListTileをモデルに、ウィジェットにenabledを追加する。
+  * 多用するもの・変更が多いものに限ることにしよう、切りが無いから……
 
 * 常にテキストが存在するウィジェット（TextButton等）以外はtooltipを追加する。
+  * 同上
 
 * WoWではSnackBarにアイコンを載せているが、IconThemeは未対応である。
   https://api.flutter.dev/flutter/material/SnackBar-class.html
@@ -51,16 +53,19 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 
 # TODO
 
+* リリースビルド
 * 回避策の実態コメント
-* x11, JisColorをライブラリに移動
-* colors整理
-  * gridを削除？
-  * themeをスクロールせず見やすく出来ないか
-* snackbarのサンプル+toastの実験ページ
+* snack barのサンプル+toastの実験ページ
+  * 実験中
 * embedded tabのもっとおもしろいやつ
 * ex_appbar整理
-* VTState -> StateNotifier<VTState> -> VT
-  * w, h, style, clear(), put(x, y, ...), scrollPos...
+* スプライトビュー
+  * domainとpresentationの切り分けの練習
+* 3Dの数値モデラ
+* loadImage, loadImages
+  * FutureProviderでハンドルできるやつ
+  * precacheImageも使ってみたがcontextが要るのでWidgetの中に入れねばならず、汎用性が無いのでいったん戻す。
+    ImageProvider.resolve→ImageStreamからasyncでロードするにはどうしたら良いのか。
 
 # 
 
@@ -68,7 +73,7 @@ Node
   // 親の座標空間中の原点位置（例えば肘なら肩からのオフセット）
   Point position
   // 親からの回転（肘の曲げ角）
-  Matrix rotation
+  Quaternion rotation
   Map<String, Node> children
 
   // パスにあるchild nodeを置換・変換

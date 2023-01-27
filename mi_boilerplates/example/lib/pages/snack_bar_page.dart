@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:example/pages/ex_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Snack bar example & toast experiment page.
@@ -22,13 +23,13 @@ class SnackBarPage extends ConsumerWidget {
   static final _logger = Logger((SnackBarPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.Tab(
       tooltip: 'Snack bar',
       icon: Icon(Icons.notifications_outlined),
     ),
-    MiTab(
-      tooltip: 'Toast',
-      icon: Icon(Icons.breakfast_dining_outlined),
+    mi.Tab(
+      tooltip: UnderConstruction.title,
+      icon: UnderConstruction.icon,
     ),
   ];
 
@@ -38,35 +39,32 @@ class SnackBarPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
         _tabIndex = index;
       },
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              children: [
-                _SnackBarTab(),
-                _ToastTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _SnackBarTab(),
+              UnderConstruction(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -92,7 +90,6 @@ class _SnackBarTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final enabled = ref.watch(enableActionsProvider);
 
     final theme = Theme.of(context);
     // https://github.com/flutter/flutter/blob/55e8cd1786211af87a7c660292c8f449c6072924/packages/flutter/lib/src/material/snack_bar.dart#L446
@@ -102,12 +99,12 @@ class _SnackBarTab extends ConsumerWidget {
     void showSnackBar() {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: MiRow(
+          content: mi.Row(
             children: [
               const Text('Ping'),
               IconTheme.merge(
                 data: IconThemeData(color: theme.colorScheme.surface),
-                child: MiRingingIcon(
+                child: mi.RingBell(
                   origin: const Offset(0, -10),
                   onInitialized: (controller) {
                     controller.forward();
@@ -140,7 +137,7 @@ class _SnackBarTab extends ConsumerWidget {
                     ? theme.colorScheme.onSurface
                     : Color.alphaBlend(
                         theme.colorScheme.onSurface.withOpacity(0.80), theme.colorScheme.surface)),
-            leading: MiRow(
+            leading: mi.Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 DefaultTextStyle(
@@ -166,70 +163,6 @@ class _SnackBarTab extends ConsumerWidget {
             },
           ),
           const Text('Note: Material Design demands not to use icons in snackbars.'),
-        ],
-      ),
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
-//
-// Overlay tab
-//
-
-class _ToastTab extends ConsumerWidget {
-  static final _logger = Logger((_ToastTab).toString());
-
-  const _ToastTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-    final enabled = ref.watch(enableActionsProvider);
-
-    Future<void> showToast(BuildContext context) async {
-      final overlay = Overlay.of(context);
-      final theme = Theme.of(context);
-      // TODO: AnimatedOpacity-ed StatefulWidget
-      final toast = OverlayEntry(
-        builder: (context) {
-          return Align(
-            alignment: const Alignment(0, 0.75),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadiusDirectional.circular(4),
-                color: theme.colorScheme.onSurface,
-              ),
-              child: DefaultTextStyle(
-                style: theme.textTheme.titleMedium!.merge(
-                  TextStyle(color: theme.colorScheme.surface),
-                ),
-                child: const Text('Toast'),
-              ),
-            ),
-          );
-        },
-      );
-      overlay!.insert(toast);
-      Future.delayed(
-        const Duration(seconds: 3),
-        () => toast.remove(),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
-        children: [
-          MiButtonListTile(
-              enabled: enabled,
-              icon: const Icon(Icons.breakfast_dining_outlined),
-              text: const Text('Toast!'),
-              onPressed: () async {
-                await showToast(context);
-              }),
         ],
       ),
     ).also((_) {

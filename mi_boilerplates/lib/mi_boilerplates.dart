@@ -5,14 +5,17 @@
 library mi_boilerplates;
 
 export 'src/color_helper.dart';
+export 'src/gradient_helper.dart';
 export 'src/jis_common_colors.dart';
 export 'src/mi_animation_controller.dart';
 export 'src/mi_app_bar.dart';
 export 'src/mi_bottom_navigation_bar.dart';
 export 'src/mi_color_grid.dart';
+export 'src/mi_color_slider.dart';
 export 'src/mi_dialogs.dart';
 export 'src/mi_list_tiles.dart';
 export 'src/mi_menus.dart';
+export 'src/mi_modeler.dart';
 export 'src/mi_page_view.dart';
 export 'src/mi_reorderable_list.dart';
 export 'src/mi_tabs.dart';

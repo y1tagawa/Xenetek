@@ -2,84 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
-
-/// カスタム[RadioListTile]
-///
-/// * [enabled]追加
-
-class MiRadioListTile<T> extends RadioListTile<T> {
-  const MiRadioListTile({
-    //<editor-fold>
-    super.key,
-    bool enabled = true,
-    required super.value,
-    required super.groupValue,
-    required ValueChanged<T?>? onChanged,
-    super.toggleable = false,
-    super.activeColor,
-    super.title,
-    super.subtitle,
-    super.isThreeLine = false,
-    super.dense,
-    super.secondary,
-    super.selected = false,
-    super.controlAffinity = ListTileControlAffinity.platform,
-    super.autofocus = false,
-    super.contentPadding,
-    super.shape,
-    super.tileColor,
-    super.selectedTileColor,
-    super.visualDensity,
-    super.focusNode,
-    super.enableFeedback,
-//</editor-fold>
-  }) : super(onChanged: enabled ? onChanged : null);
-}
-
-/// カスタム[SwitchListTile]
-///
-/// * [enabled]追加
-
-class MiSwitchListTile extends SwitchListTile {
-  const MiSwitchListTile({
-    //<editor-fold>
-    super.key,
-    bool enabled = true,
-    required super.value,
-    required ValueChanged<bool>? onChanged,
-    super.tileColor,
-    super.activeColor,
-    super.activeTrackColor,
-    super.inactiveThumbColor,
-    super.inactiveTrackColor,
-    super.activeThumbImage,
-    super.inactiveThumbImage,
-    super.title,
-    super.subtitle,
-    super.isThreeLine = false,
-    super.dense,
-    super.contentPadding,
-    super.secondary,
-    super.selected = false,
-    super.autofocus = false,
-    super.controlAffinity = ListTileControlAffinity.platform,
-    super.shape,
-    super.selectedTileColor,
-    super.visualDensity,
-    super.focusNode,
-    super.enableFeedback,
-    super.hoverColor,
-//</editor-fold>]
-  }) : super(onChanged: enabled ? onChanged : null);
-}
+import 'package:flutter/material.dart' hide ExpansionTile;
+import 'package:flutter/material.dart' as material show ExpansionTile;
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 /// カスタム[ExpansionTile]
 ///
 /// * [enabled]追加、それに合わせ動作もいろいろ変更。
 
-class MiExpansionTile extends StatelessWidget {
+class ExpansionTile extends StatelessWidget {
   //<editor-fold>
   final bool enabled;
   final Widget? leading;
@@ -104,7 +35,7 @@ class MiExpansionTile extends StatelessWidget {
   final Color? dividerColor;
 //</editor-fold>
 
-  const MiExpansionTile({
+  const ExpansionTile({
     //<editor-fold>
     super.key,
     this.enabled = true,
@@ -147,9 +78,9 @@ class MiExpansionTile extends StatelessWidget {
             collapsedIconColor: enabled ? null : disabledColor,
             collapsedTextColor: enabled ? null : disabledColor,
           ),
-          child: MiDefaultTextColor(
+          child: mi.DefaultTextColor(
             color: enabled ? null : disabledColor,
-            child: ExpansionTile(
+            child: material.ExpansionTile(
               initiallyExpanded: initiallyExpanded,
               leading: leading,
               title: title,
@@ -181,7 +112,7 @@ class MiExpansionTile extends StatelessWidget {
 ///
 /// * 頻出コード
 
-class MiButtonListTile extends StatelessWidget {
+class ButtonListTile extends StatelessWidget {
   final bool enabled;
   final bool selected;
   final Widget? leading;
@@ -193,7 +124,7 @@ class MiButtonListTile extends StatelessWidget {
   final TextDirection iconPosition;
   final VoidCallback? onPressed;
 
-  const MiButtonListTile({
+  const ButtonListTile({
     super.key,
     this.enabled = true,
     this.selected = false,
@@ -210,23 +141,21 @@ class MiButtonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final enabled_ = enabled && onPressed != null;
     final theme = Theme.of(context);
-    final textColor = enabled ? theme.foregroundColor : null;
+    final textColor = enabled_ ? theme.foregroundColor : null;
 
     Widget? subtitle_;
     Widget title_ = Row(
       mainAxisAlignment: alignment,
       children: [
-        MiDefaultTextColor(
-          color: textColor,
-          child: icon != null
-              ? MiIcon(
-                  icon: icon,
-                  text: text,
-                  iconPosition: iconPosition,
-                )
-              : text,
-        ),
+        icon != null
+            ? mi.Label(
+                icon: icon,
+                text: text,
+                iconPosition: iconPosition,
+              )
+            : text,
       ],
     );
 
@@ -239,10 +168,12 @@ class MiButtonListTile extends StatelessWidget {
     }
 
     return ListTile(
-      enabled: enabled,
+      enabled: enabled_,
       selected: selected,
-      leading: leading?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
-      trailing: trailing?.let((it) => MiDefaultTextColor(color: textColor, child: it)),
+      iconColor: textColor,
+      textColor: textColor,
+      leading: leading,
+      trailing: trailing,
       title: title_,
       subtitle: subtitle_,
       onTap: onPressed,

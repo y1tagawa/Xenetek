@@ -51,6 +51,8 @@ final openMojiSvgServiceDog = SvgPicture.asset('assets/open_moji/1F415-200D-1F9B
 final openMojiSvgPoodle = SvgPicture.asset('assets/open_moji/1F429.svg');
 // wolf  (face, wolf)
 final openMojiSvgWolf = SvgPicture.asset('assets/open_moji/1F43A.svg');
+// egg
+final openMojiSvgEgg = SvgPicture.asset('assets/open_moji/1F95A.svg');
 // fox  (face, fox)
 final openMojiSvgFox = SvgPicture.asset('assets/open_moji/1F98A.svg');
 // raccoon  (curious, raccoon, sly)
@@ -73,6 +75,17 @@ final openMojiSvgLeopard = SvgPicture.asset('assets/open_moji/1F406.svg');
 final openMojiSvgHorseFace = SvgPicture.asset('assets/open_moji/1F434.svg');
 // horse  (equestrian, horse, racehorse, racing)
 final openMojiSvgHorse = SvgPicture.asset('assets/open_moji/1F40E.svg');
+// horse  (equestrian, horse, racehorse, racing)
+final openMojiSvgDarkHorse = SvgPicture.asset('assets/open_moji/1F40E_dark_horse.svg');
+// horse  (equestrian, horse)
+final openMojiSvgPegasus = SvgPicture.asset('assets/open_moji/1F40E_pegasus.svg');
+// horse  (equestrian, horse)
+final openMojiSvgSeaHorse = SvgPicture.asset('assets/open_moji/1F40E_sea_horse.svg');
+// horse  (equestrian, horse)
+final openMojiSvgHorseUnicorn = SvgPicture.asset('assets/open_moji/1F40E_unicorn.svg');
+// horse  (equestrian, horse)
+final openMojiSvgInvisiblePinkUnicorn =
+    SvgPicture.asset('assets/open_moji/1F40E_invisible_pink_unicorn.svg');
 // unicorn  (face, unicorn)
 final openMojiSvgUnicorn = SvgPicture.asset('assets/open_moji/1F984.svg');
 // zebra  (stripe, zebra)
@@ -125,12 +138,18 @@ final openMojiSvgMouseFace = SvgPicture.asset('assets/open_moji/1F42D.svg');
 final openMojiSvgMouse = SvgPicture.asset('assets/open_moji/1F401.svg');
 // rat  (rat)
 final openMojiSvgRat = SvgPicture.asset('assets/open_moji/1F400.svg');
+// white rat  (rat)
+final openMojiSvgWhiteRat = SvgPicture.asset('assets/open_moji/1F400_white.svg');
 // hamster  (face, hamster, pet)
 final openMojiSvgHamster = SvgPicture.asset('assets/open_moji/1F439.svg');
 // rabbit face  (bunny, face, pet, rabbit)
 final openMojiSvgRabbitFace = SvgPicture.asset('assets/open_moji/1F430.svg');
 // rabbit  (bunny, pet, rabbit)
 final openMojiSvgRabbit = SvgPicture.asset('assets/open_moji/1F407.svg');
+// hare  (bunny, pet, rabbit)
+final openMojiSvgHare = SvgPicture.asset('assets/open_moji/1F407_hare.svg');
+// white rabbit  (bunny, pet, rabbit)
+final openMojiSvgWhiteRabbit = SvgPicture.asset('assets/open_moji/1F407_white_rabbit.svg');
 // chipmunk  (chipmunk, squirrel)
 final openMojiSvgChipmunk = SvgPicture.asset('assets/open_moji/1F43F.svg');
 // beaver  (beaver, dam)
@@ -165,6 +184,8 @@ final openMojiSvgTurkey = SvgPicture.asset('assets/open_moji/1F983.svg');
 final openMojiSvgChicken = SvgPicture.asset('assets/open_moji/1F414.svg');
 // rooster  (bird, rooster)
 final openMojiSvgRooster = SvgPicture.asset('assets/open_moji/1F413.svg');
+// rooster  (bird, rooster)
+final openMojiSvgWhiteRooster = SvgPicture.asset('assets/open_moji/1F413_white.svg');
 // hatching chick  (baby, bird, chick, hatching)
 final openMojiSvgHatchingChick = SvgPicture.asset('assets/open_moji/1F423.svg');
 // baby chick  (baby, bird, chick)

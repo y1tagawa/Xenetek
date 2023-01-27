@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ToggleButtons;
+import 'package:flutter/material.dart' as material show ToggleButtons;
 
-import '../mi_boilerplates.dart';
+import '../mi_boilerplates.dart' as mi;
 
 /// カスタムToggleButtons
 ///
 /// * [enabled]
 /// * [split]を指定した場合、[children]その個数ごとに行に分割し、[Column]に格納する。
-class MiToggleButtons extends StatelessWidget {
+class ToggleButtons extends StatelessWidget {
   final bool enabled;
   final int? split;
   final List<Widget> children;
@@ -18,7 +19,7 @@ class MiToggleButtons extends StatelessWidget {
   final ValueChanged<int>? onPressed;
   final bool renderBorder;
 
-  const MiToggleButtons({
+  const ToggleButtons({
     super.key,
     this.enabled = true,
     this.split,
@@ -32,7 +33,7 @@ class MiToggleButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (split == null) {
-      return ToggleButtons(
+      return material.ToggleButtons(
         isSelected: isSelected,
         onPressed: enabled ? onPressed : null,
         renderBorder: renderBorder,
@@ -57,7 +58,7 @@ class MiToggleButtons extends StatelessWidget {
 }
 
 /// ラジオトグルボタン
-class MiRadioToggleButtons extends StatelessWidget {
+class RadioToggleButtons extends StatelessWidget {
   final bool enabled;
   final int? split;
   final List<Widget> children;
@@ -65,7 +66,7 @@ class MiRadioToggleButtons extends StatelessWidget {
   final ValueChanged<int>? onPressed;
   final bool renderBorder;
 
-  const MiRadioToggleButtons({
+  const RadioToggleButtons({
     super.key,
     this.enabled = true,
     this.split,
@@ -79,10 +80,10 @@ class MiRadioToggleButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiToggleButtons(
+    return ToggleButtons(
       enabled: enabled,
       split: split,
-      isSelected: iota(children.length).map((it) => it == initiallySelected).toList(),
+      isSelected: mi.iota(children.length).map((it) => it == initiallySelected).toList(),
       onPressed: onPressed,
       renderBorder: renderBorder,
       children: children,

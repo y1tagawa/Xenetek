@@ -47,6 +47,7 @@ def main():
             print('invalid index:' + str(index))
 
     # add extra items.
+    items.append({'name':'headstone', 'code':'1FAA6', 'keywords':'object'})
     items.append({'name':'donkey', 'code':'E001', 'keywords':'extra-openmoji'})
     items.append({'name':'doe', 'code':'E003', 'keywords':'extra-openmoji'})
     items.append({'name':'spouting-orca', 'code':'E004', 'keywords':'extra-openmoji'})

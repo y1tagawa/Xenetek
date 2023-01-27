@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:gradients/gradients.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
-import 'ex_app_bar.dart';
-import 'ex_color_grid.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_color_grid.dart' as ex;
 
 //
 // Color example page.
@@ -24,13 +30,17 @@ class ColorsPage extends ConsumerWidget {
   static final _logger = Logger((ColorsPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.Tab(
       tooltip: 'Theme & color scheme',
       icon: Icon(Icons.schema_outlined),
     ),
-    MiTab(
+    mi.Tab(
       tooltip: 'Color grid',
       icon: Icon(Icons.grid_on_outlined),
+    ),
+    mi.Tab(
+      tooltip: 'Gradients',
+      icon: Icon(Icons.gradient),
     ),
   ];
 
@@ -40,32 +50,30 @@ class ColorsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 8),
-            child: TabBarView(
-              children: [
-                _ColorSchemeTab(),
-                _ColorGridTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _ColorSchemeTab(),
+              _ColorGridTab(),
+              _GradientTab(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -77,6 +85,8 @@ class ColorsPage extends ConsumerWidget {
 //
 //　Theme and color scheme tab.
 //
+
+//<editor-fold>
 
 final _colorSchemeItems = <String, Color Function(ThemeData)>{
   'primary': (theme) => theme.colorScheme.primary,
@@ -154,18 +164,18 @@ class _ColorsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiExpansionTile(
+    return mi.ExpansionTile(
       title: title,
       initiallyExpanded: initiallyExpanded,
       children: items.keys.map((key) {
-        return MiRow(
+        return mi.Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            items[key]!.call(theme1).let((color) => MiColorChip(
+            items[key]!.call(theme1).let((color) => mi.ColorChip(
                   color: color,
                   onTap: () => onColorSelected?.call(color),
                 )),
-            items[key]!.call(theme2).let((color) => MiColorChip(
+            items[key]!.call(theme2).let((color) => mi.ColorChip(
                   color: color,
                   onTap: () => onColorSelected?.call(color),
                 )),
@@ -186,7 +196,7 @@ class _SwatchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Wrap(
       children: [900, 800, 700, 600, 500, 400, 300, 200, 100, 50].map((index) {
-        return MiColorChip(color: color[index]!);
+        return mi.ColorChip(color: color[index]!);
       }).toList(),
     );
   }
@@ -218,7 +228,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         brightness: Brightness.light,
       ),
     ).let((it) => themeAdjustment
-        ? it.modifyWith(
+        ? it.modify(
             textColor: textColor,
             backgroundColor: backgroundColor,
           )
@@ -232,7 +242,7 @@ class _ColorSchemeTab extends ConsumerWidget {
         brightness: Brightness.dark,
       ),
     ).let((it) => themeAdjustment
-        ? it.modifyWith(
+        ? it.modify(
             textColor: textColor,
             backgroundColor: backgroundColor,
           )
@@ -280,9 +290,13 @@ class _ColorSchemeTab extends ConsumerWidget {
   }
 }
 
+//</editor-fold>
+
 //
 // Color grid tab.
 //
+
+//<editor-fold>
 
 final _selectedColorProvider2 = StateProvider<Color?>((ref) => null);
 
@@ -297,7 +311,7 @@ class _ColorGridTab extends ConsumerWidget {
     //final enabled = ref.watch(enableActionsProvider);
     final selectedColor = ref.watch(_selectedColorProvider2);
 
-    return MiExpandedColumn(
+    return mi.ExpandedColumn(
       bottoms: [
         if (selectedColor != null) ...[
           const Divider(),
@@ -309,7 +323,7 @@ class _ColorGridTab extends ConsumerWidget {
       ],
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: ExColorGrid(
+        child: ex.ColorGrid(
           onChanged: (color) {
             ref.read(_selectedColorProvider2.notifier).state = color;
           },
@@ -320,3 +334,135 @@ class _ColorGridTab extends ConsumerWidget {
     });
   }
 }
+
+//</editor-fold>
+
+//
+// Color grid tab.
+//
+
+//<editor-fold>
+
+final _rgbColors = <Color>[
+  const HSVColor.fromAHSV(1.0, 0.0, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 120.0, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 240.0, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 359.9, 1.0, 1.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 0.0, 0.0, 0.0).toColor(),
+  const HSVColor.fromAHSV(1.0, 0.0, 0.0, 1.0).toColor(),
+];
+
+// Hueでループさせようとすると、HsbColorでないと上手くいかない。
+const _hsbColors = <Color>[
+  HsbColor(0.0, 100.0, 100.0),
+  HsbColor(120.0, 100.0, 100.0),
+  HsbColor(240.0, 100.0, 100.0),
+  HsbColor(360.0, 100.0, 100.0),
+  HsbColor(0.0, 0.0, 0.0),
+  HsbColor(0.0, 0.0, 100.0),
+];
+
+const _stops = <double>[0.0, 0.25, 0.5, 0.75, 0.75, 1.0];
+
+final _gradientItems = <String, Gradient>{
+  // https://pub.dev/packages/gradients
+  'HSV': LinearGradientPainter(colors: _hsbColors, stops: _stops, colorSpace: ColorSpace.hsb),
+  'RGB': LinearGradient(colors: _rgbColors, stops: _stops),
+}.entries.toList();
+
+final _positionProvider = StateProvider((ref) => 0.0);
+final _colorSpaceProvider = StateProvider((ref) => 0);
+final _gradientImageProvider = StateProvider<Image?>((ref) => null);
+final _gradientColorProvider = StateProvider<Color?>((ref) => null);
+
+class _GradientTab extends ConsumerWidget {
+  static final _logger = Logger((_GradientTab).toString());
+
+  const _GradientTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
+
+    final enabled = ref.watch(ex.enableActionsProvider);
+    final position = ref.watch(_positionProvider);
+    final colorSpace = ref.watch(_colorSpaceProvider);
+
+    //final gradientImage = ref.watch(_gradientImageProvider);
+    final gradientColor = ref.watch(_gradientColorProvider);
+
+    Future<void> update() async {
+      final gradient = _gradientItems[colorSpace].value;
+
+      final image = await gradient.toImage();
+      try {
+        final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+        ref.read(_gradientImageProvider.notifier).state =
+            Image.memory(Uint8List.view(byteData!.buffer));
+      } finally {
+        image.dispose();
+      }
+
+      final colors = await gradient.toColors();
+      final color = colors[math.min((position * colors.length).toInt(), colors.length - 1)];
+      ref.read(_gradientColorProvider.notifier).state = color;
+    }
+
+    if (gradientColor == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await update();
+      });
+    }
+
+    return mi.ExpandedColumn(
+      child: ListView(
+        children: [
+          ..._gradientItems.mapIndexed((index, item) {
+            return ListTile(
+              enabled: enabled,
+              title: Text(item.key),
+              selected: colorSpace == index,
+              subtitle: Container(
+                height: kToolbarHeight * 0.5,
+                decoration: BoxDecoration(
+                  gradient: item.value,
+                ),
+              ),
+              onTap: () async {
+                ref.read(_colorSpaceProvider.notifier).state = index;
+                await update();
+              },
+            );
+          }),
+          const Divider(),
+          ListTile(
+            leading: ClipOval(
+              child: mi.ColorChip(
+                enabled: enabled,
+                color: gradientColor,
+                margin: 0,
+                size: 36,
+              ),
+            ),
+            title: Slider(
+              value: position,
+              min: 0.0,
+              max: 1.0,
+              onChanged: enabled
+                  ? (position) async {
+                      ref.read(_positionProvider.notifier).state = position;
+                      await update();
+                    }
+                  : null,
+            ),
+          ),
+          //if (gradientImage != null) gradientImage,
+        ],
+      ),
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
+  }
+}
+
+//</editor-fold>

@@ -4,9 +4,11 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DefaultTabController, Tab, TabBar, TabBarView;
+import 'package:flutter/material.dart' as material
+    show DefaultTabController, Tab, TabBar, TabBarView;
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L26
 const double _kTabHeight = 46.0;
@@ -16,14 +18,14 @@ const double _kTextAndIconTabHeight = 72.0;
 ///
 /// * [tooltip]追加
 
-class MiTab extends StatelessWidget implements PreferredSizeWidget {
+class Tab extends StatelessWidget implements PreferredSizeWidget {
   final String? text;
   final Widget? icon;
   final EdgeInsetsGeometry iconMargin;
   final double? height;
   final Widget? child;
   final String? tooltip;
-  const MiTab({
+  const Tab({
     super.key,
     this.text,
     this.icon,
@@ -47,7 +49,7 @@ class MiTab extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tab = Tab(
+    final tab = material.Tab(
       text: text,
       icon: icon,
       iconMargin: iconMargin,
@@ -69,7 +71,7 @@ class MiTab extends StatelessWidget implements PreferredSizeWidget {
 ///
 /// * [enabled]追加
 
-class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
+class TabBar extends StatelessWidget implements PreferredSizeWidget {
   // s.a. https://github.com/flutter/flutter/blob/24dfdec3e2b5fc7675d6f576d6231be107f65bef/packages/flutter/lib/src/material/tabs.dart#L885
   static double preferredHeight({
     required List<Widget> tabs,
@@ -95,7 +97,7 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
   final bool embedded;
 
   // TODO: 必要に応じて他の引数を追加
-  const MiTabBar({
+  const TabBar({
     super.key,
     this.enabled = true,
     required this.tabs,
@@ -157,7 +159,7 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       child: IgnorePointer(
         ignoring: !enabled,
-        child: TabBar(
+        child: material.TabBar(
           tabs: tabs,
           isScrollable: isScrollable,
           onTap: onTap,
@@ -174,8 +176,8 @@ class MiTabBar extends StatelessWidget implements PreferredSizeWidget {
 /// s.a. https://api.flutter.dev/flutter/material/TabController-class.html
 ///   https://api.flutter.dev/flutter/material/DefaultTabController-class.html
 
-class MiDefaultTabController extends StatelessWidget {
-  static final _logger = Logger((MiDefaultTabController).toString());
+class DefaultTabController extends StatelessWidget {
+  static final _logger = Logger((DefaultTabController).toString());
 
   final int length;
   final int initialIndex;
@@ -183,7 +185,7 @@ class MiDefaultTabController extends StatelessWidget {
   final WidgetBuilder builder;
   final Duration? animationDuration;
 
-  const MiDefaultTabController({
+  const DefaultTabController({
     super.key,
     required this.length,
     required this.initialIndex,
@@ -194,13 +196,13 @@ class MiDefaultTabController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return material.DefaultTabController(
       length: length,
       initialIndex: initialIndex,
       child: Builder(
         builder: (BuildContext context) {
           _logger.fine('[i] builder');
-          final tabController = DefaultTabController.of(context)!;
+          final tabController = material.DefaultTabController.of(context)!;
           tabController.addListener(() {
             if (!tabController.indexIsChanging) {
               onIndexChanged?.call(tabController.index);
@@ -219,13 +221,13 @@ class MiDefaultTabController extends StatelessWidget {
 ///
 /// https://m2.material.io/components/tabs#placement
 
-class MiEmbeddedTabView extends StatelessWidget {
+class EmbeddedTabView extends StatelessWidget {
   final List<Widget> tabs;
   final int initialIndex;
   final List<Widget> children;
   final double? spacing;
 
-  const MiEmbeddedTabView({
+  const EmbeddedTabView({
     super.key,
     required this.tabs,
     this.initialIndex = 0,
@@ -235,19 +237,19 @@ class MiEmbeddedTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiDefaultTabController(
+    return DefaultTabController(
       length: tabs.length,
       initialIndex: initialIndex,
       builder: (context) {
         return Column(
           children: [
-            MiTabBar(
+            TabBar(
               embedded: true,
               tabs: tabs,
             ),
             SizedBox(height: spacing ?? 4.0),
             Expanded(
-              child: TabBarView(
+              child: material.TabBarView(
                 children: children,
               ),
             ),

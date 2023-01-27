@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../licenses.dart';
@@ -22,12 +22,11 @@ import 'pages/colors_page.dart';
 import 'pages/custom_paints_page.dart';
 import 'pages/dialogs_page.dart';
 import 'pages/embedded_tab_view_page.dart';
-import 'pages/ex_app_bar.dart';
+import 'pages/ex_app_bar.dart' as ex;
 import 'pages/files_page.dart';
 import 'pages/grids_page.dart';
 import 'pages/list_tiles_page.dart';
 import 'pages/lists_page.dart';
-import 'pages/menus_page.dart';
 import 'pages/overflow_bar_page.dart';
 import 'pages/page_layouts_page.dart';
 import 'pages/page_view_page.dart';
@@ -35,11 +34,13 @@ import 'pages/progress_indicators_page.dart';
 import 'pages/prominent_top_bar_page.dart';
 import 'pages/radios_page.dart';
 import 'pages/settings_page.dart';
+import 'pages/sliders_page.dart';
 import 'pages/snack_bar_page.dart';
 import 'pages/svg_page.dart';
 import 'pages/switches_page.dart';
 import 'pages/tab_view_page.dart';
 import 'pages/three_page.dart';
+import 'pages/three_tier_page.dart';
 
 class _PageItem {
   final Widget icon;
@@ -128,6 +129,12 @@ final _pages = <_PageItem>[
     builder: (_, __) => const GridDetailPage(),
   ),
   _PageItem(
+    icon: ThreeTierPage.icon,
+    title: ThreeTierPage.title,
+    path: '/three_tier',
+    builder: (_, __) => const ThreeTierPage(),
+  ),
+  _PageItem(
     icon: ListsPage.icon,
     title: ListsPage.title,
     path: '/lists',
@@ -138,12 +145,6 @@ final _pages = <_PageItem>[
     title: ListTilesPage.title,
     path: '/drawer/list_tiles',
     builder: (_, __) => const ListTilesPage(),
-  ),
-  _PageItem(
-    icon: MenusPage.icon,
-    title: MenusPage.title,
-    path: '/drawer/menus',
-    builder: (_, __) => const MenusPage(),
   ),
   _PageItem(
     icon: OverflowBarPage.icon,
@@ -186,6 +187,12 @@ final _pages = <_PageItem>[
     title: SettingsPage.title,
     path: '/settings',
     builder: (_, __) => const SettingsPage(),
+  ),
+  _PageItem(
+    icon: SlidersPage.icon,
+    title: SlidersPage.title,
+    path: '/sliders',
+    builder: (_, __) => const SlidersPage(),
   ),
   _PageItem(
     icon: SnackBarPage.icon,
@@ -348,7 +355,7 @@ class MyApp extends ConsumerWidget {
           useMaterial3: ref.watch(useM3Provider),
         ).let(
           (it) => ref.watch(modifyThemeProvider)
-              ? it.modifyWith(
+              ? it.modify(
                   textColor: textColor,
                   backgroundColor: backgroundColor,
                 )
@@ -373,12 +380,9 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final theme = Theme.of(context);
-    final foregroundColor = theme.foregroundColor;
-
-    return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+    return ex.Scaffold(
+      appBar: ex.AppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
@@ -408,46 +412,43 @@ class HomePage extends ConsumerWidget {
           ],
         ),
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(8),
-        child: SingleChildScrollView(
-          child: Center(
-            child: Wrap(
-              spacing: 2,
-              runSpacing: 8,
-              children: [
-                ..._pages
-                    .skip(1) // Home
-                    .whereNot((item) =>
-                        item.path.startsWith('/drawer/') ||
-                        item.path.startsWith('/grids/') ||
-                        item.path == '/settings')
-                    .map(
-                      (item) => TextButton(
-                        onPressed: () => context.push(item.path),
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: 76,
-                          height: 72,
-                          padding: const EdgeInsets.all(2),
-                          child: Column(
-                            children: [
-                              item.icon,
-                              DefaultTextStyle.merge(
-                                textAlign: TextAlign.center,
-                                child: item.title,
-                              ),
-                            ],
-                          ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Wrap(
+            spacing: 2,
+            runSpacing: 8,
+            children: [
+              ..._pages
+                  .skip(1) // Home
+                  .whereNot((item) =>
+                      item.path.startsWith('/drawer/') ||
+                      item.path.startsWith('/grids/') ||
+                      item.path == '/settings')
+                  .map(
+                    (item) => TextButton(
+                      onPressed: () => context.push(item.path),
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: 76,
+                        height: 72,
+                        padding: const EdgeInsets.all(2),
+                        child: Column(
+                          children: [
+                            item.icon,
+                            DefaultTextStyle.merge(
+                              textAlign: TextAlign.center,
+                              child: item.title,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-              ],
-            ),
+                  ),
+            ],
           ),
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     ).also((_) {
       _logger.fine('[o] build');
     });

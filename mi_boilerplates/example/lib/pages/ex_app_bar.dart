@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart' hide Scaffold;
+import 'package:flutter/material.dart' as material show Scaffold;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 import '../main.dart';
 
@@ -59,14 +61,14 @@ class _OverflowMenu extends ConsumerWidget {
     return PopupMenuButton(
       itemBuilder: (context) {
         return [
-          MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             checked: enabled,
             child: const Text('Enable actions'),
             onChanged: (value) {
               ref.read(enableActionsProvider.notifier).state = value;
             },
           ),
-          MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(modifyThemeProvider),
             child: const Text('Adjust theme'),
@@ -74,7 +76,7 @@ class _OverflowMenu extends ConsumerWidget {
               ref.read(modifyThemeProvider.notifier).state = value;
             },
           ),
-          MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             enabled: enabled,
             checked: ref.watch(useM3Provider),
             child: const Text('Use M3'),
@@ -82,16 +84,16 @@ class _OverflowMenu extends ConsumerWidget {
               ref.read(useM3Provider.notifier).state = value;
             },
           ),
-          MiCheckPopupMenuItem(
+          mi.CheckPopupMenuItem(
             enabled: enabled,
             checked: brightness.isDark,
             child: const Text('Dark mode'),
             onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                 value ? Brightness.dark : Brightness.light,
           ),
-          MiPopupMenuItem(
+          mi.PopupMenuItem(
             enabled: enabled,
-            child: const MiIcon(
+            child: const mi.Label(
               text: Text('Color settings...'),
             ),
             onTap: () {
@@ -116,7 +118,7 @@ class _OverflowMenu extends ConsumerWidget {
 //
 // テーマ調整ON/OFFによりTabBarを切り替える
 
-class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class AppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;
   final Widget title;
@@ -127,7 +129,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool? centerTitle;
   final double? toolbarHeight;
 
-  const ExAppBar({
+  const AppBar({
     super.key,
     this.prominent = false,
     this.leading,
@@ -142,7 +144,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        MiAppBar.preferredHeight(
+        mi.AppBar.preferredHeight(
           prominent: prominent,
           bottom: bottom,
           toolbarHeight: toolbarHeight,
@@ -172,7 +174,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
         });
 
     if (ref.watch(modifyThemeProvider)) {
-      return MiAppBar(
+      return mi.AppBar(
         prominent: prominent,
         leading: leading,
         title: InkWell(
@@ -187,7 +189,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
           if (actions != null) ...actions!,
           if (prominent) ...[
             _ThemeAdjustmentCheckbox(),
-            MiCheckIconButton(
+            mi.CheckIconButton(
               enabled: enabled,
               checked: ref.watch(useM3Provider),
               onChanged: (value) {
@@ -196,7 +198,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
               checkIcon: const Icon(Icons.filter_3_outlined),
               uncheckIcon: const Icon(Icons.filter_2_outlined),
             ),
-            MiCheckIconButton(
+            mi.CheckIconButton(
               enabled: enabled,
               checked: brightness.isDark,
               onChanged: (value) async {
@@ -234,7 +236,7 @@ class ExAppBar extends ConsumerWidget implements PreferredSizeWidget {
 //
 // テーマ調整ON/OFFによりTabBarを切り替える
 
-class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
+class TabBar extends ConsumerWidget with PreferredSizeWidget {
   final bool enabled;
   final List<Widget> tabs;
   final bool isScrollable;
@@ -242,7 +244,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   final ValueChanged<int>? onTap;
   final bool embedded;
 
-  const ExTabBar({
+  const TabBar({
     super.key,
     this.enabled = true,
     required this.tabs,
@@ -254,7 +256,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(
-        MiTabBar.preferredHeight(
+        mi.TabBar.preferredHeight(
           tabs: tabs,
           indicatorWeight: indicatorWeight,
         ),
@@ -263,7 +265,7 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(modifyThemeProvider)
-        ? MiTabBar(
+        ? mi.TabBar(
             enabled: enabled,
             tabs: tabs,
             isScrollable: isScrollable,
@@ -280,11 +282,11 @@ class ExTabBar extends ConsumerWidget with PreferredSizeWidget {
 //
 // TODO: 横画面でNavigationRail
 
-class ExBottomNavigationBar extends ConsumerWidget {
+class BottomNavigationBar extends ConsumerWidget {
   // ignore: unused_field
-  static final _logger = Logger((ExBottomNavigationBar).toString());
+  static final _logger = Logger((BottomNavigationBar).toString());
 
-  const ExBottomNavigationBar({super.key});
+  const BottomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -317,7 +319,7 @@ class ExBottomNavigationBar extends ConsumerWidget {
       }
     });
 
-    return MiBottomNavigationBar(
+    return mi.BottomNavigationBar(
       enabled: ref.watch(enableActionsProvider),
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
@@ -346,6 +348,96 @@ class ExBottomNavigationBar extends ConsumerWidget {
             break;
         }
       },
+    );
+  }
+}
+
+/// Exampleアプリ用Scaffold
+
+class Scaffold extends StatelessWidget {
+  final PreferredSizeWidget? appBar;
+  final Widget body;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final FloatingActionButtonAnimator? floatingActionButtonAnimator;
+  final List<Widget>? persistentFooterButtons;
+  final AlignmentDirectional persistentFooterAlignment;
+  final Widget? drawer;
+  final DrawerCallback? onDrawerChanged;
+  final Widget? endDrawer;
+  final DrawerCallback? onEndDrawerChanged;
+  final Widget? bottomNavigationBar;
+  final Widget? bottomSheet;
+  final Color? backgroundColor;
+  final bool? resizeToAvoidBottomInset;
+  final bool primary;
+  final DragStartBehavior drawerDragStartBehavior;
+  final bool extendBody;
+  final bool extendBodyBehindAppBar;
+  final Color? drawerScrimColor;
+  final double? drawerEdgeDragWidth;
+  final bool drawerEnableOpenDragGesture;
+  final bool endDrawerEnableOpenDragGesture;
+  final String? restorationId;
+
+  const Scaffold({
+    super.key,
+    this.appBar,
+    required this.body,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
+    this.floatingActionButtonAnimator,
+    this.persistentFooterButtons,
+    this.persistentFooterAlignment = AlignmentDirectional.centerEnd,
+    this.drawer,
+    this.onDrawerChanged,
+    this.endDrawer,
+    this.onEndDrawerChanged,
+    this.bottomNavigationBar,
+    this.bottomSheet,
+    this.backgroundColor,
+    this.resizeToAvoidBottomInset,
+    this.primary = true,
+    this.drawerDragStartBehavior = DragStartBehavior.start,
+    this.extendBody = false,
+    this.extendBodyBehindAppBar = false,
+    this.drawerScrimColor,
+    this.drawerEdgeDragWidth,
+    this.drawerEnableOpenDragGesture = true,
+    this.endDrawerEnableOpenDragGesture = true,
+    this.restorationId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return material.Scaffold(
+      appBar: appBar,
+      body: SafeArea(
+        minimum: const EdgeInsets.all(8),
+        child: body,
+      ),
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
+      floatingActionButtonAnimator: floatingActionButtonAnimator,
+      persistentFooterButtons: persistentFooterButtons,
+      persistentFooterAlignment: persistentFooterAlignment,
+      drawer: drawer,
+      onDrawerChanged: onDrawerChanged,
+      endDrawer: endDrawer,
+      onEndDrawerChanged: onEndDrawerChanged,
+      bottomNavigationBar: bottomNavigationBar,
+      bottomSheet: bottomSheet,
+      backgroundColor: backgroundColor,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+      primary: primary,
+      drawerDragStartBehavior: drawerDragStartBehavior,
+      extendBody: extendBody,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      drawerScrimColor: drawerScrimColor,
+      drawerEdgeDragWidth: drawerEdgeDragWidth,
+      drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
+      endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
+      restorationId: restorationId,
     );
   }
 }

@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;
+}
+
+extension SliderThemeDataHelper on SliderThemeData {
+  // Null-safe value
+  // https://github.com/flutter/flutter/blob/6819f72a91553282103362cf65cd1d6c97aa479a/packages/flutter/lib/src/material/slider_theme.dart#L336
+  double get trackHeightValue => trackHeight ?? 2.0;
 }
 
 extension SwitchThemeDataHelper on SwitchThemeData {
@@ -44,9 +49,6 @@ extension SwitchThemeDataHelper on SwitchThemeData {
 }
 
 extension ThemeDataHelper on ThemeData {
-  // ignore: unused_field
-  static final _logger = Logger('ThemeDataExtension');
-
   bool get isDark => brightness.isDark;
 
   /// [TextButton]の文字色
@@ -63,8 +65,7 @@ extension ThemeDataHelper on ThemeData {
       (listTileTheme.contentPadding) ?? const EdgeInsets.symmetric(horizontal: 16.0);
 
   /// 現状のmaterial widgetsの実装は、ダークテーマの挙動がまちまちなので、一貫するよう調整
-  ///
-  ThemeData modifyWith({
+  ThemeData modify({
     Color? textColor,
     Color? backgroundColor,
   }) {

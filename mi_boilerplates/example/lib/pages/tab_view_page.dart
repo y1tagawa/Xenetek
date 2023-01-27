@@ -8,9 +8,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 const _imageWidth = 138.0;
 const _imageHeight = 240.0;
@@ -41,7 +41,7 @@ class TabViewPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: _tabIndex,
       onIndexChanged: (index) {
@@ -50,9 +50,9 @@ class TabViewPage extends ConsumerWidget {
         _logger.fine('[o] onIndexChanged');
       },
       builder: (BuildContext context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
             bottom: const TabBar(tabs: _tabs),
@@ -60,7 +60,7 @@ class TabViewPage extends ConsumerWidget {
           body: TabBarView(
             children: _tabs.mapIndexed(
               (index, tab) {
-                return MiExpandedColumn(
+                return mi.ExpandedColumn(
                   top: Text(
                     '${tab.text!} Tab',
                     style: Theme.of(context).textTheme.headline5,
@@ -70,12 +70,13 @@ class TabViewPage extends ConsumerWidget {
                       children: [
                         ..._tabs.mapIndexed(
                           (i, tab) {
-                            return MiTextButton(
-                              enabled: i != index,
-                              onPressed: () {
-                                final tabController = DefaultTabController.of(context)!;
-                                tabController.index = i;
-                              },
+                            return TextButton(
+                              onPressed: i != index
+                                  ? () {
+                                      final tabController = DefaultTabController.of(context)!;
+                                      tabController.index = i;
+                                    }
+                                  : null,
                               child: Text(tab.text!),
                             );
                           },
@@ -97,7 +98,7 @@ class TabViewPage extends ConsumerWidget {
               },
             ).toList(),
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {

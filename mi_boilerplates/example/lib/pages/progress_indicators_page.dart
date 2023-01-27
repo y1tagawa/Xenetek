@@ -7,9 +7,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 ///
 /// Progress indicators bar example page.
@@ -22,8 +22,8 @@ class ProgressIndicatorsPage extends ConsumerWidget {
   static final _logger = Logger((ProgressIndicatorsPage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(text: 'Determinate'),
-    MiTab(text: 'Indeterminate'),
+    mi.Tab(text: 'Determinate'),
+    mi.Tab(text: 'Indeterminate'),
   ];
 
   const ProgressIndicatorsPage({super.key});
@@ -32,32 +32,29 @@ class ProgressIndicatorsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _DeterminateTab(),
-                _IndeterminateTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _DeterminateTab(),
+              _IndeterminateTab(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {

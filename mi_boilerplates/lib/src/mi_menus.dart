@@ -3,20 +3,21 @@
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart' hide PopupMenuButton, PopupMenuItem;
+import 'package:flutter/material.dart' as material show PopupMenuButton, PopupMenuItem;
 
-import '../mi_boilerplates.dart';
+import '../mi_boilerplates.dart' as mi;
 
 /// カスタムポップアップメニューアイテム
 ///
 /// * AppBar上の[PopupMenuButton]など、[IconTheme]が変更されている場合、
 ///   メニュー上のアイコン色が見づらい場合があるので修正する。
 ///   TODO: PopupMenuThemeData.colorを考慮する
-///
-class MiPopupMenuItem<T> extends PopupMenuItem<T> {
+
+// TODO: 名前
+class PopupMenuItem<T> extends material.PopupMenuItem<T> {
   // ウィジェットではStateにプロパティを渡すだけ
-  const MiPopupMenuItem({
+  const PopupMenuItem({
     super.key,
     super.value,
     super.onTap,
@@ -28,10 +29,10 @@ class MiPopupMenuItem<T> extends PopupMenuItem<T> {
   });
 
   @override
-  PopupMenuItemState<T, PopupMenuItem<T>> createState() => _MiPopupMenuItemState<T>();
+  PopupMenuItemState<T, PopupMenuItem<T>> createState() => _PopupMenuItemState<T>();
 }
 
-class _MiPopupMenuItemState<T> extends PopupMenuItemState<T, MiPopupMenuItem<T>> {
+class _PopupMenuItemState<T> extends PopupMenuItemState<T, PopupMenuItem<T>> {
   // StateでPopupMenuItemState#buildをIconThemeでラップする
   @override
   Widget build(BuildContext context) {
@@ -46,14 +47,14 @@ class _MiPopupMenuItemState<T> extends PopupMenuItemState<T, MiPopupMenuItem<T>>
 /// チェックリストメニューアイテム
 ///
 /// [CheckedPopupMenuItem]が大きいので代替。
-///
-class MiCheckPopupMenuItem<T> extends MiPopupMenuItem<T> {
+
+class CheckPopupMenuItem<T> extends PopupMenuItem<T> {
   static const _checkSize = 15.0;
 
   final bool checked;
   final ValueChanged<bool>? onChanged;
 
-  const MiCheckPopupMenuItem({
+  const CheckPopupMenuItem({
     super.key,
     super.enabled = true,
     super.value,
@@ -64,7 +65,7 @@ class MiCheckPopupMenuItem<T> extends MiPopupMenuItem<T> {
 
   @override
   Widget? get child {
-    return MiIcon(
+    return mi.Label(
       icon: SizedBox.square(
         dimension: 24,
         child: checked ? const Icon(Icons.check_rounded, size: _checkSize) : null,
@@ -78,14 +79,14 @@ class MiCheckPopupMenuItem<T> extends MiPopupMenuItem<T> {
 }
 
 /// ラジオメニューアイテム
-///
-class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
+
+class RadioPopupMenuItem<T> extends PopupMenuItem<T> {
   static const _radioSize = 12.0;
 
   final bool checked;
   final ValueChanged<bool>? onChanged;
 
-  const MiRadioPopupMenuItem({
+  const RadioPopupMenuItem({
     super.key,
     super.enabled = true,
     super.value,
@@ -96,7 +97,7 @@ class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
 
   @override
   Widget? get child {
-    return MiIcon(
+    return mi.Label(
       icon: SizedBox.square(
         dimension: 24,
         child: checked ? const Icon(Icons.circle, size: _radioSize) : null,
@@ -110,14 +111,14 @@ class MiRadioPopupMenuItem<T> extends MiPopupMenuItem<T> {
 }
 
 /// グリッドポップアップメニューアイテム
-///
-class MiGridPopupMenuItem extends PopupMenuItem<int> {
+
+class GridPopupMenuItem extends PopupMenuItem<int> {
   final List<Widget> items;
   final List<String>? tooltips;
   final double? spacing;
   final double? runSpacing;
 
-  const MiGridPopupMenuItem({
+  const GridPopupMenuItem({
     super.key,
     super.enabled,
     required this.items,
@@ -128,10 +129,10 @@ class MiGridPopupMenuItem extends PopupMenuItem<int> {
         super(child: null);
 
   @override
-  PopupMenuItemState<int, PopupMenuItem<int>> createState() => _MiGridPopupMenuItemState();
+  PopupMenuItemState<int, PopupMenuItem<int>> createState() => _GridPopupMenuItemState();
 }
 
-class _MiGridPopupMenuItemState extends PopupMenuItemState<int, MiGridPopupMenuItem> {
+class _GridPopupMenuItemState extends PopupMenuItemState<int, GridPopupMenuItem> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
@@ -162,8 +163,8 @@ class _MiGridPopupMenuItemState extends PopupMenuItemState<int, MiGridPopupMenuI
 /// グリッドポップアップメニューボタン
 ///
 /// ポップアップに[items]をグリッド状に並べ、選択されたアイテムのインデックスを[onSelected]で通知する。
-///
-class MiGridPopupMenuButton extends StatelessWidget {
+
+class GridPopupMenuButton extends StatelessWidget {
   final bool enabled;
   final List<Widget> items;
   final List<String>? tooltips;
@@ -172,8 +173,9 @@ class MiGridPopupMenuButton extends StatelessWidget {
   final double runSpacing;
   final Widget? child;
   final Offset offset;
+  final String? tooltip;
 
-  const MiGridPopupMenuButton({
+  const GridPopupMenuButton({
     super.key,
     this.enabled = true,
     required this.items,
@@ -183,17 +185,19 @@ class MiGridPopupMenuButton extends StatelessWidget {
     this.runSpacing = 0.0,
     this.child,
     this.offset = Offset.zero,
+    this.tooltip,
   }) : assert(tooltips == null || tooltips.length == items.length);
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton<int>(
+    return material.PopupMenuButton<int>(
       enabled: enabled,
       onSelected: onSelected,
       offset: offset,
+      tooltip: tooltip,
       itemBuilder: (context) {
         return [
-          MiGridPopupMenuItem(
+          GridPopupMenuItem(
             items: items,
             tooltips: tooltips,
             spacing: spacing,
@@ -209,8 +213,8 @@ class MiGridPopupMenuButton extends StatelessWidget {
 /// グリッドアイテム
 ///
 /// [GridView]や[Wrap]のアイテムとして、一定サイズの中でアライメントしたら結構大変だったのでウィジェットとする。
-///
-class MiGridItem extends StatelessWidget {
+
+class GridItem extends StatelessWidget {
   final Widget? child;
   final BoxConstraints? constraints;
   final EdgeInsetsGeometry? margin;
@@ -218,7 +222,7 @@ class MiGridItem extends StatelessWidget {
   final MainAxisSize? mainAxisSize;
   final CrossAxisAlignment? crossAxisAlignment;
 
-  const MiGridItem({
+  const GridItem({
     super.key,
     this.child,
     this.constraints,
@@ -250,3 +254,7 @@ class MiGridItem extends StatelessWidget {
     );
   }
 }
+
+// DropdownMenuItemはステートレスなのでカスタマイズは困難。
+// https://github.com/flutter/flutter/blob/4a15111660c509a7f90b8bd549bad72f62ee38f5/packages/flutter/lib/src/material/dropdown.dart#L739
+// 必要ならPopupMenuButtonでアイコンを変えるとかで対応する。

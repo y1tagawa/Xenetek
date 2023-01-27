@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
+import 'package:path_provider/path_provider.dart';
+import 'package:vector_math/vector_math.dart' as vm;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // 3D examples page.
@@ -23,13 +27,13 @@ class ThreePage extends ConsumerWidget {
   static final _logger = Logger((ThreePage).toString());
 
   static const _tabs = <Widget>[
-    MiTab(
+    mi.Tab(
       tooltip: 'Bunny',
       icon: Icon(Icons.cruelty_free_outlined),
     ),
-    MiTab(
-      tooltip: 'TBD',
-      icon: Icon(Icons.more_horiz),
+    mi.Tab(
+      tooltip: 'Modeler',
+      icon: icon,
     ),
   ];
 
@@ -39,32 +43,29 @@ class ThreePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enabled = ref.watch(enableActionsProvider);
+    final enabled = ref.watch(ex.enableActionsProvider);
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enabled,
               tabs: _tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.all(8),
-            child: TabBarView(
-              children: [
-                _BunnyTab(),
-                _BunnyTab(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _BunnyTab(),
+              _ModelerTab(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((_) {
@@ -76,6 +77,8 @@ class ThreePage extends ConsumerWidget {
 //
 // Bunny tab
 //
+
+//<editor-fold>
 
 extension ColorHelper on Color {
   static const _k = 1.0 / 255.0;
@@ -124,3 +127,114 @@ class _BunnyTab extends ConsumerWidget {
     );
   }
 }
+
+//</editor-fold>
+
+//
+// Modeler tab
+//
+
+//<editor-fold>
+
+const _x = mi.Vector3.unitX;
+const _y = mi.Vector3.unitY;
+const _z = mi.Vector3.unitZ;
+const _identity = mi.Matrix4.identity;
+final _xz = _x + _z;
+
+mi.Matrix4 _rotation(mi.Vector3 axis, double angleDegree) =>
+    mi.Matrix4.fromRotation(axis, vm.radians(angleDegree));
+mi.Matrix4 _position(mi.Vector3 position) => mi.Matrix4.fromPosition(position);
+
+mi.Node? _rootNode;
+
+final _shapes = <mi.Shape>[];
+
+void _setup(StringSink sink) {
+  var root = const mi.Node();
+  _shapes.clear();
+
+  root = root.putDescendants(
+    <String, mi.Matrix4>{
+      'n1': _identity,
+      'n2': _position(_y * 2) * _rotation(_x, 45.0),
+      'n3': _position(_y * 2) * _rotation(_x, 45.0),
+    }.entries,
+  );
+
+  // _shapes.add(mi.Cube(origin: 'n1', scale: _y * 1.5 + _xz));
+  // _shapes.add(mi.Cube(origin: 'n1.n2', scale: _y * 1.5 + _xz));
+  // _shapes.add(const mi.Cube(origin: 'n1.n2.n3', scale: 0.3));
+  _shapes.add(const mi.Tube(origin: 'n1', length: 1.5, longDivision: 16, lengthDivision: 8));
+  _shapes.add(const mi.Tube(origin: 'n1.n2', length: 1.5));
+  _shapes.add(const mi.Tube(origin: 'n1.n2.n3', radius: 0.3, length: 0.5));
+  _rootNode = root;
+
+  final meshDataList = <mi.MeshData>[];
+  for (final shape in _shapes) {
+    meshDataList.add(shape.toMeshData(root));
+  }
+  mi.toWavefrontObj(meshDataList, sink);
+}
+
+final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
+  return await getApplicationDocumentsDirectory();
+});
+
+final _updateProvider = StateProvider((ref) => false);
+
+class _ModelerTab extends ConsumerWidget {
+  static final _logger = Logger((_ModelerTab).toString());
+
+  const _ModelerTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final documentsDirectory = ref.watch(_documentsDirectoryProvider);
+    return documentsDirectory.when(
+      data: (data) {
+        final tempFilePath = '${documentsDirectory.value!.path}/temp.obj';
+        _logger.fine('temp file path=$tempFilePath');
+
+        return Column(
+          children: [
+            mi.ButtonListTile(
+              enabled: documentsDirectory.hasValue,
+              text: const Text('Update'),
+              onPressed: () {
+                final file = File(tempFilePath);
+                final sink = file.openWrite();
+                _setup(sink);
+                sink.close();
+                ref.watch(_updateProvider.notifier).update((state) => !state);
+              },
+            ),
+            Expanded(
+              child: Center(
+                child: cube.Cube(
+                  onSceneCreated: (cube.Scene scene) {
+                    final model = cube.Object(
+                      fileName: tempFilePath,
+                      isAsset: false,
+                      lighting: true,
+                    );
+                    scene.world.add(model);
+                    scene.camera = cube.Camera(
+                      position: cube.Vector3(-0.05, 0.3, 1.5),
+                      target: cube.Vector3(-0.05, 0.3, 0),
+                      fov: 35.0,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      error: (error, _) => Text(error.toString()),
+      loading: () => const CircularProgressIndicator(),
+    );
+  }
+}
+
+//</editor-fold>

@@ -4,10 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 const _imageUrls = <String>[
   // ゴッホ 星月夜
@@ -30,26 +29,22 @@ final _imageProvider = StateProvider<Widget?>((ref) => null);
 int _tabIndex = 0;
 
 class ProminentTopBarPage extends ConsumerWidget {
-  static const icon = MiRotate(
+  static const icon = mi.Rotate(
     angleDegree: 180.0,
     child: Icon(Icons.horizontal_split_outlined),
   );
   static const title = Text('Prominent top bar');
 
-  // ignore: unused_field
-  static final _logger = Logger((ProminentTopBarPage).toString());
-
   static const _tabs = <Widget>[
-    MiTab(icon: Text('Dummy')),
-    MiTab(icon: Text('Dummy')),
+    mi.Tab(icon: Text('Dummy')),
+    mi.Tab(icon: Text('Dummy')),
   ];
 
   const ProminentTopBarPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final enableActions = ref.watch(enableActionsProvider);
-    final prominent = ref.watch(prominentProvider);
+    final prominent = ref.watch(ex.prominentProvider);
     final tabbed = ref.watch(_tabbedProvider);
     final centerTitle = ref.watch(_centerTitleProvider);
     final image = ref.watch(_imageProvider);
@@ -68,88 +63,85 @@ class ProminentTopBarPage extends ConsumerWidget {
     // https://en.wikipedia.org/wiki/100_Great_Paintings
     // 白は鳥獣戯画で
 
-    final body = SafeArea(
-      minimum: const EdgeInsets.all(8),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            CheckboxListTile(
-              value: prominent,
-              onChanged: (value) {
-                ref.read(prominentProvider.notifier).state = value!;
-              },
-              title: const Text('Prominent'),
-            ),
-            CheckboxListTile(
-              value: tabbed,
-              onChanged: (value) {
-                ref.read(_tabbedProvider.notifier).state = value!;
-              },
-              title: const Text('Tabbed'),
-            ),
-            CheckboxListTile(
-              value: centerTitle,
-              onChanged: (value) {
-                ref.read(_centerTitleProvider.notifier).state = value!;
-              },
-              title: const Text('Center title'),
-            ),
-            const Divider(),
-            const Text('flexibleSpace'),
-            ..._images.map(
-              (image_) => RadioListTile<Widget?>(
-                  value: image_,
-                  groupValue: image,
-                  title: image_ != null
-                      ? SizedBox(
-                          //https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/list_tile.dart#L1094
-                          height: 48,
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            clipBehavior: Clip.hardEdge,
-                            child: image_,
-                          ),
-                        )
-                      : const Icon(Icons.block_outlined),
-                  onChanged: (value) {
-                    ref.read(_imageProvider.notifier).state = image_;
-                  }),
-            ),
-          ],
-        ),
+    final body = SingleChildScrollView(
+      child: Column(
+        children: [
+          CheckboxListTile(
+            value: prominent,
+            onChanged: (value) {
+              ref.read(ex.prominentProvider.notifier).state = value!;
+            },
+            title: const Text('Prominent'),
+          ),
+          CheckboxListTile(
+            value: tabbed,
+            onChanged: (value) {
+              ref.read(_tabbedProvider.notifier).state = value!;
+            },
+            title: const Text('Tabbed'),
+          ),
+          CheckboxListTile(
+            value: centerTitle,
+            onChanged: (value) {
+              ref.read(_centerTitleProvider.notifier).state = value!;
+            },
+            title: const Text('Center title'),
+          ),
+          const Divider(),
+          const Text('flexibleSpace'),
+          ..._images.map(
+            (image_) => RadioListTile<Widget?>(
+                value: image_,
+                groupValue: image,
+                title: image_ != null
+                    ? SizedBox(
+                        //https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/list_tile.dart#L1094
+                        height: 48,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          clipBehavior: Clip.hardEdge,
+                          child: image_,
+                        ),
+                      )
+                    : const Icon(Icons.block_outlined),
+                onChanged: (value) {
+                  ref.read(_imageProvider.notifier).state = image_;
+                }),
+          ),
+        ],
       ),
     );
 
     if (tabbed) {
-      return MiDefaultTabController(
+      return mi.DefaultTabController(
         length: _tabs.length,
         initialIndex: _tabIndex,
         builder: (context) {
-          return Scaffold(
-            appBar: ExAppBar(
+          return ex.Scaffold(
+            appBar: ex.AppBar(
               prominent: prominent,
               icon: icon,
               title: title,
               centerTitle: centerTitle,
-              bottom: const ExTabBar(tabs: _tabs),
+              bottom: const ex.TabBar(tabs: _tabs),
               flexibleSpace: flexibleSpace,
             ),
             body: body,
-            bottomNavigationBar: const ExBottomNavigationBar(),
+            bottomNavigationBar: const ex.BottomNavigationBar(),
           );
         },
       );
     } else {
-      return Scaffold(
-        appBar: ExAppBar(
-          prominent: ref.watch(prominentProvider),
+      return ex.Scaffold(
+        appBar: ex.AppBar(
+          prominent: ref.watch(ex.prominentProvider),
           icon: icon,
           title: title,
           centerTitle: centerTitle,
           flexibleSpace: flexibleSpace,
         ),
         body: body,
-        bottomNavigationBar: const ExBottomNavigationBar(),
+        bottomNavigationBar: const ex.BottomNavigationBar(),
       );
     }
   }

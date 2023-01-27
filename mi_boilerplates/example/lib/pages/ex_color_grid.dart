@@ -3,24 +3,26 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
 // Exampleアプリ用カラーグリッド(primarySwatch, secondaryColor用)
 
-class ExColorGrid extends StatelessWidget {
+class ColorGrid extends StatelessWidget {
   final int initialTabIndex;
+  final Icon? nullIcon;
   final bool nullable;
   final void Function(Color?)? onChanged;
 
   static const _tabs = <Widget>[
-    MiTab(icon: Icon(Icons.flutter_dash)),
-    MiTab(text: 'X11'),
-    MiTab(text: 'JIS'),
+    mi.Tab(icon: Icon(Icons.flutter_dash)),
+    mi.Tab(text: 'X11'),
+    mi.Tab(text: 'JIS'),
   ];
 
-  const ExColorGrid({
+  const ColorGrid({
     super.key,
     this.initialTabIndex = 0,
+    this.nullIcon,
     this.onChanged,
     this.nullable = false,
   });
@@ -29,20 +31,21 @@ class ExColorGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = <List<Color?>>[
       [if (nullable) null, ...Colors.primaries],
-      x11Colors,
-      jisCommonColors,
+      mi.x11Colors,
+      mi.jisCommonColors,
     ];
 
     final tooltips = [
-      [if (nullable) 'null', ...primaryColorNames],
-      x11ColorNames,
-      jisCommonColorNames,
+      [if (nullable) 'null', ...mi.primaryColorNames],
+      mi.x11ColorNames,
+      mi.jisCommonColorNames,
     ];
 
-    return MiTabbedColorGrid(
+    return mi.TabbedColorGrid(
       initialTabIndex: initialTabIndex,
       tabs: _tabs,
       colors: colors,
+      nullIcon: nullIcon,
       tooltips: tooltips,
       onChanged: (tabIndex, colorIndex) {
         onChanged?.call(colors[tabIndex][colorIndex]);

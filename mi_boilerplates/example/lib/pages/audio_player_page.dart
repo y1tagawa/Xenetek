@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:path/path.dart' as p;
 
-import 'ex_app_bar.dart';
+import 'ex_app_bar.dart' as ex;
 
 //
 // Audio player example page.
@@ -53,79 +53,74 @@ class AudioPlayerPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
 
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      appBar: ExAppBar(
-        prominent: ref.watch(prominentProvider),
+    return ex.Scaffold(
+      appBar: ex.AppBar(
+        prominent: ref.watch(ex.prominentProvider),
         icon: icon,
         title: title,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ..._audioItems.entries.map((item) {
-                final fileType = p.extension(item.value);
-                bool playable = true;
-                // switch (theme.platform) {
-                //   case TargetPlatform.windows:
-                //     if (fileType == '.mid' || fileType == '.ogg') {
-                //       playable = false;
-                //     }
-                //     break;
-                //   case TargetPlatform.android:
-                //     break;
-                //   default:
-                //     playable = false;
-                // }
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ..._audioItems.entries.map((item) {
+              final fileType = p.extension(item.value);
+              bool playable = true;
+              // switch (theme.platform) {
+              //   case TargetPlatform.windows:
+              //     if (fileType == '.mid' || fileType == '.ogg') {
+              //       playable = false;
+              //     }
+              //     break;
+              //   case TargetPlatform.android:
+              //     break;
+              //   default:
+              //     playable = false;
+              // }
 
-                return ListTile(
-                  enabled: enableActions && playable,
-                  leading: _audioFileTypes[fileType] ?? Text(fileType),
-                  title: Text(item.key),
-                  onTap: () async {
-                    if (_player.state == PlayerState.playing) {
-                      await _player.stop();
-                      await _player.release();
-                    }
-                    try {
-                      await _player.play(UrlSource(item.value));
-                    } catch (e) {
-                      _logger.info('caught exception: $e');
-                      rethrow;
-                    }
-                  },
-                );
-              }).toList(),
-              ListTile(
-                leading: const Icon(Icons.stop),
+              return ListTile(
+                enabled: enableActions && playable,
+                leading: _audioFileTypes[fileType] ?? Text(fileType),
+                title: Text(item.key),
                 onTap: () async {
-                  await _player.stop();
-                  await _player.release();
-                },
-              ),
-              MiButtonListTile(
-                enabled: enableActions,
-                alignment: MainAxisAlignment.start,
-                icon: const Icon(Icons.volume_up_outlined),
-                text: const Text('Notification sound Icon'),
-                onPressed: () async {
+                  if (_player.state == PlayerState.playing) {
+                    await _player.stop();
+                    await _player.release();
+                  }
                   try {
-                    await methodChannel.invokeMethod('playSoundAsync', 0);
-                  } on PlatformException catch (e) {
-                    _logger.fine(e.message);
+                    await _player.play(UrlSource(item.value));
+                  } catch (e) {
+                    _logger.info('caught exception: $e');
+                    rethrow;
                   }
                 },
-              ),
-            ],
-          ),
+              );
+            }).toList(),
+            ListTile(
+              leading: const Icon(Icons.stop),
+              onTap: () async {
+                await _player.stop();
+                await _player.release();
+              },
+            ),
+            mi.ButtonListTile(
+              enabled: enableActions,
+              alignment: MainAxisAlignment.start,
+              icon: const Icon(Icons.volume_up_outlined),
+              text: const Text('Notification sound Icon'),
+              onPressed: () async {
+                try {
+                  await methodChannel.invokeMethod('playSoundAsync', 0);
+                } on PlatformException catch (e) {
+                  _logger.fine(e.message);
+                }
+              },
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: const ExBottomNavigationBar(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
 }

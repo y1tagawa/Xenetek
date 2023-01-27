@@ -5,21 +5,23 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import '../mi_boilerplates.dart';
+import '../mi_boilerplates.dart' as mi;
 
 /// カラーグリッド
 
-class MiColorGrid extends StatelessWidget {
+class ColorGrid extends StatelessWidget {
   static const double kItemSize = 40.0;
 
   final List<Color?> colors;
+  final Icon? nullIcon;
   final List<String?>? tooltips;
   final double? itemSize;
   final ValueChanged<int>? onChanged;
 
-  const MiColorGrid({
+  const ColorGrid({
     super.key,
     required this.colors,
+    this.nullIcon,
     this.tooltips,
     this.itemSize,
     this.onChanged,
@@ -37,9 +39,13 @@ class MiColorGrid extends StatelessWidget {
             onTap: () {
               onChanged?.call(i);
             },
-            child: run(
+            child: mi.run(
               () {
-                Widget item = MiColorChip(color: colors[i], size: itemSize_);
+                Widget item = mi.ColorChip(
+                  color: colors[i],
+                  nullIcon: nullIcon,
+                  size: itemSize_,
+                );
                 if (tooltips != null && i < tooltips!.length && tooltips![i] != null) {
                   item = Tooltip(
                     message: tooltips![i],
@@ -57,32 +63,35 @@ class MiColorGrid extends StatelessWidget {
 
 /// タブ付きカラーグリッド
 
-class MiTabbedColorGrid extends StatelessWidget {
+class TabbedColorGrid extends StatelessWidget {
   final int initialTabIndex;
   final List<Widget> tabs;
   final List<List<Color?>> colors;
+  final Icon? nullIcon;
   final List<List<String>?>? tooltips;
   final void Function(int tabIndex, int colorIndex)? onChanged;
 
-  const MiTabbedColorGrid({
+  const TabbedColorGrid({
     super.key,
     this.initialTabIndex = 0,
     required this.tabs,
     required this.colors,
+    this.nullIcon,
     this.tooltips,
     this.onChanged,
   }) : assert(tabs.length == colors.length);
 
   @override
   Widget build(BuildContext context) {
-    return MiEmbeddedTabView(
+    return mi.EmbeddedTabView(
       tabs: tabs,
       initialIndex: initialTabIndex,
       children: colors
           .mapIndexed(
             (tabIndex, colors_) => SingleChildScrollView(
-              child: MiColorGrid(
+              child: ColorGrid(
                 colors: colors_,
+                nullIcon: nullIcon,
                 tooltips: tooltips?.let((it) => tabIndex < it.length ? it[tabIndex] : null),
                 onChanged: (colorIndex) {
                   onChanged?.call(tabIndex, colorIndex);
@@ -97,11 +106,12 @@ class MiTabbedColorGrid extends StatelessWidget {
 
 ///
 
-class MiColorGridHelper {
+class ColorGridHelper {
   static Future<bool> showColorSelectDialog({
     required BuildContext context,
     Widget? title,
     Color? initialColor,
+    Icon? nullIcon,
     ValueChanged<Color?>? onChanged,
     double? width,
     double? height,
@@ -111,8 +121,11 @@ class MiColorGridHelper {
 
     return await showDialog<bool>(
       context: context,
-      builder: (context) => MiOkCancelDialog<bool>(
-        icon: MiColorChip(color: color),
+      builder: (context) => mi.OkCancelDialog<bool>(
+        icon: mi.ColorChip(
+          color: color,
+          nullIcon: nullIcon,
+        ),
         title: title,
         getValue: (ok) => ok,
         content: SizedBox(

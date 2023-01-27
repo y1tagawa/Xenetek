@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
-import 'ex_app_bar.dart';
-import 'under_construction.dart';
+import 'ex_app_bar.dart' as ex;
+import 'ex_widgets.dart' as ex;
 
 //
 // Custom paints trial page.
@@ -33,38 +33,35 @@ class CustomPaintsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
-    final enableActions = ref.watch(enableActionsProvider);
+    final enableActions = ref.watch(ex.enableActionsProvider);
 
     final tabs = <Widget>[
-      const MiTab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
-      const MiTab(icon: UnderConstruction.icon, tooltip: UnderConstruction.title),
+      const mi.Tab(icon: Icon(Icons.watch_later_outlined), tooltip: 'Clock'),
+      const mi.Tab(icon: ex.UnderConstruction.icon, tooltip: ex.UnderConstruction.title),
     ];
 
-    return MiDefaultTabController(
+    return mi.DefaultTabController(
       length: tabs.length,
       initialIndex: _tabIndex,
       builder: (context) {
-        return Scaffold(
-          appBar: ExAppBar(
-            prominent: ref.watch(prominentProvider),
+        return ex.Scaffold(
+          appBar: ex.AppBar(
+            prominent: ref.watch(ex.prominentProvider),
             //icon: icon,
             icon: icon,
             title: title,
-            bottom: ExTabBar(
+            bottom: ex.TabBar(
               enabled: enableActions,
               tabs: tabs,
             ),
           ),
-          body: const SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 10),
-            child: TabBarView(
-              children: [
-                _ClockTab(),
-                UnderConstruction(),
-              ],
-            ),
+          body: const TabBarView(
+            children: [
+              _ClockTab(),
+              ex.UnderConstruction(),
+            ],
           ),
-          bottomNavigationBar: const ExBottomNavigationBar(),
+          bottomNavigationBar: const ex.BottomNavigationBar(),
         );
       },
     ).also((it) {
@@ -347,7 +344,7 @@ class _ClockTab extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
-    return MiTimerController.periodic(
+    return mi.TimerController.periodic(
       duration: const Duration(milliseconds: 200),
       onPeriodic: (_) {
         final now = DateTime.now();
@@ -379,5 +376,91 @@ class _ClockTab extends ConsumerWidget {
     ).also((_) {
       _logger.fine('[o] build');
     });
+  }
+}
+
+//
+//
+//
+
+abstract class AbstractSprite {
+  int get plane;
+  void paint(Canvas canvas, Size size);
+}
+
+class _SpritePainter extends CustomPainter {
+  final List<AbstractSprite> sprites;
+
+  _SpritePainter({this.sprites = const <AbstractSprite>[]});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final sprites_ = <int, List<AbstractSprite>>{};
+    for (final sprite in sprites) {
+      sprites_[sprite.plane].let((it) {
+        if (it == null) {
+          sprites_[sprite.plane] = [sprite];
+        } else {
+          it.add(sprite);
+        }
+      });
+    }
+    final planes = sprites_.keys.toList().sorted();
+    for (final plane in planes) {
+      for (final sprite in sprites_[plane]!) {
+        sprite.paint(canvas, size);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _SpritePainter oldDelegate) {
+    return sprites != oldDelegate.sprites;
+  }
+}
+
+class SpritePaint extends StatefulWidget {
+  final ValueNotifier<List<AbstractSprite>> spritesNotifier;
+
+  const SpritePaint({
+    super.key,
+    required this.spritesNotifier,
+  });
+
+  @override
+  State<StatefulWidget> createState() => _SpritePainterState();
+}
+
+class _SpritePainterState extends State<SpritePaint> {
+  void _update() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.spritesNotifier.addListener(_update);
+  }
+
+  @override
+  void dispose() {
+    widget.spritesNotifier.removeListener(_update);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant SpritePaint oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    oldWidget.spritesNotifier.removeListener(_update);
+    widget.spritesNotifier.addListener(_update);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _SpritePainter(
+        sprites: widget.spritesNotifier.value,
+      ),
+    );
   }
 }

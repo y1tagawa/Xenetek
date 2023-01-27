@@ -5,6 +5,9 @@
 
 All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
 
+ghost_script_tiger.json is generated from Ghostscript_Tiger.svg
+which is released under the GNU Affero General Public License 3.0.
+
 x11_colors uses material from the Wikipedia article "Web colors",
 https://en.wikipedia.org/wiki/Web_colors,
 which is released under the Creative Commons Attribution-Share-Alike License 3.0.
@@ -42,11 +45,11 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## TODO
 
+* layered architectureのサンプル
 * Material designのanatomy的な設定箇所の説明図
 * M2AppBar上用のデフォルトテーマ
   * 淡色AppBar
 * https://pub.dev/packages/scrollable_positioned_list
-* ToastのF.I./F.O.、キュー（まではいらないか。SnackBarがあるのだから）
 * 通知一覧ページと通知アイコン
 * https://pub.dev/packages/audioplayers
   * https://commons.wikimedia.org/wiki/Category:Sound_sample_files
@@ -57,3 +60,6 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
     * https://pub.dev/packages/dart_vlc、https://pub.dev/packages/flutter_vlc_player 
       VLCもあるが、プラットフォームで差があったり、将来に期待。
 * https://pub.dev/packages/dynamic_color#dynamic_color
+* https://pub.dev/packages/maps_launcher
+* TextPainterで文字列の幅を取得、Widgetの幅を可変にする（端末設定で変わったりもする）
+* Path operation https://api.flutter.dev/flutter/dart-ui/Path-class.html
