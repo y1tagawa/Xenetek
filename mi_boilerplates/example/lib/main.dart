@@ -129,12 +129,6 @@ final _pages = <_PageItem>[
     builder: (_, __) => const GridDetailPage(),
   ),
   _PageItem(
-    icon: ThreeTierPage.icon,
-    title: ThreeTierPage.title,
-    path: '/three_tier',
-    builder: (_, __) => const ThreeTierPage(),
-  ),
-  _PageItem(
     icon: ListsPage.icon,
     title: ListsPage.title,
     path: '/lists',
@@ -223,6 +217,12 @@ final _pages = <_PageItem>[
     title: ThreePage.title,
     path: '/three',
     builder: (_, __) => const ThreePage(),
+  ),
+  _PageItem(
+    icon: ThreeTierPage.icon,
+    title: ThreeTierPage.title,
+    path: '/three_tier',
+    builder: (_, __) => const ThreeTierPage(),
   ),
 ];
 
