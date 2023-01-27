@@ -35,6 +35,7 @@ Future<int> _nextValue() async {
 /// View state
 ///
 /// ドメインとビュー間のプロトコル。
+/// でかくなってもProvider.selectでref.watch対象を極限できるため大丈夫らしい。
 class SampleState {
   final int value;
 
@@ -84,6 +85,7 @@ class SampleState {
 //
 // サービスロジックの群れ。
 // インフラストラクチャと通信するため、やっぱり非同期になる。
+// サービス内に状態変数は持たない事、と言われているが、するとユーザ設定（フィルタとか）もインフラ送りか。
 
 /// サンプルサービス
 ///
@@ -95,12 +97,11 @@ class SampleService {
     final valueStream = StreamController<int>();
     final provider = StreamProvider<SampleState>(
       (ref) async* {
-        // 非同期的にリソースを初期化し...
+        // 非同期的にリソースを初期化し、初期状態をゲットしてリスナに通知
         await _initValue();
-        // 必要なら初期状態をゲットしてリスナに通知
         valueStream.add(await _nextValue());
         // 以後状態が変わるごとにリスナに通知
-        // TODO: 自動的に値が変わる場合(カメラ画像とか)
+        // 自動的に値が変わる場合(カメラ画像とか)はサービスがリソースにリスナを登録とかする
         await for (final value in valueStream.stream) {
           yield SampleState(value: value);
         }
@@ -140,7 +141,7 @@ class SampleService {
 
 class ThreeTierPage extends ConsumerWidget {
   static const icon = Icon(Icons.architecture);
-  static const title = Text('3.T.A.');
+  static const title = Text('Three-tier');
 
   static final _logger = Logger((ThreeTierPage).toString());
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:example/pages/ex_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -27,8 +28,8 @@ class SnackBarPage extends ConsumerWidget {
       icon: Icon(Icons.notifications_outlined),
     ),
     mi.Tab(
-      tooltip: 'Toast',
-      icon: Icon(Icons.breakfast_dining_outlined),
+      tooltip: UnderConstruction.title,
+      icon: UnderConstruction.icon,
     ),
   ];
 
@@ -60,7 +61,7 @@ class SnackBarPage extends ConsumerWidget {
           body: const TabBarView(
             children: [
               _SnackBarTab(),
-              _ToastTab(),
+              UnderConstruction(),
             ],
           ),
           bottomNavigationBar: const ex.BottomNavigationBar(),
@@ -162,43 +163,6 @@ class _SnackBarTab extends ConsumerWidget {
             },
           ),
           const Text('Note: Material Design demands not to use icons in snackbars.'),
-        ],
-      ),
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
-  }
-}
-
-//
-// Overlay tab
-//
-
-class _ToastTab extends ConsumerWidget {
-  static final _logger = Logger((_ToastTab).toString());
-
-  const _ToastTab();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    _logger.fine('[i] build');
-    final enabled = ref.watch(ex.enableActionsProvider);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Column(
-        children: [
-          mi.ButtonListTile(
-            enabled: enabled,
-            icon: const Icon(Icons.breakfast_dining_outlined),
-            text: const Text('Toast!'),
-            onPressed: () async {
-              await mi.ToastHelper.showToast(
-                context: context,
-                child: const Text('Toast!'),
-              );
-            },
-          ),
         ],
       ),
     ).also((_) {
