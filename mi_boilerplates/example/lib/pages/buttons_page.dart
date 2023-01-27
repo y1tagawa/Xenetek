@@ -20,8 +20,6 @@ import 'knight_indicator.dart';
 
 //<editor-fold>
 
-final _pageKey = GlobalKey();
-
 final _tabIndexProvider = StateProvider((ref) => 0);
 
 final _pingNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
@@ -61,6 +59,17 @@ void _ping() {
     controller.reset();
     controller.forward();
   });
+  // HomePage.showSnackBar(
+  //   SnackBar(
+  //     content: const Text('Ping'),
+  //     action: SnackBarAction(
+  //       label: 'CLOSE',
+  //       onPressed: () {
+  //         HomePage.hideCurrentSnackBar();
+  //       },
+  //     ),
+  //   ),
+  // );
 }
 
 class ButtonsPage extends ConsumerWidget {
@@ -102,7 +111,6 @@ class ButtonsPage extends ConsumerWidget {
     final tabIndex = ref.watch(_tabIndexProvider);
 
     return mi.DefaultTabController(
-      key: _pageKey,
       length: _tabs.length,
       initialIndex: tabIndex,
       onIndexChanged: (value) {

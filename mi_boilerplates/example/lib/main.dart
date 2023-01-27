@@ -374,6 +374,13 @@ class HomePage extends ConsumerWidget {
 
   static final _logger = Logger((HomePage).toString());
 
+  static final _key = GlobalKey();
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
+          SnackBar snackBar) =>
+      ScaffoldMessenger.of(_key.currentContext!).showSnackBar(snackBar);
+  static void hideCurrentSnackBar() =>
+      ScaffoldMessenger.of(_key.currentContext!).hideCurrentSnackBar();
+
   const HomePage({super.key});
 
   @override
@@ -381,6 +388,7 @@ class HomePage extends ConsumerWidget {
     _logger.fine('[i] build');
 
     return ex.Scaffold(
+      key: _key,
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,
