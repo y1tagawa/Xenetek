@@ -397,7 +397,6 @@ class HomePage extends ConsumerWidget {
       drawer: mi.Drawer(
         onBackButtonPressed: () => Navigator.pop(context),
         children: _pages
-            .skip(1) // Home
             .where((item) => item.path.startsWith('/drawer/'))
             .map(
               (item) => ListTile(

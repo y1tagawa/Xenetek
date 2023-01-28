@@ -633,11 +633,15 @@ class ExpandedColumn extends StatelessWidget {
 
 /// カスタム[Drawer]
 class Drawer extends StatelessWidget {
+  final double headerHeight;
+  final Widget? icon;
   final VoidCallback? onBackButtonPressed;
   final List<Widget> children;
 
   const Drawer({
     super.key,
+    this.headerHeight = kToolbarHeight * 2.0,
+    this.icon,
     this.onBackButtonPressed,
     required this.children,
   });
@@ -648,13 +652,13 @@ class Drawer extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(
-            height: kToolbarHeight * 2,
+            height: headerHeight,
             child: DrawerHeader(
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
                   onPressed: onBackButtonPressed,
-                  icon: const Icon(Icons.arrow_back),
+                  icon: icon ?? const Icon(Icons.arrow_back),
                 ),
               ),
             ),
