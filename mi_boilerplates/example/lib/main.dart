@@ -394,41 +394,22 @@ class HomePage extends ConsumerWidget {
         icon: icon,
         title: title,
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            SizedBox(
-              height: kToolbarHeight * 2,
-              child: DrawerHeader(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                ),
+      drawer: mi.Drawer(
+        onBackButtonPressed: () => Navigator.pop(context),
+        children: _pages
+            .skip(1) // Home
+            .where((item) => item.path.startsWith('/drawer/'))
+            .map(
+              (item) => ListTile(
+                leading: item.icon,
+                title: item.title,
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(item.path);
+                },
               ),
-            ),
-            Expanded(
-              child: ListView(
-                children: _pages
-                    .skip(1) // Home
-                    .where((item) => item.path.startsWith('/drawer/'))
-                    .map(
-                      (item) => ListTile(
-                        leading: item.icon,
-                        title: item.title,
-                        onTap: () {
-                          Navigator.pop(context);
-                          context.push(item.path);
-                        },
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-          ],
-        ),
+            )
+            .toList(),
       ),
       body: SingleChildScrollView(
         child: Center(

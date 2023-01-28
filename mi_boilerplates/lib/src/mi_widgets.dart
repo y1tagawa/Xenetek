@@ -6,7 +6,7 @@ import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Row;
-import 'package:flutter/material.dart' as material show Row;
+import 'package:flutter/material.dart' as material show Drawer, Row;
 import 'package:logging/logging.dart';
 
 Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
@@ -627,6 +627,45 @@ class ExpandedColumn extends StatelessWidget {
         if (bottom != null) bottom!,
         if (bottoms != null) ...bottoms!,
       ],
+    );
+  }
+}
+
+/// カスタム[Drawer]
+class Drawer extends StatelessWidget {
+  final VoidCallback? onBackButtonPressed;
+  final List<Widget> children;
+
+  const Drawer({
+    super.key,
+    this.onBackButtonPressed,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return material.Drawer(
+      child: Column(
+        children: [
+          SizedBox(
+            height: kToolbarHeight * 2,
+            child: DrawerHeader(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: onBackButtonPressed,
+                  icon: const Icon(Icons.arrow_back),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              children: children,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
