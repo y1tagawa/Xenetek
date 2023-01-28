@@ -57,10 +57,10 @@ class _PageItem {
 
 final _pages = <_PageItem>[
   _PageItem(
-    icon: HomePage.icon,
-    title: HomePage.title,
+    icon: _HomePage.icon,
+    title: _HomePage.title,
     path: '/',
-    builder: (_, __) => const HomePage(),
+    builder: (_, __) => const mi.ContextProvider(child: _HomePage()),
   ),
   _PageItem(
     icon: AnimationsPage.icon,
@@ -368,27 +368,19 @@ class MyApp extends ConsumerWidget {
 
 // サンプルアプリ ホームページ
 
-class HomePage extends ConsumerWidget {
+class _HomePage extends ConsumerWidget {
   static const icon = Icon(Icons.home_outlined);
   static const title = Text('Home');
 
-  static final _logger = Logger((HomePage).toString());
+  static final _logger = Logger((_HomePage).toString());
 
-  static final _key = GlobalKey();
-  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showSnackBar(
-          SnackBar snackBar) =>
-      ScaffoldMessenger.of(_key.currentContext!).showSnackBar(snackBar);
-  static void hideCurrentSnackBar() =>
-      ScaffoldMessenger.of(_key.currentContext!).hideCurrentSnackBar();
-
-  const HomePage({super.key});
+  const _HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
 
     return ex.Scaffold(
-      key: _key,
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
         icon: icon,

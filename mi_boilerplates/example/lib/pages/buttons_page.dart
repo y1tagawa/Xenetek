@@ -24,48 +24,18 @@ final _tabIndexProvider = StateProvider((ref) => 0);
 
 final _pingNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
-// void _ping() {
-//   final context = _pageKey.currentContext!;
-//   final theme = Theme.of(context);
-//
-//   ScaffoldMessenger.of(context).showSnackBar(
-//     SnackBar(
-//       content: mi.Row(
-//         children: [
-//           const Text('Ping'),
-//           IconTheme.merge(
-//             data: IconThemeData(color: theme.colorScheme.surface),
-//             child: mi.RingBell(
-//               origin: const Offset(0, -10),
-//               onInitialized: (controller) {
-//                 controller.forward();
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//       action: SnackBarAction(
-//         label: 'CLOSE',
-//         onPressed: () {
-//           ScaffoldMessenger.of(context).clearSnackBars();
-//         },
-//       ),
-//     ),
-//   );
-// }
-
 void _ping() {
   _pingNotifier.add((controller) {
     controller.reset();
     controller.forward();
   });
-  // HomePage.showSnackBar(
+  // ScaffoldMessenger.of(mi.ContextProvider.context!).showSnackBar(
   //   SnackBar(
   //     content: const Text('Ping'),
   //     action: SnackBarAction(
   //       label: 'CLOSE',
   //       onPressed: () {
-  //         HomePage.hideCurrentSnackBar();
+  //         ScaffoldMessenger.of(mi.ContextProvider.context!).hideCurrentSnackBar();
   //       },
   //     ),
   //   ),
