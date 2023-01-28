@@ -138,20 +138,20 @@ Future<bool> _showBackgroundColorSelectDialog({
 /// Exampleアプリの設定ページ
 ///
 
-class SettingsPage extends ConsumerWidget {
+class _SettingsPage extends ConsumerWidget {
   static const icon = Icon(Icons.settings_outlined);
   static const title = Text('Settings');
 
-  static final _logger = Logger((SettingsPage).toString());
+  static final _logger = Logger((_SettingsPage).toString());
 
-  const SettingsPage({super.key});
+  final mi.ColorSettings colorSettings;
+
+  const _SettingsPage({required this.colorSettings});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
     assert(mi.x11Colors.length == mi.x11ColorNames.length);
-
-    final colorSettings = ref.watch(colorSettingsProvider);
 
     final theme = Theme.of(context);
 
@@ -180,8 +180,8 @@ class SettingsPage extends ConsumerWidget {
                 title: const Text('Primary swatch'),
                 initialColor: colorSettings.primarySwatch.value,
                 onChanged: (value) {
-                  ref.read(colorSettingsProvider.notifier).state =
-                      colorSettings.copyWith(primarySwatch: mi.SerializableColor(value));
+                  colorSettingsStream
+                      .add(colorSettings.copyWith(primarySwatch: mi.SerializableColor(value)));
                 },
               );
               if (ok) {
@@ -205,8 +205,8 @@ class SettingsPage extends ConsumerWidget {
                 initialColor: colorSettings.secondaryColor.value,
                 nullable: true,
                 onChanged: (value) {
-                  ref.read(colorSettingsProvider.notifier).state =
-                      colorSettings.copyWith(secondaryColor: mi.SerializableColor(value));
+                  colorSettingsStream
+                      .add(colorSettings.copyWith(secondaryColor: mi.SerializableColor(value)));
                 },
               );
               if (ok) {
@@ -230,8 +230,8 @@ class SettingsPage extends ConsumerWidget {
                 initialColor: colorSettings.textColor.value,
                 nullable: true,
                 onChanged: (value) {
-                  ref.read(colorSettingsProvider.notifier).state =
-                      colorSettings.copyWith(textColor: mi.SerializableColor(value));
+                  colorSettingsStream
+                      .add(colorSettings.copyWith(textColor: mi.SerializableColor(value)));
                 },
               );
               if (ok) {
@@ -255,12 +255,12 @@ class SettingsPage extends ConsumerWidget {
                 initialColor: colorSettings.backgroundColor.value,
                 nullable: true,
                 onChanged: (value) {
-                  ref.read(colorSettingsProvider.notifier).state =
-                      colorSettings.copyWith(backgroundColor: mi.SerializableColor(value));
+                  colorSettingsStream
+                      .add(colorSettings.copyWith(backgroundColor: mi.SerializableColor(value)));
                 },
               );
               if (ok) {
-                await saveThemePreferences(ref);
+                //await saveThemePreferences(ref);
               }
             },
           ),
@@ -306,5 +306,26 @@ class SettingsPage extends ConsumerWidget {
     ).also((_) {
       _logger.fine('[o] build');
     });
+  }
+}
+
+class SettingsPage extends ConsumerWidget {
+  static const icon = Icon(Icons.settings_outlined);
+  static const title = Text('Settings');
+
+  static final _logger = Logger((SettingsPage).toString());
+
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(colorSettingsProvider).when(
+          data: (data) => _SettingsPage(colorSettings: data),
+          error: (error, stackTrace) {
+            _logger.fine('${error.toString()}\n${stackTrace.toString()}');
+            return Text(error.toString());
+          },
+          loading: () => const Text('Loading'),
+        );
   }
 }

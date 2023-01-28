@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -240,71 +240,62 @@ final _router = GoRouter(
 // テーマ設定
 // ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
 const _initColor = mi.SerializableColor(Color(0xFF404040));
-final colorSettingsProvider = StateProvider(
-  (ref) => const mi.ColorSettings(
-    primarySwatch: mi.SerializableColor(Colors.indigo), // _initColor,
-    secondaryColor: mi.SerializableColor(null),
-    textColor: mi.SerializableColor(null),
-    backgroundColor: mi.SerializableColor(null),
-  ),
+const _defaultColorSettings = mi.ColorSettings(
+  primarySwatch: mi.SerializableColor(Colors.indigo),
 );
-final brightnessProvider = StateProvider((ref) => Brightness.dark);
+
+final colorSettingsStream = StreamController<mi.ColorSettings>();
+final colorSettingsProvider = StreamProvider<mi.ColorSettings>(
+  (ref) async* {
+    final logger = Logger('colorSettingsProvider');
+    await loadColorSettings();
+    await for (final data in colorSettingsStream.stream) {
+      yield data;
+    }
+  },
+);
+
+final brightnessProvider =
+    StateProvider((ref) => WidgetsBinding.instance.window.platformBrightness);
+//    Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final modifyThemeProvider = StateProvider((ref) => true);
 
-final preferencesProvider = FutureProvider((ref) async {
-  final logger = Logger('preferenceProvider');
-
-  final preferences = await SharedPreferences.getInstance();
-  final data = preferences.getString('theme')?.let((it) {
-    logger.fine(it);
-    return jsonDecode(it);
-  });
-  logger.fine('theme json=$data');
-
-  try {
-    final colorSettings = mi.ColorSettings.fromJson(data);
-    logger.fine('colorSettings=$colorSettings');
-    ref.read(colorSettingsProvider.notifier).state = colorSettings;
-    final brightness = WidgetsBinding.instance.window.platformBrightness;
-    logger.fine('brightness=$brightness');
-    ref.read(brightnessProvider.notifier).state = brightness;
-  } catch (e, stackTrace) {
-    logger.fine('${e.toString()}\n${stackTrace.toString()}');
+Future<bool> loadColorSettings() async {
+  final logger = Logger('loadColorSettings');
+  final sp = await SharedPreferences.getInstance();
+  final json = sp.getString('colorSettings');
+  logger.fine('json=$json');
+  var data = mi.ColorSettings.fromJson(json);
+  if (data.primarySwatch.value == null) {
+    data = data.copyWith(
+      primarySwatch: const mi.SerializableColor(Colors.indigo),
+    );
   }
-
-  return preferences;
-});
+  logger.fine('data=${data.toString()}');
+  colorSettingsStream.add(data);
+  return true;
+}
 
 Future<void> saveThemePreferences(WidgetRef ref) async {
   final logger = Logger('saveThemePreferences');
 
-  final preferences = ref.read(preferencesProvider);
-  preferences.when(
-    data: (data) {
-      final data_ = ref.read(colorSettingsProvider.notifier).state.toMap();
-      logger.fine('theme preferences=$data_');
-      data.setString('theme', jsonEncode(data_));
-    },
-    error: (error, _) => logger.fine(error.toString()),
-    loading: () {},
-  );
+  ref.read(colorSettingsProvider).when(
+        data: (data) async {
+          final sp = await SharedPreferences.getInstance();
+          sp.setString('colorSettings', data.toJson());
+        },
+        error: (error, stackTrace) {},
+        loading: () {},
+      );
 }
 
 Future<void> clearPreferences(WidgetRef ref) async {
   final logger = Logger('clearPreferences');
-  final preferences = ref.read(preferencesProvider);
-  preferences.when(
-    data: (data) async {
-      final ok = await data.clear();
-      logger.fine('cleared ok=$ok');
-    },
-    error: (error, stackTrace) {
-      logger.fine(error.toString());
-      logger.fine(stackTrace.toString());
-    },
-    loading: () {},
-  );
+  final sp = await SharedPreferences.getInstance();
+  final ok = await sp.clear();
+  logger.fine('cleared ok=$ok');
+  await loadColorSettings();
 }
 
 // main
@@ -328,9 +319,20 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(preferencesProvider);
-
-    final colorSettings = ref.watch(colorSettingsProvider);
+    final colorSettings = ref.watch(colorSettingsProvider).when(
+      data: (data) {
+        _logger.fine('colorSettings=${data.toString()}');
+        return data;
+      },
+      error: (error, _) {
+        _logger.fine(error.toString());
+        return _defaultColorSettings;
+      },
+      loading: () {
+        _logger.fine('Loading: colorSettings=$_defaultColorSettings');
+        return _defaultColorSettings;
+      },
+    );
     final brightness = ref.watch(brightnessProvider);
 
     return Material(

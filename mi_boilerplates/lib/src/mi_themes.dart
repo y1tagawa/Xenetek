@@ -314,11 +314,18 @@ class ColorSettings {
   final SerializableColor textColor;
   final SerializableColor backgroundColor;
 
+  const ColorSettings({
+    this.primarySwatch = const SerializableColor(null),
+    this.secondaryColor = const SerializableColor(null),
+    this.textColor = const SerializableColor(null),
+    this.backgroundColor = const SerializableColor(null),
+  });
+
   String toJson() {
     return jsonEncode(this, toEncodable: (object) {
       switch (object.runtimeType) {
-        case mi.SerializableColor:
-          return (object as mi.SerializableColor).toMap();
+        case mi.ColorSettings:
+          return (object as mi.ColorSettings).toMap();
       }
       return object;
     });
@@ -330,13 +337,6 @@ class ColorSettings {
 
   // fromMapとtoMapをカスタマイズしてるので、上書きするときは注意。
 //<editor-fold>
-
-  const ColorSettings({
-    required this.primarySwatch,
-    required this.secondaryColor,
-    required this.textColor,
-    required this.backgroundColor,
-  });
 
   @override
   bool operator ==(Object other) =>

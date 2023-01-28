@@ -209,10 +209,19 @@ class _ColorSchemeTab extends ConsumerWidget {
 
   const _ColorSchemeTab();
 
+  static const _dummy = mi.ColorSettings();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final colorSettings = ref.watch(colorSettingsProvider);
+    final colorSettings = ref.watch(colorSettingsProvider).when(
+          data: (data) => data,
+          error: (error, stackTrace) {
+            _logger.fine('${error.toString()}\n${stackTrace.toString()}');
+            return const mi.ColorSettings();
+          },
+          loading: () => const mi.ColorSettings(),
+        );
     final doModify = ref.watch(modifyThemeProvider);
 
     final selectedColor = ref.watch(_selectedColorProvider);
