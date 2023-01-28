@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 
@@ -271,4 +273,130 @@ extension ThemeDataHelper on ThemeData {
   }
 }
 
+/// 文字列化してシリアライズ可能な[Color?]のコンテナ
+class SerializableColor {
+  final Color? value;
+
+  const SerializableColor(this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SerializableColor && runtimeType == other.runtimeType && value == other.value);
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'SerializableColor{ value: $value,}';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'value': value?.toHex(),
+    };
+  }
+
+  factory SerializableColor.fromMap(Map<String, dynamic> map) {
+    final value = (map['value'] as String?) //
+        ?.let((it) => int.tryParse(it, radix: 16)) //
+        ?.let((it) => Color(it));
+    return SerializableColor(value);
+  }
+}
+
+/// 色設定
 ///
+/// primarySwatchは一旦Colorとする
+class ColorSettings {
+  final SerializableColor primarySwatch;
+  final SerializableColor secondaryColor;
+  final SerializableColor textColor;
+  final SerializableColor backgroundColor;
+
+  String toJson() {
+    return jsonEncode(this, toEncodable: (object) {
+      switch (object.runtimeType) {
+        case mi.SerializableColor:
+          return (object as mi.SerializableColor).toMap();
+      }
+      return object;
+    });
+  }
+
+  factory ColorSettings.fromJson(String source) {
+    return ColorSettings.fromMap(jsonDecode(source));
+  }
+
+  // fromMapとtoMapをカスタマイズしてるので、上書きするときは注意。
+//<editor-fold>
+
+  const ColorSettings({
+    required this.primarySwatch,
+    required this.secondaryColor,
+    required this.textColor,
+    required this.backgroundColor,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ColorSettings &&
+          runtimeType == other.runtimeType &&
+          primarySwatch == other.primarySwatch &&
+          secondaryColor == other.secondaryColor &&
+          textColor == other.textColor &&
+          backgroundColor == other.backgroundColor);
+
+  @override
+  int get hashCode =>
+      primarySwatch.hashCode ^
+      secondaryColor.hashCode ^
+      textColor.hashCode ^
+      backgroundColor.hashCode;
+
+  @override
+  String toString() {
+    return 'ColorSettings{'
+        ' primarySwatch: $primarySwatch,'
+        ' secondaryColor: $secondaryColor,'
+        ' textColor: $textColor,'
+        ' backgroundColor: $backgroundColor,'
+        '}';
+  }
+
+  ColorSettings copyWith({
+    SerializableColor? primarySwatch,
+    SerializableColor? secondaryColor,
+    SerializableColor? textColor,
+    SerializableColor? backgroundColor,
+  }) {
+    return ColorSettings(
+      primarySwatch: primarySwatch ?? this.primarySwatch,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      textColor: textColor ?? this.textColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'primarySwatch': primarySwatch.toMap(),
+      'secondaryColor': secondaryColor.toMap(),
+      'textColor': textColor.toMap(),
+      'backgroundColor': backgroundColor.toMap(),
+    };
+  }
+
+  factory ColorSettings.fromMap(Map<String, dynamic> map) {
+    return ColorSettings(
+      primarySwatch: SerializableColor.fromMap(map['primarySwatch']),
+      secondaryColor: SerializableColor.fromMap(map['secondaryColor']),
+      textColor: SerializableColor.fromMap(map['textColor']),
+      backgroundColor: SerializableColor.fromMap(map['backgroundColor']),
+    );
+  }
+
+//</editor-fold>
+}

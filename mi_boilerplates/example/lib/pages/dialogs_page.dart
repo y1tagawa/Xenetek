@@ -120,43 +120,11 @@ class DialogsPage extends ConsumerWidget {
 // テスト機能
 //
 
-class SerializableColor {
-  final Color? value;
-
-  const SerializableColor(this.value);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SerializableColor && runtimeType == other.runtimeType && value == other.value);
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() {
-    return 'SerializableColor{ value: $value,}';
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'value': value?.toHex(),
-    };
-  }
-
-  factory SerializableColor.fromMap(Map<String, dynamic> map) {
-    final value = (map['value'] as String?) //
-        ?.let((it) => int.tryParse(it, radix: 16)) //
-        ?.let((it) => Color(it));
-    return SerializableColor(value);
-  }
-}
-
 Future<void> _test() async {
   final logger = Logger('_test');
 
-  const color = SerializableColor(Color(0xFFAABBCC));
-  const colorNull = SerializableColor(null);
+  const color = mi.SerializableColor(Color(0xFFAABBCC));
+  const colorNull = mi.SerializableColor(null);
 
   final data = <String, dynamic>{};
   // map<String, dynamic>でMaterialColor, Color?をJSONにできる？
@@ -171,8 +139,8 @@ Future<void> _test() async {
 
   final json = jsonEncode(data, toEncodable: (object) {
     switch (object.runtimeType) {
-      case SerializableColor:
-        return (object as SerializableColor).toMap();
+      case mi.SerializableColor:
+        return (object as mi.SerializableColor).toMap();
     }
     return object;
   });
