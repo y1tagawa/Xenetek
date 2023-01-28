@@ -277,26 +277,26 @@ Future<bool> loadColorSettings() async {
   return true;
 }
 
-Future<void> saveThemePreferences(WidgetRef ref) async {
-  final logger = Logger('saveThemePreferences');
-
-  ref.read(colorSettingsProvider).when(
-        data: (data) async {
-          final sp = await SharedPreferences.getInstance();
-          sp.setString('colorSettings', data.toJson());
-        },
-        error: (error, stackTrace) {
-          debugPrintStack(stackTrace: stackTrace, label: error.toString());
-        },
-        loading: () {},
-      );
+Future<bool> saveColorSettings(WidgetRef ref) async {
+  return ref.read(colorSettingsProvider).when(
+    data: (data) async {
+      final sp = await SharedPreferences.getInstance();
+      sp.setString('colorSettings', data.toJson());
+      return true;
+    },
+    error: (error, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace, label: error.toString());
+      return false;
+    },
+    loading: () {
+      return false;
+    },
+  );
 }
 
 Future<void> clearPreferences(WidgetRef ref) async {
-  final logger = Logger('clearPreferences');
   final sp = await SharedPreferences.getInstance();
-  final ok = await sp.clear();
-  logger.fine('cleared ok=$ok');
+  await sp.clear();
   await loadColorSettings();
 }
 
@@ -331,7 +331,7 @@ class MyApp extends ConsumerWidget {
         return _defaultColorSettings;
       },
       loading: () {
-        _logger.fine('Loading: colorSettings=$_defaultColorSettings');
+        _logger.fine('Loading colorSettings');
         return _defaultColorSettings;
       },
     );

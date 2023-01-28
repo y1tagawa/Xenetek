@@ -185,7 +185,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveThemePreferences(ref);
+                await saveColorSettings(ref);
               }
             },
           ),
@@ -210,7 +210,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveThemePreferences(ref);
+                await saveColorSettings(ref);
               }
             },
           ),
@@ -235,7 +235,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveThemePreferences(ref);
+                await saveColorSettings(ref);
               }
             },
           ),
@@ -260,7 +260,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                //await saveThemePreferences(ref);
+                await saveColorSettings(ref);
               }
             },
           ),
@@ -287,18 +287,21 @@ class _SettingsPage extends ConsumerWidget {
             },
           ),
           const Divider(),
-          ListTile(
-            title: const Text('Reset preferences'),
-            trailing: const Icon(Icons.navigate_next),
-            onTap: () async {
-              final ok = await mi.showWarningOkCancelDialog(
-                context: context,
-                content: const Text('Are you sure to reset theme preferences?'),
-              );
-              if (ok) {
-                await clearPreferences(ref);
-              }
-            },
+          Theme(
+            data: theme.isDark ? ThemeData.dark() : ThemeData.light(),
+            child: ListTile(
+              title: const Text('Reset preferences'),
+              onTap: () async {
+                final ok = await mi.showWarningOkCancelDialog(
+                  context: context,
+                  content: const Text('Are you sure to reset theme preferences?'),
+                  theme: theme.isDark ? ThemeData.dark() : ThemeData.light(),
+                );
+                if (ok) {
+                  await clearPreferences(ref);
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -312,8 +315,6 @@ class _SettingsPage extends ConsumerWidget {
 class SettingsPage extends ConsumerWidget {
   static const icon = Icon(Icons.settings_outlined);
   static const title = Text('Settings');
-
-  static final _logger = Logger((SettingsPage).toString());
 
   const SettingsPage({super.key});
 
