@@ -16,7 +16,7 @@ extension SliderThemeDataHelper on SliderThemeData {
 }
 
 extension SwitchThemeDataHelper on SwitchThemeData {
-  SwitchThemeData modifyWith({
+  SwitchThemeData modify({
     required Color thumbColor,
     Brightness brightness = Brightness.light,
   }) {
@@ -240,4 +240,35 @@ extension ThemeDataHelper on ThemeData {
       progressIndicatorTheme: progressIndicatorTheme_,
     );
   }
+
+  /// 色設定から[ThemeData]を生成する
+  ///
+  static ThemeData fromColorSettings({
+    required MaterialColor primarySwatch,
+    Color? secondaryColor,
+    Color? textColor,
+    Color? backgroundColor,
+    required Brightness brightness,
+    bool useMaterial3 = false,
+    bool doModify = true,
+  }) {
+    return ThemeData(
+      primarySwatch: primarySwatch,
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: primarySwatch,
+        accentColor: brightness.isDark ? secondaryColor : null,
+        brightness: brightness,
+      ),
+      useMaterial3: useMaterial3,
+    ).let(
+      (it) => doModify
+          ? it.modify(
+              textColor: textColor,
+              backgroundColor: backgroundColor,
+            )
+          : it,
+    );
+  }
 }
+
+///

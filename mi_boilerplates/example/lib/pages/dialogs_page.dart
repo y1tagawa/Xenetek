@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -92,6 +94,12 @@ class DialogsPage extends ConsumerWidget {
                 showWarningOkCancel(context);
               },
             ),
+            IconButton(
+              onPressed: () async {
+                await _test();
+              },
+              icon: const Icon(Icons.telegram_sharp),
+            ),
             const Divider(),
             if (ping != null)
               Padding(
@@ -106,4 +114,68 @@ class DialogsPage extends ConsumerWidget {
       bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
+}
+
+//
+// テスト機能
+//
+
+class SerializableColor {
+  final Color? value;
+
+  const SerializableColor(this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SerializableColor && runtimeType == other.runtimeType && value == other.value);
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'SerializableColor{ value: $value,}';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'value': value?.toHex(),
+    };
+  }
+
+  factory SerializableColor.fromMap(Map<String, dynamic> map) {
+    final value = (map['value'] as String?) //
+        ?.let((it) => int.tryParse(it, radix: 16)) //
+        ?.let((it) => Color(it));
+    return SerializableColor(value);
+  }
+}
+
+Future<void> _test() async {
+  final logger = Logger('_test');
+
+  const color = SerializableColor(Color(0xFFAABBCC));
+  const colorNull = SerializableColor(null);
+
+  final data = <String, dynamic>{};
+  // map<String, dynamic>でMaterialColor, Color?をJSONにできる？
+  //data['primarySwatch'] = Colors.indigo;
+  data['color'] = color;
+  data['colorNull'] = colorNull;
+  // 結果: できない。
+  // [ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception:
+  //   Converting object to an encodable object failed: Instance of 'MaterialColor'
+  // [ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception:
+  //   Converting object to an encodable object failed: Instance of 'Color'
+
+  final json = jsonEncode(data, toEncodable: (object) {
+    switch (object.runtimeType) {
+      case SerializableColor:
+        return (object as SerializableColor).toMap();
+    }
+    return object;
+  });
+
+  logger.fine('data: [$json]');
 }

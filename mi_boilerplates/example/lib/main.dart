@@ -346,21 +346,14 @@ class MyApp extends ConsumerWidget {
         routeInformationParser: _router.routeInformationParser,
         routerDelegate: _router.routerDelegate,
         title: 'Mi boilerplates example.',
-        theme: ThemeData(
+        theme: mi.ThemeDataHelper.fromColorSettings(
           primarySwatch: primarySwatch,
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: primarySwatch,
-            accentColor: brightness.isDark ? secondaryColor : null,
-            brightness: brightness,
-          ),
+          secondaryColor: secondaryColor,
+          textColor: textColor,
+          backgroundColor: backgroundColor,
+          brightness: brightness,
           useMaterial3: ref.watch(useM3Provider),
-        ).let(
-          (it) => ref.watch(modifyThemeProvider)
-              ? it.modify(
-                  textColor: textColor,
-                  backgroundColor: backgroundColor,
-                )
-              : it,
+          doModify: ref.watch(modifyThemeProvider),
         ),
       ),
     );

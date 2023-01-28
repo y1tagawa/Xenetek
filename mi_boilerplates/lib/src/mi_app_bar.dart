@@ -93,7 +93,7 @@ class AppBar extends StatelessWidget implements PreferredSizeWidget {
       checkColor: MaterialStateProperty.resolveWith(resolveCheckColor),
     );
 
-    final switchTheme = theme.switchTheme.modifyWith(
+    final switchTheme = theme.switchTheme.modify(
       thumbColor: theme.useMaterial3
           ? theme.colorScheme.onSurface
           : theme.isDark
