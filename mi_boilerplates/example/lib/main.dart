@@ -60,7 +60,7 @@ final _pages = <_PageItem>[
     icon: _HomePage.icon,
     title: _HomePage.title,
     path: '/',
-    builder: (_, __) => const mi.ContextProvider(child: _HomePage()),
+    builder: (_, __) => const mi.HomePageHelper(child: _HomePage()),
   ),
   _PageItem(
     icon: AnimationsPage.icon,
@@ -240,6 +240,7 @@ final _router = GoRouter(
 // テーマ設定
 // ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
 const _initColor = Color(0xFF404040);
+// TODO: State化、保存も一般化
 final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
 final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
 final textColorProvider = StateProvider<Color?>((ref) => _initColor);

@@ -621,12 +621,12 @@ class ExpandedColumn extends StatelessWidget {
 }
 
 /// アプリの[HomePage]ウィジェットの親にして、[ScaffoldMessenger.of]などに使う
-class ContextProvider extends StatelessWidget {
+class HomePageHelper extends StatelessWidget {
   static final _key = GlobalKey();
 
   final Widget child;
 
-  const ContextProvider({
+  const HomePageHelper({
     super.key,
     required this.child,
   });

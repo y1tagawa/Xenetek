@@ -29,13 +29,13 @@ void _ping() {
     controller.reset();
     controller.forward();
   });
-  // ScaffoldMessenger.of(mi.ContextProvider.context!).showSnackBar(
+  // ScaffoldMessenger.of(mi.HomePageHelper.context!).showSnackBar(
   //   SnackBar(
   //     content: const Text('Ping'),
   //     action: SnackBarAction(
   //       label: 'CLOSE',
   //       onPressed: () {
-  //         ScaffoldMessenger.of(mi.ContextProvider.context!).hideCurrentSnackBar();
+  //         ScaffoldMessenger.of(mi.HomePageHelper.context!).hideCurrentSnackBar();
   //       },
   //     ),
   //   ),
