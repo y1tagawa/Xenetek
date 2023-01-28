@@ -268,7 +268,7 @@ final preferencesProvider = FutureProvider((ref) async {
   }
 
   ref.read(primarySwatchProvider.notifier).state =
-      colorOrNull('primary_swatch')?.toMaterialColor().toMaterialColor() ?? Colors.indigo;
+      colorOrNull('primary_swatch')?.toMaterialColor() ?? Colors.indigo;
   ref.read(secondaryColorProvider.notifier).state = colorOrNull('secondary_color');
   ref.read(textColorProvider.notifier).state = colorOrNull('text_color');
   ref.read(backgroundColorProvider.notifier).state = colorOrNull('background_color');
