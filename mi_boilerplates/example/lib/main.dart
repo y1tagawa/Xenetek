@@ -239,12 +239,15 @@ final _router = GoRouter(
 
 // テーマ設定
 // ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
-const _initColor = Color(0xFF404040);
-// TODO: State化、保存も一般化
-final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
-final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
-final textColorProvider = StateProvider<Color?>((ref) => _initColor);
-final backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
+const _initColor = mi.SerializableColor(Color(0xFF404040));
+final colorSettingsProvider = StateProvider(
+  (ref) => const mi.ColorSettings(
+    primarySwatch: mi.SerializableColor(Colors.indigo), // _initColor,
+    secondaryColor: mi.SerializableColor(null),
+    textColor: mi.SerializableColor(null),
+    backgroundColor: mi.SerializableColor(null),
+  ),
+);
 final brightnessProvider = StateProvider((ref) => Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final modifyThemeProvider = StateProvider((ref) => true);
@@ -253,28 +256,22 @@ final preferencesProvider = FutureProvider((ref) async {
   final logger = Logger('preferenceProvider');
 
   final preferences = await SharedPreferences.getInstance();
+  final data = preferences.getString('theme')?.let((it) {
+    logger.fine(it);
+    return jsonDecode(it);
+  });
+  logger.fine('theme json=$data');
 
-  final data = preferences.getString('theme')?.let((it) => jsonDecode(it));
-
-  logger.fine('theme preferences=$data');
-  Color? colorOrNull(String key) {
-    if (data is Map<String, dynamic>) {
-      final value = data[key];
-      if (value is String) {
-        return int.tryParse(value)?.let((it) => Color(it));
-      }
-    }
-    return null;
+  try {
+    final colorSettings = mi.ColorSettings.fromJson(data);
+    logger.fine('colorSettings=$colorSettings');
+    ref.read(colorSettingsProvider.notifier).state = colorSettings;
+    final brightness = WidgetsBinding.instance.window.platformBrightness;
+    logger.fine('brightness=$brightness');
+    ref.read(brightnessProvider.notifier).state = brightness;
+  } catch (e, stackTrace) {
+    logger.fine('${e.toString()}\n${stackTrace.toString()}');
   }
-
-  ref.read(primarySwatchProvider.notifier).state =
-      colorOrNull('primary_swatch')?.toMaterialColor() ?? Colors.indigo;
-  ref.read(secondaryColorProvider.notifier).state = colorOrNull('secondary_color');
-  ref.read(textColorProvider.notifier).state = colorOrNull('text_color');
-  ref.read(backgroundColorProvider.notifier).state = colorOrNull('background_color');
-
-  ref.read(brightnessProvider.notifier).state =
-      WidgetsBinding.instance.window.platformBrightness.also((it) => logger.fine('brightness=$it'));
 
   return preferences;
 });
@@ -282,33 +279,32 @@ final preferencesProvider = FutureProvider((ref) async {
 Future<void> saveThemePreferences(WidgetRef ref) async {
   final logger = Logger('saveThemePreferences');
 
-  final preferences = ref.read(preferencesProvider).value;
-  if (preferences != null) {
-    final data = <String, dynamic>{
-      'primary_swatch': (ref.read(primarySwatchProvider).value.toString()),
-      'secondary_color': (ref.read(secondaryColorProvider)?.value).toString(),
-      'text_color': (ref.read(textColorProvider)?.value).toString(),
-      'background_color': (ref.read(backgroundColorProvider)?.value).toString(),
-    };
-    logger.fine('theme preferences=$data');
-    preferences.setString('theme', jsonEncode(data));
-  }
-}
-
-Future<void> clearThemePreferences(WidgetRef ref) async {
-  final preferences = ref.read(preferencesProvider).value;
-  if (preferences != null) {
-    await preferences.remove('theme');
-    ref.invalidate(preferencesProvider);
-  }
+  final preferences = ref.read(preferencesProvider);
+  preferences.when(
+    data: (data) {
+      final data_ = ref.read(colorSettingsProvider.notifier).state.toMap();
+      logger.fine('theme preferences=$data_');
+      data.setString('theme', jsonEncode(data_));
+    },
+    error: (error, _) => logger.fine(error.toString()),
+    loading: () {},
+  );
 }
 
 Future<void> clearPreferences(WidgetRef ref) async {
-  final preferences = ref.read(preferencesProvider).value;
-  if (preferences != null) {
-    await preferences.clear();
-    ref.invalidate(preferencesProvider);
-  }
+  final logger = Logger('clearPreferences');
+  final preferences = ref.read(preferencesProvider);
+  preferences.when(
+    data: (data) async {
+      final ok = await data.clear();
+      logger.fine('cleared ok=$ok');
+    },
+    error: (error, stackTrace) {
+      logger.fine(error.toString());
+      logger.fine(stackTrace.toString());
+    },
+    loading: () {},
+  );
 }
 
 // main
@@ -334,10 +330,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(preferencesProvider);
 
-    final primarySwatch = ref.watch(primarySwatchProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
-    final textColor = ref.watch(textColorProvider);
-    final backgroundColor = ref.watch(backgroundColorProvider);
+    final colorSettings = ref.watch(colorSettingsProvider);
     final brightness = ref.watch(brightnessProvider);
 
     return Material(
@@ -347,10 +340,10 @@ class MyApp extends ConsumerWidget {
         routerDelegate: _router.routerDelegate,
         title: 'Mi boilerplates example.',
         theme: mi.ThemeDataHelper.fromColorSettings(
-          primarySwatch: primarySwatch,
-          secondaryColor: secondaryColor,
-          textColor: textColor,
-          backgroundColor: backgroundColor,
+          primarySwatch: colorSettings.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+          secondaryColor: colorSettings.secondaryColor.value,
+          textColor: colorSettings.textColor.value,
+          backgroundColor: colorSettings.backgroundColor.value,
           brightness: brightness,
           useMaterial3: ref.watch(useM3Provider),
           doModify: ref.watch(modifyThemeProvider),
@@ -368,6 +361,7 @@ class _HomePage extends ConsumerWidget {
 
   static final _logger = Logger((_HomePage).toString());
 
+  // ignore: unused_element
   const _HomePage({super.key});
 
   @override

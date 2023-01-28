@@ -151,10 +151,7 @@ class SettingsPage extends ConsumerWidget {
     _logger.fine('[i] build');
     assert(mi.x11Colors.length == mi.x11ColorNames.length);
 
-    final primarySwatch = ref.watch(primarySwatchProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
-    final textColor = ref.watch(textColorProvider);
-    final backgroundColor = ref.watch(backgroundColorProvider);
+    final colorSettings = ref.watch(colorSettingsProvider);
 
     final theme = Theme.of(context);
 
@@ -175,15 +172,16 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Primary swatch'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: primarySwatch),
+              child: mi.ColorChip(color: colorSettings.primarySwatch.value),
             ),
             onTap: () async {
               final ok = await _showColorSelectDialog(
                 context: context,
                 title: const Text('Primary swatch'),
-                initialColor: primarySwatch,
+                initialColor: colorSettings.primarySwatch.value,
                 onChanged: (value) {
-                  ref.read(primarySwatchProvider.notifier).state = value!.toMaterialColor();
+                  ref.read(colorSettingsProvider.notifier).state =
+                      colorSettings.copyWith(primarySwatch: mi.SerializableColor(value));
                 },
               );
               if (ok) {
@@ -195,16 +193,20 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Secondary color'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: secondaryColor, nullIcon: _nullIcon),
+              child: mi.ColorChip(
+                color: colorSettings.secondaryColor.value,
+                nullIcon: _nullIcon,
+              ),
             ),
             onTap: () async {
               final ok = await _showColorSelectDialog(
                 context: context,
                 title: const Text('Secondary color'),
-                initialColor: secondaryColor,
+                initialColor: colorSettings.secondaryColor.value,
                 nullable: true,
                 onChanged: (value) {
-                  ref.read(secondaryColorProvider.notifier).state = value;
+                  ref.read(colorSettingsProvider.notifier).state =
+                      colorSettings.copyWith(secondaryColor: mi.SerializableColor(value));
                 },
               );
               if (ok) {
@@ -216,16 +218,20 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Text color'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: textColor, nullIcon: _nullIcon),
+              child: mi.ColorChip(
+                color: colorSettings.textColor.value,
+                nullIcon: _nullIcon,
+              ),
             ),
             onTap: () async {
               final ok = await _showTextColorSelectDialog(
                 context: context,
                 title: const Text('Text color'),
-                initialColor: textColor,
+                initialColor: colorSettings.textColor.value,
                 nullable: true,
                 onChanged: (value) {
-                  ref.read(textColorProvider.notifier).state = value;
+                  ref.read(colorSettingsProvider.notifier).state =
+                      colorSettings.copyWith(textColor: mi.SerializableColor(value));
                 },
               );
               if (ok) {
@@ -237,16 +243,20 @@ class SettingsPage extends ConsumerWidget {
             title: const Text('Background color'),
             trailing: Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: mi.ColorChip(color: backgroundColor, nullIcon: _nullIcon),
+              child: mi.ColorChip(
+                color: colorSettings.backgroundColor.value,
+                nullIcon: _nullIcon,
+              ),
             ),
             onTap: () async {
               final ok = await _showBackgroundColorSelectDialog(
                 context: context,
                 title: const Text('Background color'),
-                initialColor: backgroundColor,
+                initialColor: colorSettings.backgroundColor.value,
                 nullable: true,
                 onChanged: (value) {
-                  ref.read(backgroundColorProvider.notifier).state = value;
+                  ref.read(colorSettingsProvider.notifier).state =
+                      colorSettings.copyWith(backgroundColor: mi.SerializableColor(value));
                 },
               );
               if (ok) {
@@ -286,7 +296,7 @@ class SettingsPage extends ConsumerWidget {
                 content: const Text('Are you sure to reset theme preferences?'),
               );
               if (ok) {
-                await clearThemePreferences(ref);
+                await clearPreferences(ref);
               }
             },
           ),

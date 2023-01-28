@@ -212,41 +212,26 @@ class _ColorSchemeTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final primarySwatch = ref.watch(primarySwatchProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
-    final textColor = ref.watch(textColorProvider);
-    final backgroundColor = ref.watch(backgroundColorProvider);
-    final themeAdjustment = ref.watch(modifyThemeProvider);
+    final colorSettings = ref.watch(colorSettingsProvider);
+    final doModify = ref.watch(modifyThemeProvider);
 
     final selectedColor = ref.watch(_selectedColorProvider);
 
-    final lightTheme = ThemeData(
-      primarySwatch: primarySwatch,
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: secondaryColor,
-        brightness: Brightness.light,
-      ),
-    ).let((it) => themeAdjustment
-        ? it.modify(
-            textColor: textColor,
-            backgroundColor: backgroundColor,
-          )
-        : it);
+    final lightTheme = mi.ThemeDataHelper.fromColorSettings(
+      primarySwatch: colorSettings.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+      secondaryColor: colorSettings.secondaryColor.value,
+      textColor: colorSettings.textColor.value,
+      brightness: Brightness.light,
+      doModify: doModify,
+    );
 
-    final darkTheme = ThemeData(
-      primarySwatch: primarySwatch,
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: secondaryColor,
-        brightness: Brightness.dark,
-      ),
-    ).let((it) => themeAdjustment
-        ? it.modify(
-            textColor: textColor,
-            backgroundColor: backgroundColor,
-          )
-        : it);
+    final darkTheme = mi.ThemeDataHelper.fromColorSettings(
+      primarySwatch: colorSettings.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+      secondaryColor: colorSettings.secondaryColor.value,
+      textColor: colorSettings.textColor.value,
+      brightness: Brightness.dark,
+      doModify: doModify,
+    );
 
     return Column(
       children: [

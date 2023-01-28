@@ -289,20 +289,19 @@ class SerializableColor {
 
   @override
   String toString() {
-    return 'SerializableColor{ value: $value,}';
+    return 'SerializableColor{ value: ${value?.toHex(prefix: '0x')},}';
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'value': value?.toHex(),
-    };
-  }
+  String? toMap() => value?.toHex();
 
-  factory SerializableColor.fromMap(Map<String, dynamic> map) {
-    final value = (map['value'] as String?) //
-        ?.let((it) => int.tryParse(it, radix: 16)) //
-        ?.let((it) => Color(it));
-    return SerializableColor(value);
+  factory SerializableColor.fromMap(dynamic data) {
+    if (data is String) {
+      final value = int.tryParse(data, radix: 16);
+      if (value != null) {
+        return SerializableColor(Color(value));
+      }
+    }
+    return const SerializableColor(null);
   }
 }
 
@@ -325,8 +324,8 @@ class ColorSettings {
     });
   }
 
-  factory ColorSettings.fromJson(String source) {
-    return ColorSettings.fromMap(jsonDecode(source));
+  factory ColorSettings.fromJson(String? source) {
+    return ColorSettings.fromMap(jsonDecode(source ?? '{}'));
   }
 
   // fromMapとtoMapをカスタマイズしてるので、上書きするときは注意。
