@@ -143,7 +143,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: OverflowBarPage.icon,
     title: OverflowBarPage.title,
-    path: '/overflow_bar',
+    path: '/drawer/overflow_bar',
     builder: (_, __) => const OverflowBarPage(),
   ),
   _PageItem(
@@ -155,7 +155,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: PageViewPage.icon,
     title: PageViewPage.title,
-    path: '/page_view',
+    path: '/drawer/page_view',
     builder: (_, __) => const PageViewPage(),
   ),
   _PageItem(
@@ -395,28 +395,38 @@ class HomePage extends ConsumerWidget {
         title: title,
       ),
       drawer: Drawer(
-        child: ListView(
-          shrinkWrap: true,
+        child: Column(
           children: [
-            InkWell(
-              onTap: () => Navigator.pop(context),
-              child: const DrawerHeader(
-                child: HomePage.title,
-              ),
-            ),
-            ..._pages
-                .skip(1) // Home
-                .where((item) => item.path.startsWith('/drawer/'))
-                .map(
-                  (item) => ListTile(
-                    leading: item.icon,
-                    title: item.title,
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.push(item.path);
-                    },
+            SizedBox(
+              height: kToolbarHeight * 2,
+              child: DrawerHeader(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back),
                   ),
                 ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: _pages
+                    .skip(1) // Home
+                    .where((item) => item.path.startsWith('/drawer/'))
+                    .map(
+                      (item) => ListTile(
+                        leading: item.icon,
+                        title: item.title,
+                        onTap: () {
+                          Navigator.pop(context);
+                          context.push(item.path);
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
           ],
         ),
       ),
