@@ -280,7 +280,10 @@ class _SwitchThemeTab extends ConsumerWidget {
                         }
                       : null,
                 ),
-                error: (error, _) => Text(error.toString()),
+                error: (error, stackTrace) {
+                  debugPrintStack(stackTrace: stackTrace, label: error.toString());
+                  return Text(error.toString());
+                },
                 loading: () => const CircularProgressIndicator(),
               ),
             ),
@@ -299,7 +302,10 @@ class _SwitchThemeTab extends ConsumerWidget {
                         }
                       : null,
                 ),
-                error: (error, _) => Text(error.toString()),
+                error: (error, stackTrace) {
+                  debugPrintStack(stackTrace: stackTrace, label: error.toString());
+                  return Text(error.toString());
+                },
                 loading: () => const CircularProgressIndicator(),
               ),
             ),

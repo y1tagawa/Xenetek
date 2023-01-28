@@ -201,7 +201,10 @@ class PageViewPage extends ConsumerWidget {
             ),
           );
         },
-        error: (message, stackTrace) => Text(message.toString()),
+        error: (error, stackTrace) {
+          debugPrintStack(stackTrace: stackTrace, label: error.toString());
+          return Text(error.toString());
+        },
         loading: () => const CircularProgressIndicator(),
       ),
       bottomNavigationBar: const ex.BottomNavigationBar(),

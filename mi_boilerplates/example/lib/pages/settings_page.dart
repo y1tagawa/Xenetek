@@ -322,7 +322,7 @@ class SettingsPage extends ConsumerWidget {
     return ref.watch(colorSettingsProvider).when(
           data: (data) => _SettingsPage(colorSettings: data),
           error: (error, stackTrace) {
-            _logger.fine('${error.toString()}\n${stackTrace.toString()}');
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
             return Text(error.toString());
           },
           loading: () => const Text('Loading'),

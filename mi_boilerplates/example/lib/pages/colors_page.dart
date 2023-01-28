@@ -217,7 +217,7 @@ class _ColorSchemeTab extends ConsumerWidget {
     final colorSettings = ref.watch(colorSettingsProvider).when(
           data: (data) => data,
           error: (error, stackTrace) {
-            _logger.fine('${error.toString()}\n${stackTrace.toString()}');
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
             return const mi.ColorSettings();
           },
           loading: () => const mi.ColorSettings(),

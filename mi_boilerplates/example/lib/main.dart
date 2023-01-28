@@ -285,7 +285,9 @@ Future<void> saveThemePreferences(WidgetRef ref) async {
           final sp = await SharedPreferences.getInstance();
           sp.setString('colorSettings', data.toJson());
         },
-        error: (error, stackTrace) {},
+        error: (error, stackTrace) {
+          debugPrintStack(stackTrace: stackTrace, label: error.toString());
+        },
         loading: () {},
       );
 }
@@ -324,8 +326,8 @@ class MyApp extends ConsumerWidget {
         _logger.fine('colorSettings=${data.toString()}');
         return data;
       },
-      error: (error, _) {
-        _logger.fine(error.toString());
+      error: (error, stackTrace) {
+        debugPrintStack(stackTrace: stackTrace, label: error.toString());
         return _defaultColorSettings;
       },
       loading: () {

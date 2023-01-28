@@ -358,7 +358,8 @@ class _SliderTab extends ConsumerWidget {
                 ),
               );
             },
-            error: (error, _) {
+            error: (error, stackTrace) {
+              debugPrintStack(stackTrace: stackTrace, label: error.toString());
               return Text(error.toString());
             },
             loading: () {
