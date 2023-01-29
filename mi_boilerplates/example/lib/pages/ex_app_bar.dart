@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' hide Scaffold;
-import 'package:flutter/material.dart' as material show Scaffold;
+import 'package:flutter/material.dart' as material show PreferredSizeWidget, Scaffold;
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -37,16 +37,26 @@ class _ThemeAdjustmentCheckbox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(enableActionsProvider);
-    final themeAdjustment = ref.watch(modifyThemeProvider);
-
-    return Tooltip(
-      message: themeAdjustment ? 'Theme adjustment: ON' : 'Theme adjustment: OFF',
-      child: Checkbox(
-        value: themeAdjustment,
-        onChanged:
-            enabled ? (value) => ref.read(modifyThemeProvider.notifier).state = value! : null,
-      ),
-    );
+    return ref.watch(colorSettingsProvider).when(
+          data: (data) {
+            return Tooltip(
+              message: data.doModify ? 'Theme adjustment: ON' : 'Theme adjustment: OFF',
+              child: Checkbox(
+                value: data.doModify,
+                onChanged: enabled
+                    ? (value) {
+                        colorSettingsStream.sink.add(data.copyWith(doModify: value));
+                      }
+                    : null,
+              ),
+            );
+          },
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return Text(error.toString());
+          },
+          loading: () => const Text('Loading'),
+        );
   }
 }
 
@@ -55,62 +65,71 @@ class _OverflowMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
-    final brightness = ref.watch(brightnessProvider);
+    return ref.watch(colorSettingsProvider).when(
+          data: (data) {
+            final enabled = ref.watch(enableActionsProvider);
+            final brightness = ref.watch(brightnessProvider);
 
-    return PopupMenuButton(
-      itemBuilder: (context) {
-        return [
-          mi.CheckPopupMenuItem(
-            checked: enabled,
-            child: const Text('Enable actions'),
-            onChanged: (value) {
-              ref.read(enableActionsProvider.notifier).state = value;
-            },
-          ),
-          mi.CheckPopupMenuItem(
-            enabled: enabled,
-            checked: ref.watch(modifyThemeProvider),
-            child: const Text('Adjust theme'),
-            onChanged: (value) {
-              ref.read(modifyThemeProvider.notifier).state = value;
-            },
-          ),
-          mi.CheckPopupMenuItem(
-            enabled: enabled,
-            checked: ref.watch(useM3Provider),
-            child: const Text('Use M3'),
-            onChanged: (value) {
-              ref.read(useM3Provider.notifier).state = value;
-            },
-          ),
-          mi.CheckPopupMenuItem(
-            enabled: enabled,
-            checked: brightness.isDark,
-            child: const Text('Dark mode'),
-            onChanged: (value) => ref.read(brightnessProvider.notifier).state =
-                value ? Brightness.dark : Brightness.light,
-          ),
-          mi.PopupMenuItem(
-            enabled: enabled,
-            child: const mi.Label(
-              text: Text('Color settings...'),
-            ),
-            onTap: () {
-              _logger.fine('tap!');
-            },
-          ),
-        ];
-      },
-      offset: const Offset(0, 40),
-      tooltip: <String>[
-        if (ref.read(enableActionsProvider)) 'Enabled',
-        if (ref.read(modifyThemeProvider)) 'Adjusted',
-        ref.read(useM3Provider) ? 'M3' : 'M2',
-        if (ref.read(brightnessProvider).isDark) 'Dark',
-      ].join(', '),
-      //icon: const Icon(Icons.square),
-    );
+            return PopupMenuButton(
+              itemBuilder: (context) {
+                return [
+                  mi.CheckPopupMenuItem(
+                    checked: enabled,
+                    child: const Text('Enable actions'),
+                    onChanged: (value) {
+                      ref.read(enableActionsProvider.notifier).state = value;
+                    },
+                  ),
+                  mi.CheckPopupMenuItem(
+                    enabled: enabled,
+                    checked: data.doModify,
+                    child: const Text('Adjust theme'),
+                    onChanged: (value) {
+                      colorSettingsStream.sink.add(data.copyWith(doModify: value));
+                    },
+                  ),
+                  mi.CheckPopupMenuItem(
+                    enabled: enabled,
+                    checked: data.useMaterial3,
+                    child: const Text('Use M3'),
+                    onChanged: (value) {
+                      colorSettingsStream.sink.add(data.copyWith(useMaterial3: value));
+                    },
+                  ),
+                  mi.CheckPopupMenuItem(
+                    enabled: enabled,
+                    checked: brightness.isDark,
+                    child: const Text('Dark mode'),
+                    onChanged: (value) => ref.read(brightnessProvider.notifier).state =
+                        value ? Brightness.dark : Brightness.light,
+                  ),
+                  mi.PopupMenuItem(
+                    enabled: enabled,
+                    child: const mi.Label(
+                      text: Text('Color settings...'),
+                    ),
+                    onTap: () {
+                      _logger.fine('tap!');
+                    },
+                  ),
+                ];
+              },
+              offset: const Offset(0, 40),
+              tooltip: <String>[
+                if (enabled) 'Enabled',
+                if (data.doModify) 'Adjusted',
+                data.useMaterial3 ? 'M3' : 'M2',
+                if (brightness.isDark) 'Dark',
+              ].join(', '),
+              //icon: const Icon(Icons.square),
+            );
+          },
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return Text(error.toString());
+          },
+          loading: () => const Text('Loading'),
+        );
   }
 }
 
@@ -123,7 +142,7 @@ class AppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Widget? leading;
   final Widget title;
   final Widget? icon;
-  final PreferredSizeWidget? bottom;
+  final material.PreferredSizeWidget? bottom;
   final Widget? flexibleSpace;
   final List<Widget>? actions;
   final bool? centerTitle;
@@ -153,82 +172,91 @@ class AppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(enableActionsProvider);
-    final brightness = ref.watch(brightnessProvider);
-    final theme = Theme.of(context);
+    return ref.watch(colorSettingsProvider).when(
+          data: (data) {
+            final enabled = ref.watch(enableActionsProvider);
+            final brightness = ref.watch(brightnessProvider);
+            final theme = Theme.of(context);
 
-    final flexibleSpace_ = flexibleSpace ??
-        icon?.let((it) {
-          return IconTheme(
-            data: IconThemeData(
-                color: theme.isDark
-                    ? theme.colorScheme.onSurface.withAlpha(36)
-                    : theme.colorScheme.onPrimary.withAlpha(36),
-                size: 240),
-            child: FittedBox(
-              fit: BoxFit.none,
-              clipBehavior: Clip.hardEdge,
-              child: it,
-            ),
-          );
-        });
+            final flexibleSpace_ = flexibleSpace ??
+                icon?.let((it) {
+                  return IconTheme(
+                    data: IconThemeData(
+                        color: theme.isDark
+                            ? theme.colorScheme.onSurface.withAlpha(36)
+                            : theme.colorScheme.onPrimary.withAlpha(36),
+                        size: 240),
+                    child: FittedBox(
+                      fit: BoxFit.none,
+                      clipBehavior: Clip.hardEdge,
+                      child: it,
+                    ),
+                  );
+                });
 
-    if (ref.watch(modifyThemeProvider)) {
-      return mi.AppBar(
-        prominent: prominent,
-        leading: leading,
-        title: InkWell(
-          onTap: () {
-            ref.read(prominentProvider.notifier).state = !prominent;
+            if (data.doModify) {
+              return mi.AppBar(
+                prominent: prominent,
+                leading: leading,
+                title: InkWell(
+                  onTap: () {
+                    ref.read(prominentProvider.notifier).state = !prominent;
+                  },
+                  child: title,
+                ),
+                bottom: bottom,
+                flexibleSpace: flexibleSpace_,
+                actions: <Widget>[
+                  if (actions != null) ...actions!,
+                  if (prominent) ...[
+                    _ThemeAdjustmentCheckbox(),
+                    mi.CheckIconButton(
+                      enabled: enabled,
+                      checked: data.useMaterial3,
+                      onChanged: (value) {
+                        colorSettingsStream.sink.add(data.copyWith(useMaterial3: value));
+                      },
+                      checkIcon: const Icon(Icons.filter_3_outlined),
+                      uncheckIcon: const Icon(Icons.filter_2_outlined),
+                    ),
+                    mi.CheckIconButton(
+                      enabled: enabled,
+                      checked: brightness.isDark,
+                      onChanged: (value) async {
+                        ref.read(brightnessProvider.notifier).state =
+                            value ? Brightness.dark : Brightness.light;
+                      },
+                      checkIcon: const Icon(Icons.dark_mode_outlined),
+                      uncheckIcon: const Icon(Icons.light_mode_outlined),
+                    ),
+                    _EnableActionsSwitch(),
+                  ] else
+                    _OverflowMenu(),
+                ],
+                centerTitle: centerTitle,
+              );
+            } else {
+              return AppBar(
+                leading: leading,
+                title: title,
+                bottom: bottom,
+                flexibleSpace: flexibleSpace_,
+                actions: <Widget>[
+                  if (actions != null) ...actions!,
+                  _ThemeAdjustmentCheckbox(),
+                  _EnableActionsSwitch(),
+                  _OverflowMenu(),
+                ],
+                centerTitle: centerTitle,
+              );
+            }
           },
-          child: title,
-        ),
-        bottom: bottom,
-        flexibleSpace: flexibleSpace_,
-        actions: <Widget>[
-          if (actions != null) ...actions!,
-          if (prominent) ...[
-            _ThemeAdjustmentCheckbox(),
-            mi.CheckIconButton(
-              enabled: enabled,
-              checked: ref.watch(useM3Provider),
-              onChanged: (value) {
-                ref.read(useM3Provider.notifier).state = value;
-              },
-              checkIcon: const Icon(Icons.filter_3_outlined),
-              uncheckIcon: const Icon(Icons.filter_2_outlined),
-            ),
-            mi.CheckIconButton(
-              enabled: enabled,
-              checked: brightness.isDark,
-              onChanged: (value) async {
-                ref.read(brightnessProvider.notifier).state =
-                    value ? Brightness.dark : Brightness.light;
-              },
-              checkIcon: const Icon(Icons.dark_mode_outlined),
-              uncheckIcon: const Icon(Icons.light_mode_outlined),
-            ),
-            _EnableActionsSwitch(),
-          ] else
-            _OverflowMenu(),
-        ],
-        centerTitle: centerTitle,
-      );
-    } else {
-      return AppBar(
-        leading: leading,
-        title: title,
-        bottom: bottom,
-        flexibleSpace: flexibleSpace_,
-        actions: <Widget>[
-          if (actions != null) ...actions!,
-          _ThemeAdjustmentCheckbox(),
-          _EnableActionsSwitch(),
-          _OverflowMenu(),
-        ],
-        centerTitle: centerTitle,
-      );
-    }
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return Text(error.toString());
+          },
+          loading: () => const Text('Loading'),
+        );
   }
 }
 
@@ -264,7 +292,15 @@ class TabBar extends ConsumerWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(modifyThemeProvider)
+    final themeAdjustment = ref.watch(colorSettingsProvider).when(
+          data: (data) => data.doModify,
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return true;
+          },
+          loading: () => true,
+        );
+    return themeAdjustment
         ? mi.TabBar(
             enabled: enabled,
             tabs: tabs,

@@ -285,17 +285,17 @@ class _SettingsPage extends ConsumerWidget {
             },
           ),
           CheckboxListTile(
-            value: ref.watch(useM3Provider),
+            value: colorSettings.useMaterial3,
             title: const Text('Use material 3'),
             onChanged: (value) {
-              ref.read(useM3Provider.notifier).state = value!;
+              colorSettingsStream.sink.add(colorSettings.copyWith(useMaterial3: value));
             },
           ),
           CheckboxListTile(
-            value: ref.watch(modifyThemeProvider),
+            value: colorSettings.doModify,
             title: const Text('Modify theme'),
             onChanged: (value) {
-              ref.read(modifyThemeProvider.notifier).state = value!;
+              colorSettingsStream.sink.add(colorSettings.copyWith(doModify: value));
             },
           ),
           const Divider(),

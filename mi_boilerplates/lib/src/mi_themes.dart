@@ -313,12 +313,16 @@ class ColorSettings {
   final SerializableColor secondaryColor;
   final SerializableColor textColor;
   final SerializableColor backgroundColor;
+  final bool useMaterial3;
+  final bool doModify;
 
   const ColorSettings({
     this.primarySwatch = const SerializableColor(null),
     this.secondaryColor = const SerializableColor(null),
     this.textColor = const SerializableColor(null),
     this.backgroundColor = const SerializableColor(null),
+    this.useMaterial3 = false,
+    this.doModify = true,
   });
 
   String toJson() {
@@ -346,14 +350,18 @@ class ColorSettings {
           primarySwatch == other.primarySwatch &&
           secondaryColor == other.secondaryColor &&
           textColor == other.textColor &&
-          backgroundColor == other.backgroundColor);
+          backgroundColor == other.backgroundColor &&
+          useMaterial3 == other.useMaterial3 &&
+          doModify == other.doModify);
 
   @override
   int get hashCode =>
       primarySwatch.hashCode ^
       secondaryColor.hashCode ^
       textColor.hashCode ^
-      backgroundColor.hashCode;
+      backgroundColor.hashCode ^
+      useMaterial3.hashCode ^
+      doModify.hashCode;
 
   @override
   String toString() {
@@ -362,6 +370,8 @@ class ColorSettings {
         ' secondaryColor: $secondaryColor,'
         ' textColor: $textColor,'
         ' backgroundColor: $backgroundColor,'
+        ' useMaterial3: $useMaterial3,'
+        ' doModify: $doModify,'
         '}';
   }
 
@@ -370,12 +380,16 @@ class ColorSettings {
     SerializableColor? secondaryColor,
     SerializableColor? textColor,
     SerializableColor? backgroundColor,
+    bool? useMaterial3,
+    bool? doModify,
   }) {
     return ColorSettings(
       primarySwatch: primarySwatch ?? this.primarySwatch,
       secondaryColor: secondaryColor ?? this.secondaryColor,
       textColor: textColor ?? this.textColor,
       backgroundColor: backgroundColor ?? this.backgroundColor,
+      useMaterial3: useMaterial3 ?? this.useMaterial3,
+      doModify: doModify ?? this.doModify,
     );
   }
 
@@ -385,6 +399,8 @@ class ColorSettings {
       'secondaryColor': secondaryColor.toMap(),
       'textColor': textColor.toMap(),
       'backgroundColor': backgroundColor.toMap(),
+      'useMaterial3': useMaterial3,
+      'doModify': doModify,
     };
   }
 
@@ -394,6 +410,8 @@ class ColorSettings {
       secondaryColor: SerializableColor.fromMap(map['secondaryColor']),
       textColor: SerializableColor.fromMap(map['textColor']),
       backgroundColor: SerializableColor.fromMap(map['backgroundColor']),
+      useMaterial3: (map['useMaterial3'] as bool?) ?? false,
+      doModify: (map['useMaterial3'] as bool?) ?? true,
     );
   }
 

@@ -214,7 +214,7 @@ class _ColorSchemeTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final colorSettings = ref.watch(colorSettingsProvider).when(
+    final data = ref.watch(colorSettingsProvider).when(
           data: (data) => data,
           error: (error, stackTrace) {
             debugPrintStack(stackTrace: stackTrace, label: error.toString());
@@ -222,24 +222,23 @@ class _ColorSchemeTab extends ConsumerWidget {
           },
           loading: () => const mi.ColorSettings(),
         );
-    final doModify = ref.watch(modifyThemeProvider);
 
     final selectedColor = ref.watch(_selectedColorProvider);
 
     final lightTheme = mi.ThemeDataHelper.fromColorSettings(
-      primarySwatch: colorSettings.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
-      secondaryColor: colorSettings.secondaryColor.value,
-      textColor: colorSettings.textColor.value,
+      primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+      secondaryColor: data.secondaryColor.value,
+      textColor: data.textColor.value,
       brightness: Brightness.light,
-      doModify: doModify,
+      doModify: data.doModify,
     );
 
     final darkTheme = mi.ThemeDataHelper.fromColorSettings(
-      primarySwatch: colorSettings.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
-      secondaryColor: colorSettings.secondaryColor.value,
-      textColor: colorSettings.textColor.value,
+      primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+      secondaryColor: data.secondaryColor.value,
+      textColor: data.textColor.value,
       brightness: Brightness.dark,
-      doModify: doModify,
+      doModify: data.doModify,
     );
 
     return Column(

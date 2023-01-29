@@ -251,8 +251,6 @@ final colorSettingsProvider = StreamProvider<mi.ColorSettings>(
 final brightnessProvider =
     StateProvider((ref) => WidgetsBinding.instance.window.platformBrightness);
 //    Brightness.dark);
-final useM3Provider = StateProvider((ref) => false);
-final modifyThemeProvider = StateProvider((ref) => true);
 
 // main
 
@@ -320,8 +318,8 @@ class MyApp extends ConsumerWidget {
               textColor: data.textColor.value,
               backgroundColor: data.backgroundColor.value,
               brightness: brightness,
-              useMaterial3: ref.watch(useM3Provider),
-              doModify: ref.watch(modifyThemeProvider),
+              useMaterial3: data.useMaterial3,
+              doModify: data.doModify,
             ),
           ),
         ).also((it) => _logger.fine('[o] build'));
@@ -332,7 +330,7 @@ class MyApp extends ConsumerWidget {
       },
       loading: () {
         _logger.fine('Loading colorSettings');
-        return const CircularProgressIndicator();
+        return const Text('Loading');
       },
     );
   }
