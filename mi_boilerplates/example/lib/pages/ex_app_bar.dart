@@ -68,74 +68,76 @@ class _OverflowMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ref.watch(colorSettingsProvider).when(
-          data: (data) {
-            final enabled = ref.watch(enableActionsProvider);
-            final brightness = ref.watch(brightnessProvider);
+      data: (data) {
+        final enabled = ref.watch(enableActionsProvider);
+        final brightness = ref.watch(brightnessProvider);
 
-            return PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  mi.CheckPopupMenuItem(
-                    checked: enabled,
-                    child: const Text('Enable actions'),
-                    onChanged: (value) {
-                      ref.read(enableActionsProvider.notifier).state = value;
-                    },
-                  ),
-                  mi.CheckPopupMenuItem(
-                    enabled: enabled,
-                    checked: data.doModify,
-                    child: const Text('Adjust theme'),
-                    onChanged: (value) {
-                      MyApp.setColorSettings(
-                        data: data.copyWith(doModify: value),
-                      );
-                    },
-                  ),
-                  mi.CheckPopupMenuItem(
-                    enabled: enabled,
-                    checked: data.useMaterial3,
-                    child: const Text('Use M3'),
-                    onChanged: (value) {
-                      MyApp.setColorSettings(
-                        data: data.copyWith(useMaterial3: value),
-                      );
-                    },
-                  ),
-                  mi.CheckPopupMenuItem(
-                    enabled: enabled,
-                    checked: brightness.isDark,
-                    child: const Text('Dark mode'),
-                    onChanged: (value) => ref.read(brightnessProvider.notifier).state =
-                        value ? Brightness.dark : Brightness.light,
-                  ),
-                  mi.PopupMenuItem(
-                    enabled: enabled,
-                    child: const mi.Label(
-                      text: Text('Color settings...'),
-                    ),
-                    onTap: () {
-                      _logger.fine('tap!');
-                    },
-                  ),
-                ];
-              },
-              offset: const Offset(0, 40),
-              tooltip: <String>[
-                if (enabled) 'Enabled',
-                if (data.doModify) 'Adjusted',
-                data.useMaterial3 ? 'M3' : 'M2',
-                if (brightness.isDark) 'Dark',
-              ].join(', '),
-              //icon: const Icon(Icons.square),
-            );
+        return PopupMenuButton(
+          itemBuilder: (context) {
+            return [
+              mi.CheckPopupMenuItem(
+                checked: enabled,
+                child: const Text('Enable actions'),
+                onChanged: (value) {
+                  ref.read(enableActionsProvider.notifier).state = value;
+                },
+              ),
+              mi.CheckPopupMenuItem(
+                enabled: enabled,
+                checked: data.doModify,
+                child: const Text('Adjust theme'),
+                onChanged: (value) {
+                  MyApp.setColorSettings(
+                    data: data.copyWith(doModify: value),
+                  );
+                },
+              ),
+              mi.CheckPopupMenuItem(
+                enabled: enabled,
+                checked: data.useMaterial3,
+                child: const Text('Use M3'),
+                onChanged: (value) {
+                  MyApp.setColorSettings(
+                    data: data.copyWith(useMaterial3: value),
+                  );
+                },
+              ),
+              mi.CheckPopupMenuItem(
+                enabled: enabled,
+                checked: brightness.isDark,
+                child: const Text('Dark mode'),
+                onChanged: (value) => ref.read(brightnessProvider.notifier).state =
+                    value ? Brightness.dark : Brightness.light,
+              ),
+              mi.PopupMenuItem(
+                enabled: enabled,
+                child: const mi.Label(
+                  text: Text('Color settings...'),
+                ),
+                onTap: () {
+                  _logger.fine('tap!');
+                },
+              ),
+            ];
           },
-          error: (error, stackTrace) {
-            debugPrintStack(stackTrace: stackTrace, label: error.toString());
-            return Text(error.toString());
-          },
-          loading: () => const Text('Loading'),
+          offset: const Offset(0, 40),
+          tooltip: <String>[
+            if (enabled) 'Enabled',
+            if (data.doModify) 'Adjusted',
+            data.useMaterial3 ? 'M3' : 'M2',
+            if (brightness.isDark) 'Dark',
+          ].join(', '),
+          //icon: const Icon(Icons.square),
         );
+      },
+      error: (error, stackTrace) {
+        debugPrintStack(stackTrace: stackTrace, label: error.toString());
+        return Text(error.toString());
+      },
+      loading: () {
+        return const Text('Loading');
+      },
+    );
   }
 }
 
