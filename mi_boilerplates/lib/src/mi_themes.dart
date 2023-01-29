@@ -274,34 +274,34 @@ extension ThemeDataHelper on ThemeData {
 }
 
 /// 文字列化してシリアライズ可能な[Color?]のコンテナ
-class SerializableColor {
+class ColorOrNull {
   final Color? value;
 
-  const SerializableColor(this.value);
+  const ColorOrNull(this.value);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is SerializableColor && runtimeType == other.runtimeType && value == other.value);
+      (other is ColorOrNull && runtimeType == other.runtimeType && value == other.value);
 
   @override
   int get hashCode => value.hashCode;
 
   @override
   String toString() {
-    return 'SerializableColor{ value: ${value?.toHex(prefix: '0x')},}';
+    return 'SerializableColor{ value: $value},}';
   }
 
-  String? toMap() => value?.toHex();
+  String? toStringOrNull() => value?.toHex(prefix: '0x');
 
-  factory SerializableColor.fromMap(dynamic data) {
-    if (data is String) {
-      final value = int.tryParse(data, radix: 16);
+  factory ColorOrNull.fromStringOrNull(String? data) {
+    if (data != null) {
+      final value = int.tryParse(data);
       if (value != null) {
-        return SerializableColor(Color(value));
+        return ColorOrNull(Color(value));
       }
     }
-    return const SerializableColor(null);
+    return const ColorOrNull(null);
   }
 }
 
@@ -309,18 +309,18 @@ class SerializableColor {
 ///
 /// primarySwatchは一旦Colorとする
 class ColorSettings {
-  final SerializableColor primarySwatch;
-  final SerializableColor secondaryColor;
-  final SerializableColor textColor;
-  final SerializableColor backgroundColor;
+  final ColorOrNull primarySwatch;
+  final ColorOrNull secondaryColor;
+  final ColorOrNull textColor;
+  final ColorOrNull backgroundColor;
   final bool useMaterial3;
   final bool doModify;
 
   const ColorSettings({
-    this.primarySwatch = const SerializableColor(null),
-    this.secondaryColor = const SerializableColor(null),
-    this.textColor = const SerializableColor(null),
-    this.backgroundColor = const SerializableColor(null),
+    this.primarySwatch = const ColorOrNull(null),
+    this.secondaryColor = const ColorOrNull(null),
+    this.textColor = const ColorOrNull(null),
+    this.backgroundColor = const ColorOrNull(null),
     this.useMaterial3 = false,
     this.doModify = true,
   });
@@ -328,8 +328,8 @@ class ColorSettings {
   String toJson() {
     return jsonEncode(this, toEncodable: (object) {
       switch (object.runtimeType) {
-        case mi.ColorSettings:
-          return (object as mi.ColorSettings).toMap();
+        case ColorSettings:
+          return (object as ColorSettings).toMap();
       }
       return object;
     });
@@ -376,10 +376,10 @@ class ColorSettings {
   }
 
   ColorSettings copyWith({
-    SerializableColor? primarySwatch,
-    SerializableColor? secondaryColor,
-    SerializableColor? textColor,
-    SerializableColor? backgroundColor,
+    ColorOrNull? primarySwatch,
+    ColorOrNull? secondaryColor,
+    ColorOrNull? textColor,
+    ColorOrNull? backgroundColor,
     bool? useMaterial3,
     bool? doModify,
   }) {
@@ -395,10 +395,10 @@ class ColorSettings {
 
   Map<String, dynamic> toMap() {
     return {
-      'primarySwatch': primarySwatch.toMap(),
-      'secondaryColor': secondaryColor.toMap(),
-      'textColor': textColor.toMap(),
-      'backgroundColor': backgroundColor.toMap(),
+      'primarySwatch': primarySwatch.toStringOrNull(),
+      'secondaryColor': secondaryColor.toStringOrNull(),
+      'textColor': textColor.toStringOrNull(),
+      'backgroundColor': backgroundColor.toStringOrNull(),
       'useMaterial3': useMaterial3,
       'doModify': doModify,
     };
@@ -406,12 +406,12 @@ class ColorSettings {
 
   factory ColorSettings.fromMap(Map<String, dynamic> map) {
     return ColorSettings(
-      primarySwatch: SerializableColor.fromMap(map['primarySwatch']),
-      secondaryColor: SerializableColor.fromMap(map['secondaryColor']),
-      textColor: SerializableColor.fromMap(map['textColor']),
-      backgroundColor: SerializableColor.fromMap(map['backgroundColor']),
+      primarySwatch: ColorOrNull.fromStringOrNull(map['primarySwatch']),
+      secondaryColor: ColorOrNull.fromStringOrNull(map['secondaryColor']),
+      textColor: ColorOrNull.fromStringOrNull(map['textColor']),
+      backgroundColor: ColorOrNull.fromStringOrNull(map['backgroundColor']),
       useMaterial3: (map['useMaterial3'] as bool?) ?? false,
-      doModify: (map['useMaterial3'] as bool?) ?? true,
+      doModify: (map['doModify'] as bool?) ?? true,
     );
   }
 

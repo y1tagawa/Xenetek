@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import '../mi_boilerplates.dart' as mi;
 
 /// カラーグリッド
-
 class ColorGrid extends StatelessWidget {
   static const double kItemSize = 40.0;
 
@@ -62,7 +61,6 @@ class ColorGrid extends StatelessWidget {
 }
 
 /// タブ付きカラーグリッド
-
 class TabbedColorGrid extends StatelessWidget {
   final int initialTabIndex;
   final List<Widget> tabs;
@@ -104,10 +102,9 @@ class TabbedColorGrid extends StatelessWidget {
   }
 }
 
-///
-
 class ColorGridHelper {
-  static Future<bool> showColorSelectDialog({
+  /// 色選択ダイアログ
+  static Future<MapEntry<bool, Color?>> showColorSelectDialog({
     required BuildContext context,
     Widget? title,
     Color? initialColor,
@@ -141,6 +138,6 @@ class ColorGridHelper {
           ),
         ),
       ),
-    ).then((value) => value ?? false);
+    ).then((value) => MapEntry(value ?? false, color));
   }
 }

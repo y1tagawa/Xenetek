@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -122,28 +120,4 @@ class DialogsPage extends ConsumerWidget {
 
 Future<void> _test() async {
   final logger = Logger('_test');
-
-  const color = mi.SerializableColor(Color(0xFFAABBCC));
-  const colorNull = mi.SerializableColor(null);
-
-  final data = <String, dynamic>{};
-  // map<String, dynamic>でMaterialColor, Color?をJSONにできる？
-  //data['primarySwatch'] = Colors.indigo;
-  data['color'] = color;
-  data['colorNull'] = colorNull;
-  // 結果: できない。
-  // [ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception:
-  //   Converting object to an encodable object failed: Instance of 'MaterialColor'
-  // [ERROR:flutter/runtime/dart_vm_initializer.cc(41)] Unhandled Exception:
-  //   Converting object to an encodable object failed: Instance of 'Color'
-
-  final json = jsonEncode(data, toEncodable: (object) {
-    switch (object.runtimeType) {
-      case mi.SerializableColor:
-        return (object as mi.SerializableColor).toMap();
-    }
-    return object;
-  });
-
-  logger.fine('data: [$json]');
 }

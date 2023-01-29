@@ -273,26 +273,17 @@ class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   static void setColorSettings(mi.ColorSettings data) {
-    _logger.fine('[i] setColorSettings');
+    _logger.fine('[i] setColorSettings: data=${data.toString()}');
     _colorSettingsStream.sink.add(data);
     _logger.fine('[o] setColorSettings');
   }
 
-  static Future<void> saveColorSettings(WidgetRef ref) async {
-    _logger.fine('[i] saveColorSettings');
-    ref.read(colorSettingsProvider).when(
-      data: (data) async {
-        _logger.fine('saveColorSettings: data=${data.toString()}');
-        final sp = await SharedPreferences.getInstance();
-        sp.setString('colorSettings', data.toJson());
-      },
-      error: (error, stackTrace) {
-        debugPrintStack(stackTrace: stackTrace, label: error.toString());
-      },
-      loading: () {
-        _logger.fine('Unexpected call of saveColorSettings during loading.');
-      },
-    );
+  static Future<void> setAndSaveColorSettings(mi.ColorSettings data) async {
+    // TODO: try/catch
+    _logger.fine('[i] saveColorSettings: data=${data.toString()}');
+    final sp = await SharedPreferences.getInstance();
+    sp.setString('colorSettings', data.toJson());
+    setColorSettings(data);
     _logger.fine('[o] saveColorSettings');
   }
 
@@ -304,7 +295,7 @@ class MyApp extends ConsumerWidget {
         (it) => it.copyWith(
           // Primary swatchのデフォルト
           primarySwatch: it.primarySwatch.value == null
-              ? const mi.SerializableColor(Colors.indigo)
+              ? const mi.ColorOrNull(Colors.indigo)
               : it.primarySwatch,
           // Theme adjustmentは必ずONにする
           doModify: true,
@@ -329,37 +320,42 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final data = ref.watch(colorSettingsProvider).when(
-          data: (data) => data,
-          error: (error, stackTrace) {
-            debugPrintStack(stackTrace: stackTrace, label: error.toString());
-            return const mi.ColorSettings();
-          },
-          loading: () {
-            _logger.fine('Loading colorSettings');
-            return const mi.ColorSettings();
-          },
+    return ref.watch(colorSettingsProvider).when(
+      data: (data) {
+        _logger.fine('colorSettings=${data.toString()}');
+        final brightness = ref.watch(brightnessProvider);
+        return Material(
+          child: MaterialApp.router(
+            routeInformationProvider: _router.routeInformationProvider,
+            routeInformationParser: _router.routeInformationParser,
+            routerDelegate: _router.routerDelegate,
+            title: 'Mi boilerplates example.',
+            theme: mi.ThemeDataHelper.fromColorSettings(
+              primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+              secondaryColor: data.secondaryColor.value,
+              textColor: data.textColor.value,
+              backgroundColor: data.backgroundColor.value,
+              brightness: brightness,
+              useMaterial3: data.useMaterial3,
+              doModify: data.doModify,
+            ),
+          ),
         );
-
-    _logger.fine('colorSettings=${data.toString()}');
-    final brightness = ref.watch(brightnessProvider);
-    return Material(
-      child: MaterialApp.router(
-        routeInformationProvider: _router.routeInformationProvider,
-        routeInformationParser: _router.routeInformationParser,
-        routerDelegate: _router.routerDelegate,
-        title: 'Mi boilerplates example.',
-        theme: mi.ThemeDataHelper.fromColorSettings(
-          primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
-          secondaryColor: data.secondaryColor.value,
-          textColor: data.textColor.value,
-          backgroundColor: data.backgroundColor.value,
-          brightness: brightness,
-          useMaterial3: data.useMaterial3,
-          doModify: data.doModify,
-        ),
-      ),
-    ).also((it) => _logger.fine('[o] build'));
+      },
+      error: (error, stackTrace) {
+        debugPrintStack(stackTrace: stackTrace, label: error.toString());
+        return Scaffold(
+          body: Text(error.toString()),
+        );
+      },
+      loading: () {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
+    ).also((it) {
+      _logger.fine('[o] build');
+    });
   }
 }
 
