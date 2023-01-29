@@ -262,15 +262,14 @@ extension ThemeDataHelper on ThemeData {
         brightness: brightness,
       ),
       useMaterial3: useMaterial3,
+    ).let(
+      (it) => doModify
+          ? it.modify(
+              textColor: textColor,
+              backgroundColor: backgroundColor,
+            )
+          : it,
     );
-    // .let(
-    //   (it) => doModify
-    //       ? it.modify(
-    //           textColor: textColor,
-    //           backgroundColor: backgroundColor,
-    //         )
-    //       : it,
-    // );
   }
 }
 

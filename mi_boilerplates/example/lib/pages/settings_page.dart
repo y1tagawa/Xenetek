@@ -191,9 +191,9 @@ class SettingsPage extends ConsumerWidget {
                         context: context,
                         title: const Text('Primary swatch'),
                         initialColor: data.primarySwatch.value,
-                        onChanged: (value) {
-                          colorSettingsStream.sink
-                              .add(data.copyWith(primarySwatch: mi.SerializableColor(value)));
+                        onChanged: (value) async {
+                          MyApp.setColorSettings(
+                              data.copyWith(primarySwatch: mi.SerializableColor(value)));
                         },
                       );
                       if (ok) {
@@ -217,8 +217,9 @@ class SettingsPage extends ConsumerWidget {
                         initialColor: data.secondaryColor.value,
                         nullable: true,
                         onChanged: (value) {
-                          colorSettingsStream.sink
-                              .add(data.copyWith(secondaryColor: mi.SerializableColor(value)));
+                          MyApp.setColorSettings(data.copyWith(
+                            secondaryColor: mi.SerializableColor(value),
+                          ));
                         },
                       );
                       if (ok) {
@@ -242,8 +243,9 @@ class SettingsPage extends ConsumerWidget {
                         initialColor: data.textColor.value,
                         nullable: true,
                         onChanged: (value) {
-                          colorSettingsStream.sink
-                              .add(data.copyWith(textColor: mi.SerializableColor(value)));
+                          MyApp.setColorSettings(data.copyWith(
+                            textColor: mi.SerializableColor(value),
+                          ));
                         },
                       );
                       if (ok) {
@@ -267,8 +269,9 @@ class SettingsPage extends ConsumerWidget {
                         initialColor: data.backgroundColor.value,
                         nullable: true,
                         onChanged: (value) {
-                          colorSettingsStream.sink
-                              .add(data.copyWith(backgroundColor: mi.SerializableColor(value)));
+                          MyApp.setColorSettings(data.copyWith(
+                            backgroundColor: mi.SerializableColor(value),
+                          ));
                         },
                       );
                       if (ok) {
@@ -288,14 +291,14 @@ class SettingsPage extends ConsumerWidget {
                     value: data.useMaterial3,
                     title: const Text('Use material 3'),
                     onChanged: (value) {
-                      colorSettingsStream.sink.add(data.copyWith(useMaterial3: value));
+                      MyApp.setColorSettings(data.copyWith(useMaterial3: value));
                     },
                   ),
                   CheckboxListTile(
                     value: data.doModify,
                     title: const Text('Modify theme'),
                     onChanged: (value) {
-                      colorSettingsStream.sink.add(data.copyWith(doModify: value));
+                      MyApp.setColorSettings(data.copyWith(doModify: value));
                     },
                   ),
                   const Divider(),
