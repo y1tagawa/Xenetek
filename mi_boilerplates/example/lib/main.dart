@@ -278,10 +278,21 @@ class MyApp extends ConsumerWidget {
     _logger.fine('[o] setColorSettings');
   }
 
-  static Future<void> saveColorSettings(mi.ColorSettings data) async {
+  static Future<void> saveColorSettings(WidgetRef ref) async {
     _logger.fine('[i] saveColorSettings');
-    final sp = await SharedPreferences.getInstance();
-    sp.setString('colorSettings', data.toJson());
+    ref.read(colorSettingsProvider).when(
+      data: (data) async {
+        _logger.fine('saveColorSettings: data=${data.toString()}');
+        final sp = await SharedPreferences.getInstance();
+        sp.setString('colorSettings', data.toJson());
+      },
+      error: (error, stackTrace) {
+        debugPrintStack(stackTrace: stackTrace, label: error.toString());
+      },
+      loading: () {
+        _logger.fine('Unexpected call of saveColorSettings during loading.');
+      },
+    );
     _logger.fine('[o] saveColorSettings');
   }
 

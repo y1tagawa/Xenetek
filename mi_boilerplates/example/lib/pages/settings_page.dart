@@ -155,18 +155,6 @@ class SettingsPage extends ConsumerWidget {
           data: (data) {
             final theme = Theme.of(context);
 
-            Future<void> saveColorSettings() async {
-              ref.read(colorSettingsProvider).when(
-                    data: (data) async {
-                      await MyApp.saveColorSettings(data);
-                    },
-                    error: (error, stackTrace) {
-                      debugPrintStack(stackTrace: stackTrace, label: error.toString());
-                    },
-                    loading: () {},
-                  );
-            }
-
             return ex.Scaffold(
               appBar: ex.AppBar(
                 prominent: ref.watch(ex.prominentProvider),
@@ -192,12 +180,13 @@ class SettingsPage extends ConsumerWidget {
                         title: const Text('Primary swatch'),
                         initialColor: data.primarySwatch.value,
                         onChanged: (value) async {
-                          MyApp.setColorSettings(
-                              data.copyWith(primarySwatch: mi.SerializableColor(value)));
+                          MyApp.setColorSettings(data.copyWith(
+                            primarySwatch: mi.SerializableColor(value),
+                          ));
                         },
                       );
                       if (ok) {
-                        await saveColorSettings();
+                        await MyApp.saveColorSettings(ref);
                       }
                     },
                   ),
@@ -223,7 +212,7 @@ class SettingsPage extends ConsumerWidget {
                         },
                       );
                       if (ok) {
-                        await saveColorSettings();
+                        await MyApp.saveColorSettings(ref);
                       }
                     },
                   ),
@@ -249,7 +238,7 @@ class SettingsPage extends ConsumerWidget {
                         },
                       );
                       if (ok) {
-                        await saveColorSettings();
+                        await MyApp.saveColorSettings(ref);
                       }
                     },
                   ),
@@ -275,7 +264,7 @@ class SettingsPage extends ConsumerWidget {
                         },
                       );
                       if (ok) {
-                        await saveColorSettings();
+                        await MyApp.saveColorSettings(ref);
                       }
                     },
                   ),
@@ -291,16 +280,10 @@ class SettingsPage extends ConsumerWidget {
                     value: data.useMaterial3,
                     title: const Text('Use material 3'),
                     onChanged: (value) async {
-                      MyApp.saveColorSettings(data.copyWith(useMaterial3: value));
+                      MyApp.setColorSettings(data.copyWith(useMaterial3: value));
+                      MyApp.saveColorSettings(ref);
                     },
                   ),
-                  // CheckboxListTile(
-                  //   value: data.doModify,
-                  //   title: const Text('Modify theme'),
-                  //   onChanged: (value) {
-                  //     MyApp.setColorSettings(data.copyWith(doModify: value));
-                  //   },
-                  // ),
                   const Divider(),
                   Theme(
                     data: theme.isDark ? ThemeData.dark() : ThemeData.light(),
