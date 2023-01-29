@@ -13,6 +13,7 @@ import 'ex_app_bar.dart' as ex;
 
 const _nullIcon = Icon(Icons.block);
 
+/// primarySwatchまたはsecondaryColor選択ダイアログ
 Future<MapEntry<bool, Color?>> _showColorSelectDialog({
   required BuildContext context,
   Widget? title,
@@ -38,6 +39,7 @@ Future<MapEntry<bool, Color?>> _showColorSelectDialog({
   return ok;
 }
 
+/// textColor選択ダイアログ
 Future<MapEntry<bool, Color?>> _showTextColorSelectDialog({
   required BuildContext context,
   Widget? title,
@@ -86,6 +88,7 @@ Future<MapEntry<bool, Color?>> _showTextColorSelectDialog({
   return ok;
 }
 
+/// backgroundColor選択ダイアログ
 Future<MapEntry<bool, Color?>> _showBackgroundColorSelectDialog({
   required BuildContext context,
   Widget? title,
@@ -138,9 +141,6 @@ Future<MapEntry<bool, Color?>> _showBackgroundColorSelectDialog({
 // Exampleアプリの設定ページ
 //
 
-// TODO: ドメイン層
-mi.ColorSettings? _lastData;
-
 class SettingsPage extends ConsumerWidget {
   static const icon = Icon(Icons.settings_outlined);
   static const title = Text('Settings');
@@ -156,7 +156,6 @@ class SettingsPage extends ConsumerWidget {
 
     return ref.watch(colorSettingsProvider).when(
           data: (data) {
-            _lastData = data;
             final theme = Theme.of(context);
 
             return ex.Scaffold(
@@ -184,14 +183,15 @@ class SettingsPage extends ConsumerWidget {
                         title: const Text('Primary swatch'),
                         initialColor: data.primarySwatch.value,
                         onChanged: (value) async {
-                          _lastData = _lastData!.copyWith(
-                            primarySwatch: mi.ColorOrNull(value),
+                          MyApp.setColorSettings(
+                            data.copyWith(primarySwatch: mi.ColorOrNull(value)),
                           );
-                          MyApp.setColorSettings(_lastData!);
                         },
                       );
                       if (ok.key) {
-                        await MyApp.setAndSaveColorSettings(_lastData!);
+                        await MyApp.setAndSaveColorSettings(
+                          data.copyWith(primarySwatch: mi.ColorOrNull(ok.value)),
+                        );
                       }
                     },
                   ),
@@ -211,14 +211,15 @@ class SettingsPage extends ConsumerWidget {
                         initialColor: data.secondaryColor.value,
                         nullable: true,
                         onChanged: (value) {
-                          _lastData = _lastData!.copyWith(
-                            secondaryColor: mi.ColorOrNull(value),
+                          MyApp.setColorSettings(
+                            data.copyWith(secondaryColor: mi.ColorOrNull(value)),
                           );
-                          MyApp.setColorSettings(_lastData!);
                         },
                       );
                       if (ok.key) {
-                        await MyApp.setAndSaveColorSettings(_lastData!);
+                        await MyApp.setAndSaveColorSettings(
+                          data.copyWith(secondaryColor: mi.ColorOrNull(ok.value)),
+                        );
                       }
                     },
                   ),
@@ -238,14 +239,15 @@ class SettingsPage extends ConsumerWidget {
                         initialColor: data.textColor.value,
                         nullable: true,
                         onChanged: (value) {
-                          _lastData = _lastData!.copyWith(
-                            textColor: mi.ColorOrNull(value),
+                          MyApp.setColorSettings(
+                            data.copyWith(textColor: mi.ColorOrNull(value)),
                           );
-                          MyApp.setColorSettings(_lastData!);
                         },
                       );
                       if (ok.key) {
-                        await MyApp.setAndSaveColorSettings(_lastData!);
+                        await MyApp.setAndSaveColorSettings(
+                          data.copyWith(textColor: mi.ColorOrNull(ok.value)),
+                        );
                       }
                     },
                   ),
@@ -265,14 +267,15 @@ class SettingsPage extends ConsumerWidget {
                         initialColor: data.backgroundColor.value,
                         nullable: true,
                         onChanged: (value) {
-                          _lastData = _lastData!.copyWith(
-                            backgroundColor: mi.ColorOrNull(value),
+                          MyApp.setColorSettings(
+                            data.copyWith(backgroundColor: mi.ColorOrNull(value)),
                           );
-                          MyApp.setColorSettings(_lastData!);
                         },
                       );
                       if (ok.key) {
-                        await MyApp.setAndSaveColorSettings(_lastData!);
+                        await MyApp.setAndSaveColorSettings(
+                          data.copyWith(backgroundColor: mi.ColorOrNull(ok.value)),
+                        );
                       }
                     },
                   ),
@@ -288,10 +291,9 @@ class SettingsPage extends ConsumerWidget {
                     value: data.useMaterial3,
                     title: const Text('Use material 3'),
                     onChanged: (value) async {
-                      _lastData = _lastData!.copyWith(
-                        useMaterial3: value,
+                      MyApp.setAndSaveColorSettings(
+                        data.copyWith(useMaterial3: value),
                       );
-                      MyApp.setAndSaveColorSettings(_lastData!);
                     },
                   ),
                   const Divider(),

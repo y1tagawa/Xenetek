@@ -104,6 +104,9 @@ class TabbedColorGrid extends StatelessWidget {
 
 class ColorGridHelper {
   /// 色選択ダイアログ
+  ///
+  /// [initialColor]を初期値とする色選択ダイアログを表示する。
+  /// OKかキャンセルか、最後に選択した色(またはnull)のペアを返す。
   static Future<MapEntry<bool, Color?>> showColorSelectDialog({
     required BuildContext context,
     Widget? title,
