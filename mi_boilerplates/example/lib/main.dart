@@ -274,39 +274,42 @@ void main() async {
 }
 
 class MyApp extends ConsumerWidget {
-  // ignore: unused_field
   static final _logger = Logger((MyApp).toString());
 
   const MyApp({super.key});
 
   static Future<void> saveColorSettings(mi.ColorSettings data) async {
+    _logger.fine('[i] saveColorSettings');
     final sp = await SharedPreferences.getInstance();
     sp.setString('colorSettings', data.toJson());
+    _logger.fine('[o] saveColorSettings');
   }
 
   static Future<bool> loadColorSettings() async {
-    final logger = Logger('loadColorSettings');
+    _logger.fine('[i] loadColorSettings');
     final sp = await SharedPreferences.getInstance();
     var data = mi.ColorSettings.fromJson(sp.getString('colorSettings')).let(
       (it) => it.primarySwatch.value == null
-          ? it.copyWith(
-              primarySwatch: const mi.SerializableColor(Colors.indigo),
-            )
+          ? it.copyWith(primarySwatch: const mi.SerializableColor(Colors.indigo))
           : it,
     );
-    logger.fine('data=${data.toString()}');
+    _logger.fine('loadColorSettings: data=${data.toString()}');
     colorSettingsStream.add(data);
+    _logger.fine('[o] loadColorSettings');
     return true;
   }
 
   static Future<void> clearPreferences() async {
+    _logger.fine('[i] clearPreferences');
     final sp = await SharedPreferences.getInstance();
     await sp.clear();
     await loadColorSettings();
+    _logger.fine('[o] clearPreferences');
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _logger.fine('[i] build');
     final colorSettings = ref.watch(colorSettingsProvider).when(
       data: (data) {
         _logger.fine('colorSettings=${data.toString()}');
@@ -339,7 +342,7 @@ class MyApp extends ConsumerWidget {
           doModify: ref.watch(modifyThemeProvider),
         ),
       ),
-    );
+    ).also((it) => _logger.fine('[o] build'));
   }
 }
 
