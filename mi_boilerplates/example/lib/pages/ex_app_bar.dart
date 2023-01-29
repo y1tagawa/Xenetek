@@ -109,15 +109,6 @@ class _OverflowMenu extends ConsumerWidget {
                 onChanged: (value) => ref.read(brightnessProvider.notifier).state =
                     value ? Brightness.dark : Brightness.light,
               ),
-              mi.PopupMenuItem(
-                enabled: enabled,
-                child: const mi.Label(
-                  text: Text('Color settings...'),
-                ),
-                onTap: () {
-                  _logger.fine('tap!');
-                },
-              ),
             ];
           },
           offset: const Offset(0, 40),
@@ -144,7 +135,6 @@ class _OverflowMenu extends ConsumerWidget {
 // Exampleアプリ用AppBar
 //
 // テーマ調整ON/OFFによりTabBarを切り替える
-
 class AppBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool prominent;
   final Widget? leading;

@@ -276,13 +276,16 @@ class MyApp extends ConsumerWidget {
     required mi.ColorSettings data,
     bool save = false,
   }) async {
-    // TODO: try/catch
-    _logger.fine('[i] saveColorSettings: data=${data.toString()} save=$save');
-    if (save) {
-      final sp = await SharedPreferences.getInstance();
-      sp.setString('colorSettings', data.toJson());
+    try {
+      _logger.fine('[i] saveColorSettings: data=${data.toString()} save=$save');
+      if (save) {
+        final sp = await SharedPreferences.getInstance();
+        sp.setString('colorSettings', data.toJson());
+      }
+      _colorSettingsStream.sink.add(data);
+    } catch (error, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace, label: error.toString());
     }
-    _colorSettingsStream.sink.add(data);
     _logger.fine('[o] saveColorSettings');
   }
 
@@ -300,12 +303,12 @@ class MyApp extends ConsumerWidget {
           doModify: true,
         ),
       );
+      _logger.fine('loadColorSettings: data=${data.toString()}');
       _colorSettingsStream.sink.add(data);
-      _logger.fine('[o] loadColorSettings data=${data.toString()}');
     } catch (error, stackTrace) {
       debugPrintStack(stackTrace: stackTrace, label: error.toString());
-      _logger.fine('[e/o] loadColorSettings');
     }
+    _logger.fine('[o] loadColorSettings');
   }
 
   static Future<void> clearPreferences() async {
