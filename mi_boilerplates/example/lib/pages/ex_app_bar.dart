@@ -45,7 +45,9 @@ class _ThemeAdjustmentCheckbox extends ConsumerWidget {
                 value: data.doModify,
                 onChanged: enabled
                     ? (value) {
-                        MyApp.setColorSettings(data.copyWith(doModify: value));
+                        MyApp.setColorSettings(
+                          data: data.copyWith(doModify: value),
+                        );
                       }
                     : null,
               ),
@@ -85,7 +87,9 @@ class _OverflowMenu extends ConsumerWidget {
                     checked: data.doModify,
                     child: const Text('Adjust theme'),
                     onChanged: (value) {
-                      MyApp.setColorSettings(data.copyWith(doModify: value));
+                      MyApp.setColorSettings(
+                        data: data.copyWith(doModify: value),
+                      );
                     },
                   ),
                   mi.CheckPopupMenuItem(
@@ -93,7 +97,9 @@ class _OverflowMenu extends ConsumerWidget {
                     checked: data.useMaterial3,
                     child: const Text('Use M3'),
                     onChanged: (value) {
-                      MyApp.setColorSettings(data.copyWith(useMaterial3: value));
+                      MyApp.setColorSettings(
+                        data: data.copyWith(useMaterial3: value),
+                      );
                     },
                   ),
                   mi.CheckPopupMenuItem(
@@ -214,7 +220,9 @@ class AppBar extends ConsumerWidget implements PreferredSizeWidget {
                       enabled: enabled,
                       checked: data.useMaterial3,
                       onChanged: (value) {
-                        MyApp.setColorSettings(data.copyWith(useMaterial3: value));
+                        MyApp.setColorSettings(
+                          data: data.copyWith(useMaterial3: value),
+                        );
                       },
                       checkIcon: const Icon(Icons.filter_3_outlined),
                       uncheckIcon: const Icon(Icons.filter_2_outlined),

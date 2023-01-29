@@ -272,18 +272,17 @@ class MyApp extends ConsumerWidget {
 
   const MyApp({super.key});
 
-  static void setColorSettings(mi.ColorSettings data) {
-    _logger.fine('[i] setColorSettings: data=${data.toString()}');
-    _colorSettingsStream.sink.add(data);
-    _logger.fine('[o] setColorSettings');
-  }
-
-  static Future<void> setAndSaveColorSettings(mi.ColorSettings data) async {
+  static Future<void> setColorSettings({
+    required mi.ColorSettings data,
+    bool save = false,
+  }) async {
     // TODO: try/catch
-    _logger.fine('[i] saveColorSettings: data=${data.toString()}');
-    final sp = await SharedPreferences.getInstance();
-    sp.setString('colorSettings', data.toJson());
-    setColorSettings(data);
+    _logger.fine('[i] saveColorSettings: data=${data.toString()} save=$save');
+    if (save) {
+      final sp = await SharedPreferences.getInstance();
+      sp.setString('colorSettings', data.toJson());
+    }
+    _colorSettingsStream.sink.add(data);
     _logger.fine('[o] saveColorSettings');
   }
 
