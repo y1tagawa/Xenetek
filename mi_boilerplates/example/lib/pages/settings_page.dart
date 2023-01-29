@@ -290,17 +290,17 @@ class SettingsPage extends ConsumerWidget {
                   CheckboxListTile(
                     value: data.useMaterial3,
                     title: const Text('Use material 3'),
-                    onChanged: (value) {
-                      MyApp.setColorSettings(data.copyWith(useMaterial3: value));
+                    onChanged: (value) async {
+                      MyApp.saveColorSettings(data.copyWith(useMaterial3: value));
                     },
                   ),
-                  CheckboxListTile(
-                    value: data.doModify,
-                    title: const Text('Modify theme'),
-                    onChanged: (value) {
-                      MyApp.setColorSettings(data.copyWith(doModify: value));
-                    },
-                  ),
+                  // CheckboxListTile(
+                  //   value: data.doModify,
+                  //   title: const Text('Modify theme'),
+                  //   onChanged: (value) {
+                  //     MyApp.setColorSettings(data.copyWith(doModify: value));
+                  //   },
+                  // ),
                   const Divider(),
                   Theme(
                     data: theme.isDark ? ThemeData.dark() : ThemeData.light(),

@@ -290,9 +290,14 @@ class MyApp extends ConsumerWidget {
     try {
       final sp = await SharedPreferences.getInstance();
       final data = mi.ColorSettings.fromJson(sp.getString('colorSettings')).let(
-        (it) => it.primarySwatch.value == null
-            ? it.copyWith(primarySwatch: const mi.SerializableColor(Colors.indigo))
-            : it,
+        (it) => it.copyWith(
+          // Primary swatchのデフォルト
+          primarySwatch: it.primarySwatch.value == null
+              ? const mi.SerializableColor(Colors.indigo)
+              : it.primarySwatch,
+          // Theme adjustmentは必ずONにする
+          doModify: true,
+        ),
       );
       _colorSettingsStream.sink.add(data);
       _logger.fine('[o] loadColorSettings data=${data.toString()}');
