@@ -247,8 +247,7 @@ const _defaultColorSettings = mi.ColorSettings(
 final colorSettingsStream = StreamController<mi.ColorSettings>();
 final colorSettingsProvider = StreamProvider<mi.ColorSettings>(
   (ref) async* {
-    final logger = Logger('colorSettingsProvider');
-    await loadColorSettings();
+    await MyApp.loadColorSettings();
     await for (final data in colorSettingsStream.stream) {
       yield data;
     }
@@ -260,45 +259,6 @@ final brightnessProvider =
 //    Brightness.dark);
 final useM3Provider = StateProvider((ref) => false);
 final modifyThemeProvider = StateProvider((ref) => true);
-
-Future<bool> loadColorSettings() async {
-  final logger = Logger('loadColorSettings');
-  final sp = await SharedPreferences.getInstance();
-  final json = sp.getString('colorSettings');
-  logger.fine('json=$json');
-  var data = mi.ColorSettings.fromJson(json);
-  if (data.primarySwatch.value == null) {
-    data = data.copyWith(
-      primarySwatch: const mi.SerializableColor(Colors.indigo),
-    );
-  }
-  logger.fine('data=${data.toString()}');
-  colorSettingsStream.add(data);
-  return true;
-}
-
-Future<bool> saveColorSettings(WidgetRef ref) async {
-  return ref.read(colorSettingsProvider).when(
-    data: (data) async {
-      final sp = await SharedPreferences.getInstance();
-      sp.setString('colorSettings', data.toJson());
-      return true;
-    },
-    error: (error, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace, label: error.toString());
-      return false;
-    },
-    loading: () {
-      return false;
-    },
-  );
-}
-
-Future<void> clearPreferences(WidgetRef ref) async {
-  final sp = await SharedPreferences.getInstance();
-  await sp.clear();
-  await loadColorSettings();
-}
 
 // main
 
@@ -318,6 +278,32 @@ class MyApp extends ConsumerWidget {
   static final _logger = Logger((MyApp).toString());
 
   const MyApp({super.key});
+
+  static Future<void> saveColorSettings(mi.ColorSettings data) async {
+    final sp = await SharedPreferences.getInstance();
+    sp.setString('colorSettings', data.toJson());
+  }
+
+  static Future<bool> loadColorSettings() async {
+    final logger = Logger('loadColorSettings');
+    final sp = await SharedPreferences.getInstance();
+    var data = mi.ColorSettings.fromJson(sp.getString('colorSettings')).let(
+      (it) => it.primarySwatch.value == null
+          ? it.copyWith(
+              primarySwatch: const mi.SerializableColor(Colors.indigo),
+            )
+          : it,
+    );
+    logger.fine('data=${data.toString()}');
+    colorSettingsStream.add(data);
+    return true;
+  }
+
+  static Future<void> clearPreferences() async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.clear();
+    await loadColorSettings();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

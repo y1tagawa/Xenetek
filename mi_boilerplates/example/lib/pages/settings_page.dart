@@ -155,6 +155,18 @@ class _SettingsPage extends ConsumerWidget {
 
     final theme = Theme.of(context);
 
+    Future<void> saveColorSettings() async {
+      ref.read(colorSettingsProvider).when(
+            data: (data) async {
+              await MyApp.saveColorSettings(data);
+            },
+            error: (error, stackTrace) {
+              debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            },
+            loading: () {},
+          );
+    }
+
     return ex.Scaffold(
       appBar: ex.AppBar(
         prominent: ref.watch(ex.prominentProvider),
@@ -185,7 +197,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveColorSettings(ref);
+                await saveColorSettings();
               }
             },
           ),
@@ -210,7 +222,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveColorSettings(ref);
+                await saveColorSettings();
               }
             },
           ),
@@ -235,7 +247,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveColorSettings(ref);
+                await saveColorSettings();
               }
             },
           ),
@@ -260,7 +272,7 @@ class _SettingsPage extends ConsumerWidget {
                 },
               );
               if (ok) {
-                await saveColorSettings(ref);
+                await saveColorSettings();
               }
             },
           ),
@@ -298,7 +310,7 @@ class _SettingsPage extends ConsumerWidget {
                   theme: theme.isDark ? ThemeData.dark() : ThemeData.light(),
                 );
                 if (ok) {
-                  await clearPreferences(ref);
+                  await MyApp.clearPreferences();
                 }
               },
             ),
