@@ -238,12 +238,6 @@ final _router = GoRouter(
 );
 
 // テーマ設定
-// ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
-const _initColor = mi.SerializableColor(Color(0xFF404040));
-const _defaultColorSettings = mi.ColorSettings(
-  primarySwatch: mi.SerializableColor(Colors.indigo),
-);
-
 final colorSettingsStream = StreamController<mi.ColorSettings>();
 final colorSettingsProvider = StreamProvider<mi.ColorSettings>(
   (ref) async* {
@@ -310,39 +304,37 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final colorSettings = ref.watch(colorSettingsProvider).when(
+    return ref.watch(colorSettingsProvider).when(
       data: (data) {
         _logger.fine('colorSettings=${data.toString()}');
-        return data;
+        final brightness = ref.watch(brightnessProvider);
+        return Material(
+          child: MaterialApp.router(
+            routeInformationProvider: _router.routeInformationProvider,
+            routeInformationParser: _router.routeInformationParser,
+            routerDelegate: _router.routerDelegate,
+            title: 'Mi boilerplates example.',
+            theme: mi.ThemeDataHelper.fromColorSettings(
+              primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+              secondaryColor: data.secondaryColor.value,
+              textColor: data.textColor.value,
+              backgroundColor: data.backgroundColor.value,
+              brightness: brightness,
+              useMaterial3: ref.watch(useM3Provider),
+              doModify: ref.watch(modifyThemeProvider),
+            ),
+          ),
+        ).also((it) => _logger.fine('[o] build'));
       },
       error: (error, stackTrace) {
         debugPrintStack(stackTrace: stackTrace, label: error.toString());
-        return _defaultColorSettings;
+        return Text(error.toString());
       },
       loading: () {
         _logger.fine('Loading colorSettings');
-        return _defaultColorSettings;
+        return const CircularProgressIndicator();
       },
     );
-    final brightness = ref.watch(brightnessProvider);
-
-    return Material(
-      child: MaterialApp.router(
-        routeInformationProvider: _router.routeInformationProvider,
-        routeInformationParser: _router.routeInformationParser,
-        routerDelegate: _router.routerDelegate,
-        title: 'Mi boilerplates example.',
-        theme: mi.ThemeDataHelper.fromColorSettings(
-          primarySwatch: colorSettings.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
-          secondaryColor: colorSettings.secondaryColor.value,
-          textColor: colorSettings.textColor.value,
-          backgroundColor: colorSettings.backgroundColor.value,
-          brightness: brightness,
-          useMaterial3: ref.watch(useM3Provider),
-          doModify: ref.watch(modifyThemeProvider),
-        ),
-      ),
-    ).also((it) => _logger.fine('[o] build'));
   }
 }
 
