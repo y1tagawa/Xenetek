@@ -239,10 +239,22 @@ final _router = GoRouter(
 
 // テーマ設定
 final colorSettingsStream = StreamController<mi.ColorSettings>();
+// ..sink.add(
+//   const mi.ColorSettings(
+//     primarySwatch: mi.SerializableColor(Colors.indigo),
+//     doModify: true,
+//   ),
+// );
 final colorSettingsProvider = StreamProvider<mi.ColorSettings>(
   (ref) async* {
-    await MyApp.loadColorSettings();
+    final logger = Logger(colorSettingsProvider.toString());
+    logger.fine('Loading color settings');
+    final data = await MyApp.loadColorSettings();
+    logger.fine('Adding data=${data.toString()}');
+    colorSettingsStream.add(data);
+    logger.fine('added data');
     await for (final data in colorSettingsStream.stream) {
+      logger.fine('yielding data=${data.toString()}');
       yield data;
     }
   },
@@ -277,62 +289,62 @@ class MyApp extends ConsumerWidget {
     _logger.fine('[o] saveColorSettings');
   }
 
-  static Future<bool> loadColorSettings() async {
+  static Future<mi.ColorSettings> loadColorSettings() async {
     _logger.fine('[i] loadColorSettings');
     final sp = await SharedPreferences.getInstance();
-    var data = mi.ColorSettings.fromJson(sp.getString('colorSettings')).let(
+    final data = mi.ColorSettings.fromJson(sp.getString('colorSettings')).let(
       (it) => it.primarySwatch.value == null
           ? it.copyWith(primarySwatch: const mi.SerializableColor(Colors.indigo))
           : it,
     );
-    _logger.fine('loadColorSettings: data=${data.toString()}');
-    colorSettingsStream.add(data);
-    _logger.fine('[o] loadColorSettings');
-    return true;
+    return data.also((it) {
+      _logger.fine('[o] loadColorSettings data=${data.toString()}');
+    });
   }
 
   static Future<void> clearPreferences() async {
     _logger.fine('[i] clearPreferences');
     final sp = await SharedPreferences.getInstance();
     await sp.clear();
-    await loadColorSettings();
+    final data = await loadColorSettings();
+    colorSettingsStream.sink.add(data);
     _logger.fine('[o] clearPreferences');
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    return ref.watch(colorSettingsProvider).when(
-      data: (data) {
-        _logger.fine('colorSettings=${data.toString()}');
-        final brightness = ref.watch(brightnessProvider);
-        return Material(
-          child: MaterialApp.router(
-            routeInformationProvider: _router.routeInformationProvider,
-            routeInformationParser: _router.routeInformationParser,
-            routerDelegate: _router.routerDelegate,
-            title: 'Mi boilerplates example.',
-            theme: mi.ThemeDataHelper.fromColorSettings(
-              primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
-              secondaryColor: data.secondaryColor.value,
-              textColor: data.textColor.value,
-              backgroundColor: data.backgroundColor.value,
-              brightness: brightness,
-              useMaterial3: data.useMaterial3,
-              doModify: data.doModify,
-            ),
-          ),
-        ).also((it) => _logger.fine('[o] build'));
-      },
-      error: (error, stackTrace) {
-        debugPrintStack(stackTrace: stackTrace, label: error.toString());
-        return Text(error.toString());
-      },
-      loading: () {
-        _logger.fine('Loading colorSettings');
-        return const Text('Loading');
-      },
-    );
+    final data = ref.watch(colorSettingsProvider).when(
+          data: (data) => data,
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return const mi.ColorSettings();
+          },
+          loading: () {
+            _logger.fine('Loading colorSettings');
+            return const mi.ColorSettings();
+          },
+        );
+
+    _logger.fine('colorSettings=${data.toString()}');
+    final brightness = ref.watch(brightnessProvider);
+    return Material(
+      child: MaterialApp.router(
+        routeInformationProvider: _router.routeInformationProvider,
+        routeInformationParser: _router.routeInformationParser,
+        routerDelegate: _router.routerDelegate,
+        title: 'Mi boilerplates example.',
+        theme: mi.ThemeDataHelper.fromColorSettings(
+          primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+          secondaryColor: data.secondaryColor.value,
+          textColor: data.textColor.value,
+          backgroundColor: data.backgroundColor.value,
+          brightness: brightness,
+          useMaterial3: data.useMaterial3,
+          doModify: data.doModify,
+        ),
+      ),
+    ).also((it) => _logger.fine('[o] build'));
   }
 }
 

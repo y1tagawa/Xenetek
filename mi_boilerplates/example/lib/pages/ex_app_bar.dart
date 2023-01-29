@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' as material show PreferredSizeWidget, Scaffold;
+import 'package:flutter/material.dart' as material show AppBar, PreferredSizeWidget, Scaffold;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -236,7 +236,7 @@ class AppBar extends ConsumerWidget implements PreferredSizeWidget {
                 centerTitle: centerTitle,
               );
             } else {
-              return AppBar(
+              return material.AppBar(
                 leading: leading,
                 title: title,
                 bottom: bottom,
