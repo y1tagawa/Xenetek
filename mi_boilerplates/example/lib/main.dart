@@ -322,55 +322,38 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    return ref.watch(colorSettingsProvider).when(
+
+    final data = ref.watch(colorSettingsProvider).when(
       data: (data) {
-        _logger.fine('colorSettings=${data.toString()}');
-        final brightness = ref.watch(brightnessProvider);
-        return Material(
-          child: MaterialApp.router(
-            routeInformationProvider: _router.routeInformationProvider,
-            routeInformationParser: _router.routeInformationParser,
-            routerDelegate: _router.routerDelegate,
-            title: 'Mi boilerplates example.',
-            theme: mi.ThemeDataHelper.fromColorSettings(
-              primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
-              secondaryColor: data.secondaryColor.value,
-              textColor: data.textColor.value,
-              backgroundColor: data.backgroundColor.value,
-              brightness: brightness,
-              useMaterial3: data.useMaterial3,
-              doModify: data.doModify,
-            ),
-          ),
-        );
+        _logger.fine('build: colorSettings=${data.toString()}');
+        return data;
       },
       error: (error, stackTrace) {
         debugPrintStack(stackTrace: stackTrace, label: error.toString());
-        return Material(
-          child: MaterialApp(
-            home: Scaffold(
-              body: Expanded(
-                child: Container(
-                  color: Colors.red,
-                  child: Text(
-                    error.toString(),
-                    style: const TextStyle(color: Colors.yellow),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
+        return const mi.ColorSettings(); // TODO: エラー色化
       },
       loading: () {
-        return const Material(
-          child: MaterialApp(
-            home: Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            ),
-          ),
-        );
+        return const mi.ColorSettings(); // TODO: 暗色化
       },
+    );
+    final brightness = ref.watch(brightnessProvider);
+
+    return Material(
+      child: MaterialApp.router(
+        routeInformationProvider: _router.routeInformationProvider,
+        routeInformationParser: _router.routeInformationParser,
+        routerDelegate: _router.routerDelegate,
+        title: 'Mi boilerplates example.',
+        theme: mi.ThemeDataHelper.fromColorSettings(
+          primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+          secondaryColor: data.secondaryColor.value,
+          textColor: data.textColor.value,
+          backgroundColor: data.backgroundColor.value,
+          brightness: brightness,
+          useMaterial3: data.useMaterial3,
+          doModify: data.doModify,
+        ),
+      ),
     ).also((it) {
       _logger.fine('[o] build');
     });
