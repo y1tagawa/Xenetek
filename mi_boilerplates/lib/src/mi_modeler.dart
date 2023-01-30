@@ -786,13 +786,13 @@ const _cubeVertices = <Vector3>[
   Vector3(-0.5, 0, 0.5),
 ];
 
-final _cubeNormals = <Vector3>[
-  Vector3.unitY,
-  Vector3.unitZ,
-  -Vector3.unitX,
-  -Vector3.unitY,
-  Vector3.unitX,
-  -Vector3.unitZ,
+const _cubeNormals = <Vector3>[
+  Vector3(0, 1, 0),
+  Vector3(0, 0, 1),
+  Vector3(-1, 0, 0),
+  Vector3(0, -1, 0),
+  Vector3(1, 0, 0),
+  Vector3(0, 0, -1),
 ];
 
 const _cubeFaces = <MeshFace>[
@@ -834,7 +834,7 @@ const _cubeFaces = <MeshFace>[
   ],
 ];
 
-final _cubeMeshData = MeshData(
+const _cubeMeshData = MeshData(
   vertices: _cubeVertices,
   normals: _cubeNormals,
   faces: _cubeFaces,
@@ -848,11 +848,11 @@ final _cubeMeshData = MeshData(
 
 class Cube extends Shape {
   final String origin;
-  final dynamic scale;
+  final Vector3 scale;
 
   const Cube({
     required this.origin,
-    this.scale = Vector3.one,
+    this.scale = const Vector3(1, 1, 1),
   });
 
   @override
@@ -876,7 +876,7 @@ class Cube extends Shape {
 
   @override
   String toString() {
-    return 'CubeMesh{' ' path: $origin,' ' scale: $scale,' '}';
+    return 'CubeMesh{ path: $origin, scale: $scale,}';
   }
 
   Cube copyWith({
@@ -906,7 +906,144 @@ class Cube extends Shape {
 //</editor-fold>
 }
 
+/// 正八面体メッシュデータ
+///
+/// (-0.5,0,-0.5)-(0.5,1,0.5)
+
+//<editor-fold>
+
+const _octahedronVertices = <Vector3>[
+  Vector3(0.5, 0.5, 0),
+  Vector3(-0.5, 0.5, 0),
+  Vector3(0, 1, 0),
+  Vector3(0, 0, 0),
+  Vector3(0, 0.5, 0.5),
+  Vector3(0, 0.5, -0.5),
+];
+
+const _octahedronFaces = <MeshFace>[
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(0, -1, -1),
+    MeshVertex(2, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(2, -1, -1),
+    MeshVertex(1, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(1, -1, -1),
+    MeshVertex(3, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(3, -1, -1),
+    MeshVertex(0, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(2, -1, -1),
+    MeshVertex(0, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(1, -1, -1),
+    MeshVertex(2, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(3, -1, -1),
+    MeshVertex(1, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(0, -1, -1),
+    MeshVertex(3, -1, -1),
+  ],
+];
+
+const _octahedronMeshData = MeshData(
+  vertices: _cubeVertices,
+  faces: _cubeFaces,
+);
+
+//</editor-fold>
+
+/// ピン
+///
+/// [origin]を上中心として八面体のピンを生成する。
+
+class Pin extends Shape {
+  final String origin;
+  final Vector3 scale;
+
+  const Pin({
+    required this.origin,
+    this.scale = const Vector3(1, 1, 1),
+  });
+
+  @override
+  MeshData toMeshData(Node root) {
+    final find = root.find(origin)!;
+    final vertices = _octahedronVertices
+        .map((it) => Vector3(it.x, it.y == 0.5 ? 0.25 : it.y, it.z))
+        .toList(growable: false);
+    final meshData = MeshData(
+      vertices: vertices,
+      faces: _octahedronFaces,
+    );
+    return meshData.transformed(find.matrix * Matrix4.fromScale(Vector3.one * scale));
+  }
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Pin &&
+          runtimeType == other.runtimeType &&
+          origin == other.origin &&
+          scale == other.scale);
+
+  @override
+  int get hashCode => origin.hashCode ^ scale.hashCode;
+
+  @override
+  String toString() {
+    return 'Pin{ origin: $origin, scale: $scale,}';
+  }
+
+  Pin copyWith({
+    String? origin,
+    dynamic scale,
+  }) {
+    return Pin(
+      origin: origin ?? this.origin,
+      scale: scale ?? this.scale,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'origin': origin,
+      'scale': scale,
+    };
+  }
+
+  factory Pin.fromMap(Map<String, dynamic> map) {
+    return Pin(
+      origin: map['origin'] as String,
+      scale: map['scale'] as Vector3,
+    );
+  }
+
+//</editor-fold>
+}
+
 /// 積み上げ式円筒メッシュデータ生成
+/// TODO: まずは回転体か
 ///
 /// (-0.5,0,-0.5)-(0.5,1,0.5)
 /// TODO: 底面形状ドーム、平面、その他。ドームのためにあとでScaleはできない。

@@ -346,13 +346,29 @@ class MyApp extends ConsumerWidget {
       },
       error: (error, stackTrace) {
         debugPrintStack(stackTrace: stackTrace, label: error.toString());
-        return Scaffold(
-          body: Text(error.toString()),
+        return Material(
+          child: MaterialApp(
+            home: Scaffold(
+              body: Expanded(
+                child: Container(
+                  color: Colors.red,
+                  child: Text(
+                    error.toString(),
+                    style: const TextStyle(color: Colors.yellow),
+                  ),
+                ),
+              ),
+            ),
+          ),
         );
       },
       loading: () {
-        return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
+        return const Material(
+          child: MaterialApp(
+            home: Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          ),
         );
       },
     ).also((it) {
