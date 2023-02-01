@@ -288,11 +288,14 @@ class Node {
     Matrix4 matrix,
     Node? parent,
   ) {
+    //_logger.fine('[i] _find path=$path, ${path.length} ${path.isEmpty}');
     if (path.isEmpty) {
+      //_logger.fine('[o] _find ok');
       return NodeFind(node: this, matrix: this.matrix * matrix, parent: parent);
     }
     final child = children[path.first];
     if (child == null) {
+      //_logger.fine('[o] _find \'${path.first}\' not found.');
       return null;
     }
     return child._find(path.skip(1), this.matrix * matrix, this);
@@ -303,25 +306,29 @@ class Node {
       case Iterable<String>:
         return _find(path, Matrix4.identity, null);
       case String:
-        return _find(splitPath(path), Matrix4.identity, null);
+        return _find(
+          path.isEmpty ? const <String>[] : splitPath(path),
+          Matrix4.identity,
+          null,
+        );
       default:
         throw UnimplementedError();
     }
   }
 
-  Node put(String key, Node child) {
+  Node add(String key, Node child) {
     final children_ = {...children};
     children_[key] = child;
     return copyWith(children: children_);
   }
 
-  Node putDescendants(Iterable<MapEntry<String, Matrix4>> descendants) {
+  Node addDescendants(Iterable<MapEntry<String, Matrix4>> descendants) {
     if (descendants.isEmpty) {
       return this;
     }
-    return put(
+    return add(
       descendants.first.key,
-      Node(matrix: descendants.first.value).putDescendants(descendants.skip(1)),
+      Node(matrix: descendants.first.value).addDescendants(descendants.skip(1)),
     );
   }
 
@@ -847,6 +854,8 @@ const _cubeMeshData = MeshData(
 /// [origin]を上面中心として直方体を生成する。
 
 class Cube extends Shape {
+  static final _logger = Logger('Cube');
+
   final String origin;
   final Vector3 scale;
 
@@ -857,7 +866,12 @@ class Cube extends Shape {
 
   @override
   MeshData toMeshData(Node root) {
-    final find = root.find(origin)!;
+    final find = root.find(origin);
+    if (find == null) {
+      _logger.fine('toMeshData: \'$origin\' not found.');
+      return const MeshData();
+    }
+
     return _cubeMeshData.transformed(find.matrix * Matrix4.fromScale(Vector3.one * scale));
   }
 
@@ -976,6 +990,8 @@ const _octahedronMeshData = MeshData(
 /// [origin]を上中心として八面体のピンを生成する。
 
 class Pin extends Shape {
+  static final _logger = Logger('Pin');
+
   final String origin;
   final Vector3 scale;
 
@@ -986,9 +1002,14 @@ class Pin extends Shape {
 
   @override
   MeshData toMeshData(Node root) {
-    final find = root.find(origin)!;
+    final find = root.find(origin);
+    if (find == null) {
+      _logger.fine('toMeshData: \'$origin\' not found.');
+      return const MeshData();
+    }
+
     final vertices = _octahedronVertices
-        .map((it) => Vector3(it.x * 0.5, it.y == 0.5 ? 0.25 : it.y, it.z * 0.5))
+        .map((it) => Vector3(it.x * 0.75, it.y == 0.5 ? 0.25 : it.y, it.z * 0.75))
         .toList(growable: false);
     final meshData = MeshData(
       vertices: vertices,

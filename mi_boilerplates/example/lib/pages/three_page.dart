@@ -4,11 +4,12 @@
 
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Matrix4;
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
+import 'package:mi_boilerplates/mi_boilerplates.dart' show Vector3, Matrix4, Node, Shape, Pin;
 import 'package:path_provider/path_provider.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 
@@ -150,21 +151,55 @@ mi.Node? _rootNode;
 
 final _shapes = <mi.Shape>[];
 
+extension NodeHelper on Node {
+  Node addLeg({
+    required String coxaKey,
+    required Matrix4 coxa,
+    required Matrix4 knee,
+    required Matrix4 ankle,
+  }) {
+    return addDescendants(
+      <String, mi.Matrix4>{
+        coxaKey: coxa,
+        'knee': knee,
+        'ankle': ankle,
+      }.entries,
+    );
+  }
+}
+
 void _setup(StringSink sink) {
   var root = const mi.Node();
   _shapes.clear();
 
-  root = root.putDescendants(
-    <String, mi.Matrix4>{
-      'n1': _identity,
-      'n2': _position(_y * 2) * _rotation(_x, 45.0),
-      'n3': _position(_y * 2) * _rotation(_x, 45.0),
-    }.entries,
+  // root = root.putDescendants(
+  //   <String, mi.Matrix4>{
+  //     'n1': _identity,
+  //     'n2': _position(_y * 2) * _rotation(_x, 45.0),
+  //     'n3': _position(_y * 2) * _rotation(_x, 45.0),
+  //   }.entries,
+  // );
+
+  root = root.addLeg(
+    coxaKey: 'rCoxa',
+    coxa: _rotation(_x, 180) * _position(_x * 0.2),
+    knee: _position(_y),
+    ankle: _position(_y),
+  );
+  root = root.addLeg(
+    coxaKey: 'lCoxa',
+    coxa: _position(_x * -0.2) * _rotation(_x, 180),
+    knee: _position(_y) * _rotation(_x, 45),
+    ankle: _position(_y),
   );
 
-  _shapes.add(mi.Pin(origin: 'n1', scale: _y * 2 + _xz));
-  _shapes.add(mi.Pin(origin: 'n1.n2', scale: _y * 2 + _xz));
-  _shapes.add(const mi.Pin(origin: 'n1.n2.n3'));
+  _shapes.add(mi.Pin(origin: '', scale: _y + _xz));
+  _shapes.add(mi.Pin(origin: 'rCoxa', scale: _y + _xz * 0.2));
+  _shapes.add(mi.Pin(origin: 'rCoxa.knee', scale: _y + _xz * 0.2));
+  _shapes.add(mi.Pin(origin: 'rCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
+  _shapes.add(mi.Pin(origin: 'lCoxa', scale: _y + _xz * 0.2));
+  _shapes.add(mi.Pin(origin: 'lCoxa.knee', scale: _y + _xz * 0.2));
+  _shapes.add(mi.Pin(origin: 'lCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
   // _shapes.add(const mi.Tube(origin: 'n1', length: 1.5, longDivision: 16, lengthDivision: 8));
   // _shapes.add(const mi.Tube(origin: 'n1.n2', length: 1.5));
   // _shapes.add(const mi.Tube(origin: 'n1.n2.n3', radius: 0.3, length: 0.5));
