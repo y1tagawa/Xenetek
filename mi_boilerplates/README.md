@@ -54,6 +54,18 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 # TODO
 
 * nullableなプロパティも使えるcopyWithの代替
+  * こんな感じか。でも省略とnullを別の方法で分けないと碌な事にならないぞ。
+```dart
+  static const _singular = Object();
+  X copyWith({
+    dynamic a = _singular,
+  }) {
+    X(
+      a: a != _singular ? a as Y : this.a,
+    );
+  }
+```
+
 * fromJson, toJsonはtoMap, fromMapを介してはいけない。（jsonEncodeですら要素のパースで嵌るから）
 
 * リリースビルド

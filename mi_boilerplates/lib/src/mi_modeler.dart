@@ -988,7 +988,7 @@ class Pin extends Shape {
   MeshData toMeshData(Node root) {
     final find = root.find(origin)!;
     final vertices = _octahedronVertices
-        .map((it) => Vector3(it.x, it.y == 0.5 ? 0.25 : it.y, it.z))
+        .map((it) => Vector3(it.x * 0.5, it.y == 0.5 ? 0.25 : it.y, it.z * 0.5))
         .toList(growable: false);
     final meshData = MeshData(
       vertices: vertices,

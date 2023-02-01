@@ -18,16 +18,16 @@ class SwitchesPage extends ConsumerWidget {
 
   static final _logger = Logger((SwitchesPage).toString());
 
-  static const _tabs = <Widget>[
-    mi.Tab(
-      tooltip: 'Switches',
-      icon: icon,
-    ),
-    mi.Tab(
-      tooltip: 'Switch theme',
-      icon: Icon(Icons.more_horiz),
-    ),
-  ];
+  // static const _tabs = <Widget>[
+  //   mi.Tab(
+  //     tooltip: 'Switches',
+  //     icon: icon,
+  //   ),
+  //   mi.Tab(
+  //     tooltip: 'Switch theme',
+  //     icon: Icon(Icons.more_horiz),
+  //   ),
+  // ];
 
   const SwitchesPage({super.key});
 
@@ -37,32 +37,33 @@ class SwitchesPage extends ConsumerWidget {
 
     final enabled = ref.watch(ex.enableActionsProvider);
 
-    return mi.DefaultTabController(
-      length: _tabs.length,
-      initialIndex: 0,
-      builder: (context) {
-        return ex.Scaffold(
-          appBar: ex.AppBar(
-            prominent: ref.watch(ex.prominentProvider),
-            icon: icon,
-            title: title,
-            bottom: ex.TabBar(
-              enabled: enabled,
-              tabs: _tabs,
-            ),
-          ),
-          body: const TabBarView(
-            children: [
-              _SwitchesTab(),
-              _SwitchThemeTab(),
-            ],
-          ),
-          bottomNavigationBar: const ex.BottomNavigationBar(),
-        );
-      },
-    ).also((_) {
-      _logger.fine('[o] build');
-    });
+    // return mi.DefaultTabController(
+    //   length: _tabs.length,
+    //   initialIndex: 0,
+    //   builder: (context) {
+    return ex.Scaffold(
+      appBar: ex.AppBar(
+        prominent: ref.watch(ex.prominentProvider),
+        icon: icon,
+        title: title,
+        // bottom: ex.TabBar(
+        //   enabled: enabled,
+        //   tabs: _tabs,
+        // ),
+      ),
+      // body: const TabBarView(
+      //   children: [
+      //     _SwitchesTab(),
+      //     _SwitchThemeTab(),
+      //   ],
+      // ),
+      body: const _SwitchesTab(),
+      bottomNavigationBar: const ex.BottomNavigationBar(),
+    );
+    //   },
+    // ).also((_) {
+    //   _logger.fine('[o] build');
+    // });
   }
 }
 
