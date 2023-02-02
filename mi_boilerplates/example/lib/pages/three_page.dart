@@ -186,13 +186,13 @@ void _setup(StringSink sink) {
   );
   root = root.addLeg(
     coxaKey: 'rCoxa',
-    coxa: _rotation(_x, 180) * _position(_x * 0.2),
+    coxa: _position(_x * 0.2) * _rotation(_x, 180),
     knee: _position(_y),
     ankle: _position(_y),
   );
   root = root.addLeg(
     coxaKey: 'lCoxa',
-    coxa: _position(_x * -0.2) * _rotation(_x, 180),
+    coxa: _position(_x * -0.2) * _rotation(_x, 160),
     knee: _position(_y) * _rotation(_x, 45),
     ankle: _position(_y),
   );
