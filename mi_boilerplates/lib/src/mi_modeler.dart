@@ -322,7 +322,7 @@ class Node {
   }
 
   NodeFind? find({dynamic path}) {
-    _logger.fine('[i] _find path=${_toPath(path)}');
+    _logger.fine('[i] _find path=${_toString(_toPath(path))}');
     return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null).also((it) {
       _logger.fine('[o] _find return=$it');
     });
@@ -355,13 +355,13 @@ class Node {
 
   //TODO: remove
 
-  /// [path]で指定されたノードの[children]を[key] : [child]で更新または追加する。
+  /// [path]で指定されたノードの[children]を[key],[child]で更新または追加する。
   Node add({
     dynamic path = const <String>[],
     required String key,
     required Node child,
   }) {
-    _logger.fine('[i] add path=${_toPath(path)}');
+    _logger.fine('[i] add path=${_toString(_toPath(path))}');
     return _add(path: _toPath(path), key: key, child: child).also((it) {
       _logger.fine('[o] _add return=$it');
     });
