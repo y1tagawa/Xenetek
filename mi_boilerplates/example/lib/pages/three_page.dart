@@ -180,6 +180,10 @@ void _setup(StringSink sink) {
   //   }.entries,
   // );
 
+  root = root.add(
+    'upper',
+    Node(matrix: _position(_y)),
+  );
   root = root.addLeg(
     coxaKey: 'rCoxa',
     coxa: _rotation(_x, 180) * _position(_x * 0.2),
@@ -194,15 +198,13 @@ void _setup(StringSink sink) {
   );
 
   _shapes.add(mi.Pin(origin: '', scale: _y + _xz));
+  _shapes.add(const mi.Pin(origin: 'upper'));
   _shapes.add(mi.Pin(origin: 'rCoxa', scale: _y + _xz * 0.2));
   _shapes.add(mi.Pin(origin: 'rCoxa.knee', scale: _y + _xz * 0.2));
   _shapes.add(mi.Pin(origin: 'rCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
   _shapes.add(mi.Pin(origin: 'lCoxa', scale: _y + _xz * 0.2));
   _shapes.add(mi.Pin(origin: 'lCoxa.knee', scale: _y + _xz * 0.2));
   _shapes.add(mi.Pin(origin: 'lCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
-  // _shapes.add(const mi.Tube(origin: 'n1', length: 1.5, longDivision: 16, lengthDivision: 8));
-  // _shapes.add(const mi.Tube(origin: 'n1.n2', length: 1.5));
-  // _shapes.add(const mi.Tube(origin: 'n1.n2.n3', radius: 0.3, length: 0.5));
   _rootNode = root;
 
   final meshDataList = <mi.MeshData>[];

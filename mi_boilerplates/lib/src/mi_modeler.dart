@@ -291,14 +291,14 @@ class Node {
     //_logger.fine('[i] _find path=$path, ${path.length} ${path.isEmpty}');
     if (path.isEmpty) {
       //_logger.fine('[o] _find ok');
-      return NodeFind(node: this, matrix: this.matrix * matrix, parent: parent);
+      return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent);
     }
     final child = children[path.first];
     if (child == null) {
       //_logger.fine('[o] _find \'${path.first}\' not found.');
       return null;
     }
-    return child._find(path.skip(1), this.matrix * matrix, this);
+    return child._find(path.skip(1), matrix * this.matrix, this);
   }
 
   NodeFind? find(dynamic path) {
@@ -378,20 +378,6 @@ class Node {
     return Node(
       matrix: matrix ?? this.matrix,
       children: children ?? this.children,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'matrix': matrix,
-      'children': children,
-    };
-  }
-
-  factory Node.fromMap(Map<String, dynamic> map) {
-    return Node(
-      matrix: map['matrix'] as Matrix4,
-      children: map['children'] as Map<String, Node>,
     );
   }
 
