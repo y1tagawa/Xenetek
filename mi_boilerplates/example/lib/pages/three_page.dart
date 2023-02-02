@@ -153,14 +153,15 @@ final _shapes = <mi.Shape>[];
 
 extension NodeHelper on Node {
   Node addLeg({
-    required String coxaKey,
+    required String key,
     required Matrix4 coxa,
     required Matrix4 knee,
     required Matrix4 ankle,
+    // TODO: Node? foot
   }) {
     return addDescendants(
       <String, mi.Matrix4>{
-        coxaKey: coxa,
+        key: coxa,
         'knee': knee,
         'ankle': ankle,
       }.entries,
@@ -185,13 +186,13 @@ void _setup(StringSink sink) {
     Node(matrix: _position(_y)),
   );
   root = root.addLeg(
-    coxaKey: 'rCoxa',
+    key: 'rCoxa',
     coxa: _position(_x * 0.2) * _rotation(_x, 180),
     knee: _position(_y),
     ankle: _position(_y),
   );
   root = root.addLeg(
-    coxaKey: 'lCoxa',
+    key: 'lCoxa',
     coxa: _position(_x * -0.2) * _rotation(_x, 160),
     knee: _position(_y) * _rotation(_x, 45),
     ankle: _position(_y),

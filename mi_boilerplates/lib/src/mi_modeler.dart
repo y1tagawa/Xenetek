@@ -278,10 +278,15 @@ class NodeFind {
 class Node {
   static final _logger = Logger((Node).toString());
 
-  static List<String> splitPath(String path) => path.split('.');
+  static List<String> _splitPath(String path) => path.split('.');
 
   final Matrix4 matrix;
   final Map<String, Node> children;
+
+  const Node({
+    this.matrix = Matrix4.identity,
+    this.children = const <String, Node>{},
+  });
 
   NodeFind? _find(
     Iterable<String> path,
@@ -307,7 +312,7 @@ class Node {
         return _find(path, Matrix4.identity, null);
       case String:
         return _find(
-          path.isEmpty ? const <String>[] : splitPath(path),
+          path.isEmpty ? const <String>[] : _splitPath(path),
           Matrix4.identity,
           null,
         );
@@ -322,13 +327,22 @@ class Node {
     return copyWith(children: children_);
   }
 
-  Node addDescendants(Iterable<MapEntry<String, Matrix4>> descendants) {
+  Node addDescendants(
+    Iterable<MapEntry<String, Matrix4>> descendants, [
+    Map<String, Node>? children,
+  ]) {
     if (descendants.isEmpty) {
+      if (children != null) {
+        return Node(children: children);
+      }
       return this;
     }
     return add(
       descendants.first.key,
-      Node(matrix: descendants.first.value).addDescendants(descendants.skip(1)),
+      Node(matrix: descendants.first.value).addDescendants(
+        descendants.skip(1),
+        children,
+      ),
     );
   }
 
@@ -342,18 +356,13 @@ class Node {
       case Iterable<String>:
         return _getPosition(path);
       case String:
-        return _getPosition(splitPath(path));
+        return _getPosition(_splitPath(path));
       default:
         throw UnimplementedError();
     }
   }
 
   //<editor-fold desc="Data Methods">
-
-  const Node({
-    this.matrix = Matrix4.identity,
-    this.children = const <String, Node>{},
-  });
 
   @override
   bool operator ==(Object other) =>
