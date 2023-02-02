@@ -279,6 +279,7 @@ class Node {
   static final _logger = Logger((Node).toString());
 
   static List<String> _splitPath(String path) => path.split('.');
+  static String _pathToString(Iterable<String> data) => '[\'${data.join('\',\'')}\']';
 
   final Matrix4 matrix;
   final Map<String, Node> children;
@@ -293,7 +294,7 @@ class Node {
     Matrix4 matrix,
     Node? parent,
   ) {
-    //_logger.fine('[i] _find path=$path, ${path.length} ${path.isEmpty}');
+    //_logger.fine('[i] _find path=${_pathToString(path)}');
     if (path.isEmpty) {
       //_logger.fine('[o] _find ok');
       return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent);
@@ -321,28 +322,68 @@ class Node {
     }
   }
 
-  Node add(String key, Node child) {
+  // 追加または更新
+  Node _replace({
+    required Iterable<String> path,
+    required Node child,
+  }) {
+    _logger.fine('[i] _replace path=${_pathToString(path)}');
+    // rootを更新してもあまり意味が無いので例外とする
+    assert(path.isNotEmpty);
+    // 自分が対象のノードの直接の親であれば、更新または追加して返す
+    if (path.length == 1) {
+      final children_ = {...children};
+      children_[path.first] = child;
+      return Node(matrix: matrix, children: children_).also((it) {
+        _logger.fine('[o] _replace');
+      });
+    }
+    // パスを途中で辿れなくなったらエラー
+    assert(children.containsKey(path.first));
+    // パスの途中の子を更新して返す
     final children_ = {...children};
-    children_[key] = child;
-    return copyWith(children: children_);
+    children_[path.first] = _replace(path: path.skip(1), child: child);
+    return Node(matrix: matrix, children: children_).also((it) {
+      _logger.fine('[o] _replace');
+    });
   }
 
-  Node addDescendants(
-    Iterable<MapEntry<String, Matrix4>> descendants, [
+  //TODO: remove
+
+  Node add({
+    String? key,
+    dynamic path,
+    required Node child,
+  }) {
+    assert(key != null && path == null || key == null && path != null);
+    if (key != null) {
+      final children_ = {...children};
+      children_[key] = child;
+      return copyWith(children: children_);
+    }
+    switch (path.runtimeType) {
+      case Iterable<String>:
+        return _replace(path: path, child: child);
+      case String:
+        return _replace(path: _splitPath(path), child: child);
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  Node addLimb({
+    required Iterable<MapEntry<String, Matrix4>> limb,
     Map<String, Node>? children,
-  ]) {
-    if (descendants.isEmpty) {
+  }) {
+    if (limb.isEmpty) {
       if (children != null) {
         return Node(children: children);
       }
       return this;
     }
     return add(
-      descendants.first.key,
-      Node(matrix: descendants.first.value).addDescendants(
-        descendants.skip(1),
-        children,
-      ),
+      key: limb.first.key,
+      child: Node(matrix: limb.first.value).addLimb(limb: limb.skip(1), children: children),
     );
   }
 

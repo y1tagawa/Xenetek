@@ -159,8 +159,8 @@ extension NodeHelper on Node {
     required Matrix4 ankle,
     // TODO: Node? foot
   }) {
-    return addDescendants(
-      <String, mi.Matrix4>{
+    return addLimb(
+      limb: <String, mi.Matrix4>{
         key: coxa,
         'knee': knee,
         'ankle': ankle,
@@ -173,17 +173,9 @@ void _setup(StringSink sink) {
   var root = const mi.Node();
   _shapes.clear();
 
-  // root = root.putDescendants(
-  //   <String, mi.Matrix4>{
-  //     'n1': _identity,
-  //     'n2': _position(_y * 2) * _rotation(_x, 45.0),
-  //     'n3': _position(_y * 2) * _rotation(_x, 45.0),
-  //   }.entries,
-  // );
-
   root = root.add(
-    'upper',
-    Node(matrix: _position(_y)),
+    key: 'upper',
+    child: Node(matrix: _position(_y)),
   );
   root = root.addLeg(
     key: 'rCoxa',
