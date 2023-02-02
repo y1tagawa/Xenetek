@@ -270,16 +270,28 @@ class NodeFind {
   });
 }
 
+//
+
+String _toString(Iterable<String> path) => '[\'${path.join('\',\'')}\']';
+
+Iterable<String> _toPath(dynamic path) {
+  switch (path.runtimeType) {
+    case List<String>:
+    case Iterable<String>:
+      return path;
+    case String:
+      return path.split('.');
+    default:
+      throw UnimplementedError('path.runtimeType=${path.runtimeType}');
+  }
+}
+
 /// ノード
 ///
 /// モデルの制御点（関節）を定義する。
 /// [matrix]は親ノードからの相対的な変換を表す。
-
 class Node {
   static final _logger = Logger((Node).toString());
-
-  static List<String> _splitPath(String path) => path.split('.');
-  static String _pathToString(Iterable<String> data) => '[\'${data.join('\',\'')}\']';
 
   final Matrix4 matrix;
   final Map<String, Node> children;
@@ -289,60 +301,53 @@ class Node {
     this.children = const <String, Node>{},
   });
 
-  NodeFind? _find(
-    Iterable<String> path,
-    Matrix4 matrix,
+  NodeFind? _find({
+    required Iterable<String> path,
+    required Matrix4 matrix,
     Node? parent,
-  ) {
-    //_logger.fine('[i] _find path=${_pathToString(path)}');
+  }) {
+    _logger.fine('[i] _find path=${_toString(path)}');
     if (path.isEmpty) {
-      //_logger.fine('[o] _find ok');
-      return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent);
+      return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent).also((it) {
+        _logger.fine('[o] _find return=$it');
+      });
     }
     final child = children[path.first];
     if (child == null) {
-      //_logger.fine('[o] _find \'${path.first}\' not found.');
-      return null;
+      return null.also((it) {
+        _logger.fine('[o] _find return=$it');
+      });
     }
-    return child._find(path.skip(1), matrix * this.matrix, this);
+    return child._find(path: path.skip(1), matrix: matrix * this.matrix, parent: this);
   }
 
-  NodeFind? find(dynamic path) {
-    switch (path.runtimeType) {
-      case Iterable<String>:
-        return _find(path, Matrix4.identity, null);
-      case String:
-        return _find(
-          path.isEmpty ? const <String>[] : _splitPath(path),
-          Matrix4.identity,
-          null,
-        );
-      default:
-        throw UnimplementedError();
-    }
+  NodeFind? find({dynamic path}) {
+    _logger.fine('[i] _find path=${_toPath(path)}');
+    return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null).also((it) {
+      _logger.fine('[o] _find return=$it');
+    });
   }
 
   // 追加または更新
-  Node _replace({
+  Node _add({
     required Iterable<String> path,
+    required String key,
     required Node child,
   }) {
-    _logger.fine('[i] _replace path=${_pathToString(path)}');
-    // rootを更新してもあまり意味が無いので例外とする
-    assert(path.isNotEmpty);
-    // 自分が対象のノードの直接の親であれば、更新または追加して返す
-    if (path.length == 1) {
+    _logger.fine('[i] _add path=${_toString(path)}');
+    // [path]が指すノードであれば
+    if (path.isEmpty) {
       final children_ = {...children};
-      children_[path.first] = child;
+      children_[key] = child;
       return Node(matrix: matrix, children: children_).also((it) {
-        _logger.fine('[o] _replace');
+        _logger.fine('[o] _add');
       });
     }
     // パスを途中で辿れなくなったらエラー
     assert(children.containsKey(path.first));
     // パスの途中の子を更新して返す
     final children_ = {...children};
-    children_[path.first] = _replace(path: path.skip(1), child: child);
+    children_[path.first] = _add(path: path.skip(1), key: key, child: child);
     return Node(matrix: matrix, children: children_).also((it) {
       _logger.fine('[o] _replace');
     });
@@ -350,25 +355,16 @@ class Node {
 
   //TODO: remove
 
+  /// [path]で指定されたノードの[children]を[key] : [child]で更新または追加する。
   Node add({
-    String? key,
-    dynamic path,
+    dynamic path = const <String>[],
+    required String key,
     required Node child,
   }) {
-    assert(key != null && path == null || key == null && path != null);
-    if (key != null) {
-      final children_ = {...children};
-      children_[key] = child;
-      return copyWith(children: children_);
-    }
-    switch (path.runtimeType) {
-      case Iterable<String>:
-        return _replace(path: path, child: child);
-      case String:
-        return _replace(path: _splitPath(path), child: child);
-      default:
-        throw UnimplementedError();
-    }
+    _logger.fine('[i] add path=${_toPath(path)}');
+    return _add(path: _toPath(path), key: key, child: child).also((it) {
+      _logger.fine('[o] _add return=$it');
+    });
   }
 
   Node addLimb({
@@ -388,19 +384,12 @@ class Node {
   }
 
   Vector3? _getPosition(Iterable<String> path) {
-    final find_ = find(path);
+    final find_ = find(path: path);
     return find_?.matrix.position;
   }
 
   Vector3? getPosition(dynamic path) {
-    switch (path.runtimeType) {
-      case Iterable<String>:
-        return _getPosition(path);
-      case String:
-        return _getPosition(_splitPath(path));
-      default:
-        throw UnimplementedError();
-    }
+    return _getPosition(path._toPath());
   }
 
   //<editor-fold desc="Data Methods">
@@ -902,7 +891,7 @@ class Cube extends Shape {
 
   @override
   MeshData toMeshData(Node root) {
-    final find = root.find(origin);
+    final find = root.find(path: origin);
     if (find == null) {
       _logger.fine('toMeshData: \'$origin\' not found.');
       return const MeshData();
@@ -1038,7 +1027,7 @@ class Pin extends Shape {
 
   @override
   MeshData toMeshData(Node root) {
-    final find = root.find(origin);
+    final find = root.find(path: origin);
     if (find == null) {
       _logger.fine('toMeshData: \'$origin\' not found.');
       return const MeshData();
@@ -1157,7 +1146,7 @@ class Tube extends Shape {
 
   @override
   MeshData toMeshData(Node root) {
-    final find = root.find(origin)!;
+    final find = root.find(path: origin)!;
     return _tubeMeshData(
       radius: radius,
       length: length,
