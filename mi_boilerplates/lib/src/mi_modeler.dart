@@ -280,7 +280,7 @@ Iterable<String> _toPath(dynamic path) {
     case Iterable<String>:
       return path;
     case String:
-      return path.split('.');
+      return path.isEmpty ? const <String>[] : path.split('.');
     default:
       throw UnimplementedError('path.runtimeType=${path.runtimeType}');
   }
