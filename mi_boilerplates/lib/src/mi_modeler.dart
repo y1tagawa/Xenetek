@@ -8,6 +8,9 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
 import 'package:vector_math/vector_math_64.dart' as vm;
 
+// 出力フォーマット
+const _fractionDigits = 4;
+
 /// vector_mathのVector3の代わり
 ///
 /// vector_mathのVector3はimmutableにできないので
@@ -57,6 +60,22 @@ class Vector3 {
         z = value.z;
   vm.Vector3 toVmVector() => vm.Vector3(x, y, z);
 
+  /// 可視化 TODO: indent
+  StringSink print({
+    required StringSink sink,
+    int indent = 0,
+    String? key,
+  }) {
+    sink.write(''.padLeft(indent));
+    if (key != null) {
+      sink.write('key: key ');
+    }
+    sink.writeln('(${x.toStringAsFixed(4)} ${y.toStringAsFixed(4)}${z.toStringAsFixed(4)})');
+    return sink;
+  }
+
+  // TODO: to/fromJSON
+
   //<editor-fold desc="Data Methods">
 
   const Vector3(this.x, this.y, this.z);
@@ -86,22 +105,6 @@ class Vector3 {
     return Vector3(x ?? this.x, y ?? this.y, z ?? this.z);
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'x': x,
-      'y': y,
-      'z': z,
-    };
-  }
-
-  factory Vector3.fromMap(Map<String, dynamic> map) {
-    return Vector3(
-      map['x'] as double,
-      map['y'] as double,
-      map['z'] as double,
-    );
-  }
-
 //</editor-fold>
 }
 
@@ -116,56 +119,16 @@ extension Vector3ListHelper on List<Vector3> {
 /// vector_mathのMatrix4はimmutableにできないので
 
 class Matrix4 {
+  static final _logger = Logger('Matrix4');
+
   static const identity = Matrix4._(<double>[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
   static const zero = Matrix4._(<double>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
   final List<double> elements;
 
-  /// 併進成分
-  Vector3 get position {
-    return Vector3(elements[3], elements[7], elements[11]);
-  }
+  const Matrix4._(this.elements);
 
-  /// 回転成分
-  Matrix4 get rotation {
-    return Matrix4.fromList(<double>[
-      elements[0], elements[1], elements[2], 0, //
-      elements[4], elements[5], elements[6], 0, //
-      elements[8], elements[9], elements[10], 0, //
-      0, 0, 0, 1
-    ]);
-  }
-
-  /// 行列積
-  Matrix4 operator *(Matrix4 other) {
-    return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
-  }
-
-  Matrix4.fromList(this.elements) : assert(elements.length == 16);
-
-  Matrix4.fromVmMatrix(vm.Matrix4 value) : elements = value.storage;
-  vm.Matrix4 toVmMatrix() {
-    assert(elements.length == 16);
-    return vm.Matrix4(
-      elements[0],
-      elements[1],
-      elements[2],
-      elements[3],
-      elements[4],
-      elements[5],
-      elements[6],
-      elements[7],
-      elements[8],
-      elements[9],
-      elements[10],
-      elements[11],
-      elements[12],
-      elements[13],
-      elements[14],
-      elements[15],
-    );
-  }
-
+  // コンストラクタ
   static Matrix4 fromRotation(Vector3 axis, double angle) {
     // https://w3e.kanazawa-it.ac.jp/math/physics/category/physical_math/linear_algebra/henkan-tex.cgi?target=/math/physics/category/physical_math/linear_algebra/rodrigues_rotation_matrix.html
     final n = axis.normalized();
@@ -212,11 +175,91 @@ class Matrix4 {
     }
   }
 
+  Matrix4.fromList(this.elements) : assert(elements.length == 16);
+  Matrix4.fromVmMatrix(vm.Matrix4 value) : elements = value.storage;
+  vm.Matrix4 toVmMatrix() {
+    assert(elements.length == 16);
+    return vm.Matrix4(
+      elements[0],
+      elements[1],
+      elements[2],
+      elements[3],
+      elements[4],
+      elements[5],
+      elements[6],
+      elements[7],
+      elements[8],
+      elements[9],
+      elements[10],
+      elements[11],
+      elements[12],
+      elements[13],
+      elements[14],
+      elements[15],
+    );
+  }
+
+  /// 併進成分
+  Vector3 get position => Vector3(elements[3], elements[7], elements[11]);
+
+  /// 回転成分
+  Matrix4 get rotation {
+    return Matrix4.fromList(<double>[
+      elements[0], elements[1], elements[2], 0, //
+      elements[4], elements[5], elements[6], 0, //
+      elements[8], elements[9], elements[10], 0, //
+      0, 0, 0, 1
+    ]);
+  }
+
+  /// 行列積
+  Matrix4 operator *(Matrix4 other) {
+    return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
+  }
+
   // todo その他のコンストラクタ（LookAtとか）
 
-  //<editor-fold desc="Data Methods">
+  /// 可視化 TODO: indent
+  StringSink print({
+    required StringSink sink,
+    int indent = 0,
+    String? key,
+  }) {
+    if (key != null) {
+      sink.writeln('key: key'.padLeft(indent));
+    }
+    sink.write(''.padLeft(indent));
+    sink.writeln(
+      '(${elements[0].toStringAsFixed(4)}'
+      ' ${elements[1].toStringAsFixed(4)}'
+      ' ${elements[2].toStringAsFixed(4)}'
+      ' ${elements[3].toStringAsFixed(4)}',
+    );
+    sink.write(''.padLeft(indent));
+    sink.writeln(
+      ' ${elements[4].toStringAsFixed(4)}'
+      ' ${elements[5].toStringAsFixed(4)}'
+      ' ${elements[6].toStringAsFixed(4)}'
+      ' ${elements[7].toStringAsFixed(4)}',
+    );
+    sink.write(''.padLeft(indent));
+    sink.writeln(
+      ' ${elements[8].toStringAsFixed(4)}'
+      ' ${elements[9].toStringAsFixed(4)}'
+      ' ${elements[10].toStringAsFixed(4)}'
+      ' ${elements[11].toStringAsFixed(4)}',
+    );
+    sink.write(''.padLeft(indent));
+    sink.write(
+      ' ${elements[12].toStringAsFixed(4)}'
+      ' ${elements[13].toStringAsFixed(4)}'
+      ' ${elements[14].toStringAsFixed(4)}'
+      ' ${elements[15].toStringAsFixed(4)})',
+    );
+    return sink;
+  }
 
-  const Matrix4._(this.elements);
+  //<editor-fold desc="Data Methods">
 
   @override
   bool operator ==(Object other) =>
@@ -382,24 +425,21 @@ class Node {
   void _print({
     required StringSink sink,
     required int indent,
-    required String key,
+    required String? key,
     required Node node,
   }) {
-    void writeIndent(int indent) {
-      for (int i = 0; i < indent; ++i) {
-        sink.write('  ');
-      }
+    if (key != null) {
+      sink.writeln();
+      sink.write(''.padLeft(indent));
+      sink.writeln(key);
+      indent += 2;
     }
 
-    sink.writeln();
-    writeIndent(indent);
-    sink.writeln(key);
-    writeIndent(indent + 1);
-    sink.write('${node.matrix}');
+    node.matrix.print(sink: sink, indent: indent);
     for (final child in node.children.entries) {
       _print(
         sink: sink,
-        indent: indent + 1,
+        indent: indent,
         key: child.key,
         node: child.value,
       );
@@ -408,9 +448,10 @@ class Node {
 
   StringSink print({
     required StringSink sink,
-    required String key,
+    int indent = 0,
+    String? key,
   }) {
-    _print(sink: sink, indent: 0, key: key, node: this);
+    _print(sink: sink, indent: indent, key: key, node: this);
     return sink;
   }
 
@@ -784,8 +825,6 @@ void toWavefrontObj(
   List<MeshData> meshDataList,
   StringSink sink,
 ) {
-  const fractionDigits = 4;
-
   int vertexIndex = 1;
   int textureVertexIndex = 1;
   int normalIndex = 1;
@@ -793,25 +832,25 @@ void toWavefrontObj(
     for (final vertex in meshData.vertices) {
       sink.writeln(
         'v'
-        ' ${vertex.x.toStringAsFixed(fractionDigits)}'
-        ' ${vertex.y.toStringAsFixed(fractionDigits)}'
-        ' ${vertex.z.toStringAsFixed(fractionDigits)}',
+        ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
+        ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
+        ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
       );
     }
     for (final textureVertex in meshData.textureVertices) {
       sink.writeln(
         'vt'
-        ' ${textureVertex.x.toStringAsFixed(fractionDigits)}'
-        ' ${textureVertex.y.toStringAsFixed(fractionDigits)}'
-        ' ${textureVertex.z.toStringAsFixed(fractionDigits)}',
+        ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
+        ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
+        ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
       );
     }
     for (final normal in meshData.normals) {
       sink.writeln(
         'vn'
-        ' ${normal.x.toStringAsFixed(fractionDigits)}'
-        ' ${normal.y.toStringAsFixed(fractionDigits)}'
-        ' ${normal.z.toStringAsFixed(fractionDigits)}',
+        ' ${normal.x.toStringAsFixed(_fractionDigits)}'
+        ' ${normal.y.toStringAsFixed(_fractionDigits)}'
+        ' ${normal.z.toStringAsFixed(_fractionDigits)}',
       );
     }
     sink.writeln('s ${meshData.smooth ? 1 : 0}');
