@@ -65,8 +65,8 @@ class Vector3 {
         z = value.z;
   vm.Vector3 toVmVector() => vm.Vector3(x, y, z);
 
-  /// 可視化 TODO: indent
-  StringSink print({
+  /// 可読だが正確でない出力
+  StringSink format({
     required StringSink sink,
     int indent = 0,
     String? key,
@@ -222,8 +222,8 @@ class Matrix4 {
 
   // todo その他のコンストラクタ（LookAtとか）
 
-  /// 可視化 TODO: indent
-  StringSink print({
+  /// 可読だが正確でない出力
+  StringSink format({
     required StringSink sink,
     int indent = 0,
     String? key,
@@ -289,7 +289,6 @@ class Matrix4 {
 }
 
 /// ノード検索結果
-
 class NodeFind {
   final Node node;
   final Matrix4 matrix;
@@ -461,8 +460,8 @@ class Node {
     );
   }
 
-  // 樹状図
-  StringSink print({
+  /// 可読だが正確でない出力
+  StringSink format({
     required StringSink sink,
     int indent = 0,
     String? key,
@@ -478,7 +477,7 @@ class Node {
         sink.writeln(key);
         indent += 2;
       }
-      node.matrix.print(sink: sink, indent: indent);
+      node.matrix.format(sink: sink, indent: indent);
       for (final child in node.children.entries) {
         print_(
           indent: indent,
@@ -554,6 +553,36 @@ class DollModel {
     required this.root,
     required this.meshes,
   });
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DollModel &&
+          runtimeType == other.runtimeType &&
+          root == other.root &&
+          meshes == other.meshes);
+
+  @override
+  int get hashCode => root.hashCode ^ meshes.hashCode;
+
+  @override
+  String toString() {
+    return 'DollModel{ root: $root, meshes: $meshes,}';
+  }
+
+  DollModel copyWith({
+    Node? root,
+    Map<String, MeshData>? meshes,
+  }) {
+    return DollModel(
+      root: root ?? this.root,
+      meshes: meshes ?? this.meshes,
+    );
+  }
+
+//</editor-fold>
 }
 
 /// ドールモデルのリグを生成する最小限のパラメタs。

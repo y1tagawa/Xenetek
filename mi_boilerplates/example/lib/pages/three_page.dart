@@ -247,7 +247,7 @@ void _setup(StringSink sink) {
   const rig = mi.DollRigBuilder();
   final d = rig.build();
   logger.fine('rig');
-  logger.fine(d.root.print(sink: StringBuffer()).toString());
+  logger.fine(d.root.format(sink: StringBuffer()).toString());
 }
 
 final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
