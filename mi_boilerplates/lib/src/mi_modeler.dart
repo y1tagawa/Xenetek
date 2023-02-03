@@ -412,13 +412,39 @@ class Node {
     );
   }
 
-  Vector3? _getPosition(Iterable<String> path) {
-    final find_ = find(path: path);
-    return find_?.matrix.position;
+  // ルート空間内の位置
+  Vector3? getPosition(dynamic path) {
+    return find(path: _toPath(path))?.matrix.position;
   }
 
-  Vector3? getPosition(dynamic path) {
-    return _getPosition(path._toPath());
+  // 変換行列再設定
+  Node setMatrix({
+    dynamic path = const <String>[],
+    required String key,
+    required Matrix4 matrix,
+  }) {
+    final t = find(path: [..._toPath(path), key]);
+    assert(t != null);
+    return add(
+      path: path,
+      key: key,
+      child: Node(matrix: matrix, children: t!.node.children),
+    );
+  }
+
+  /// 変換
+  Node transform({
+    dynamic path = const <String>[],
+    required String key,
+    required Matrix4 matrix,
+  }) {
+    final t = find(path: [..._toPath(path), key]);
+    assert(t != null);
+    return add(
+      path: path,
+      key: key,
+      child: Node(matrix: t!.node.matrix * matrix, children: t.node.children),
+    );
   }
 
   // 樹状図
