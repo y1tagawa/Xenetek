@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
 import 'package:vector_math/vector_math_64.dart' as vm;
@@ -47,6 +48,9 @@ class Vector3 {
         throw UnimplementedError();
     }
   }
+
+  /// ドット積
+  double dot(Vector3 other) => x * other.x + y * other.y + z * other.z;
 
   /// 左右反転
   Vector3 mirrored() => Vector3(-x, y, z);
@@ -122,6 +126,7 @@ extension Vector3ListHelper on List<Vector3> {
 /// vector_mathのMatrix4はimmutableにできないので
 
 class Matrix4 {
+  // ignore: unused_field
   static final _logger = Logger('Matrix4');
 
   static const identity = Matrix4._(<double>[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
@@ -203,7 +208,9 @@ class Matrix4 {
   }
 
   /// 併進成分
-  Vector3 get position => Vector3(elements[3], elements[7], elements[11]);
+  //NGだった、厳しいな！
+  //Vector3 get position => Vector3(elements[3], elements[7], elements[11]);
+  Vector3 get position => Vector3(elements[12], elements[13], elements[14]);
 
   /// 回転成分
   Matrix4 get rotation {
@@ -429,6 +436,7 @@ class Node {
   Vector3? getPosition({
     required dynamic path,
   }) {
+    _logger.fine('[i] getPosition ${_toString(_toPath(path))}');
     return find(path: _toPath(path))?.matrix.position;
   }
 
@@ -524,68 +532,9 @@ class Node {
 
 // ドール(mk1)
 
-/// ドールモデル
-class DollModel {
-  // ノードパス
-  final pelvis = 'pelvis';
-  final chest = 'pelvis.chest';
-  final neck = 'pelvis.chest.neck';
-  final head = 'pelvis.chest.neck.head';
-  final rSc = 'pelvis.chest.neck.rSc';
-  final lSc = 'pelvis.chest.neck.lSc';
-  final rShoulder = 'pelvis.chest.neck.rSc.shoulder';
-  final lShoulder = 'pelvis.chest.neck.lSc.shoulder';
-  final rElbow = 'pelvis.chest.neck.rSc.shoulder.elbow';
-  final lElbow = 'pelvis.chest.neck.lSc.shoulder.elbow';
-  final rWrist = 'pelvis.chest.neck.rSc.shoulder.elbow.wrist';
-  final lWrist = 'pelvis.chest.neck.lSc.shoulder.elbow.wrist';
-  final rHip = 'pelvis.rHip';
-  final lHip = 'pelvis.lHip';
-  final rKnee = 'pelvis.rHip.knee';
-  final lKnee = 'pelvis.lHip.knee';
-  final rAnkle = 'pelvis.rHip.ankle';
-  final lAnkle = 'pelvis.lHip.ankle';
-
-  final Node root;
-  final Map<String, MeshData> meshes;
-
-  const DollModel({
-    required this.root,
-    required this.meshes,
-  });
-
-//<editor-fold desc="Data Methods">
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DollModel &&
-          runtimeType == other.runtimeType &&
-          root == other.root &&
-          meshes == other.meshes);
-
-  @override
-  int get hashCode => root.hashCode ^ meshes.hashCode;
-
-  @override
-  String toString() {
-    return 'DollModel{ root: $root, meshes: $meshes,}';
-  }
-
-  DollModel copyWith({
-    Node? root,
-    Map<String, MeshData>? meshes,
-  }) {
-    return DollModel(
-      root: root ?? this.root,
-      meshes: meshes ?? this.meshes,
-    );
-  }
-
-//</editor-fold>
-}
-
-/// ドールモデルのリグを生成する最小限のパラメタs。
+/// 最小限のパラメタかドールモデルのリグを生成するビルダ。
+///
+/// todo: copyWithなど
 class DollRigBuilder {
   final Vector3 pelvis; // rootから腰椎底の相対位置
   final double chest; // 胸椎底（腰椎の長さ）
@@ -594,6 +543,7 @@ class DollRigBuilder {
   // 胸鎖関節
   final Vector3 sc; // 頸椎底から右胸鎖関節の相対位置
   // 右上肢 (肩関節で、以下はY+が右を向くよう回転する)
+  // TODO: いずれ回転は止めて、Shapeの方で形状補完を吸収
   final Vector3 shoulder; // 右胸鎖関節から肩への相対位置
   final double elbow; // 上腕長
   final double wrist; // 前腕長
@@ -619,8 +569,8 @@ class DollRigBuilder {
     this.ankle = 0.5,
   });
 
-  // まずはリグだけ作る
-  DollModel build() {
+  /// リグ生成
+  Node build() {
     Node root = const Node();
     // 脊柱
     root = root.addLimb(
@@ -670,11 +620,104 @@ class DollRigBuilder {
         'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
       }.entries,
     );
+    return root;
+  }
+}
 
-    return DollModel(
-      root: root,
-      meshes: <String, MeshData>{},
+class DollMeshBuilder {
+  static final _logger = Logger('DollMeshBuilder');
+
+  // ノードパス
+  static const pelvis = 'pelvis';
+  static const chest = 'pelvis.chest';
+  static const neck = 'pelvis.chest.neck';
+  static const head = 'pelvis.chest.neck.head';
+  static const rSc = 'pelvis.chest.neck.rSc';
+  static const lSc = 'pelvis.chest.neck.lSc';
+  static const rShoulder = 'pelvis.chest.neck.rSc.shoulder';
+  static const lShoulder = 'pelvis.chest.neck.lSc.shoulder';
+  static const rElbow = 'pelvis.chest.neck.rSc.shoulder.elbow';
+  static const lElbow = 'pelvis.chest.neck.lSc.shoulder.elbow';
+  static const rWrist = 'pelvis.chest.neck.rSc.shoulder.elbow.wrist';
+  static const lWrist = 'pelvis.chest.neck.lSc.shoulder.elbow.wrist';
+  static const rHip = 'pelvis.rHip';
+  static const lHip = 'pelvis.lHip';
+  static const rKnee = 'pelvis.rHip.knee';
+  static const lKnee = 'pelvis.lHip.knee';
+  static const rAnkle = 'pelvis.rHip.knee.ankle';
+  static const lAnkle = 'pelvis.lHip.knee.ankle';
+
+  final Node rig;
+
+  const DollMeshBuilder({required this.rig});
+
+  @protected
+  MeshData? makePin(String origin, String end) {
+    // todo lookAt end
+    final matrix = rig.find(path: origin)!;
+    final length = (rig.getPosition(path: end)! - rig.getPosition(path: origin)!).length;
+    _logger.fine(rig.getPosition(path: end)!.toString());
+    _logger.fine(rig.getPosition(path: origin)!.toString());
+    _logger.fine('L=$length');
+    final shape = _cubeMeshData.transformed(
+      matrix.matrix * Matrix4.fromScale(Vector3(0.1, length, 0.1)),
     );
+    return shape;
+  }
+
+  @protected
+  Map<String, MeshData> makeBody() {
+    final buffer = <String, MeshData>{};
+    makePin(pelvis, chest)?.let((it) => buffer['waist'] = it);
+    makePin(chest, neck)?.let((it) => buffer['chest'] = it);
+    makePin(neck, head)?.let((it) => buffer['neck'] = it);
+    return buffer;
+  }
+
+  @protected
+  Map<String, MeshData> makeRArm() {
+    final buffer = <String, MeshData>{};
+    makePin(rShoulder, rElbow)?.let((it) => buffer['rUpperArm'] = it);
+    makePin(rElbow, rAnkle)?.let((it) => buffer['rForeArm'] = it);
+    // todo: hand
+    return buffer;
+  }
+
+  @protected
+  Map<String, MeshData> makeLArm() {
+    final buffer = <String, MeshData>{};
+    makePin(lShoulder, lElbow)?.let((it) => buffer['lUpperArm'] = it);
+    makePin(lElbow, lWrist)?.let((it) => buffer['lForeArm'] = it);
+    // todo: hand
+    return buffer;
+  }
+
+  @protected
+  Map<String, MeshData> makeRLeg() {
+    final buffer = <String, MeshData>{};
+    makePin(rHip, rKnee)?.let((it) => buffer['rThigh'] = it);
+    makePin(rKnee, rAnkle)?.let((it) => buffer['rShank'] = it);
+    // todo: foot
+    return buffer;
+  }
+
+  @protected
+  Map<String, MeshData> makeLLeg() {
+    final buffer = <String, MeshData>{};
+    makePin(lHip, lKnee)?.let((it) => buffer['lThigh'] = it);
+    makePin(lKnee, lAnkle)?.let((it) => buffer['lShank'] = it);
+    // todo: foot
+    return buffer;
+  }
+
+  Map<String, MeshData> build() {
+    final buffer = <String, MeshData>{};
+    buffer.addAll(makeBody());
+    buffer.addAll(makeRArm());
+    buffer.addAll(makeLArm());
+    buffer.addAll(makeRLeg());
+    buffer.addAll(makeLLeg());
+    return buffer;
   }
 }
 
@@ -1012,16 +1055,17 @@ List<MeshData> toMeshData({
 }
 
 /// Wavefront .obj出力
-
 void toWavefrontObj(
-  List<MeshData> meshDataList,
+  Map<String, MeshData> meshData,
   StringSink sink,
 ) {
   int vertexIndex = 1;
   int textureVertexIndex = 1;
   int normalIndex = 1;
-  for (final meshData in meshDataList) {
-    for (final vertex in meshData.vertices) {
+  for (final entry in meshData.entries) {
+    sink.writeln('# ${entry.key}');
+    final data = entry.value;
+    for (final vertex in data.vertices) {
       sink.writeln(
         'v'
         ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
@@ -1029,7 +1073,7 @@ void toWavefrontObj(
         ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
       );
     }
-    for (final textureVertex in meshData.textureVertices) {
+    for (final textureVertex in data.textureVertices) {
       sink.writeln(
         'vt'
         ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
@@ -1037,7 +1081,7 @@ void toWavefrontObj(
         ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
       );
     }
-    for (final normal in meshData.normals) {
+    for (final normal in data.normals) {
       sink.writeln(
         'vn'
         ' ${normal.x.toStringAsFixed(_fractionDigits)}'
@@ -1045,29 +1089,29 @@ void toWavefrontObj(
         ' ${normal.z.toStringAsFixed(_fractionDigits)}',
       );
     }
-    sink.writeln('s ${meshData.smooth ? 1 : 0}');
-    for (final face in meshData.faces) {
+    sink.writeln('s ${data.smooth ? 1 : 0}');
+    for (final face in data.faces) {
       assert(face.length >= 3);
       sink.write('f');
       for (final vertex in face) {
-        assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < meshData.vertices.length);
+        assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
         sink.write(' ${vertex.vertexIndex + vertexIndex}');
         if (vertex.normalIndex >= 0) {
           sink.write('/');
           if (vertex.textureVertexIndex >= 0) {
-            assert(vertex.textureVertexIndex < meshData.textureVertices.length);
+            assert(vertex.textureVertexIndex < data.textureVertices.length);
             sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
           }
           sink.write('/');
-          assert(vertex.normalIndex < meshData.normals.length);
+          assert(vertex.normalIndex < data.normals.length);
           sink.write('${vertex.normalIndex + normalIndex}');
         }
       }
       sink.writeln();
     }
-    vertexIndex += meshData.vertices.length;
-    textureVertexIndex += meshData.textureVertices.length;
-    normalIndex += meshData.normals.length;
+    vertexIndex += data.vertices.length;
+    textureVertexIndex += data.textureVertices.length;
+    normalIndex += data.normals.length;
   }
 }
 

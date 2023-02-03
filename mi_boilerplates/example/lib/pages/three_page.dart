@@ -223,31 +223,34 @@ void _setup(StringSink sink) {
   //   child: Node(matrix: lKnee.matrix * _rotation(_x, -45), children: lKnee.children),
   // );
   // logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
-  root = root.transform(
-    path: 'lCoxa.knee',
-    matrix: _rotation(_x, -45),
-  );
+  // root = root.transform(
+  //   path: 'lCoxa.knee',
+  //   matrix: _rotation(_x, -45),
+  // );
+  //
+  // _shapes.add(mi.Pin(origin: '', scale: _y + _xz));
+  // _shapes.add(const mi.Pin(origin: 'upper'));
+  // _shapes.add(mi.Pin(origin: 'rCoxa', scale: _y + _xz * 0.2));
+  // _shapes.add(mi.Pin(origin: 'rCoxa.knee', scale: _y + _xz * 0.2));
+  // _shapes.add(mi.Pin(origin: 'rCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
+  // _shapes.add(mi.Pin(origin: 'lCoxa', scale: _y + _xz * 0.2));
+  // _shapes.add(mi.Pin(origin: 'lCoxa.knee', scale: _y + _xz * 0.2));
+  // _shapes.add(mi.Pin(origin: 'lCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
+  // _rootNode = root;
+  //
+  // final meshDataList = <mi.MeshData>[];
+  // for (final shape in _shapes) {
+  //   meshDataList.add(shape.toMeshData(root));
+  // }
+  // mi.toWavefrontObj(meshDataList, sink);
 
-  _shapes.add(mi.Pin(origin: '', scale: _y + _xz));
-  _shapes.add(const mi.Pin(origin: 'upper'));
-  _shapes.add(mi.Pin(origin: 'rCoxa', scale: _y + _xz * 0.2));
-  _shapes.add(mi.Pin(origin: 'rCoxa.knee', scale: _y + _xz * 0.2));
-  _shapes.add(mi.Pin(origin: 'rCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
-  _shapes.add(mi.Pin(origin: 'lCoxa', scale: _y + _xz * 0.2));
-  _shapes.add(mi.Pin(origin: 'lCoxa.knee', scale: _y + _xz * 0.2));
-  _shapes.add(mi.Pin(origin: 'lCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
-  _rootNode = root;
-
-  final meshDataList = <mi.MeshData>[];
-  for (final shape in _shapes) {
-    meshDataList.add(shape.toMeshData(root));
-  }
-  mi.toWavefrontObj(meshDataList, sink);
-
-  const rig = mi.DollRigBuilder();
-  final d = rig.build();
+  const rigBuilder = mi.DollRigBuilder();
+  final rig = rigBuilder.build();
   logger.fine('rig');
-  logger.fine(d.root.format(sink: StringBuffer()).toString());
+  logger.fine(rig.format(sink: StringBuffer()).toString());
+  final data = mi.DollMeshBuilder(rig: rig);
+  final meshData = data.build();
+  mi.toWavefrontObj(meshData, sink);
 }
 
 final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
