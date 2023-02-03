@@ -152,6 +152,26 @@ mi.Node? _rootNode;
 final _shapes = <mi.Shape>[];
 
 extension NodeHelper on Node {
+  Node addArm({
+    // この辺をShapeでも流用したい
+    required String key, // 'r|lShoulder'
+    required Matrix4 matrix, // shoulder's matrix
+    required double upperArmLength,
+    required double foreArmLength,
+    //
+    Vector3 direction = Vector3.unitY,
+    Map<String, Node>? hand,
+  }) {
+    return addLimb(
+      joints: <String, mi.Matrix4>{
+        key: matrix,
+        'elbow': _position(direction * upperArmLength),
+        'wrist': _position(direction * foreArmLength),
+      }.entries,
+      children: hand,
+    );
+  }
+
   Node addLeg({
     required String key,
     required Matrix4 coxa,

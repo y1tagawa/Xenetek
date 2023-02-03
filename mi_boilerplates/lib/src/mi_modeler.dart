@@ -520,6 +520,45 @@ class Node {
 //</editor-fold>
 }
 
+/// ドール(mk1)
+///
+/// ドールのリグを生成する最小限のパラメタs。
+class DollRigBuilder {
+  final Vector3 pelvis; // rootから腰椎底の相対位置
+  final double lumbar; // 腰椎の長さ
+  final double thorax; // 胸椎の長さ
+  final double neck; // 頸椎の長さ
+  // 胸鎖関節
+  final Vector3 sc; // neckから右胸鎖関節の相対位置
+  // 右上肢 (肩関節で、以下はY+が右を向くよう回転する)
+  final Vector3 shoulder; // 右胸鎖関節から肩関節への相対位置
+  final double upperArm; // 上腕長
+  final double foreArm; // 前腕長
+  // 右下肢 (股関節で、以下はY+が下を向くようX軸回りに180°回転する)
+  final Vector3 coxa; // pelvisから右股関節の位置
+  final double thigh; // 大腿長
+  final double shank; // 下腿長
+  // 左は右の反転
+
+  const DollRigBuilder({
+    this.pelvis = Vector3.zero,
+    required this.lumbar,
+    required this.thorax,
+    required this.neck,
+    required this.sc,
+    required this.shoulder,
+    required this.upperArm,
+    required this.foreArm,
+    required this.coxa,
+    required this.thigh,
+    required this.shank,
+  });
+
+  Node makeRig() {
+    throw UnimplementedError();
+  }
+}
+
 /// メッシュ頂点データ
 ///
 /// 大体Wavefront .objの頂点データ。ただし、
