@@ -170,6 +170,8 @@ extension NodeHelper on Node {
 }
 
 void _setup(StringSink sink) {
+  final logger = Logger('_setup');
+
   var root = const mi.Node();
   _shapes.clear();
 
@@ -177,24 +179,36 @@ void _setup(StringSink sink) {
     key: 'upper',
     child: Node(matrix: _position(_y)),
   );
+  // root = root.addLeg(
+  //   key: 'rCoxa',
+  //   coxa: _position(_x * 0.2) * _rotation(_x, 180),
+  //   knee: _position(_y),
+  //   ankle: _position(_y),
+  // );
   root = root.addLeg(
-    key: 'rCoxa',
-    coxa: _position(_x * 0.2) * _rotation(_x, 180),
+    key: 'lCoxa',
+    coxa: _position(_x * -0.2) * _rotation(_x, 100),
     knee: _position(_y),
     ankle: _position(_y),
   );
-  root = root.addLeg(
-    key: 'lCoxa',
-    coxa: _position(_x * -0.2) * _rotation(_x, 160),
-    knee: _position(_y) * _rotation(_x, 45),
-    ankle: _position(_y),
+
+  // 左ひざを...
+  logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
+  final lKnee = root.find(path: 'lCoxa.knee')!.node;
+  logger.fine(lKnee.print(sink: StringBuffer(), key: 'lCoxa').toString());
+  // 曲げる
+  root = root.add(
+    path: 'lCoxa',
+    key: 'knee',
+    child: Node(matrix: lKnee.matrix * _rotation(_x, -45), children: lKnee.children),
   );
+  logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
 
   _shapes.add(mi.Pin(origin: '', scale: _y + _xz));
-  _shapes.add(const mi.Pin(origin: 'upper'));
-  _shapes.add(mi.Pin(origin: 'rCoxa', scale: _y + _xz * 0.2));
-  _shapes.add(mi.Pin(origin: 'rCoxa.knee', scale: _y + _xz * 0.2));
-  _shapes.add(mi.Pin(origin: 'rCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
+  // _shapes.add(const mi.Pin(origin: 'upper'));
+  // _shapes.add(mi.Pin(origin: 'rCoxa', scale: _y + _xz * 0.2));
+  // _shapes.add(mi.Pin(origin: 'rCoxa.knee', scale: _y + _xz * 0.2));
+  // _shapes.add(mi.Pin(origin: 'rCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));
   _shapes.add(mi.Pin(origin: 'lCoxa', scale: _y + _xz * 0.2));
   _shapes.add(mi.Pin(origin: 'lCoxa.knee', scale: _y + _xz * 0.2));
   _shapes.add(mi.Pin(origin: 'lCoxa.knee.ankle', scale: _y * 0.1 + _xz * 0.4));

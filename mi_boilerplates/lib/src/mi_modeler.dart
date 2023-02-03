@@ -239,20 +239,6 @@ class Matrix4 {
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'elements': elements,
-    };
-  }
-
-  factory Matrix4.fromMap(Map<String, dynamic> map) {
-    final elements = map['elements'] as List<double>;
-    if (elements.length != 16) {
-      throw const FormatException();
-    }
-    return Matrix4._(elements);
-  }
-
 //</editor-fold>
 }
 
@@ -306,25 +292,25 @@ class Node {
     required Matrix4 matrix,
     Node? parent,
   }) {
-    _logger.fine('[i] _find path=${_toString(path)}');
+    // _logger.fine('[i] _find path=${_toString(path)}');
     if (path.isEmpty) {
       return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent).also((it) {
-        _logger.fine('[o] _find return=$it');
+        // _logger.fine('[o] _find return=$it');
       });
     }
     final child = children[path.first];
     if (child == null) {
       return null.also((it) {
-        _logger.fine('[o] _find return=$it');
+        // _logger.fine('[o] _find return=$it');
       });
     }
     return child._find(path: path.skip(1), matrix: matrix * this.matrix, parent: this);
   }
 
   NodeFind? find({dynamic path}) {
-    _logger.fine('[i] _find path=${_toString(_toPath(path))}');
+    // _logger.fine('[i] _find path=${_toString(_toPath(path))}');
     return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null).also((it) {
-      _logger.fine('[o] _find return=$it');
+      // _logger.fine('[o] _find return=$it');
     });
   }
 
@@ -334,13 +320,13 @@ class Node {
     required String key,
     required Node child,
   }) {
-    _logger.fine('[i] _add path=${_toString(path)}');
+    // _logger.fine('[i] _add path=${_toString(path)}');
     // [path]が指すノードであれば
     if (path.isEmpty) {
       final children_ = {...children};
       children_[key] = child;
       return Node(matrix: matrix, children: children_).also((it) {
-        _logger.fine('[o] _add');
+        // _logger.fine('[o] _add');
       });
     }
     // パスを途中で辿れなくなったらエラー
@@ -349,7 +335,7 @@ class Node {
     final children_ = {...children};
     children_[path.first] = _add(path: path.skip(1), key: key, child: child);
     return Node(matrix: matrix, children: children_).also((it) {
-      _logger.fine('[o] _replace');
+      // _logger.fine('[o] _replace');
     });
   }
 
@@ -361,9 +347,9 @@ class Node {
     required String key,
     required Node child,
   }) {
-    _logger.fine('[i] add path=${_toString(_toPath(path))}');
+    // _logger.fine('[i] add path=${_toString(_toPath(path))}');
     return _add(path: _toPath(path), key: key, child: child).also((it) {
-      _logger.fine('[o] _add return=$it');
+      // _logger.fine('[o] _add return=$it');
     });
   }
 
@@ -390,6 +376,42 @@ class Node {
 
   Vector3? getPosition(dynamic path) {
     return _getPosition(path._toPath());
+  }
+
+  // 樹状図
+  void _print({
+    required StringSink sink,
+    required int indent,
+    required String key,
+    required Node node,
+  }) {
+    void writeIndent(int indent) {
+      for (int i = 0; i < indent; ++i) {
+        sink.write('  ');
+      }
+    }
+
+    sink.writeln();
+    writeIndent(indent);
+    sink.writeln(key);
+    writeIndent(indent + 1);
+    sink.write('${node.matrix}');
+    for (final child in node.children.entries) {
+      _print(
+        sink: sink,
+        indent: indent + 1,
+        key: child.key,
+        node: child.value,
+      );
+    }
+  }
+
+  StringSink print({
+    required StringSink sink,
+    required String key,
+  }) {
+    _print(sink: sink, indent: 0, key: key, node: this);
+    return sink;
   }
 
   //<editor-fold desc="Data Methods">
@@ -762,18 +784,35 @@ void toWavefrontObj(
   List<MeshData> meshDataList,
   StringSink sink,
 ) {
+  const fractionDigits = 4;
+
   int vertexIndex = 1;
   int textureVertexIndex = 1;
   int normalIndex = 1;
   for (final meshData in meshDataList) {
     for (final vertex in meshData.vertices) {
-      sink.writeln('v ${vertex.x} ${vertex.y} ${vertex.z}');
+      sink.writeln(
+        'v'
+        ' ${vertex.x.toStringAsFixed(fractionDigits)}'
+        ' ${vertex.y.toStringAsFixed(fractionDigits)}'
+        ' ${vertex.z.toStringAsFixed(fractionDigits)}',
+      );
     }
     for (final textureVertex in meshData.textureVertices) {
-      sink.writeln('vt ${textureVertex.x} ${textureVertex.y} ${textureVertex.z}');
+      sink.writeln(
+        'vt'
+        ' ${textureVertex.x.toStringAsFixed(fractionDigits)}'
+        ' ${textureVertex.y.toStringAsFixed(fractionDigits)}'
+        ' ${textureVertex.z.toStringAsFixed(fractionDigits)}',
+      );
     }
     for (final normal in meshData.normals) {
-      sink.writeln('vn ${normal.x} ${normal.y} ${normal.z}');
+      sink.writeln(
+        'vn'
+        ' ${normal.x.toStringAsFixed(fractionDigits)}'
+        ' ${normal.y.toStringAsFixed(fractionDigits)}'
+        ' ${normal.z.toStringAsFixed(fractionDigits)}',
+      );
     }
     sink.writeln('s ${meshData.smooth ? 1 : 0}');
     for (final face in meshData.faces) {
