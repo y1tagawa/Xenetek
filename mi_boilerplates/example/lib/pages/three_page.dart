@@ -243,6 +243,11 @@ void _setup(StringSink sink) {
     meshDataList.add(shape.toMeshData(root));
   }
   mi.toWavefrontObj(meshDataList, sink);
+
+  const rig = mi.DollRigBuilder();
+  final d = rig.build();
+  logger.fine('rig');
+  logger.fine(d.root.print(sink: StringBuffer()).toString());
 }
 
 final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {

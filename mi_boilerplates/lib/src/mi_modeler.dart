@@ -26,6 +26,8 @@ class Vector3 {
   final double y;
   final double z;
 
+  const Vector3(this.x, this.y, this.z);
+
   double get length => math.sqrt(x * x + y * y + z * z);
 
   Vector3 operator -() => Vector3(-x, -y, -z);
@@ -45,6 +47,9 @@ class Vector3 {
         throw UnimplementedError();
     }
   }
+
+  /// 左右反転
+  Vector3 mirrored() => Vector3(-x, y, z);
 
   Vector3 normalized() {
     return Vector3.fromVmVector(toVmVector().normalized());
@@ -77,8 +82,6 @@ class Vector3 {
   // TODO: to/fromJSON
 
   //<editor-fold desc="Data Methods">
-
-  const Vector3(this.x, this.y, this.z);
 
   @override
   bool operator ==(Object other) =>
@@ -520,42 +523,129 @@ class Node {
 //</editor-fold>
 }
 
-/// ドール(mk1)
-///
-/// ドールのリグを生成する最小限のパラメタs。
+// ドール(mk1)
+
+/// ドールモデル
+class DollModel {
+  // ノードパス
+  final pelvis = 'pelvis';
+  final chest = 'pelvis.chest';
+  final neck = 'pelvis.chest.neck';
+  final head = 'pelvis.chest.neck.head';
+  final rSc = 'pelvis.chest.neck.rSc';
+  final lSc = 'pelvis.chest.neck.lSc';
+  final rShoulder = 'pelvis.chest.neck.rSc.shoulder';
+  final lShoulder = 'pelvis.chest.neck.lSc.shoulder';
+  final rElbow = 'pelvis.chest.neck.rSc.shoulder.elbow';
+  final lElbow = 'pelvis.chest.neck.lSc.shoulder.elbow';
+  final rWrist = 'pelvis.chest.neck.rSc.shoulder.elbow.wrist';
+  final lWrist = 'pelvis.chest.neck.lSc.shoulder.elbow.wrist';
+  final rHip = 'pelvis.rHip';
+  final lHip = 'pelvis.lHip';
+  final rKnee = 'pelvis.rHip.knee';
+  final lKnee = 'pelvis.lHip.knee';
+  final rAnkle = 'pelvis.rHip.ankle';
+  final lAnkle = 'pelvis.lHip.ankle';
+
+  final Node root;
+  final Map<String, MeshData> meshes;
+
+  const DollModel({
+    required this.root,
+    required this.meshes,
+  });
+}
+
+/// ドールモデルのリグを生成する最小限のパラメタs。
 class DollRigBuilder {
   final Vector3 pelvis; // rootから腰椎底の相対位置
-  final double lumbar; // 腰椎の長さ
-  final double thorax; // 胸椎の長さ
-  final double neck; // 頸椎の長さ
+  final double chest; // 胸椎底（腰椎の長さ）
+  final double neck; // 頸椎底（胸椎の長さ）
+  final double head; // 頭蓋底（頸椎の長さ）
   // 胸鎖関節
-  final Vector3 sc; // neckから右胸鎖関節の相対位置
+  final Vector3 sc; // 頸椎底から右胸鎖関節の相対位置
   // 右上肢 (肩関節で、以下はY+が右を向くよう回転する)
-  final Vector3 shoulder; // 右胸鎖関節から肩関節への相対位置
-  final double upperArm; // 上腕長
-  final double foreArm; // 前腕長
-  // 右下肢 (股関節で、以下はY+が下を向くようX軸回りに180°回転する)
-  final Vector3 coxa; // pelvisから右股関節の位置
-  final double thigh; // 大腿長
-  final double shank; // 下腿長
+  final Vector3 shoulder; // 右胸鎖関節から肩への相対位置
+  final double elbow; // 上腕長
+  final double wrist; // 前腕長
+  // 右下肢 (股関節で、以下はY+が下を向くようX軸回りに180°
+  final Vector3 hip; // 腰椎底から右股関節の位置
+  final double knee; // 大腿長
+  final double ankle; // 下腿長
   // 左は右の反転
 
+  // TODO: 適当な初期値を適正に
+  // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
   const DollRigBuilder({
     this.pelvis = Vector3.zero,
-    required this.lumbar,
-    required this.thorax,
-    required this.neck,
-    required this.sc,
-    required this.shoulder,
-    required this.upperArm,
-    required this.foreArm,
-    required this.coxa,
-    required this.thigh,
-    required this.shank,
+    this.chest = 0.3,
+    this.neck = 0.5,
+    this.head = 0.2,
+    this.sc = const Vector3(0.01, 0.0, -0.08),
+    this.shoulder = const Vector3(0.14, 0.0, 0.08),
+    this.elbow = 0.45,
+    this.wrist = 0.45,
+    this.hip = const Vector3(0.1, 0.05, 0.0),
+    this.knee = 0.5,
+    this.ankle = 0.5,
   });
 
-  Node makeRig() {
-    throw UnimplementedError();
+  // まずはリグだけ作る
+  DollModel build() {
+    Node root = const Node();
+    // 脊柱
+    root = root.addLimb(
+      joints: <String, Matrix4>{
+        'pelvis': Matrix4.fromPosition(pelvis),
+        'chest': Matrix4.fromPosition(Vector3.unitY * chest),
+        'neck': Matrix4.fromPosition(Vector3.unitY * neck),
+        'head': Matrix4.fromPosition(Vector3.unitY * head),
+      }.entries,
+    );
+    // 右下肢
+    root = root.addLimb(
+      path: 'pelvis',
+      joints: <String, Matrix4>{
+        'rHip': Matrix4.fromPosition(hip) * Matrix4.fromRotation(Vector3.unitX, 180),
+        'knee': Matrix4.fromPosition(Vector3.unitY * knee),
+        'ankle': Matrix4.fromPosition(Vector3.unitY * ankle),
+      }.entries,
+    );
+    // 左下肢
+    root = root.addLimb(
+      path: 'pelvis',
+      joints: <String, Matrix4>{
+        'lHip': Matrix4.fromPosition(hip.mirrored()) * Matrix4.fromRotation(Vector3.unitX, 180),
+        'knee': Matrix4.fromPosition(Vector3.unitY * knee),
+        'ankle': Matrix4.fromPosition(Vector3.unitY * ankle),
+      }.entries,
+    );
+    // 右上肢
+    root = root.addLimb(
+      path: 'pelvis.chest.neck',
+      joints: <String, Matrix4>{
+        'rSc': Matrix4.fromPosition(sc),
+        'shoulder': Matrix4.fromPosition(shoulder) * Matrix4.fromRotation(Vector3.unitZ, 90),
+        'elbow': Matrix4.fromPosition(Vector3.unitY * elbow),
+        'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
+      }.entries,
+    );
+    // 左上肢
+    root = root.addLimb(
+      path: 'pelvis.chest.neck',
+      joints: <String, Matrix4>{
+        'lSc': Matrix4.fromPosition(sc.mirrored()),
+        'shoulder':
+            Matrix4.fromPosition(shoulder.mirrored()) * Matrix4.fromRotation(Vector3.unitZ, 90),
+        'elbow': Matrix4.fromPosition(Vector3.unitY * elbow),
+        'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
+      }.entries,
+    );
+
+    return DollModel(
+      root: root,
+      meshes: <String, MeshData>{},
+    );
   }
 }
 
