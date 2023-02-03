@@ -319,7 +319,9 @@ Iterable<String> _toPath(dynamic path) {
 ///
 /// モデルの制御点（関節）を定義する。
 /// [matrix]は親ノードからの相対的な変換を表す。
+/// TODO: immutableだからコンストラクト時に親から見たキーをコピーできるはず
 class Node {
+  // ignore: unused_field
   static final _logger = Logger((Node).toString());
 
   final Matrix4 matrix;
@@ -330,71 +332,59 @@ class Node {
     this.children = const <String, Node>{},
   });
 
+  // [path]で指定されたノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
+  // 見つからなければ`null`を返す。
   NodeFind? _find({
     required Iterable<String> path,
     required Matrix4 matrix,
     Node? parent,
   }) {
-    // _logger.fine('[i] _find path=${_toString(path)}');
     if (path.isEmpty) {
-      return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent).also((it) {
-        // _logger.fine('[o] _find return=$it');
-      });
+      return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent);
     }
     final child = children[path.first];
     if (child == null) {
-      return null.also((it) {
-        // _logger.fine('[o] _find return=$it');
-      });
+      return null;
     }
     return child._find(path: path.skip(1), matrix: matrix * this.matrix, parent: this);
   }
 
+  /// [path]で指定されたノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
+  /// 見つからなければ`null`を返す。
   NodeFind? find({dynamic path}) {
-    // _logger.fine('[i] _find path=${_toString(_toPath(path))}');
-    return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null).also((it) {
-      // _logger.fine('[o] _find return=$it');
-    });
+    return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
-  // 追加または更新
+  // [path].[key]で指定されたノードの[children]を[child]で追加または置換する。
   Node _add({
     required Iterable<String> path,
     required String key,
     required Node child,
   }) {
-    _logger.fine('[i] _add path=${_toString(path)}');
     // [path]が指すノードであれば
     if (path.isEmpty) {
       final children_ = {...children};
       children_[key] = child;
-      return Node(matrix: matrix, children: children_).also((it) {
-        _logger.fine('[o] _add');
-      });
+      return Node(matrix: matrix, children: children_);
     }
     // パスを途中で辿れなくなったらエラー
     assert(children.containsKey(path.first));
     // パスの途中の子を更新して返す
     final children_ = {...children};
     children_[path.first] = children[path.first]!._add(path: path.skip(1), key: key, child: child);
-    return Node(matrix: matrix, children: children_).also((it) {
-      // _logger.fine('[o] _replace');
-    });
+    return Node(matrix: matrix, children: children_);
   }
 
-  //TODO: remove
-
-  /// [path]で指定されたノードの[children]を[key],[child]で更新または追加する。
+  /// [path].[key]で指定されたノードの[children]を[child]で追加または置換する。
   Node add({
     dynamic path = const <String>[],
     required String key,
     required Node child,
   }) {
-    // _logger.fine('[i] add path=${_toString(_toPath(path))}');
-    return _add(path: _toPath(path), key: key, child: child).also((it) {
-      // _logger.fine('[o] _add return=$it');
-    });
+    return _add(path: _toPath(path), key: key, child: child);
   }
+
+//TODO: 必要ならremove
 
   Node addLimb({
     required Iterable<MapEntry<String, Matrix4>> limb,
@@ -448,36 +438,33 @@ class Node {
   }
 
   // 樹状図
-  void _print({
-    required StringSink sink,
-    required int indent,
-    required String? key,
-    required Node node,
-  }) {
-    if (key != null) {
-      sink.writeln();
-      sink.write(''.padLeft(indent));
-      sink.writeln(key);
-      indent += 2;
-    }
-
-    node.matrix.print(sink: sink, indent: indent);
-    for (final child in node.children.entries) {
-      _print(
-        sink: sink,
-        indent: indent,
-        key: child.key,
-        node: child.value,
-      );
-    }
-  }
-
   StringSink print({
     required StringSink sink,
     int indent = 0,
     String? key,
   }) {
-    _print(sink: sink, indent: indent, key: key, node: this);
+    void print_({
+      required int indent,
+      required String? key,
+      required Node node,
+    }) {
+      if (key != null) {
+        sink.writeln();
+        sink.write(''.padLeft(indent));
+        sink.writeln(key);
+        indent += 2;
+      }
+      node.matrix.print(sink: sink, indent: indent);
+      for (final child in node.children.entries) {
+        print_(
+          indent: indent,
+          key: child.key,
+          node: child.value,
+        );
+      }
+    }
+
+    print_(indent: indent, key: key, node: this);
     return sink;
   }
 

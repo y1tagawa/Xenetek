@@ -192,17 +192,22 @@ void _setup(StringSink sink) {
     ankle: _position(_y),
   );
 
-  // 左ひざを...
-  logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
-  final lKnee = root.find(path: 'lCoxa.knee')!.node;
-  logger.fine(lKnee.print(sink: StringBuffer(), key: 'lKnee').toString());
-  // 曲げる
-  root = root.add(
+  // // 左ひざを...
+  // logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
+  // final lKnee = root.find(path: 'lCoxa.knee')!.node;
+  // logger.fine(lKnee.print(sink: StringBuffer(), key: 'lKnee').toString());
+  // // 曲げる
+  // root = root.add(
+  //   path: 'lCoxa',
+  //   key: 'knee',
+  //   child: Node(matrix: lKnee.matrix * _rotation(_x, -45), children: lKnee.children),
+  // );
+  // logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
+  root = root.transform(
     path: 'lCoxa',
     key: 'knee',
-    child: Node(matrix: lKnee.matrix * _rotation(_x, -45), children: lKnee.children),
+    matrix: _rotation(_x, -45),
   );
-  logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
 
   _shapes.add(mi.Pin(origin: '', scale: _y + _xz));
   _shapes.add(const mi.Pin(origin: 'upper'));
