@@ -160,7 +160,7 @@ extension NodeHelper on Node {
     // TODO: Node? foot
   }) {
     return addLimb(
-      limb: <String, mi.Matrix4>{
+      joints: <String, mi.Matrix4>{
         key: coxa,
         'knee': knee,
         'ankle': ankle,

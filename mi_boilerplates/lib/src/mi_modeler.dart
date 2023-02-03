@@ -389,20 +389,37 @@ class Node {
 
 //TODO: 必要ならremove
 
-  // TODO: pathとする
-  Node addLimb({
-    required Iterable<MapEntry<String, Matrix4>> limb,
+  // [joints]を順次生成し、末端に（もしあれば）[children]を追加する。
+  Node _addLimb({
+    required Iterable<MapEntry<String, Matrix4>> joints,
     Map<String, Node>? children,
   }) {
-    if (limb.isEmpty) {
+    if (joints.isEmpty) {
       if (children != null) {
         return Node(children: children);
       }
       return this;
     }
     return add(
-      path: limb.first.key,
-      child: Node(matrix: limb.first.value).addLimb(limb: limb.skip(1), children: children),
+      path: joints.first.key,
+      child: Node(matrix: joints.first.value)._addLimb(joints: joints.skip(1), children: children),
+    );
+  }
+
+  /// [path]で指定するノードに、[joints]（およびもしあれば[children]）を順次追加する。
+  /// 省略されたらノード自身に対して行う。
+  Node addLimb({
+    dynamic path = const <String>[],
+    required Iterable<MapEntry<String, Matrix4>> joints,
+    Map<String, Node>? children,
+  }) {
+    assert(joints.isNotEmpty);
+    final tempNode = const Node()._addLimb(joints: joints, children: children);
+    assert(tempNode.children.length == 1);
+    final child = tempNode.children.entries.first;
+    return add(
+      path: [..._toPath(path), child.key],
+      child: child.value,
     );
   }
 
@@ -414,7 +431,7 @@ class Node {
   }
 
   /// [path]で指定するノードの変換行列を再設定する。
-  /// [path]が省略されたらノード自身に対して行う。
+  /// 省略されたらノード自身に対して行う。
   Node setMatrix({
     dynamic path = const <String>[],
     required Matrix4 matrix,
@@ -428,7 +445,7 @@ class Node {
   }
 
   /// [path]で指定するノードの変換行列に変換を加える。
-  /// [path]が省略されたらノード自身に対して行う。
+  /// 省略されたらノード自身に対して行う。
   Node transform({
     dynamic path = const <String>[],
     required Matrix4 matrix,
