@@ -320,20 +320,20 @@ class Node {
     required String key,
     required Node child,
   }) {
-    // _logger.fine('[i] _add path=${_toString(path)}');
+    _logger.fine('[i] _add path=${_toString(path)}');
     // [path]が指すノードであれば
     if (path.isEmpty) {
       final children_ = {...children};
       children_[key] = child;
       return Node(matrix: matrix, children: children_).also((it) {
-        // _logger.fine('[o] _add');
+        _logger.fine('[o] _add');
       });
     }
     // パスを途中で辿れなくなったらエラー
     assert(children.containsKey(path.first));
     // パスの途中の子を更新して返す
     final children_ = {...children};
-    children_[path.first] = _add(path: path.skip(1), key: key, child: child);
+    children_[path.first] = children[path.first]!._add(path: path.skip(1), key: key, child: child);
     return Node(matrix: matrix, children: children_).also((it) {
       // _logger.fine('[o] _replace');
     });
