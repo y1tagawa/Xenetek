@@ -176,7 +176,7 @@ void _setup(StringSink sink) {
   _shapes.clear();
 
   root = root.add(
-    key: 'upper',
+    path: 'upper',
     child: Node(matrix: _position(_y)),
   );
   root = root.addLeg(
@@ -204,8 +204,7 @@ void _setup(StringSink sink) {
   // );
   // logger.fine(root.print(sink: StringBuffer(), key: 'root').toString());
   root = root.transform(
-    path: 'lCoxa',
-    key: 'knee',
+    path: 'lCoxa.knee',
     matrix: _rotation(_x, -45),
   );
 

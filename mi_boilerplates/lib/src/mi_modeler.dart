@@ -351,41 +351,44 @@ class Node {
 
   /// [path]で指定されたノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
   /// 見つからなければ`null`を返す。
-  NodeFind? find({dynamic path}) {
+  NodeFind? find({
+    dynamic path,
+  }) {
     return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
-  // [path].[key]で指定されたノードの[children]を[child]で追加または置換する。
+  // [path]で指定されたノードの[children]を[child]で追加または置換する。
   Node _add({
     required Iterable<String> path,
-    required String key,
     required Node child,
   }) {
-    // [path]が指すノードであれば
-    if (path.isEmpty) {
+    assert(path.isNotEmpty);
+    // [path]が指すノードの親であれば
+    if (path.length == 1) {
+      // 指定の子を追加または置換する。
       final children_ = {...children};
-      children_[key] = child;
+      children_[path.first] = child;
       return Node(matrix: matrix, children: children_);
     }
     // パスを途中で辿れなくなったらエラー
     assert(children.containsKey(path.first));
     // パスの途中の子を更新して返す
     final children_ = {...children};
-    children_[path.first] = children[path.first]!._add(path: path.skip(1), key: key, child: child);
+    children_[path.first] = children[path.first]!._add(path: path.skip(1), child: child);
     return Node(matrix: matrix, children: children_);
   }
 
-  /// [path].[key]で指定されたノードの[children]を[child]で追加または置換する。
+  /// [path]で指定されたノードの[children]を[child]で追加または置換する。
   Node add({
-    dynamic path = const <String>[],
-    required String key,
+    dynamic path,
     required Node child,
   }) {
-    return _add(path: _toPath(path), key: key, child: child);
+    return _add(path: _toPath(path), child: child);
   }
 
 //TODO: 必要ならremove
 
+  // TODO: pathとする
   Node addLimb({
     required Iterable<MapEntry<String, Matrix4>> limb,
     Map<String, Node>? children,
@@ -397,43 +400,41 @@ class Node {
       return this;
     }
     return add(
-      key: limb.first.key,
+      path: limb.first.key,
       child: Node(matrix: limb.first.value).addLimb(limb: limb.skip(1), children: children),
     );
   }
 
   // ルート空間内の位置
-  Vector3? getPosition(dynamic path) {
+  Vector3? getPosition({
+    required dynamic path,
+  }) {
     return find(path: _toPath(path))?.matrix.position;
   }
 
   // 変換行列再設定
   Node setMatrix({
     dynamic path = const <String>[],
-    required String key,
     required Matrix4 matrix,
   }) {
-    final t = find(path: [..._toPath(path), key]);
-    assert(t != null);
+    final path_ = _toPath(path);
+    final node = find(path: _toPath(path))!.node;
     return add(
-      path: path,
-      key: key,
-      child: Node(matrix: matrix, children: t!.node.children),
+      path: path_,
+      child: Node(matrix: matrix, children: node.children),
     );
   }
 
   /// 変換
   Node transform({
     dynamic path = const <String>[],
-    required String key,
     required Matrix4 matrix,
   }) {
-    final t = find(path: [..._toPath(path), key]);
-    assert(t != null);
+    final path_ = _toPath(path);
+    final node = find(path: _toPath(path))!.node;
     return add(
-      path: path,
-      key: key,
-      child: Node(matrix: t!.node.matrix * matrix, children: t.node.children),
+      path: path_,
+      child: Node(matrix: node.matrix * matrix, children: node.children),
     );
   }
 
