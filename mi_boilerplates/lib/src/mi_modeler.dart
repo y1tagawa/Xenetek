@@ -319,7 +319,6 @@ Iterable<String> _toPath(dynamic path) {
 ///
 /// モデルの制御点（関節）を定義する。
 /// [matrix]は親ノードからの相対的な変換を表す。
-/// TODO: immutableだからコンストラクト時に親から見たキーをコピーできるはず
 class Node {
   // ignore: unused_field
   static final _logger = Logger((Node).toString());
@@ -332,7 +331,7 @@ class Node {
     this.children = const <String, Node>{},
   });
 
-  // [path]で指定されたノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
+  // [path]で指定するノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
   // 見つからなければ`null`を返す。
   NodeFind? _find({
     required Iterable<String> path,
@@ -349,7 +348,7 @@ class Node {
     return child._find(path: path.skip(1), matrix: matrix * this.matrix, parent: this);
   }
 
-  /// [path]で指定されたノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
+  /// [path]で指定するノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
   /// 見つからなければ`null`を返す。
   NodeFind? find({
     dynamic path,
@@ -382,7 +381,7 @@ class Node {
   /// [path]で指定するノードを[child]で置換または追加する。
   /// 親までの[path]が見つからなければ例外送出。
   Node add({
-    dynamic path,
+    required dynamic path,
     required Node child,
   }) {
     return _add(path: _toPath(path), child: child);
@@ -414,7 +413,8 @@ class Node {
     return find(path: _toPath(path))?.matrix.position;
   }
 
-  // 変換行列再設定
+  /// [path]で指定するノードの変換行列を再設定する。
+  /// [path]が省略されたらノード自身に対して行う。
   Node setMatrix({
     dynamic path = const <String>[],
     required Matrix4 matrix,
@@ -427,7 +427,8 @@ class Node {
     );
   }
 
-  /// [path]変換
+  /// [path]で指定するノードの変換行列に変換を加える。
+  /// [path]が省略されたらノード自身に対して行う。
   Node transform({
     dynamic path = const <String>[],
     required Matrix4 matrix,
