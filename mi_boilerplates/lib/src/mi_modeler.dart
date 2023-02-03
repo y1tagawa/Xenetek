@@ -357,7 +357,8 @@ class Node {
     return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
-  // [path]で指定されたノードの[children]を[child]で追加または置換する。
+  // [path]で指定するノードを[child]で置換または追加する。
+  // 親までの[path]が見つからなければ例外送出。
   Node _add({
     required Iterable<String> path,
     required Node child,
@@ -378,7 +379,8 @@ class Node {
     return Node(matrix: matrix, children: children_);
   }
 
-  /// [path]で指定されたノードの[children]を[child]で追加または置換する。
+  /// [path]で指定するノードを[child]で置換または追加する。
+  /// 親までの[path]が見つからなければ例外送出。
   Node add({
     dynamic path,
     required Node child,
@@ -425,7 +427,7 @@ class Node {
     );
   }
 
-  /// 変換
+  /// [path]変換
   Node transform({
     dynamic path = const <String>[],
     required Matrix4 matrix,
