@@ -502,7 +502,7 @@ class Node {
 
 // ドール(mk1)
 
-/// 最小限のパラメタかドールモデルのリグを生成するビルダ。
+/// 最小限のパラメタからドールモデルのリグを生成するビルダ。
 ///
 /// todo: copyWithなど
 class DollRigBuilder {
@@ -510,15 +510,13 @@ class DollRigBuilder {
   final double chest; // 胸椎底（腰椎の長さ）
   final double neck; // 頸椎底（胸椎の長さ）
   final double head; // 頭蓋底（頸椎の長さ）
-  final double collar; // 胸鎖関節のZ位置
-  final double shoulder; // 右肩関節のX位置
-//  final Vector3 sc; // 頸椎底から右胸鎖関節の相対位置
-  // 右上肢 (肩関節で、以下はY+が右を向くよう回転する)
-  // TODO: いずれ回転は止めて、Shapeの方で形状補完を吸収
+  final double collar; // 胸鎖関節のZ位置（胸の厚さ）
+  final double shoulder; // 右肩関節のX位置（肩幅）
+  // 右上肢
   final double elbow; // 上腕長
   final double wrist; // 前腕長
-  // 右下肢 (股関節で、以下はY+が下を向くようX軸回りに180°
-  final Vector3 hip; // 腰椎底から右股関節の位置
+  // 右下肢
+  final double hip; // 腰幅
   final double knee; // 大腿長
   final double ankle; // 下腿長
   // 左は右の反転
@@ -534,7 +532,7 @@ class DollRigBuilder {
     this.shoulder = 0.14,
     this.elbow = 0.4,
     this.wrist = 0.5,
-    this.hip = const Vector3(0.1, 0.05, 0.0),
+    this.hip = 0.1,
     this.knee = 0.6,
     this.ankle = 0.7,
   });
@@ -552,10 +550,11 @@ class DollRigBuilder {
       }.entries,
     );
     // 右下肢
+    final hip_ = Vector3(hip, 0.0, 0.0);
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'rHip': Matrix4.fromTranslation(hip),
+        'rHip': Matrix4.fromTranslation(hip_),
         'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
         'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
       }.entries,
@@ -564,7 +563,7 @@ class DollRigBuilder {
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'lHip': Matrix4.fromTranslation(hip.mirrored()),
+        'lHip': Matrix4.fromTranslation(hip_.mirrored()),
         'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
         'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
       }.entries,
