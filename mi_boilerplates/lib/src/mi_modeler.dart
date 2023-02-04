@@ -79,7 +79,7 @@ class Vector3 {
     if (key != null) {
       sink.write('key: key ');
     }
-    sink.writeln('(${x.toStringAsFixed(4)} ${y.toStringAsFixed(4)}${z.toStringAsFixed(4)})');
+    sink.writeln('(${x.toStringAsFixed(4)} ${y.toStringAsFixed(4)} ${z.toStringAsFixed(4)})');
     return sink;
   }
 
@@ -159,6 +159,9 @@ class Matrix4 {
     ];
     return Matrix4.fromList(elements);
   }
+
+  static Matrix4 fromRotationDegree(Vector3 axis, double angleDegree) =>
+      fromRotation(axis, angleDegree * math.pi / 180.0);
 
   static Matrix4 fromPosition(Vector3 position) {
     return Matrix4.fromVmMatrix(vm.Matrix4.translation(position.toVmVector()));
@@ -561,7 +564,7 @@ class DollRigBuilder {
     this.neck = 0.5,
     this.head = 0.2,
     this.sc = const Vector3(0.01, 0.0, -0.08),
-    this.shoulder = const Vector3(0.14, 0.0, 0.08),
+    this.shoulder = const Vector3(0.14, 0.0, 0.05), //ちょっと前
     this.elbow = 0.45,
     this.wrist = 0.45,
     this.hip = const Vector3(0.1, 0.05, 0.0),
@@ -582,10 +585,11 @@ class DollRigBuilder {
       }.entries,
     );
     // 右下肢
+    final hipRotation = Matrix4.fromRotation(Vector3.unitX, math.pi);
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'rHip': Matrix4.fromPosition(hip) * Matrix4.fromRotation(Vector3.unitX, 180),
+        'rHip': Matrix4.fromPosition(hip) * hipRotation,
         'knee': Matrix4.fromPosition(Vector3.unitY * knee),
         'ankle': Matrix4.fromPosition(Vector3.unitY * ankle),
       }.entries,
@@ -594,7 +598,7 @@ class DollRigBuilder {
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'lHip': Matrix4.fromPosition(hip.mirrored()) * Matrix4.fromRotation(Vector3.unitX, 180),
+        'lHip': Matrix4.fromPosition(hip.mirrored()) * hipRotation,
         'knee': Matrix4.fromPosition(Vector3.unitY * knee),
         'ankle': Matrix4.fromPosition(Vector3.unitY * ankle),
       }.entries,
@@ -604,7 +608,7 @@ class DollRigBuilder {
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
         'rSc': Matrix4.fromPosition(sc),
-        'shoulder': Matrix4.fromPosition(shoulder) * Matrix4.fromRotation(Vector3.unitZ, 90),
+        'shoulder': Matrix4.fromPosition(shoulder) * Matrix4.fromRotationDegree(Vector3.unitZ, 150),
         'elbow': Matrix4.fromPosition(Vector3.unitY * elbow),
         'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
       }.entries,
@@ -614,8 +618,8 @@ class DollRigBuilder {
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
         'lSc': Matrix4.fromPosition(sc.mirrored()),
-        'shoulder':
-            Matrix4.fromPosition(shoulder.mirrored()) * Matrix4.fromRotation(Vector3.unitZ, 90),
+        'shoulder': Matrix4.fromPosition(shoulder.mirrored()) *
+            Matrix4.fromRotationDegree(Vector3.unitZ, -150),
         'elbow': Matrix4.fromPosition(Vector3.unitY * elbow),
         'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
       }.entries,
@@ -678,7 +682,7 @@ class DollMeshBuilder {
   Map<String, MeshData> makeRArm() {
     final buffer = <String, MeshData>{};
     makePin(rShoulder, rElbow)?.let((it) => buffer['rUpperArm'] = it);
-    makePin(rElbow, rAnkle)?.let((it) => buffer['rForeArm'] = it);
+    makePin(rElbow, rWrist)?.let((it) => buffer['rForeArm'] = it);
     // todo: hand
     return buffer;
   }
