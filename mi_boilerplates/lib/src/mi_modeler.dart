@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
@@ -137,7 +138,7 @@ class Matrix4 {
   const Matrix4._(this.elements);
 
   /// 回転行列
-  static Matrix4 fromRotationAxisAngle(Vector3 axis, double radians) => Matrix4.fromVmMatrix(
+  static Matrix4 fromAxisAngleRotation(Vector3 axis, double radians) => Matrix4.fromVmMatrix(
         vm.Matrix4.compose(
           vm.Vector3.zero(),
           vm.Quaternion.axisAngle(axis.toVmVector(), radians),
@@ -146,11 +147,11 @@ class Matrix4 {
       );
 
   /// 回転行列
-  static Matrix4 fromRotationAxisAngleDegree(Vector3 axis, double degrees) =>
-      fromRotationAxisAngle(axis, vm.radians(degrees));
+  static Matrix4 fromAxisAngleDegreeRotation(Vector3 axis, double degrees) =>
+      fromAxisAngleRotation(axis, vm.radians(degrees));
 
   /// 回転行列
-  static Matrix4 fromRotationForwardTarget({
+  static Matrix4 fromForwardTargetRotation({
     required Vector3 forward,
     required Vector3 target,
   }) =>
@@ -531,11 +532,11 @@ class DollRigBuilder {
     this.head = 0.2,
     this.sc = const Vector3(0.01, 0.0, -0.08),
     this.shoulder = const Vector3(0.14, 0.0, 0.05), //ちょっと前
-    this.elbow = 0.45,
-    this.wrist = 0.45,
+    this.elbow = 0.4,
+    this.wrist = 0.5,
     this.hip = const Vector3(0.1, 0.05, 0.0),
-    this.knee = 0.5,
-    this.ankle = 0.5,
+    this.knee = 0.6,
+    this.ankle = 0.7,
   });
 
   /// リグ生成
@@ -551,7 +552,7 @@ class DollRigBuilder {
       }.entries,
     );
     // 右下肢
-    final hipRotation = Matrix4.fromRotationAxisAngle(Vector3.unitX, math.pi);
+    final hipRotation = Matrix4.fromAxisAngleRotation(Vector3.unitX, math.pi);
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
@@ -575,7 +576,7 @@ class DollRigBuilder {
       joints: <String, Matrix4>{
         'rSc': Matrix4.fromTranslation(sc),
         'shoulder': Matrix4.fromTranslation(shoulder) *
-            Matrix4.fromRotationAxisAngleDegree(Vector3.unitZ, -120),
+            Matrix4.fromAxisAngleDegreeRotation(Vector3.unitZ, -120),
         'elbow': Matrix4.fromTranslation(Vector3.unitY * elbow),
         'wrist': Matrix4.fromTranslation(Vector3.unitY * wrist),
       }.entries,
@@ -586,7 +587,7 @@ class DollRigBuilder {
       joints: <String, Matrix4>{
         'lSc': Matrix4.fromTranslation(sc.mirrored()),
         'shoulder': Matrix4.fromTranslation(shoulder.mirrored()) *
-            Matrix4.fromRotationAxisAngleDegree(Vector3.unitZ, 120),
+            Matrix4.fromAxisAngleDegreeRotation(Vector3.unitZ, 120),
         'elbow': Matrix4.fromTranslation(Vector3.unitY * elbow),
         'wrist': Matrix4.fromTranslation(Vector3.unitY * wrist),
       }.entries,
@@ -624,25 +625,11 @@ class DollMeshBuilder {
 
   @protected
   List<MeshData> makePin(String originPath, String targetPath) {
-    //
-    final origin = root.find(path: originPath)!;
-    final target = root.find(path: targetPath)!;
-    // targetのrootからの変換を。origin原点に変換する
-    final targetMatrix = origin.matrix.inverted() * target.matrix;
-    // originから見たtarget位置に、ピンの足を向ける
-    final rotation = Matrix4.fromRotationForwardTarget(
-      forward: Vector3.unitY, // ピンの足の方向
-      target: targetMatrix.translation,
-    );
-    // originを原点とするtargetまでの距離
-    final length = targetMatrix.translation.length;
-    // ピンのメッシュデータを生成する
-    final meshData = _cubeMeshData.transformed(
-      origin.matrix * rotation * Matrix4.fromScale(Vector3(0.1, length, 0.1)),
-    );
-    // final meshData = _cubeMeshData
-    //     .transformed(origin.matrix * Matrix4.fromScale(Vector3(0.1, length, 0.1)));
-    return [meshData];
+    return Pin(
+      origin: originPath,
+      target: targetPath,
+      scale: const Vector3(0.25, 1, 0.25),
+    ).toMeshData(root: root);
   }
 
   @protected
@@ -694,9 +681,9 @@ class DollMeshBuilder {
     final buffer = <String, List<MeshData>>{};
     buffer.addAll(makeBody());
     buffer.addAll(makeRArm());
-    //buffer.addAll(makeLArm());
-    //buffer.addAll(makeRLeg());
-    //buffer.addAll(makeLLeg());
+    buffer.addAll(makeLArm());
+    buffer.addAll(makeRLeg());
+    buffer.addAll(makeLLeg());
     return buffer;
   }
 }
@@ -706,7 +693,6 @@ class DollMeshBuilder {
 /// 大体Wavefront .objの頂点データ。ただし、
 /// - インデックスは0から。
 /// - テクスチャ、法線インデックスを省略する場合は-1。
-
 class MeshVertex {
   final int vertexIndex;
   final int textureVertexIndex;
@@ -1017,7 +1003,7 @@ class MeshData {
 /// 多面体の基底クラス
 abstract class Shape {
   const Shape();
-  MeshData toMeshData(Node root);
+  List<MeshData> toMeshData({required Node root});
 }
 
 /// メッシュデータアレイ
@@ -1167,28 +1153,55 @@ const _cubeMeshData = MeshData(
 
 /// 直方体
 ///
-/// [origin]を上面中心として直方体を生成する。
-
+/// [origin]を底面中心、[target]を上面として直方体を生成する。
 class Cube extends Shape {
+  // ignore: unused_field
   static final _logger = Logger('Cube');
 
   final String origin;
+  final String target;
   final Vector3 scale;
+  final bool fill;
 
   const Cube({
     required this.origin,
-    this.scale = const Vector3(1, 1, 1),
+    this.target = '',
+    this.scale = Vector3.one,
+    this.fill = true,
   });
 
-  @override
-  MeshData toMeshData(Node root) {
-    final find = root.find(path: origin);
-    if (find == null) {
-      _logger.fine('toMeshData: \'$origin\' not found.');
-      return const MeshData();
+  @protected
+  List<MeshData> _toMeshData({
+    required Node root,
+    required MeshData data,
+  }) {
+    final origin_ = root.find(path: origin)!.matrix;
+    if (target.isNotEmpty) {
+      // targetのroot空間からの変換行列を、origin空間にローカライズする。
+      final target_ = origin_.inverted() * root.find(path: target)!.matrix;
+      // モデルの上面をtargetの原点に向ける。
+      final rotation = Matrix4.fromForwardTargetRotation(
+        forward: Vector3.unitY,
+        target: target_.translation,
+      );
+      // fillの場合、モデルをorigin原点からtarget原点までに拡縮する。
+      var scale_ = scale;
+      if (fill) {
+        final length = target_.translation.length;
+        final k = length / scale.y;
+        scale_ = Vector3(scale.x * k, length, scale.z * k);
+      }
+      // モデルをスケールし、targetに向けて回転させ、originからroot空間に変換する。
+      return <MeshData>[data.transformed(origin_ * rotation * Matrix4.fromScale(scale_))];
+    } else {
+      // targetが省略されたらY+を上にする。
+      return <MeshData>[data.transformed(origin_ * Matrix4.fromScale(scale))];
     }
+  }
 
-    return _cubeMeshData.transformed(find.matrix * Matrix4.fromScale(Vector3.one * scale));
+  @override
+  List<MeshData> toMeshData({required Node root}) {
+    return _toMeshData(root: root, data: _cubeMeshData);
   }
 
 //<editor-fold desc="Data Methods">
@@ -1199,37 +1212,29 @@ class Cube extends Shape {
       (other is Cube &&
           runtimeType == other.runtimeType &&
           origin == other.origin &&
-          scale == other.scale);
+          target == other.target &&
+          scale == other.scale &&
+          fill == other.fill);
 
   @override
-  int get hashCode => origin.hashCode ^ scale.hashCode;
+  int get hashCode => origin.hashCode ^ target.hashCode ^ scale.hashCode ^ fill.hashCode;
 
   @override
   String toString() {
-    return 'CubeMesh{ path: $origin, scale: $scale,}';
+    return 'Cube{ origin: $origin, target: $target, scale: $scale, fill: $fill}';
   }
 
   Cube copyWith({
     String? origin,
+    String? target,
     Vector3? scale,
+    bool? fill,
   }) {
     return Cube(
       origin: origin ?? this.origin,
+      target: target ?? this.target,
       scale: scale ?? this.scale,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'origin': origin,
-      'scale': scale,
-    };
-  }
-
-  factory Cube.fromMap(Map<String, dynamic> map) {
-    return Cube(
-      origin: map['origin'] as String,
-      scale: map['scale'] as Vector3,
+      fill: fill ?? this.fill,
     );
   }
 
@@ -1303,35 +1308,30 @@ const _octahedronMeshData = MeshData(
 
 /// ピン
 ///
-/// [origin]を上中心として八面体のピンを生成する。
-
-class Pin extends Shape {
+/// [origin]を始端(底面)中心、[target]を終端(上面)として八面体のピンを生成する。
+class Pin extends Cube {
+  // ignore: unused_field
   static final _logger = Logger('Pin');
 
-  final String origin;
-  final Vector3 scale;
-
   const Pin({
-    required this.origin,
-    this.scale = Vector3.one,
+    required super.origin,
+    super.target = '',
+    super.scale = Vector3.one,
+    super.fill = true,
   });
 
   @override
-  MeshData toMeshData(Node root) {
-    final find = root.find(path: origin);
-    if (find == null) {
-      _logger.fine('toMeshData: \'$origin\' not found.');
-      return const MeshData();
-    }
-
+  List<MeshData> toMeshData({required Node root}) {
     final vertices = _octahedronVertices
-        .map((it) => Vector3(it.x * 0.75, it.y == 0.5 ? 0.25 : it.y, it.z * 0.75))
+        .map((it) => Vector3(it.x, it.y == 0.5 ? 0.25 : it.y, it.z))
         .toList(growable: false);
-    final meshData = MeshData(
-      vertices: vertices,
-      faces: _octahedronFaces,
+    return _toMeshData(
+      root: root,
+      data: MeshData(
+        vertices: vertices,
+        faces: _octahedronFaces,
+      ),
     );
-    return meshData.transformed(find.matrix * Matrix4.fromScale(Vector3.one * scale));
   }
 
 //<editor-fold desc="Data Methods">
@@ -1342,37 +1342,29 @@ class Pin extends Shape {
       (other is Pin &&
           runtimeType == other.runtimeType &&
           origin == other.origin &&
-          scale == other.scale);
+          target == other.target &&
+          scale == other.scale &&
+          fill == other.fill);
 
   @override
-  int get hashCode => origin.hashCode ^ scale.hashCode;
+  int get hashCode => origin.hashCode ^ target.hashCode ^ scale.hashCode ^ fill.hashCode;
 
   @override
   String toString() {
-    return 'Pin{ origin: $origin, scale: $scale,}';
+    return 'Pin{ origin: $origin, target: $target, scale: $scale, fill: $fill}';
   }
 
   Pin copyWith({
     String? origin,
-    dynamic scale,
+    String? target,
+    Vector3? scale,
+    bool? fill,
   }) {
     return Pin(
       origin: origin ?? this.origin,
+      target: target ?? this.target,
       scale: scale ?? this.scale,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'origin': origin,
-      'scale': scale,
-    };
-  }
-
-  factory Pin.fromMap(Map<String, dynamic> map) {
-    return Pin(
-      origin: map['origin'] as String,
-      scale: map['scale'] as Vector3,
+      fill: fill ?? this.fill,
     );
   }
 
@@ -1415,7 +1407,6 @@ MeshData _tubeMeshData({
 /// 円筒
 ///
 /// [origin]を上面中心として円筒を生成する。
-
 class Tube extends Shape {
   final String origin;
   final double radius;
@@ -1436,15 +1427,16 @@ class Tube extends Shape {
         assert(lengthDivision >= 1);
 
   @override
-  MeshData toMeshData(Node root) {
-    final find = root.find(path: origin)!;
-    return _tubeMeshData(
-      radius: radius,
-      length: length,
-      longDivision: longDivision,
-      radiusDivision: radiusDivision,
-      lengthDivision: lengthDivision,
-    ).transformed(find.matrix);
+  List<MeshData> toMeshData({required Node root}) {
+    throw UnimplementedError();
+    // final find = root.find(path: origin)!;
+    // return _tubeMeshData(
+    //   radius: radius,
+    //   length: length,
+    //   longDivision: longDivision,
+    //   radiusDivision: radiusDivision,
+    //   lengthDivision: lengthDivision,
+    // ).transformed(find.matrix);
   }
 
 //<editor-fold desc="Data Methods">

@@ -144,7 +144,7 @@ const _identity = mi.Matrix4.identity;
 final _xz = _x + _z;
 
 mi.Matrix4 _rotation(mi.Vector3 axis, double angleDegree) =>
-    mi.Matrix4.fromRotationAxisAngle(axis, vm.radians(angleDegree));
+    mi.Matrix4.fromAxisAngleRotation(axis, vm.radians(angleDegree));
 mi.Matrix4 _position(mi.Vector3 position) => mi.Matrix4.fromTranslation(position);
 
 mi.Node? _rootNode;
