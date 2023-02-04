@@ -1081,9 +1081,9 @@ extension MeshDataArrayHelper on Map<String, List<MeshData>> {
   }
 }
 
-/// 立方体メッシュデータ
-///
-/// (-0.5,0,-0.5)-(0.5,1,0.5)
+// 立方体メッシュデータ
+//
+// (-0.5,0,-0.5)-(0.5,1,0.5)
 
 //<editor-fold>
 
@@ -1244,9 +1244,9 @@ class Cube extends Shape {
 //</editor-fold>
 }
 
-/// 正八面体メッシュデータ
-///
-/// (-0.5,0,-0.5)-(0.5,1,0.5)
+// 正八面体メッシュデータ
+//
+// (-0.5,0,-0.5)-(0.5,1,0.5)
 
 //<editor-fold>
 
@@ -1372,6 +1372,28 @@ class Pin extends Cube {
   }
 
 //</editor-fold>
+}
+
+/// メッシュ
+///
+class Mesh extends Cube {
+  // ignore: unused_field
+  static final _logger = Logger('Mesh');
+
+  final MeshData data;
+
+  const Mesh({
+    required super.origin,
+    super.target = '',
+    super.scale = Vector3.one,
+    super.fill = false,
+    required this.data,
+  });
+
+  @override
+  List<MeshData> toMeshData({required Node root}) {
+    return _toMeshData(root: root, data: data);
+  }
 }
 
 /// 積み上げ式円筒メッシュデータ生成
