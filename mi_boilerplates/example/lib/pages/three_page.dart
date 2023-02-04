@@ -151,40 +151,21 @@ mi.Node? _rootNode;
 
 final _shapes = <mi.Shape>[];
 
-extension NodeHelper on Node {
-  Node addArm({
-    // この辺をShapeでも流用したい
-    required String key, // 'r|lShoulder'
-    required Matrix4 matrix, // shoulder's matrix
-    required double upperArmLength,
-    required double foreArmLength,
-    //
-    Vector3 direction = Vector3.unitY,
-    Map<String, Node>? hand,
-  }) {
-    return addLimb(
-      joints: <String, mi.Matrix4>{
-        key: matrix,
-        'elbow': _position(direction * upperArmLength),
-        'wrist': _position(direction * foreArmLength),
-      }.entries,
-      children: hand,
-    );
-  }
-
-  Node addLeg({
-    required String key,
-    required Matrix4 coxa,
-    required Matrix4 knee,
-    required Matrix4 ankle,
-    // TODO: Node? foot
-  }) {
-    return addLimb(
-      joints: <String, mi.Matrix4>{
-        key: coxa,
-        'knee': knee,
-        'ankle': ankle,
-      }.entries,
+extension CubeMeshHelper on cube.Mesh {
+  mi.MeshData toMeshData() {
+    final vertices_ = vertices.map((it) => Vector3(it.x, it.y, it.z)).toList(growable: false);
+    final faces = indices
+        .map(
+          (it) => <mi.MeshVertex>[
+            mi.MeshVertex(it.vertex0, -1, -1),
+            mi.MeshVertex(it.vertex1, -1, -1),
+            mi.MeshVertex(it.vertex2, -1, -1),
+          ],
+        )
+        .toList(growable: false);
+    return mi.MeshData(
+      vertices: vertices_,
+      faces: faces,
     );
   }
 }
