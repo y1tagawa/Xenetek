@@ -627,13 +627,11 @@ class DollMeshBuilder {
     final eye = originNode.matrix.translation;
     final at = endNode.matrix.translation;
     final matrix = Matrix4.fromRotationForwardTarget(
-      forward: Vector3.unitY.transformed(originNode.matrix),
-      target: at - eye,
+      forward: Vector3.unitY,
+      target: endNode.node.matrix.translation,
     );
     final meshData = _cubeMeshData.transformed(
-      Matrix4.fromTranslation(eye) *
-          matrix *
-          Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)),
+      originNode.matrix * matrix * Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)),
     );
     // final meshData = _cubeMeshData
     //     .transformed(originNode.matrix * Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)));
