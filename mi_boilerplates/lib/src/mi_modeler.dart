@@ -620,22 +620,24 @@ class DollMeshBuilder {
   const DollMeshBuilder({required this.root});
 
   @protected
-  List<MeshData> makePin(String origin, String end) {
+  List<MeshData> makePin(String originPath, String targetPath) {
     //
-    final originNode = root.find(path: origin)!;
-    final endNode = root.find(path: end)!;
-    final eye = originNode.matrix.translation;
-    final at = endNode.matrix.translation;
-    final matrix = Matrix4.fromRotationForwardTarget(
-      forward: Vector3.unitY,
-      target: endNode.node.matrix.translation,
+    final origin = root.find(path: originPath)!;
+    final target = root.find(path: targetPath)!;
+
+    // originから見たtarget位置に、ピンの足を向ける
+    final rotation = Matrix4.fromRotationForwardTarget(
+      forward: Vector3.unitY, // ピンの足の方向
+      target: target.matrix.translation,
     );
+    // originを原点とするtargetまでの距離
+    final length = target.matrix.translation.length;
     final meshData = _cubeMeshData.transformed(
-      originNode.matrix * matrix * Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)),
+      origin.node.matrix * rotation * Matrix4.fromScale(Vector3(0.1, length, 0.1)),
     );
-    // final meshData = _cubeMeshData
-    //     .transformed(originNode.matrix * Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)));
-    return [meshData];
+    final meshData2 = _cubeMeshData
+        .transformed(origin.node.matrix * Matrix4.fromScale(Vector3(0.1, length, 0.1)));
+    return [meshData, meshData2];
   }
 
   @protected
@@ -1020,6 +1022,7 @@ extension MeshDataArrayHelper on Map<String, List<MeshData>> {
 
   /// Wavefront .obj出力
   void toWavefrontObj(StringSink sink) {
+    _logger.fine('[i] toWavefrontObj $length entries');
     int vertexIndex = 1;
     int textureVertexIndex = 1;
     int normalIndex = 1;
@@ -1075,6 +1078,12 @@ extension MeshDataArrayHelper on Map<String, List<MeshData>> {
         normalIndex += data.normals.length;
       }
     }
+    _logger.fine(
+      '[o] toWavefrontObj'
+      ' $vertexIndex vertices,'
+      ' $textureVertexIndex texture vertices,'
+      ' $normalIndex normals.',
+    );
   }
 }
 

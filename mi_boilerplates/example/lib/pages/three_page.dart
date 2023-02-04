@@ -193,12 +193,12 @@ void _setup(StringSink sink) {
   final logger = Logger('_setup');
 
   const rigBuilder = mi.DollRigBuilder();
-  final rig = rigBuilder.build();
-  logger.fine('rig');
-  logger.fine(rig.format(sink: StringBuffer()).toString());
-  final data = mi.DollMeshBuilder(root: rig);
-  final meshData = data.build();
-  meshData.toWavefrontObj(sink);
+  final root = rigBuilder.build();
+  logger.fine('root');
+  logger.fine(root.format(sink: StringBuffer()).toString());
+  final data = mi.DollMeshBuilder(root: root);
+  final meshDataArray = data.build();
+  meshDataArray.toWavefrontObj(sink);
 }
 
 final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
