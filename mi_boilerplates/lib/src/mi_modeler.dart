@@ -510,11 +510,11 @@ class DollRigBuilder {
   final double chest; // 胸椎底（腰椎の長さ）
   final double neck; // 頸椎底（胸椎の長さ）
   final double head; // 頭蓋底（頸椎の長さ）
-  // 胸鎖関節
-  final Vector3 sc; // 頸椎底から右胸鎖関節の相対位置
+  final double collar; // 胸鎖関節のZ位置
+  final double shoulder; // 右肩関節のX位置
+//  final Vector3 sc; // 頸椎底から右胸鎖関節の相対位置
   // 右上肢 (肩関節で、以下はY+が右を向くよう回転する)
   // TODO: いずれ回転は止めて、Shapeの方で形状補完を吸収
-  final Vector3 shoulder; // 右胸鎖関節から肩への相対位置
   final double elbow; // 上腕長
   final double wrist; // 前腕長
   // 右下肢 (股関節で、以下はY+が下を向くようX軸回りに180°
@@ -530,8 +530,8 @@ class DollRigBuilder {
     this.chest = 0.3,
     this.neck = 0.5,
     this.head = 0.2,
-    this.sc = const Vector3(0.01, 0.0, -0.08),
-    this.shoulder = const Vector3(0.14, 0.0, 0.05), //ちょっと前
+    this.collar = -0.08,
+    this.shoulder = 0.14,
     this.elbow = 0.4,
     this.wrist = 0.5,
     this.hip = const Vector3(0.1, 0.05, 0.0),
@@ -552,33 +552,33 @@ class DollRigBuilder {
       }.entries,
     );
     // 右下肢
-    final hipRotation = Matrix4.fromAxisAngleRotation(Vector3.unitX, math.pi);
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'rHip': Matrix4.fromTranslation(hip) * hipRotation,
-        'knee': Matrix4.fromTranslation(Vector3.unitY * knee),
-        'ankle': Matrix4.fromTranslation(Vector3.unitY * ankle),
+        'rHip': Matrix4.fromTranslation(hip),
+        'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
+        'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
       }.entries,
     );
     // 左下肢
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'lHip': Matrix4.fromTranslation(hip.mirrored()) * hipRotation,
-        'knee': Matrix4.fromTranslation(Vector3.unitY * knee),
-        'ankle': Matrix4.fromTranslation(Vector3.unitY * ankle),
+        'lHip': Matrix4.fromTranslation(hip.mirrored()),
+        'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
+        'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
       }.entries,
     );
     // 右上肢
+    final sc = Vector3(0.0, 0.0, collar);
+    final shoulder_ = Vector3(shoulder, 0.0, -collar);
     root = root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
         'rSc': Matrix4.fromTranslation(sc),
-        'shoulder': Matrix4.fromTranslation(shoulder) *
-            Matrix4.fromAxisAngleDegreeRotation(Vector3.unitZ, -120),
-        'elbow': Matrix4.fromTranslation(Vector3.unitY * elbow),
-        'wrist': Matrix4.fromTranslation(Vector3.unitY * wrist),
+        'shoulder': Matrix4.fromTranslation(shoulder_),
+        'elbow': Matrix4.fromTranslation(Vector3.unitX * elbow),
+        'wrist': Matrix4.fromTranslation(Vector3.unitX * wrist),
       }.entries,
     );
     // 左上肢
@@ -586,10 +586,9 @@ class DollRigBuilder {
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
         'lSc': Matrix4.fromTranslation(sc.mirrored()),
-        'shoulder': Matrix4.fromTranslation(shoulder.mirrored()) *
-            Matrix4.fromAxisAngleDegreeRotation(Vector3.unitZ, 120),
-        'elbow': Matrix4.fromTranslation(Vector3.unitY * elbow),
-        'wrist': Matrix4.fromTranslation(Vector3.unitY * wrist),
+        'shoulder': Matrix4.fromTranslation(shoulder_.mirrored()),
+        'elbow': Matrix4.fromTranslation(Vector3.unitX * -elbow),
+        'wrist': Matrix4.fromTranslation(Vector3.unitX * -wrist),
       }.entries,
     );
     return root;
@@ -624,10 +623,13 @@ class DollMeshBuilder {
   const DollMeshBuilder({required this.root});
 
   @protected
-  List<MeshData> makePin(String originPath, String targetPath) {
+  List<MeshData> makePin({
+    required String origin,
+    required String target,
+  }) {
     return Pin(
-      origin: originPath,
-      target: targetPath,
+      origin: origin,
+      target: target,
       scale: const Vector3(0.25, 1, 0.25),
     ).toMeshData(root: root);
   }
@@ -635,17 +637,18 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeBody() {
     final buffer = <String, List<MeshData>>{};
-    makePin(pelvis, chest).let((it) => buffer['waist'] = it);
-    makePin(chest, neck).let((it) => buffer['chest'] = it);
-    makePin(neck, head).let((it) => buffer['neck'] = it);
+    makePin(origin: pelvis, target: chest).let((it) => buffer['waist'] = it);
+    makePin(origin: chest, target: neck).let((it) => buffer['chest'] = it);
+    makePin(origin: neck, target: head).let((it) => buffer['neck'] = it);
     return buffer;
   }
 
   @protected
   Map<String, List<MeshData>> makeRArm() {
     final buffer = <String, List<MeshData>>{};
-    makePin(rShoulder, rElbow).let((it) => buffer['rUpperArm'] = it);
-    makePin(rElbow, rWrist).let((it) => buffer['rForeArm'] = it);
+    makePin(origin: rSc, target: rShoulder).let((it) => buffer['rCollar'] = it);
+    makePin(origin: rShoulder, target: rElbow).let((it) => buffer['rUpperArm'] = it);
+    makePin(origin: rElbow, target: rWrist).let((it) => buffer['rForeArm'] = it);
     // todo: hand
     return buffer;
   }
@@ -653,8 +656,9 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeLArm() {
     final buffer = <String, List<MeshData>>{};
-    makePin(lShoulder, lElbow).let((it) => buffer['lUpperArm'] = it);
-    makePin(lElbow, lWrist).let((it) => buffer['lForeArm'] = it);
+    makePin(origin: lSc, target: lShoulder).let((it) => buffer['lCollar'] = it);
+    makePin(origin: lShoulder, target: lElbow).let((it) => buffer['lUpperArm'] = it);
+    makePin(origin: lElbow, target: lWrist).let((it) => buffer['lForeArm'] = it);
     // todo: hand
     return buffer;
   }
@@ -662,8 +666,8 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeRLeg() {
     final buffer = <String, List<MeshData>>{};
-    makePin(rHip, rKnee).let((it) => buffer['rThigh'] = it);
-    makePin(rKnee, rAnkle).let((it) => buffer['rShank'] = it);
+    makePin(origin: rHip, target: rKnee).let((it) => buffer['rThigh'] = it);
+    makePin(origin: rKnee, target: rAnkle).let((it) => buffer['rShank'] = it);
     // todo: foot
     return buffer;
   }
@@ -671,8 +675,8 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeLLeg() {
     final buffer = <String, List<MeshData>>{};
-    makePin(lHip, lKnee).let((it) => buffer['lThigh'] = it);
-    makePin(lKnee, lAnkle).let((it) => buffer['lShank'] = it);
+    makePin(origin: lHip, target: lKnee).let((it) => buffer['lThigh'] = it);
+    makePin(origin: lKnee, target: lAnkle).let((it) => buffer['lShank'] = it);
     // todo: foot
     return buffer;
   }
