@@ -150,6 +150,7 @@ class Matrix4 {
   static Matrix4 fromRotationAxisAngleDegree(Vector3 axis, double degrees) =>
       fromRotationAxisAngle(axis, vm.radians(degrees));
 
+  /// 回転行列
   static Matrix4 fromRotationForwardTarget({
     required Vector3 forward,
     required Vector3 target,
@@ -194,6 +195,9 @@ class Matrix4 {
 
   /// 行列積
   Matrix4 operator *(Matrix4 other) => Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
+
+  /// 逆行列
+  Matrix4 inverted() => Matrix4.fromVmMatrix(vm.Matrix4.inverted(toVmMatrix()));
 
   /// 可読だが正確でない出力
   StringSink format({
@@ -624,20 +628,22 @@ class DollMeshBuilder {
     //
     final origin = root.find(path: originPath)!;
     final target = root.find(path: targetPath)!;
-
+    // targetのrootからの変換を。origin原点に変換する
+    final targetMatrix = origin.matrix.inverted() * target.matrix;
     // originから見たtarget位置に、ピンの足を向ける
     final rotation = Matrix4.fromRotationForwardTarget(
       forward: Vector3.unitY, // ピンの足の方向
-      target: target.matrix.translation,
+      target: targetMatrix.translation,
     );
     // originを原点とするtargetまでの距離
-    final length = target.matrix.translation.length;
+    final length = targetMatrix.translation.length;
+    // ピンのメッシュデータを生成する
     final meshData = _cubeMeshData.transformed(
-      origin.node.matrix * rotation * Matrix4.fromScale(Vector3(0.1, length, 0.1)),
+      origin.matrix * rotation * Matrix4.fromScale(Vector3(0.1, length, 0.1)),
     );
-    final meshData2 = _cubeMeshData
-        .transformed(origin.node.matrix * Matrix4.fromScale(Vector3(0.1, length, 0.1)));
-    return [meshData, meshData2];
+    // final meshData = _cubeMeshData
+    //     .transformed(origin.matrix * Matrix4.fromScale(Vector3(0.1, length, 0.1)));
+    return [meshData];
   }
 
   @protected
@@ -1080,9 +1086,9 @@ extension MeshDataArrayHelper on Map<String, List<MeshData>> {
     }
     _logger.fine(
       '[o] toWavefrontObj'
-      ' $vertexIndex vertices,'
-      ' $textureVertexIndex texture vertices,'
-      ' $normalIndex normals.',
+      ' ${vertexIndex - 1} vertices,'
+      ' ${textureVertexIndex - 1} texture vertices,'
+      ' ${normalIndex - 1} normals.',
     );
   }
 }
