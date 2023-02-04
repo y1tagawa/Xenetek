@@ -12,10 +12,7 @@ import 'package:vector_math/vector_math_64.dart' as vm;
 // 出力フォーマット
 const _fractionDigits = 4;
 
-/// vector_mathのVector3の代わり
-///
-/// vector_mathのVector3はimmutableにできないので
-
+/// 不変のVector3
 class Vector3 {
   static const unitX = Vector3(1, 0, 0);
   static const unitY = Vector3(0, 1, 0);
@@ -52,21 +49,28 @@ class Vector3 {
   /// ドット積
   double dot(Vector3 other) => x * other.x + y * other.y + z * other.z;
 
+  /// クロス積
+  Vector3 cross(Vector3 other) =>
+      Vector3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
+
   /// 左右反転
   Vector3 mirrored() => Vector3(-x, y, z);
 
-  Vector3 normalized() {
-    return Vector3.fromVmVector(toVmVector().normalized());
-  }
+  /// 正規化
+  Vector3 normalized() => Vector3.fromVmVector(toVmVector().normalized());
 
+  /// 変換結果
   Vector3 transformed(Matrix4 matrix) {
     return Vector3.fromVmVector(matrix.toVmMatrix().transform3(toVmVector()));
   }
 
+  /// vector_math.vm.Vector3から変換
   Vector3.fromVmVector(vm.Vector3 value)
       : x = value.x,
         y = value.y,
         z = value.z;
+
+  /// vector_math.vm.Vector3に変換
   vm.Vector3 toVmVector() => vm.Vector3(x, y, z);
 
   /// 可読だが正確でない出力
@@ -115,16 +119,12 @@ class Vector3 {
 //</editor-fold>
 }
 
-extension Vector3ListHelper on List<Vector3> {
-  List<Vector3> transformed(Matrix4 matrix) {
-    return map((value) => value.transformed(matrix)).toList();
-  }
+extension Vector3ListHelper on Iterable<Vector3> {
+  List<Vector3> transformed(Matrix4 matrix) => map((value) => value.transformed(matrix)).toList();
 }
 
-/// vector_mathのMatrix4の代わり
+/// [vector_math]の[Matrix4]のimmutableなfacade
 ///
-/// vector_mathのMatrix4はimmutableにできないので
-
 class Matrix4 {
   // ignore: unused_field
   static final _logger = Logger('Matrix4');
@@ -136,7 +136,7 @@ class Matrix4 {
 
   const Matrix4._(this.elements);
 
-  // コンストラクタ
+  /// 回転行列
   static Matrix4 fromRotationAxisAngle(Vector3 axis, double radians) => Matrix4.fromVmMatrix(
         vm.Matrix4.compose(
           vm.Vector3.zero(),
@@ -145,58 +145,62 @@ class Matrix4 {
         ),
       );
 
+  /// 回転行列
   static Matrix4 fromRotationAxisAngleDegree(Vector3 axis, double degrees) =>
       fromRotationAxisAngle(axis, vm.radians(degrees));
 
+  /// 併進行列
   static Matrix4 fromTranslation(Vector3 position) =>
       Matrix4.fromVmMatrix(vm.Matrix4.translation(position.toVmVector()));
 
-  static Matrix4 fromScale(dynamic scale) {
-    final elements_ = identity.elements.toList();
-    switch (scale.runtimeType) {
-      case double:
-      case int:
-        elements_[0] *= scale;
-        elements_[5] *= scale;
-        elements_[10] *= scale;
-        return Matrix4._(elements_);
-      case Vector3:
-        elements_[0] *= scale.x;
-        elements_[5] *= scale.y;
-        elements_[10] *= scale.z;
-        return Matrix4._(elements_);
-      default:
-        throw UnimplementedError();
-    }
+  /// 拡縮行列
+  static Matrix4 fromScale(Vector3 scale) =>
+      Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(scale.x, scale.y, scale.z));
+
+  /// Look at
+  static Matrix4? lookAt(Vector3 eye, Vector3 at, Vector3 up) {
+    Vector3 zAxis = (at - eye);
+    if (zAxis.length < 0.00001) return null;
+    zAxis = zAxis.normalized();
+    Vector3 xAxis = zAxis.cross(up).normalized();
+    if (xAxis.length < 0.00001) return null;
+    xAxis = xAxis.normalized();
+    final yAxis = xAxis.cross(zAxis);
+
+    return Matrix4._(
+      <double>[
+        xAxis.x, yAxis.x, zAxis.x, 0, //
+        xAxis.y, yAxis.y, zAxis.y, 0, //
+        xAxis.z, yAxis.z, zAxis.z, 0, //
+        -(xAxis.dot(eye)), -(yAxis.dot(eye)), -(zAxis.dot(eye)), 1,
+      ],
+    );
   }
 
   Matrix4.fromList(this.elements) : assert(elements.length == 16);
+
   Matrix4.fromVmMatrix(vm.Matrix4 value) : elements = value.storage;
+
   vm.Matrix4 toVmMatrix() {
     assert(elements.length == 16);
     return vm.Matrix4.fromList(elements);
   }
 
-  /// 併進成分
-  ///
-  Vector3 get position => Vector3(elements[12], elements[13], elements[14]);
-
   /// 回転成分
-  Matrix4 get rotation {
-    return Matrix4.fromList(<double>[
-      elements[0], elements[1], elements[2], 0, //
-      elements[4], elements[5], elements[6], 0, //
-      elements[8], elements[9], elements[10], 0, //
-      0, 0, 0, 1
-    ]);
-  }
+  Matrix4 get rotation => Matrix4.fromList(
+        <double>[
+          elements[0], elements[1], elements[2], 0, //
+          elements[4], elements[5], elements[6], 0, //
+          elements[8], elements[9], elements[10], 0, //
+          0, 0, 0, 1
+        ],
+      );
+
+  /// 併進成分
+  Vector3 get translation => Vector3(elements[12], elements[13], elements[14]);
 
   /// 行列積
-  Matrix4 operator *(Matrix4 other) {
-    return Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
-  }
-
-  // todo その他のコンストラクタ（LookAtとか）
+  Matrix4 operator *(Matrix4 other) => Matrix4.fromVmMatrix(toVmMatrix() * other.toVmMatrix());
 
   /// 可読だが正確でない出力
   StringSink format({
@@ -406,7 +410,7 @@ class Node {
     required dynamic path,
   }) {
     _logger.fine('[i] getPosition ${_toString(_toPath(path))}');
-    return find(path: _toPath(path))?.matrix.position;
+    return find(path: _toPath(path))?.matrix.translation;
   }
 
   /// [path]で指定するノードの変換行列を再設定する。
