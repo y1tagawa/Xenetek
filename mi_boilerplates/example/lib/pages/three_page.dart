@@ -198,7 +198,7 @@ void _setup(StringSink sink) {
   logger.fine(rig.format(sink: StringBuffer()).toString());
   final data = mi.DollMeshBuilder(rig: rig);
   final meshData = data.build();
-  mi.toWavefrontObj(meshData, sink);
+  meshData.toWavefrontObj(sink);
 }
 
 final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {

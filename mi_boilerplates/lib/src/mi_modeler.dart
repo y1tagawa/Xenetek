@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' hide Vector3, Matrix4;
@@ -157,8 +158,12 @@ class Matrix4 {
   static Matrix4 fromScale(Vector3 scale) =>
       Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(scale.x, scale.y, scale.z));
 
-  /// Look at
-  static Matrix4? lookAt(Vector3 eye, Vector3 at, Vector3 up) {
+  /// Look at (ジンバルロックしたら`null`を返す)
+  static Matrix4? tryLookAt({
+    required Vector3 eye,
+    required Vector3 at,
+    required Vector3 up,
+  }) {
     Vector3 zAxis = (at - eye);
     if (zAxis.length < 0.00001) return null;
     zAxis = zAxis.normalized();
@@ -175,6 +180,20 @@ class Matrix4 {
         -(xAxis.dot(eye)), -(yAxis.dot(eye)), -(zAxis.dot(eye)), 1,
       ],
     );
+  }
+
+  /// Look at (ジンバルロックしたらup2を試し、それでもだめなら例外送出)
+  static Matrix4 lookAt({
+    required Vector3 eye,
+    required Vector3 at,
+    required Vector3 up,
+    Vector3? up2,
+  }) {
+    Matrix4? result = tryLookAt(eye: eye, at: at, up: up);
+    if (result != null) return result;
+    if (up2 != null) result = tryLookAt(eye: eye, at: at, up: up2);
+    if (result != null) return result;
+    throw ArgumentError();
   }
 
   Matrix4.fromList(this.elements) : assert(elements.length == 16);
@@ -628,16 +647,15 @@ class DollMeshBuilder {
 
   @protected
   MeshData? makePin(String origin, String end) {
-    // todo lookAt end
-    final matrix = rig.find(path: origin)!;
-    final length = (rig.getPosition(path: end)! - rig.getPosition(path: origin)!).length;
-    _logger.fine(rig.getPosition(path: end)!.toString());
-    _logger.fine(rig.getPosition(path: origin)!.toString());
-    _logger.fine('L=$length');
-    final shape = _cubeMeshData.transformed(
-      matrix.matrix * Matrix4.fromScale(Vector3(0.1, length, 0.1)),
+    final originNode = rig.find(path: origin)!;
+    final endNode = rig.find(path: end)!;
+    final eye = originNode.matrix.translation;
+    final at = endNode.matrix.translation;
+    final matrix = Matrix4.lookAt(eye: eye, at: at, up: Vector3.unitY, up2: Vector3.unitZ);
+    final meshData = _octahedronMeshData.transformed(
+      matrix * Matrix4.fromScale(Vector3(0.25, (at - eye).length, 0.25)),
     );
-    return shape;
+    return meshData;
   }
 
   @protected
@@ -700,7 +718,7 @@ class DollMeshBuilder {
 ///
 /// 大体Wavefront .objの頂点データ。ただし、
 /// - インデックスは0から。
-/// - 省略されたインデックスは-1。
+/// - テクスチャ、法線インデックスを省略する場合は-1。
 
 class MeshVertex {
   final int vertexIndex;
@@ -709,10 +727,9 @@ class MeshVertex {
 
   const MeshVertex(
     this.vertexIndex,
-    int? textureVertexIndex,
-    int? normalIndex,
-  )   : textureVertexIndex = textureVertexIndex ?? -1,
-        normalIndex = normalIndex ?? -1;
+    this.textureVertexIndex,
+    this.normalIndex,
+  );
 
   //<editor-fold desc="Data Methods">
 
@@ -777,6 +794,9 @@ typedef MeshFace = List<MeshVertex>;
 /// 大体Wavefront .objみたいなやつ。
 
 class MeshData {
+  // ignore: unused_field
+  static final _logger = Logger('MeshData');
+
   final List<Vector3> vertices;
   final List<Vector3> normals;
   final List<Vector3> textureVertices;
@@ -1016,77 +1036,65 @@ abstract class Shape {
   MeshData toMeshData(Node root);
 }
 
-/// MeshData集積
+extension MeshDataMapHelper on Map<String, MeshData> {
+  static final _logger = Logger('toWavefrontObj');
 
-List<MeshData> toMeshData({
-  required Node root,
-  required Iterable<Shape> shapes,
-}) {
-  final result = <MeshData>[];
-  for (final shape in shapes) {
-    result.add(shape.toMeshData(root));
-  }
-  return result;
-}
-
-/// Wavefront .obj出力
-void toWavefrontObj(
-  Map<String, MeshData> meshData,
-  StringSink sink,
-) {
-  int vertexIndex = 1;
-  int textureVertexIndex = 1;
-  int normalIndex = 1;
-  for (final entry in meshData.entries) {
-    sink.writeln('# ${entry.key}');
-    final data = entry.value;
-    for (final vertex in data.vertices) {
-      sink.writeln(
-        'v'
-        ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
-        ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
-        ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
-      );
-    }
-    for (final textureVertex in data.textureVertices) {
-      sink.writeln(
-        'vt'
-        ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
-        ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
-        ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
-      );
-    }
-    for (final normal in data.normals) {
-      sink.writeln(
-        'vn'
-        ' ${normal.x.toStringAsFixed(_fractionDigits)}'
-        ' ${normal.y.toStringAsFixed(_fractionDigits)}'
-        ' ${normal.z.toStringAsFixed(_fractionDigits)}',
-      );
-    }
-    sink.writeln('s ${data.smooth ? 1 : 0}');
-    for (final face in data.faces) {
-      assert(face.length >= 3);
-      sink.write('f');
-      for (final vertex in face) {
-        assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
-        sink.write(' ${vertex.vertexIndex + vertexIndex}');
-        if (vertex.normalIndex >= 0) {
-          sink.write('/');
-          if (vertex.textureVertexIndex >= 0) {
-            assert(vertex.textureVertexIndex < data.textureVertices.length);
-            sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
-          }
-          sink.write('/');
-          assert(vertex.normalIndex < data.normals.length);
-          sink.write('${vertex.normalIndex + normalIndex}');
-        }
+  /// Wavefront .obj出力
+  void toWavefrontObj(StringSink sink) {
+    int vertexIndex = 1;
+    int textureVertexIndex = 1;
+    int normalIndex = 1;
+    for (final entry in entries) {
+      sink.writeln('# ${entry.key}');
+      final data = entry.value;
+      for (final vertex in data.vertices) {
+        sink.writeln(
+          'v'
+          ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
+          ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
+          ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
+        );
       }
-      sink.writeln();
+      for (final textureVertex in data.textureVertices) {
+        sink.writeln(
+          'vt'
+          ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
+          ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
+          ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
+        );
+      }
+      for (final normal in data.normals) {
+        sink.writeln(
+          'vn'
+          ' ${normal.x.toStringAsFixed(_fractionDigits)}'
+          ' ${normal.y.toStringAsFixed(_fractionDigits)}'
+          ' ${normal.z.toStringAsFixed(_fractionDigits)}',
+        );
+      }
+      sink.writeln('s ${data.smooth ? 1 : 0}');
+      for (final face in data.faces) {
+        assert(face.length >= 3);
+        sink.write('f');
+        for (final vertex in face) {
+          assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
+          sink.write(' ${vertex.vertexIndex + vertexIndex}');
+          if (vertex.normalIndex >= 0) {
+            sink.write('/');
+            if (vertex.textureVertexIndex >= 0) {
+              assert(vertex.textureVertexIndex < data.textureVertices.length);
+              sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
+            }
+            sink.write('/');
+            assert(vertex.normalIndex < data.normals.length);
+            sink.write('${vertex.normalIndex + normalIndex}');
+          }
+        }
+        sink.writeln();
+      }
+      vertexIndex += data.vertices.length;
+      textureVertexIndex += data.textureVertices.length;
+      normalIndex += data.normals.length;
     }
-    vertexIndex += data.vertices.length;
-    textureVertexIndex += data.textureVertices.length;
-    normalIndex += data.normals.length;
   }
 }
 
@@ -1293,8 +1301,8 @@ const _octahedronFaces = <MeshFace>[
 ];
 
 const _octahedronMeshData = MeshData(
-  vertices: _cubeVertices,
-  faces: _cubeFaces,
+  vertices: _octahedronVertices,
+  faces: _octahedronFaces,
 );
 
 //</editor-fold>
@@ -1311,7 +1319,7 @@ class Pin extends Shape {
 
   const Pin({
     required this.origin,
-    this.scale = const Vector3(1, 1, 1),
+    this.scale = Vector3.one,
   });
 
   @override
