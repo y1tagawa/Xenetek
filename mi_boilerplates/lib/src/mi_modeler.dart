@@ -150,6 +150,18 @@ class Matrix4 {
   static Matrix4 fromRotationAxisAngleDegree(Vector3 axis, double degrees) =>
       fromRotationAxisAngle(axis, vm.radians(degrees));
 
+  static Matrix4 fromRotationForwardTarget({
+    required Vector3 forward,
+    required Vector3 target,
+  }) =>
+      Matrix4.fromVmMatrix(
+        vm.Matrix4.compose(
+          vm.Vector3.zero(),
+          vm.Quaternion.fromTwoVectors(forward.toVmVector(), target.toVmVector()),
+          vm.Vector3(1, 1, 1),
+        ),
+      );
+
   /// 併進行列
   static Matrix4 fromTranslation(Vector3 position) =>
       Matrix4.fromVmMatrix(vm.Matrix4.translation(position.toVmVector()));
@@ -157,44 +169,6 @@ class Matrix4 {
   /// 拡縮行列
   static Matrix4 fromScale(Vector3 scale) =>
       Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(scale.x, scale.y, scale.z));
-
-  /// Look at (ジンバルロックしたら`null`を返す)
-  static Matrix4? tryLookAt({
-    required Vector3 eye,
-    required Vector3 at,
-    required Vector3 up,
-  }) {
-    Vector3 zAxis = (at - eye);
-    if (zAxis.length < 0.00001) return null;
-    zAxis = zAxis.normalized();
-    Vector3 xAxis = zAxis.cross(up).normalized();
-    if (xAxis.length < 0.00001) return null;
-    xAxis = xAxis.normalized();
-    final yAxis = xAxis.cross(zAxis);
-
-    return Matrix4._(
-      <double>[
-        xAxis.x, yAxis.x, zAxis.x, 0, //
-        xAxis.y, yAxis.y, zAxis.y, 0, //
-        xAxis.z, yAxis.z, zAxis.z, 0, //
-        -(xAxis.dot(eye)), -(yAxis.dot(eye)), -(zAxis.dot(eye)), 1,
-      ],
-    );
-  }
-
-  /// Look at (ジンバルロックしたらup2を試し、それでもだめなら例外送出)
-  static Matrix4 lookAt({
-    required Vector3 eye,
-    required Vector3 at,
-    required Vector3 up,
-    Vector3? up2,
-  }) {
-    Matrix4? result = tryLookAt(eye: eye, at: at, up: up);
-    if (result != null) return result;
-    if (up2 != null) result = tryLookAt(eye: eye, at: at, up: up2);
-    if (result != null) return result;
-    throw ArgumentError();
-  }
 
   Matrix4.fromList(this.elements) : assert(elements.length == 16);
 
@@ -641,75 +615,83 @@ class DollMeshBuilder {
   static const rAnkle = 'pelvis.rHip.knee.ankle';
   static const lAnkle = 'pelvis.lHip.knee.ankle';
 
-  final Node rig;
+  final Node root;
 
-  const DollMeshBuilder({required this.rig});
+  const DollMeshBuilder({required this.root});
 
   @protected
-  MeshData? makePin(String origin, String end) {
-    final originNode = rig.find(path: origin)!;
-    final endNode = rig.find(path: end)!;
+  List<MeshData> makePin(String origin, String end) {
+    //
+    final originNode = root.find(path: origin)!;
+    final endNode = root.find(path: end)!;
     final eye = originNode.matrix.translation;
     final at = endNode.matrix.translation;
-    final matrix = Matrix4.lookAt(eye: eye, at: at, up: Vector3.unitY, up2: Vector3.unitZ);
-    final meshData = _octahedronMeshData.transformed(
-      matrix * Matrix4.fromScale(Vector3(0.25, (at - eye).length, 0.25)),
+    final matrix = Matrix4.fromRotationForwardTarget(
+      forward: Vector3.unitY.transformed(originNode.matrix),
+      target: at - eye,
     );
-    return meshData;
+    final meshData = _cubeMeshData.transformed(
+      Matrix4.fromTranslation(eye) *
+          matrix *
+          Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)),
+    );
+    // final meshData = _cubeMeshData
+    //     .transformed(originNode.matrix * Matrix4.fromScale(Vector3(0.1, (at - eye).length, 0.1)));
+    return [meshData];
   }
 
   @protected
-  Map<String, MeshData> makeBody() {
-    final buffer = <String, MeshData>{};
-    makePin(pelvis, chest)?.let((it) => buffer['waist'] = it);
-    makePin(chest, neck)?.let((it) => buffer['chest'] = it);
-    makePin(neck, head)?.let((it) => buffer['neck'] = it);
+  Map<String, List<MeshData>> makeBody() {
+    final buffer = <String, List<MeshData>>{};
+    makePin(pelvis, chest).let((it) => buffer['waist'] = it);
+    makePin(chest, neck).let((it) => buffer['chest'] = it);
+    makePin(neck, head).let((it) => buffer['neck'] = it);
     return buffer;
   }
 
   @protected
-  Map<String, MeshData> makeRArm() {
-    final buffer = <String, MeshData>{};
-    makePin(rShoulder, rElbow)?.let((it) => buffer['rUpperArm'] = it);
-    makePin(rElbow, rWrist)?.let((it) => buffer['rForeArm'] = it);
+  Map<String, List<MeshData>> makeRArm() {
+    final buffer = <String, List<MeshData>>{};
+    makePin(rShoulder, rElbow).let((it) => buffer['rUpperArm'] = it);
+    makePin(rElbow, rWrist).let((it) => buffer['rForeArm'] = it);
     // todo: hand
     return buffer;
   }
 
   @protected
-  Map<String, MeshData> makeLArm() {
-    final buffer = <String, MeshData>{};
-    makePin(lShoulder, lElbow)?.let((it) => buffer['lUpperArm'] = it);
-    makePin(lElbow, lWrist)?.let((it) => buffer['lForeArm'] = it);
+  Map<String, List<MeshData>> makeLArm() {
+    final buffer = <String, List<MeshData>>{};
+    makePin(lShoulder, lElbow).let((it) => buffer['lUpperArm'] = it);
+    makePin(lElbow, lWrist).let((it) => buffer['lForeArm'] = it);
     // todo: hand
     return buffer;
   }
 
   @protected
-  Map<String, MeshData> makeRLeg() {
-    final buffer = <String, MeshData>{};
-    makePin(rHip, rKnee)?.let((it) => buffer['rThigh'] = it);
-    makePin(rKnee, rAnkle)?.let((it) => buffer['rShank'] = it);
+  Map<String, List<MeshData>> makeRLeg() {
+    final buffer = <String, List<MeshData>>{};
+    makePin(rHip, rKnee).let((it) => buffer['rThigh'] = it);
+    makePin(rKnee, rAnkle).let((it) => buffer['rShank'] = it);
     // todo: foot
     return buffer;
   }
 
   @protected
-  Map<String, MeshData> makeLLeg() {
-    final buffer = <String, MeshData>{};
-    makePin(lHip, lKnee)?.let((it) => buffer['lThigh'] = it);
-    makePin(lKnee, lAnkle)?.let((it) => buffer['lShank'] = it);
+  Map<String, List<MeshData>> makeLLeg() {
+    final buffer = <String, List<MeshData>>{};
+    makePin(lHip, lKnee).let((it) => buffer['lThigh'] = it);
+    makePin(lKnee, lAnkle).let((it) => buffer['lShank'] = it);
     // todo: foot
     return buffer;
   }
 
-  Map<String, MeshData> build() {
-    final buffer = <String, MeshData>{};
+  Map<String, List<MeshData>> build() {
+    final buffer = <String, List<MeshData>>{};
     buffer.addAll(makeBody());
     buffer.addAll(makeRArm());
-    buffer.addAll(makeLArm());
-    buffer.addAll(makeRLeg());
-    buffer.addAll(makeLLeg());
+    //buffer.addAll(makeLArm());
+    //buffer.addAll(makeRLeg());
+    //buffer.addAll(makeLLeg());
     return buffer;
   }
 }
@@ -791,8 +773,7 @@ typedef MeshFace = List<MeshVertex>;
 
 /// メッシュデータ
 ///
-/// 大体Wavefront .objみたいなやつ。
-
+/// 大体Wavefrontの.objみたいなやつ。
 class MeshData {
   // ignore: unused_field
   static final _logger = Logger('MeshData');
@@ -1029,14 +1010,14 @@ class MeshData {
 }
 
 /// 多面体の基底クラス
-
 abstract class Shape {
   const Shape();
-
   MeshData toMeshData(Node root);
 }
 
-extension MeshDataMapHelper on Map<String, MeshData> {
+/// メッシュデータアレイ
+extension MeshDataArrayHelper on Map<String, List<MeshData>> {
+  // ignore: unused_field
   static final _logger = Logger('toWavefrontObj');
 
   /// Wavefront .obj出力
@@ -1046,54 +1027,55 @@ extension MeshDataMapHelper on Map<String, MeshData> {
     int normalIndex = 1;
     for (final entry in entries) {
       sink.writeln('# ${entry.key}');
-      final data = entry.value;
-      for (final vertex in data.vertices) {
-        sink.writeln(
-          'v'
-          ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
-          ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
-          ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
-        );
-      }
-      for (final textureVertex in data.textureVertices) {
-        sink.writeln(
-          'vt'
-          ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
-          ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
-          ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
-        );
-      }
-      for (final normal in data.normals) {
-        sink.writeln(
-          'vn'
-          ' ${normal.x.toStringAsFixed(_fractionDigits)}'
-          ' ${normal.y.toStringAsFixed(_fractionDigits)}'
-          ' ${normal.z.toStringAsFixed(_fractionDigits)}',
-        );
-      }
-      sink.writeln('s ${data.smooth ? 1 : 0}');
-      for (final face in data.faces) {
-        assert(face.length >= 3);
-        sink.write('f');
-        for (final vertex in face) {
-          assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
-          sink.write(' ${vertex.vertexIndex + vertexIndex}');
-          if (vertex.normalIndex >= 0) {
-            sink.write('/');
-            if (vertex.textureVertexIndex >= 0) {
-              assert(vertex.textureVertexIndex < data.textureVertices.length);
-              sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
-            }
-            sink.write('/');
-            assert(vertex.normalIndex < data.normals.length);
-            sink.write('${vertex.normalIndex + normalIndex}');
-          }
+      for (final data in entry.value) {
+        for (final vertex in data.vertices) {
+          sink.writeln(
+            'v'
+            ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
+            ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
+            ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
+          );
         }
-        sink.writeln();
+        for (final textureVertex in data.textureVertices) {
+          sink.writeln(
+            'vt'
+            ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
+            ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
+            ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
+          );
+        }
+        for (final normal in data.normals) {
+          sink.writeln(
+            'vn'
+            ' ${normal.x.toStringAsFixed(_fractionDigits)}'
+            ' ${normal.y.toStringAsFixed(_fractionDigits)}'
+            ' ${normal.z.toStringAsFixed(_fractionDigits)}',
+          );
+        }
+        sink.writeln('s ${data.smooth ? 1 : 0}');
+        for (final face in data.faces) {
+          assert(face.length >= 3);
+          sink.write('f');
+          for (final vertex in face) {
+            assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
+            sink.write(' ${vertex.vertexIndex + vertexIndex}');
+            if (vertex.normalIndex >= 0) {
+              sink.write('/');
+              if (vertex.textureVertexIndex >= 0) {
+                assert(vertex.textureVertexIndex < data.textureVertices.length);
+                sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
+              }
+              sink.write('/');
+              assert(vertex.normalIndex < data.normals.length);
+              sink.write('${vertex.normalIndex + normalIndex}');
+            }
+          }
+          sink.writeln();
+        }
+        vertexIndex += data.vertices.length;
+        textureVertexIndex += data.textureVertices.length;
+        normalIndex += data.normals.length;
       }
-      vertexIndex += data.vertices.length;
-      textureVertexIndex += data.textureVertices.length;
-      normalIndex += data.normals.length;
     }
   }
 }

@@ -196,7 +196,7 @@ void _setup(StringSink sink) {
   final rig = rigBuilder.build();
   logger.fine('rig');
   logger.fine(rig.format(sink: StringBuffer()).toString());
-  final data = mi.DollMeshBuilder(rig: rig);
+  final data = mi.DollMeshBuilder(root: rig);
   final meshData = data.build();
   meshData.toWavefrontObj(sink);
 }
@@ -225,11 +225,11 @@ class _ModelerTab extends ConsumerWidget {
             mi.ButtonListTile(
               enabled: documentsDirectory.hasValue,
               text: const Text('Update'),
-              onPressed: () {
+              onPressed: () async {
                 final file = File(tempFilePath);
                 final sink = file.openWrite();
                 _setup(sink);
-                sink.close();
+                await sink.close();
                 ref.watch(_updateProvider.notifier).update((state) => !state);
               },
             ),
