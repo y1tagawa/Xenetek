@@ -137,35 +137,19 @@ class Matrix4 {
   const Matrix4._(this.elements);
 
   // コンストラクタ
-  static Matrix4 fromRotation(Vector3 axis, double angle) {
-    // https://w3e.kanazawa-it.ac.jp/math/physics/category/physical_math/linear_algebra/henkan-tex.cgi?target=/math/physics/category/physical_math/linear_algebra/rodrigues_rotation_matrix.html
-    final n = axis.normalized();
-    final c = math.cos(angle), c1 = 1.0 - c;
-    final s = math.sin(angle);
-    final elements = <double>[
-      n.x * n.x * c1 + c,
-      n.x * n.y * c1 - n.z * s,
-      n.x * n.z * c1 + n.y * s,
-      0, //
-      n.x * n.y * c1 + n.z * s,
-      n.y * n.y * c1 + c,
-      n.y * n.z * c1 - n.x * s,
-      0, //
-      n.x * n.z * c1 - n.y * s,
-      n.y * n.z * c1 + n.x * s,
-      n.z * n.z * c1 + c,
-      0, //
-      0, 0, 0, 1
-    ];
-    return Matrix4.fromList(elements);
-  }
+  static Matrix4 fromRotationAxisAngle(Vector3 axis, double radians) => Matrix4.fromVmMatrix(
+        vm.Matrix4.compose(
+          vm.Vector3.zero(),
+          vm.Quaternion.axisAngle(axis.toVmVector(), radians),
+          vm.Vector3(1, 1, 1),
+        ),
+      );
 
-  static Matrix4 fromRotationDegree(Vector3 axis, double angleDegree) =>
-      fromRotation(axis, angleDegree * math.pi / 180.0);
+  static Matrix4 fromRotationAxisAngleDegree(Vector3 axis, double degrees) =>
+      fromRotationAxisAngle(axis, vm.radians(degrees));
 
-  static Matrix4 fromPosition(Vector3 position) {
-    return Matrix4.fromVmMatrix(vm.Matrix4.translation(position.toVmVector()));
-  }
+  static Matrix4 fromTranslation(Vector3 position) =>
+      Matrix4.fromVmMatrix(vm.Matrix4.translation(position.toVmVector()));
 
   static Matrix4 fromScale(dynamic scale) {
     final elements_ = identity.elements.toList();
@@ -190,29 +174,11 @@ class Matrix4 {
   Matrix4.fromVmMatrix(vm.Matrix4 value) : elements = value.storage;
   vm.Matrix4 toVmMatrix() {
     assert(elements.length == 16);
-    return vm.Matrix4(
-      elements[0],
-      elements[1],
-      elements[2],
-      elements[3],
-      elements[4],
-      elements[5],
-      elements[6],
-      elements[7],
-      elements[8],
-      elements[9],
-      elements[10],
-      elements[11],
-      elements[12],
-      elements[13],
-      elements[14],
-      elements[15],
-    );
+    return vm.Matrix4.fromList(elements);
   }
 
   /// 併進成分
-  //NGだった、厳しいな！
-  //Vector3 get position => Vector3(elements[3], elements[7], elements[11]);
+  ///
   Vector3 get position => Vector3(elements[12], elements[13], elements[14]);
 
   /// 回転成分
@@ -578,50 +544,51 @@ class DollRigBuilder {
     // 脊柱
     root = root.addLimb(
       joints: <String, Matrix4>{
-        'pelvis': Matrix4.fromPosition(pelvis),
-        'chest': Matrix4.fromPosition(Vector3.unitY * chest),
-        'neck': Matrix4.fromPosition(Vector3.unitY * neck),
-        'head': Matrix4.fromPosition(Vector3.unitY * head),
+        'pelvis': Matrix4.fromTranslation(pelvis),
+        'chest': Matrix4.fromTranslation(Vector3.unitY * chest),
+        'neck': Matrix4.fromTranslation(Vector3.unitY * neck),
+        'head': Matrix4.fromTranslation(Vector3.unitY * head),
       }.entries,
     );
     // 右下肢
-    final hipRotation = Matrix4.fromRotation(Vector3.unitX, math.pi);
+    final hipRotation = Matrix4.fromRotationAxisAngle(Vector3.unitX, math.pi);
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'rHip': Matrix4.fromPosition(hip) * hipRotation,
-        'knee': Matrix4.fromPosition(Vector3.unitY * knee),
-        'ankle': Matrix4.fromPosition(Vector3.unitY * ankle),
+        'rHip': Matrix4.fromTranslation(hip) * hipRotation,
+        'knee': Matrix4.fromTranslation(Vector3.unitY * knee),
+        'ankle': Matrix4.fromTranslation(Vector3.unitY * ankle),
       }.entries,
     );
     // 左下肢
     root = root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'lHip': Matrix4.fromPosition(hip.mirrored()) * hipRotation,
-        'knee': Matrix4.fromPosition(Vector3.unitY * knee),
-        'ankle': Matrix4.fromPosition(Vector3.unitY * ankle),
+        'lHip': Matrix4.fromTranslation(hip.mirrored()) * hipRotation,
+        'knee': Matrix4.fromTranslation(Vector3.unitY * knee),
+        'ankle': Matrix4.fromTranslation(Vector3.unitY * ankle),
       }.entries,
     );
     // 右上肢
     root = root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
-        'rSc': Matrix4.fromPosition(sc),
-        'shoulder': Matrix4.fromPosition(shoulder) * Matrix4.fromRotationDegree(Vector3.unitZ, 150),
-        'elbow': Matrix4.fromPosition(Vector3.unitY * elbow),
-        'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
+        'rSc': Matrix4.fromTranslation(sc),
+        'shoulder': Matrix4.fromTranslation(shoulder) *
+            Matrix4.fromRotationAxisAngleDegree(Vector3.unitZ, -120),
+        'elbow': Matrix4.fromTranslation(Vector3.unitY * elbow),
+        'wrist': Matrix4.fromTranslation(Vector3.unitY * wrist),
       }.entries,
     );
     // 左上肢
     root = root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
-        'lSc': Matrix4.fromPosition(sc.mirrored()),
-        'shoulder': Matrix4.fromPosition(shoulder.mirrored()) *
-            Matrix4.fromRotationDegree(Vector3.unitZ, -150),
-        'elbow': Matrix4.fromPosition(Vector3.unitY * elbow),
-        'wrist': Matrix4.fromPosition(Vector3.unitY * wrist),
+        'lSc': Matrix4.fromTranslation(sc.mirrored()),
+        'shoulder': Matrix4.fromTranslation(shoulder.mirrored()) *
+            Matrix4.fromRotationAxisAngleDegree(Vector3.unitZ, 120),
+        'elbow': Matrix4.fromTranslation(Vector3.unitY * elbow),
+        'wrist': Matrix4.fromTranslation(Vector3.unitY * wrist),
       }.entries,
     );
     return root;
@@ -858,7 +825,7 @@ class MeshData {
           yRadius,
           ...(points
               .transformed(Matrix4.fromScale(xzRadius * math.sin(t)))
-              .transformed(Matrix4.fromPosition(yRadius * math.cos(t))))
+              .transformed(Matrix4.fromTranslation(yRadius * math.cos(t))))
         ].transformed(matrix))
         .addCup(index0, index1, latDivision);
     index0 = index1;
@@ -869,7 +836,7 @@ class MeshData {
       data = data
           .addVertices(points
               .transformed(Matrix4.fromScale(xzRadius * math.sin(t)))
-              .transformed(Matrix4.fromPosition(yRadius * math.cos(t)))
+              .transformed(Matrix4.fromTranslation(yRadius * math.cos(t)))
               .transformed(matrix))
           .addTube(index0, index1, latDivision);
       index0 = index1;
@@ -1431,7 +1398,7 @@ MeshData _tubeMeshData({
   // 中間
   for (int i = 1; i <= lengthDivision; ++i) {
     final index1 = data.vertices.length;
-    final matrix1 = Matrix4.fromPosition(Vector3.unitY * (i * length / lengthDivision));
+    final matrix1 = Matrix4.fromTranslation(Vector3.unitY * (i * length / lengthDivision));
     data = data.addVertices(circle.transformed(matrix1)).addTube(index0, index1, circle.length);
     index0 = index1;
     matrix0 = matrix1;
