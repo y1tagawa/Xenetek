@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // This program uses material from the Wikipedia article "JIS慣用色名",
 // https://ja.wikipedia.org/wiki/JIS%E6%85%A3%E7%94%A8%E8%89%B2%E5%90%8D
 // which is released under the Creative Commons Attribution-Share-Alike License 3.0.

@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ export 'src/mi_dialogs.dart';
 export 'src/mi_list_tiles.dart';
 export 'src/mi_menus.dart';
 export 'src/mi_modeler.dart';
+export 'src/mi_modeler_doll.dart';
 export 'src/mi_page_view.dart';
 export 'src/mi_reorderable_list.dart';
 export 'src/mi_tabs.dart';
