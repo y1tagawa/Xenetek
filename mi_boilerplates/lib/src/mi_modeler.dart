@@ -294,27 +294,32 @@ class NodeFind {
   });
 }
 
-String _toString(Iterable<String> path) => '[\'${path.join('\',\'')}\']';
-
-Iterable<String> _toPath(dynamic path) {
-  switch (path.runtimeType) {
-    case List<String>:
-    case Iterable<String>:
-      return path;
-    case String:
-      return path.isEmpty ? const <String>[] : path.split('.');
-    default:
-      throw UnimplementedError('path.runtimeType=${path.runtimeType}');
-  }
-}
-
 /// 不変ノード
 ///
 /// モデルの制御点（関節）を定義する。
 /// [matrix]は親ノードからの相対的な変換を表す。
 class Node {
+  static const pathDelimiter = '.';
+
   // ignore: unused_field
   static final _logger = Logger((Node).toString());
+
+  // ノードパス可読化
+  // ignore: unused_element
+  static String _format(Iterable<String> path) => '[\'${path.join('\',\'')}\']';
+
+  // (文字列等で与えられた)ノードパス正規化
+  static Iterable<String> _toPath(dynamic path) {
+    switch (path.runtimeType) {
+      case List<String>:
+      case Iterable<String>:
+        return path;
+      case String:
+        return path.isEmpty ? const <String>[] : path.split(pathDelimiter);
+      default:
+        throw UnimplementedError('path.runtimeType=${path.runtimeType}');
+    }
+  }
 
   // todo: bending
   final Matrix4 matrix;
@@ -325,7 +330,7 @@ class Node {
     this.children = const <String, Node>{},
   });
 
-  //
+  // ノード検索の下請け
   NodeFind? _find({
     required Iterable<String> path,
     required Matrix4 matrix,
@@ -349,8 +354,7 @@ class Node {
     return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
-  // [path]で指定するノードを[child]で置換または追加する。
-  // 親までの[path]が見つからなければ例外送出。
+  // ノード追加コピーの下請け
   Node _add({
     required Iterable<String> path,
     required Node child,
@@ -382,8 +386,8 @@ class Node {
 
 //TODO: 必要ならremove
 
-  // [joints]を順次生成し、末端に（もしあれば）[children]を追加する。
-  Node _addLimb({
+  // 連続した関節ノードを生成する。
+  Node _makeLimb({
     required Iterable<MapEntry<String, Matrix4>> joints,
     Map<String, Node>? children,
   }) {
@@ -395,20 +399,22 @@ class Node {
     }
     return add(
       path: joints.first.key,
-      child: Node(matrix: joints.first.value)._addLimb(joints: joints.skip(1), children: children),
+      child: Node(matrix: joints.first.value)._makeLimb(joints: joints.skip(1), children: children),
     );
   }
 
-  /// [path]で指定するノードに、[joints]（およびもしあれば[children]）を順次追加したコピーを返す。
+  /// [path]で指定するノードに、連続した関節ノードを追加したコピーを返す。
   Node addLimb({
     dynamic path = const <String>[],
     required Iterable<MapEntry<String, Matrix4>> joints,
     Map<String, Node>? children,
   }) {
+    // 一時ノードの下に関節ノードsを生成し……
     assert(joints.isNotEmpty);
-    final tempNode = const Node()._addLimb(joints: joints, children: children);
-    assert(tempNode.children.length == 1);
-    final child = tempNode.children.entries.first;
+    final t = const Node()._makeLimb(joints: joints, children: children);
+    assert(t.children.length == 1);
+    // 生成された関節ノードsを[path]に追加したコピーを返す。
+    final child = t.children.entries.first;
     return add(
       path: [..._toPath(path), child.key],
       child: child.value,
