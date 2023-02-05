@@ -2,9 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// toJson, fromJsonヘルパー
-//
-// toMap, fromMapが戻し変換を保証しなかったり正確でなかったりするため、その辺改善したい。
-//
-// まず基本型のto, from, objectのmap<String, dynamic>へのto, from, List<dynamic>,
-// Color, doubleの正確な変換、...
+extension JsonHelper on Map<String, dynamic> {
+  // 破壊的変更
+  Map<String, dynamic> setBool(String key, bool? value) {
+    this[key] = value;
+    return this;
+  }
+
+  // bool?の取得もとりあえずこれで間に合わす
+  bool? tryGetBool(String key) {
+    final value = this[key];
+    assert(value == null || value is bool);
+    return value as bool?;
+  }
+
+  //
+  bool getBool(String key) {
+    final value = tryGetBool(key);
+    assert(value != null);
+    return value!;
+  }
+
+  bool getBoolOr(String key, bool or) {
+    return tryGetBool(key) ?? or;
+  }
+
+  // containsKeyはそのまま使う
+  //  int tryGetInt(String key);
+}

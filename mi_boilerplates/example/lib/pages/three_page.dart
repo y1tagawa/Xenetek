@@ -147,10 +147,6 @@ mi.Matrix4 _rotation(mi.Vector3 axis, double angleDegree) =>
     mi.Matrix4.fromAxisAngleRotation(axis, vm.radians(angleDegree));
 mi.Matrix4 _position(mi.Vector3 position) => mi.Matrix4.fromTranslation(position);
 
-mi.Node? _rootNode;
-
-final _shapes = <mi.Shape>[];
-
 extension CubeMeshHelper on cube.Mesh {
   mi.MeshData toMeshData() {
     final vertices_ = vertices.map((it) => Vector3(it.x, it.y, it.z)).toList(growable: false);

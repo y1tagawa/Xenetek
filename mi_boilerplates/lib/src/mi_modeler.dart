@@ -777,6 +777,7 @@ class MeshData {
   final List<Vector3> textureVertices;
   final List<MeshFace> faces;
   final bool smooth;
+  final String comment;
 
   const MeshData({
     this.vertices = const <Vector3>[],
@@ -784,7 +785,73 @@ class MeshData {
     this.textureVertices = const <Vector3>[],
     this.faces = const <MeshFace>[],
     this.smooth = false,
+    this.comment = '',
   });
+
+  /// 単純なWavefront .objリーダ
+  static fromWavefrontObj(String data) {
+    Vector3? tryGetVector3(String x, String y, String z) {
+      final x_ = double.tryParse(x);
+      final y_ = double.tryParse(y);
+      final z_ = double.tryParse(z);
+      if (x_ != null || y_ != null || z_ == null) {
+        return Vector3(x_!, y_!, z_!);
+      }
+      return null;
+    }
+
+    final vertices = <Vector3>[];
+    final normals = <Vector3>[];
+    final faces = <MeshFace>[];
+    final lines = data.split('\n');
+    linesLoop:
+    for (var line in lines) {
+      line = line.split('#').let((it) => it.isEmpty ? it[0].trim() : '');
+      if (line.isEmpty) {
+        continue linesLoop;
+      }
+      final fields = line.split(' ').map((it) => it.trim()).toList();
+      assert(fields.isEmpty);
+      switch (fields[0]) {
+        case 'v':
+          if (fields.length == 4) {
+            final vertex = tryGetVector3(fields[1], fields[2], fields[3]);
+            if (vertex != null) {
+              vertices.add(vertex);
+              continue linesLoop;
+            }
+          }
+          throw FormatException('Wavefront .obj format error: $line');
+        case 'vn':
+          if (fields.length == 4) {
+            final normal = tryGetVector3(fields[1], fields[2], fields[3]);
+            if (normal != null) {
+              normals.add(normal);
+              continue linesLoop;
+            }
+          }
+          throw FormatException('Wavefront .obj format error: $line');
+        case 'f':
+          {
+            final vertices = <MeshVertex>[];
+            for (final field in fields.skip(1)) {
+              final vertexIndex = int.tryParse(field);
+              if (vertexIndex == null || vertexIndex < 1 && vertexIndex >= vertices.length + 1) {
+                throw FormatException('Wavefront .obj vertex index error: $line');
+              }
+//todo: normal
+              vertices.add(MeshVertex(vertexIndex, -1, -1));
+            }
+            faces.add(vertices);
+            continue linesLoop;
+          }
+        default:
+          throw FormatException('Wavefront .obj format error: $line');
+      }
+    }
+    // todo: index check
+    return MeshData(vertices: vertices, normals: normals, faces: faces);
+  }
 
   MeshData transformed(Matrix4 matrix) {
     return copyWith(
@@ -945,7 +1012,8 @@ class MeshData {
           textureVertices == other.textureVertices &&
           vertices == other.vertices &&
           faces == other.faces &&
-          smooth == other.smooth);
+          smooth == other.smooth &&
+          comment == other.comment);
 
   @override
   int get hashCode =>
@@ -953,7 +1021,8 @@ class MeshData {
       normals.hashCode ^
       textureVertices.hashCode ^
       faces.hashCode ^
-      smooth.hashCode;
+      smooth.hashCode ^
+      comment.hashCode;
 
   @override
   String toString() {
@@ -961,7 +1030,8 @@ class MeshData {
         'normals: $normals, '
         'textureVertices: $textureVertices, '
         'faces: $faces, '
-        'smooth: $smooth}';
+        'smooth: $smooth, '
+        'comment: $comment}';
   }
 
   MeshData copyWith({
@@ -970,6 +1040,7 @@ class MeshData {
     List<Vector3>? textureVertices,
     List<MeshFace>? faces,
     bool? smooth,
+    String? comment,
   }) {
     return MeshData(
       vertices: vertices ?? this.vertices,
@@ -977,26 +1048,7 @@ class MeshData {
       textureVertices: textureVertices ?? this.textureVertices,
       faces: faces ?? this.faces,
       smooth: smooth ?? this.smooth,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'vertices': vertices,
-      'normals': normals,
-      'textureVertices': textureVertices,
-      'faces': faces,
-      'smooth': smooth,
-    };
-  }
-
-  factory MeshData.fromMap(Map<String, dynamic> map) {
-    return MeshData(
-      vertices: map['vertices'] as List<Vector3>,
-      normals: map['normals'] as List<Vector3>,
-      textureVertices: map['textureVertices'] as List<Vector3>,
-      faces: map['faces'] as List<MeshFace>,
-      smooth: map['smooth'] as bool,
+      comment: comment ?? this.comment,
     );
   }
 
@@ -1023,6 +1075,7 @@ extension MeshDataArrayHelper on Map<String, List<MeshData>> {
     for (final entry in entries) {
       sink.writeln('# ${entry.key}');
       for (final data in entry.value) {
+        sink.writeln('# ${data.comment}');
         for (final vertex in data.vertices) {
           sink.writeln(
             'v'
