@@ -11,6 +11,7 @@ import '../mi_boilerplates.dart';
 
 /// ドールモデル(mk1)のリグを生成する。
 ///
+/// カスタマイズの基底クラス。
 /// todo: copyWithなど
 class DollRigBuilder {
   final Vector3 pelvis; // rootから腰椎底の相対位置
@@ -124,9 +125,9 @@ class DollRigBuilder {
   }
 }
 
-// ドールリグにメッシュを当てはめる
-//
-// デフォルトはピンを置くだけ。カスタマイズの基底クラス。
+/// ドールリグにメッシュを当てはめる
+///
+/// デフォルトはピンを置くだけ。カスタマイズの基底クラス。
 class DollMeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('DollMeshBuilder');
