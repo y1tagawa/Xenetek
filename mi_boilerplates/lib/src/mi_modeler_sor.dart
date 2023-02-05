@@ -47,9 +47,9 @@ class SorBuilder {
       for (int i = 0; i < n - 1; ++i) {
         faces.add(<MeshVertex>[
           MeshVertex(j0, -1, -1),
-          MeshVertex(j0 + 1, -1, -1),
-          MeshVertex(j1 + 1, -1, -1),
           MeshVertex(j1, -1, -1),
+          MeshVertex(j1 + 1, -1, -1),
+          MeshVertex(j0 + 1, -1, -1),
         ]);
       }
     }
@@ -62,5 +62,51 @@ class SorBuilder {
 
     final data = MeshData(vertices: vertices_, faces: faces, smooth: smooth);
     return reverse ? data.reversed() : data;
+  }
+}
+
+class Tube extends Cube {
+  final double beginRadius;
+  final double endRadius;
+  final double height;
+  final int circumDivision;
+  final int heightDivision;
+  final bool smooth;
+  final bool reverse;
+
+  const Tube({
+    required super.origin,
+    super.target = '',
+    super.scale = Vector3.one,
+    super.fill = true,
+    this.beginRadius = 0.5,
+    this.endRadius = 0.5,
+    this.height = 1.0,
+    this.circumDivision = 12,
+    this.heightDivision = 1,
+    this.smooth = true,
+    this.reverse = false,
+  });
+
+  @override
+  List<MeshData> toMeshData({required Node root}) {
+    assert(circumDivision >= 3);
+    assert(heightDivision >= 1);
+    final vertices = <Vector3>[
+      for (int i = 0; i < heightDivision; ++i)
+        run(() {
+          final t = i.toDouble() / heightDivision;
+          return Vector3((endRadius - beginRadius) * t + beginRadius, t * height, 0.0);
+        }),
+      Vector3(endRadius, height, 0.0),
+    ];
+
+    final data = SorBuilder(
+      vertices: vertices,
+      division: circumDivision,
+      smooth: smooth,
+      reverse: reverse,
+    ).build();
+    return makeMeshData(root: root, data: data);
   }
 }

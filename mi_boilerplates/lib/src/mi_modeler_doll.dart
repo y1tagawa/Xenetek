@@ -165,11 +165,17 @@ class DollMeshBuilder {
     required String origin,
     required String target,
   }) {
-    return Pin(
+    return Tube(
       origin: origin,
       target: target,
-      scale: const Vector3(0.25, 1, 0.25),
+      beginRadius: 0.12,
+      endRadius: 0.1,
     ).toMeshData(root: root);
+    // return Pin(
+    //   origin: origin,
+    //   target: target,
+    //   scale: const Vector3(0.25, 1, 0.25),
+    // ).toMeshData(root: root);
   }
 
   @protected
