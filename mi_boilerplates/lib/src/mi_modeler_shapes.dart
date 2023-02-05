@@ -6,9 +6,13 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-/// 多面体の基底クラス
+// スクリプト的モデラ、メッシュデータ生成
+
+/// 立体図形の基底クラス
 abstract class Shape {
   const Shape();
+
+  /// メッシュデータ生成
   List<MeshData> toMeshData({required Node root});
 }
 
@@ -104,8 +108,22 @@ class Cube extends Shape {
     this.fill = true,
   });
 
+  /// メッシュデータ拡縮
+  ///
+  /// ここでは単に拡縮するだけだが、図形によっては（面取りした直方体とか）カスタマイズできるかもしれない。
   @protected
-  List<MeshData> _toMeshData({
+  MeshData scaleMeshData({
+    required MeshData data,
+    required Vector3 scale,
+  }) =>
+      data.transformed(Matrix4.fromScale(scale));
+
+  /// メッシュデータ生成の下請け
+  ///
+  /// [origin]の原点位置に置かれた[data]を[target]に向け回転、拡縮し、[root]空間に頂点・法線変換した
+  /// メッシュデータを返す。
+  @protected
+  List<MeshData> makeMeshData({
     required Node root,
     required MeshData data,
   }) {
@@ -125,17 +143,19 @@ class Cube extends Shape {
         final k = length / scale.y;
         scale_ = Vector3(scale.x * k, length, scale.z * k);
       }
-      // モデルをスケールし、targetに向けて回転させ、originからroot空間に変換する。
-      return <MeshData>[data.transformed(origin_ * rotation * Matrix4.fromScale(scale_))];
+      // モデルをスケールし、targetに向けて回転させ、root空間に変換する。
+      final data_ = scaleMeshData(data: data, scale: scale_);
+      return <MeshData>[data_.transformed(origin_ * rotation)];
     } else {
-      // targetが省略されたらY+を上にする。
-      return <MeshData>[data.transformed(origin_ * Matrix4.fromScale(scale))];
+      // targetが省略されたらoriginの原点からroot空間に変換する。
+      final data_ = scaleMeshData(data: data, scale: scale);
+      return <MeshData>[data_.transformed(origin_)];
     }
   }
 
   @override
   List<MeshData> toMeshData({required Node root}) {
-    return _toMeshData(root: root, data: _cubeMeshData);
+    return makeMeshData(root: root, data: _cubeMeshData);
   }
 
 //<editor-fold desc="Data Methods">
@@ -259,7 +279,7 @@ class Pin extends Cube {
     final vertices = _octahedronVertices
         .map((it) => Vector3(it.x, it.y == 0.5 ? 0.25 : it.y, it.z))
         .toList(growable: false);
-    return _toMeshData(
+    return makeMeshData(
       root: root,
       data: MeshData(
         vertices: vertices,
@@ -305,8 +325,9 @@ class Pin extends Cube {
 //</editor-fold>
 }
 
-/// メッシュ
+/// メッシュデータ
 ///
+/// [root]空間における[origin]の原点に、[data]の(0,0,0)を置く。
 class Mesh extends Cube {
   // ignore: unused_field
   static final _logger = Logger('Mesh');
@@ -323,7 +344,7 @@ class Mesh extends Cube {
 
   @override
   List<MeshData> toMeshData({required Node root}) {
-    return _toMeshData(root: root, data: data);
+    return makeMeshData(root: root, data: data);
   }
 }
 
