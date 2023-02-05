@@ -615,6 +615,16 @@ class MeshData {
     );
   }
 
+  /// 面を表裏反転したコピーを返す。
+  MeshData reversed() {
+    final faces_ = <MeshFace>[];
+    for (final face in faces) {
+      assert(face.isNotEmpty);
+      faces_.add([face[0], ...face.skip(1).toList().reversed]);
+    }
+    return copyWith(faces: faces_);
+  }
+
   /// 頂点リストを追加したコピーを返す。
   MeshData addVertices(List<Vector3> vertices) {
     return copyWith(vertices: <Vector3>[...this.vertices, ...vertices]);
