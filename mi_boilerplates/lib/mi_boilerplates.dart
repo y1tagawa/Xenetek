@@ -17,6 +17,7 @@ export 'src/mi_list_tiles.dart';
 export 'src/mi_menus.dart';
 export 'src/mi_modeler.dart';
 export 'src/mi_modeler_doll.dart';
+export 'src/mi_modeler_wavefront_obj.dart';
 export 'src/mi_page_view.dart';
 export 'src/mi_reorderable_list.dart';
 export 'src/mi_tabs.dart';
