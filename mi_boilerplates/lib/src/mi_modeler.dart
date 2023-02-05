@@ -639,17 +639,28 @@ class DollMeshBuilder {
   }
 
   @protected
+  List<MeshData> makeMesh({
+    required String origin,
+    String target = '',
+    required MeshData data,
+  }) {
+    return Mesh(
+      origin: origin,
+      target: target,
+      // 1x1x1の頭モデルの大きさ
+      scale: const Vector3(0.3, 0.3, 0.3),
+      data: data,
+    ).toMeshData(root: root);
+  }
+
+  @protected
   Map<String, List<MeshData>> makeBody() {
     final buffer = <String, List<MeshData>>{};
-    makePin(origin: pelvis, target: chest).let((it) => buffer['waist'] = it);
-    makePin(origin: chest, target: neck).let((it) => buffer['chest'] = it);
-    makePin(origin: neck, target: head).let((it) => buffer['neck'] = it);
+    buffer['waist'] = makePin(origin: pelvis, target: chest);
+    buffer['chest'] = makePin(origin: chest, target: neck);
+    buffer['neck'] = makePin(origin: neck, target: head);
     if (headMesh != null) {
-      buffer['head'] = Mesh(
-        origin: head,
-        data: headMesh!,
-        scale: Vector3.one * 0.3,
-      ).toMeshData(root: root);
+      buffer['head'] = makeMesh(origin: head, data: headMesh!);
     }
     return buffer;
   }
@@ -657,9 +668,9 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeRArm() {
     final buffer = <String, List<MeshData>>{};
-    makePin(origin: rSc, target: rShoulder).let((it) => buffer['rCollar'] = it);
-    makePin(origin: rShoulder, target: rElbow).let((it) => buffer['rUpperArm'] = it);
-    makePin(origin: rElbow, target: rWrist).let((it) => buffer['rForeArm'] = it);
+    buffer['rCollar'] = makePin(origin: rSc, target: rShoulder);
+    buffer['rUpperArm'] = makePin(origin: rShoulder, target: rElbow);
+    buffer['rForeArm'] = makePin(origin: rElbow, target: rWrist);
     // todo: hand
     return buffer;
   }
@@ -667,9 +678,9 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeLArm() {
     final buffer = <String, List<MeshData>>{};
-    makePin(origin: lSc, target: lShoulder).let((it) => buffer['lCollar'] = it);
-    makePin(origin: lShoulder, target: lElbow).let((it) => buffer['lUpperArm'] = it);
-    makePin(origin: lElbow, target: lWrist).let((it) => buffer['lForeArm'] = it);
+    buffer['lCollar'] = makePin(origin: lSc, target: lShoulder);
+    buffer['lUpperArm'] = makePin(origin: lShoulder, target: lElbow);
+    buffer['lForeArm'] = makePin(origin: lElbow, target: lWrist);
     // todo: hand
     return buffer;
   }
@@ -677,8 +688,8 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeRLeg() {
     final buffer = <String, List<MeshData>>{};
-    makePin(origin: rHip, target: rKnee).let((it) => buffer['rThigh'] = it);
-    makePin(origin: rKnee, target: rAnkle).let((it) => buffer['rShank'] = it);
+    buffer['rThigh'] = makePin(origin: rHip, target: rKnee);
+    buffer['rShank'] = makePin(origin: rKnee, target: rAnkle);
     // todo: foot
     return buffer;
   }
@@ -686,8 +697,8 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeLLeg() {
     final buffer = <String, List<MeshData>>{};
-    makePin(origin: lHip, target: lKnee).let((it) => buffer['lThigh'] = it);
-    makePin(origin: lKnee, target: lAnkle).let((it) => buffer['lShank'] = it);
+    buffer['lThigh'] = makePin(origin: lHip, target: lKnee);
+    buffer['lShank'] = makePin(origin: lKnee, target: lAnkle);
     // todo: foot
     return buffer;
   }
