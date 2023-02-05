@@ -281,9 +281,7 @@ class Matrix4 {
 //</editor-fold>
 }
 
-//
 // リグ
-//
 
 /// ノード検索結果
 class NodeFind {
@@ -310,10 +308,10 @@ class Node {
 
   // ノードパス可読化
   // ignore: unused_element
-  static String _format(Iterable<String> path) => '[\'${path.join('\',\'')}\']';
+  static String formatPath(Iterable<String> path) => '[\'${path.join('\',\'')}\']';
 
   // (文字列等で与えられた)ノードパス正規化
-  static Iterable<String> _toPath(dynamic path) {
+  static Iterable<String> toPath(dynamic path) {
     switch (path.runtimeType) {
       case List<String>:
       case Iterable<String>:
@@ -355,7 +353,7 @@ class Node {
   NodeFind? find({
     dynamic path,
   }) {
-    return _find(path: _toPath(path), matrix: Matrix4.identity, parent: null);
+    return _find(path: toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
   // ノード追加コピーの下請け
@@ -385,7 +383,7 @@ class Node {
     required dynamic path,
     required Node child,
   }) {
-    return _add(path: _toPath(path), child: child);
+    return _add(path: toPath(path), child: child);
   }
 
 //TODO: 必要ならremove
@@ -420,7 +418,7 @@ class Node {
     // 生成された関節ノードsを[path]に追加したコピーを返す。
     final child = t.children.entries.first;
     return add(
-      path: [..._toPath(path), child.key],
+      path: [...toPath(path), child.key],
       child: child.value,
     );
   }
@@ -430,8 +428,8 @@ class Node {
     dynamic path = const <String>[],
     required Matrix4 matrix,
   }) {
-    final path_ = _toPath(path);
-    final node = find(path: _toPath(path))!.node;
+    final path_ = toPath(path);
+    final node = find(path: path_)!.node;
     return add(
       path: path_,
       child: Node(matrix: matrix, children: node.children),
@@ -443,8 +441,8 @@ class Node {
     dynamic path = const <String>[],
     required Matrix4 matrix,
   }) {
-    final path_ = _toPath(path);
-    final node = find(path: _toPath(path))!.node;
+    final path_ = toPath(path);
+    final node = find(path: path_)!.node;
     return add(
       path: path_,
       child: Node(matrix: node.matrix * matrix, children: node.children),
@@ -513,9 +511,7 @@ class Node {
 //</editor-fold>
 }
 
-//
 // メッシュデータ
-//
 
 /// 不変メッシュ頂点データ
 ///
