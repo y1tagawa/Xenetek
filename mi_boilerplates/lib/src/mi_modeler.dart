@@ -595,6 +595,7 @@ class DollRigBuilder {
 }
 
 class DollMeshBuilder {
+  // ignore: unused_field
   static final _logger = Logger('DollMeshBuilder');
 
   // ノードパス
@@ -618,8 +619,12 @@ class DollMeshBuilder {
   static const lAnkle = 'pelvis.lHip.knee.ankle';
 
   final Node root;
+  final MeshData? headMesh;
 
-  const DollMeshBuilder({required this.root});
+  const DollMeshBuilder({
+    required this.root,
+    this.headMesh,
+  });
 
   @protected
   List<MeshData> makePin({
@@ -639,6 +644,13 @@ class DollMeshBuilder {
     makePin(origin: pelvis, target: chest).let((it) => buffer['waist'] = it);
     makePin(origin: chest, target: neck).let((it) => buffer['chest'] = it);
     makePin(origin: neck, target: head).let((it) => buffer['neck'] = it);
+    if (headMesh != null) {
+      buffer['head'] = Mesh(
+        origin: head,
+        data: headMesh!,
+        scale: Vector3.one * 0.3,
+      ).toMeshData(root: root);
+    }
     return buffer;
   }
 
@@ -790,6 +802,8 @@ class MeshData {
 
   /// 単純なWavefront .objリーダ
   static fromWavefrontObj(String data) {
+    _logger.fine('[i] fromWavefrontObj');
+
     Vector3? tryGetVector3(String x, String y, String z) {
       final x_ = double.tryParse(x);
       final y_ = double.tryParse(y);
@@ -806,12 +820,12 @@ class MeshData {
     final lines = data.split('\n');
     linesLoop:
     for (var line in lines) {
-      line = line.split('#').let((it) => it.isEmpty ? it[0].trim() : '');
+      line = line.split('#').let((it) => it.isNotEmpty ? it[0].trim() : '');
       if (line.isEmpty) {
         continue linesLoop;
       }
       final fields = line.split(' ').map((it) => it.trim()).toList();
-      assert(fields.isEmpty);
+      assert(fields.isNotEmpty);
       switch (fields[0]) {
         case 'v':
           if (fields.length == 4) {
@@ -821,7 +835,7 @@ class MeshData {
               continue linesLoop;
             }
           }
-          throw FormatException('Wavefront .obj format error: $line');
+          throw FormatException('vertex format error: $line');
         case 'vn':
           if (fields.length == 4) {
             final normal = tryGetVector3(fields[1], fields[2], fields[3]);
@@ -830,27 +844,40 @@ class MeshData {
               continue linesLoop;
             }
           }
-          throw FormatException('Wavefront .obj format error: $line');
+          throw FormatException('normal format error: $line');
         case 'f':
           {
             final vertices = <MeshVertex>[];
             for (final field in fields.skip(1)) {
-              final vertexIndex = int.tryParse(field);
-              if (vertexIndex == null || vertexIndex < 1 && vertexIndex >= vertices.length + 1) {
-                throw FormatException('Wavefront .obj vertex index error: $line');
+              // 1～を0～に
+              final vertexIndex = (int.tryParse(field) ?? 0) - 1;
+              if (vertexIndex < 0 && vertexIndex >= vertices.length) {
+                throw FormatException('vertex index error: $line');
               }
 //todo: normal
               vertices.add(MeshVertex(vertexIndex, -1, -1));
             }
+            if (vertices.length < 3) {
+              throw FormatException('number of face vertices < 3: $line');
+            }
             faces.add(vertices);
             continue linesLoop;
           }
+        case 's':
+        case 'g':
+          continue linesLoop;
         default:
-          throw FormatException('Wavefront .obj format error: $line');
+          throw FormatException('unimplemented format: $line');
       }
     }
     // todo: index check
-    return MeshData(vertices: vertices, normals: normals, faces: faces);
+    return MeshData(vertices: vertices, normals: normals, faces: faces).also((it) {
+      _logger.fine(
+        '[o] fromWavefrontObj'
+        ' ${vertices.length} vertices,'
+        ' ${faces.length} faces.',
+      );
+    });
   }
 
   MeshData transformed(Matrix4 matrix) {

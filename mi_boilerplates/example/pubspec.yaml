@@ -79,6 +79,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/eye_close.png
+    - assets/head.obj
     - assets/lottie_icon.png
     - assets/lottie/
     - assets/more_grid.png

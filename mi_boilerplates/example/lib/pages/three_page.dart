@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart' hide Matrix4;
+import 'package:flutter/services.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -166,14 +167,17 @@ extension CubeMeshHelper on cube.Mesh {
   }
 }
 
-void _setup(StringSink sink) {
+Future<void> _setup(StringSink sink) async {
   final logger = Logger('_setup');
+
+  final headObj = await rootBundle.loadString('assets/head.obj');
+  final headMesh = mi.MeshData.fromWavefrontObj(headObj);
 
   const rigBuilder = mi.DollRigBuilder();
   final root = rigBuilder.build();
   logger.fine('root');
   logger.fine(root.format(sink: StringBuffer()).toString());
-  final data = mi.DollMeshBuilder(root: root);
+  final data = mi.DollMeshBuilder(root: root, headMesh: headMesh);
   final meshDataArray = data.build();
   meshDataArray.toWavefrontObj(sink);
 }
@@ -205,7 +209,7 @@ class _ModelerTab extends ConsumerWidget {
               onPressed: () async {
                 final file = File(tempFilePath);
                 final sink = file.openWrite();
-                _setup(sink);
+                await _setup(sink);
                 await sink.close();
                 ref.watch(_updateProvider.notifier).update((state) => !state);
               },
