@@ -7,10 +7,9 @@ import 'package:logging/logging.dart';
 
 import '../mi_boilerplates.dart';
 
-// mi_modelerを使用し、パラメトリックにドールを生成する。
-// （開発中）
+// スクリプト的ドールモデラ
 
-/// ドールモデルのリグを生成する。
+/// ドールモデル(mk1)のリグを生成する。
 ///
 /// todo: copyWithなど
 class DollRigBuilder {
@@ -36,8 +35,8 @@ class DollRigBuilder {
     this.chest = 0.3,
     this.neck = 0.5,
     this.head = 0.2,
-    this.collar = -0.08,
-    this.shoulder = 0.14,
+    this.collar = -0.2,
+    this.shoulder = 0.25,
     this.elbow = 0.4,
     this.wrist = 0.5,
     this.hip = 0.1,
@@ -45,11 +44,11 @@ class DollRigBuilder {
     this.ankle = 0.7,
   });
 
-  /// リグ生成
-  Node build() {
-    Node root = const Node();
-    // 脊柱
-    root = root.addLimb(
+  @protected
+
+  /// 脊柱生成
+  Node addSpine(Node root) {
+    return root.addLimb(
       joints: <String, Matrix4>{
         'pelvis': Matrix4.fromTranslation(pelvis),
         'chest': Matrix4.fromTranslation(Vector3.unitY * chest),
@@ -57,51 +56,77 @@ class DollRigBuilder {
         'head': Matrix4.fromTranslation(Vector3.unitY * head),
       }.entries,
     );
-    // 右下肢
-    final hip_ = Vector3(hip, 0.0, 0.0);
-    root = root.addLimb(
+  }
+
+  /// 左下肢生成
+  @protected
+  Node addRLeg(Node root) {
+    return root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'rHip': Matrix4.fromTranslation(hip_),
+        'rHip': Matrix4.fromTranslation(Vector3(hip, 0.0, 0.0)),
         'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
         'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
       }.entries,
     );
-    // 左下肢
-    root = root.addLimb(
+  }
+
+  /// 左下肢生成
+  @protected
+  Node addLLeg(Node root) {
+    return root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'lHip': Matrix4.fromTranslation(hip_.mirrored()),
+        'lHip': Matrix4.fromTranslation(Vector3(-hip, 0.0, 0.0)),
         'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
         'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
       }.entries,
     );
-    // 右上肢
-    final sc = Vector3(0.0, 0.0, collar);
-    final shoulder_ = Vector3(shoulder, 0.0, -collar);
-    root = root.addLimb(
+  }
+
+  /// 右上肢生成
+  @protected
+  Node addRArm(Node root) {
+    return root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
-        'rSc': Matrix4.fromTranslation(sc),
-        'shoulder': Matrix4.fromTranslation(shoulder_),
+        'rSc': Matrix4.fromTranslation(Vector3(0.0, 0.0, collar)),
+        'shoulder': Matrix4.fromTranslation(Vector3(shoulder, 0.0, -collar)),
         'elbow': Matrix4.fromTranslation(Vector3.unitX * elbow),
         'wrist': Matrix4.fromTranslation(Vector3.unitX * wrist),
       }.entries,
     );
-    // 左上肢
-    root = root.addLimb(
+  }
+
+  /// 左上肢生成
+  @protected
+  Node addLArm(Node root) {
+    return root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
-        'lSc': Matrix4.fromTranslation(sc.mirrored()),
-        'shoulder': Matrix4.fromTranslation(shoulder_.mirrored()),
+        'lSc': Matrix4.fromTranslation(Vector3(0.0, 0.0, collar)),
+        'shoulder': Matrix4.fromTranslation(Vector3(-shoulder, 0.0, -collar)),
         'elbow': Matrix4.fromTranslation(Vector3.unitX * -elbow),
         'wrist': Matrix4.fromTranslation(Vector3.unitX * -wrist),
       }.entries,
     );
+  }
+
+  /// リグ生成
+  Node build() {
+    Node root = const Node();
+    root = addSpine(root);
+    root = addRLeg(root);
+    root = addLLeg(root);
+    root = addRArm(root);
+    root = addLArm(root);
     return root;
   }
 }
 
+// ドールリグにメッシュを当てはめる
+//
+// デフォルトはピンを置くだけ。カスタマイズの基底クラス。
 class DollMeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('DollMeshBuilder');

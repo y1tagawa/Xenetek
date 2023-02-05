@@ -7,6 +7,10 @@ import 'dart:math' as math;
 import 'package:logging/logging.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
+// スクリプト的モデラ
+//
+// 繰り返して試行、再現できるよう、パラメタのみでモデルを生成する。
+
 /// 不変３次元ベクトル
 class Vector3 {
   static const unitX = Vector3(1, 0, 0);
