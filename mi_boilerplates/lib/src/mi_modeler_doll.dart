@@ -170,6 +170,7 @@ class DollMeshBuilder {
       target: target,
       beginRadius: 0.12,
       endRadius: 0.1,
+      heightDivision: 8,
     ).toMeshData(root: root);
     // return Pin(
     //   origin: origin,

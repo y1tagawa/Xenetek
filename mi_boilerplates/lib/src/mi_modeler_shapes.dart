@@ -13,7 +13,7 @@ abstract class Shape {
   const Shape();
 
   /// メッシュデータ生成
-  List<MeshData> toMeshData({required Node root});
+  List<MeshData> toMeshData({required final Node root});
 }
 
 // 立方体メッシュデータ
@@ -113,8 +113,8 @@ class Cube extends Shape {
   /// ここでは単に拡縮するだけだが、図形によっては（面取りした直方体とか）カスタマイズできるかもしれない。
   @protected
   MeshData scaleMeshData({
-    required MeshData data,
-    required Vector3 scale,
+    required final MeshData data,
+    required final Vector3 scale,
   }) =>
       data.transformed(Matrix4.fromScale(scale));
 
@@ -124,8 +124,8 @@ class Cube extends Shape {
   /// メッシュデータを返す。
   @protected
   List<MeshData> makeMeshData({
-    required Node root,
-    required MeshData data,
+    required final Node root,
+    required final MeshData data,
   }) {
     final origin_ = root.find(path: origin)!.matrix;
     if (target.isNotEmpty) {
@@ -154,7 +154,7 @@ class Cube extends Shape {
   }
 
   @override
-  List<MeshData> toMeshData({required Node root}) {
+  List<MeshData> toMeshData({required final Node root}) {
     return makeMeshData(root: root, data: _cubeMeshData);
   }
 
@@ -275,7 +275,7 @@ class Pin extends Cube {
   });
 
   @override
-  List<MeshData> toMeshData({required Node root}) {
+  List<MeshData> toMeshData({required final Node root}) {
     final vertices = _octahedronVertices
         .map((it) => Vector3(it.x, it.y == 0.5 ? 0.25 : it.y, it.z))
         .toList(growable: false);
@@ -343,7 +343,7 @@ class Mesh extends Cube {
   });
 
   @override
-  List<MeshData> toMeshData({required Node root}) {
+  List<MeshData> toMeshData({required final Node root}) {
     return makeMeshData(root: root, data: data);
   }
 }

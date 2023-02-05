@@ -43,13 +43,13 @@ class SorBuilder {
     // 面生成
     final faces = <MeshFace>[];
 
-    void addFaces(int j0, int j1) {
+    void addFaces(final int j0, final int j1) {
       for (int i = 0; i < n - 1; ++i) {
         faces.add(<MeshVertex>[
-          MeshVertex(j0, -1, -1),
-          MeshVertex(j1, -1, -1),
-          MeshVertex(j1 + 1, -1, -1),
-          MeshVertex(j0 + 1, -1, -1),
+          MeshVertex(j0 + i, -1, -1),
+          MeshVertex(j1 + i, -1, -1),
+          MeshVertex(j1 + i + 1, -1, -1),
+          MeshVertex(j0 + i + 1, -1, -1),
         ]);
       }
     }
@@ -89,7 +89,7 @@ class Tube extends Cube {
   });
 
   @override
-  List<MeshData> toMeshData({required Node root}) {
+  List<MeshData> toMeshData({required final Node root}) {
     assert(circumDivision >= 3);
     assert(heightDivision >= 1);
     final vertices = <Vector3>[
