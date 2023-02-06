@@ -125,7 +125,7 @@ class DollRigBuilder {
   }
 }
 
-/// ドールリグにメッシュを当てはめる
+/// ドールリグにメッシュを置く
 ///
 /// デフォルトはピンを置くだけ。カスタマイズの基底クラス。
 class DollMeshBuilder {
@@ -165,20 +165,20 @@ class DollMeshBuilder {
     required String origin,
     required String target,
   }) {
-    return Tube(
-      origin: origin,
-      target: target,
-      beginRadius: 0.12,
-      endRadius: 0.1,
-      heightDivision: 8,
-      beginShape: const ConeEnd(height: 0.4, division: 8),
-      endShape: const ConeEnd(height: 0.2, division: 3),
-    ).toMeshData(root: root);
-    // return Pin(
+    // return Tube(
     //   origin: origin,
     //   target: target,
-    //   scale: const Vector3(0.25, 1, 0.25),
+    //   beginRadius: 0.12,
+    //   endRadius: 0.1,
+    //   heightDivision: 8,
+    //   beginShape: const ConeEnd(height: 0.4, division: 8),
+    //   endShape: const ConeEnd(height: 0.2, division: 3),
     // ).toMeshData(root: root);
+    return Pin(
+      origin: origin,
+      target: target,
+      scale: const Vector3(0.25, 1, 0.25),
+    ).toMeshData(root: root);
   }
 
   @protected
