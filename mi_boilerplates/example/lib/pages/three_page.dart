@@ -171,14 +171,15 @@ Future<void> _setup(StringSink sink) async {
   final logger = Logger('_setup');
 
   final headObj = await rootBundle.loadString('assets/head.obj');
-  final headMesh = mi.MeshDataHelper.fromWavefrontObj(headObj);
+  final headMesh =
+      mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
 
-  const rigBuilder = mi.DollRigBuilder();
-  final root = rigBuilder.build();
-  logger.fine('root');
+  final dollBuilder = mi.DollBuilder(headMesh: headMesh);
+  final root = dollBuilder.makeRig();
+  // 本来はここでポージング
+  //logger.fine('root');
   //logger.fine(root.format(sink: StringBuffer()).toString());
-  final data = mi.DollMeshBuilder(root: root, headMesh: headMesh);
-  final meshDataArray = data.build();
+  final meshDataArray = dollBuilder.toMeshData(root: root);
   meshDataArray.toWavefrontObj(sink);
 }
 

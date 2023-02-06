@@ -11,7 +11,7 @@ extension MeshDataHelper on MeshData {
   static final _logger = Logger('MeshDataHelper');
 
   /// 単純なWavefront .objリーダ
-  static fromWavefrontObj(String data) {
+  static MeshData fromWavefrontObj(String data) {
     _logger.fine('[i] fromWavefrontObj');
 
     Vector3? tryGetVector3(String x, String y, String z) {
