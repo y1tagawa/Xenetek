@@ -14,35 +14,35 @@ import '../../mi_boilerplates.dart';
 /// カスタマイズの基底クラス。
 /// todo: copyWithなど
 class DollRigBuilder {
-  final Vector3 pelvis; // rootから腰椎底の相対位置
-  final double chest; // 胸椎底（腰椎の長さ）
-  final double neck; // 頸椎底（胸椎の長さ）
-  final double head; // 頭蓋底（頸椎の長さ）
-  final double collar; // 胸鎖関節のZ位置（胸の厚さ）
-  final double shoulder; // 右肩関節のX位置（肩幅）
+  final Vector3 pelvisPosition; // rootから仙骨への相対位置
+  final double bellyLength; // 腹部の長さ
+  final double chestLength; // 胸郭の長さ
+  final double neckLength; // 頸部の長さ
+  final Vector3 scPosition; // 首の根から胸鎖関節の相対位置（胸の厚さ）
+  final Vector3 shoulderPosition; // 胸鎖関節から右肩関節の相対位置（肩幅）
   // 右上肢
-  final double elbow; // 上腕長
-  final double wrist; // 前腕長
+  final double upperArmLength; // 上腕の長さ
+  final double foreArmLength; // 前腕の長さ
   // 右下肢
-  final double hip; // 腰幅
-  final double knee; // 大腿長
-  final double ankle; // 下腿長
+  final Vector3 coxaPosition; // 仙骨から右股関節への相対位置
+  final double thighLength; // 大腿長
+  final double shankLength; // 下腿長
   // 左は右の反転
 
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
   const DollRigBuilder({
-    this.pelvis = Vector3.zero,
-    this.chest = 0.3,
-    this.neck = 0.5,
-    this.head = 0.2,
-    this.collar = -0.2,
-    this.shoulder = 0.25,
-    this.elbow = 0.4,
-    this.wrist = 0.5,
-    this.hip = 0.1,
-    this.knee = 0.6,
-    this.ankle = 0.7,
+    this.pelvisPosition = Vector3.zero,
+    this.bellyLength = 0.3,
+    this.chestLength = 0.5,
+    this.neckLength = 0.2,
+    this.scPosition = const Vector3(0.0, 0.0, -0.2),
+    this.shoulderPosition = const Vector3(0.0, 0.25, 0.2),
+    this.upperArmLength = 0.4,
+    this.foreArmLength = 0.5,
+    this.coxaPosition = const Vector3(0.1, 0.0, 0.0),
+    this.thighLength = 0.6,
+    this.shankLength = 0.7,
   });
 
   @protected
@@ -51,10 +51,10 @@ class DollRigBuilder {
   Node addSpine(Node root) {
     return root.addLimb(
       joints: <String, Matrix4>{
-        'pelvis': Matrix4.fromTranslation(pelvis),
-        'chest': Matrix4.fromTranslation(Vector3.unitY * chest),
-        'neck': Matrix4.fromTranslation(Vector3.unitY * neck),
-        'head': Matrix4.fromTranslation(Vector3.unitY * head),
+        'pelvis': Matrix4.fromTranslation(pelvisPosition),
+        'chest': Matrix4.fromTranslation(Vector3.unitY * bellyLength),
+        'neck': Matrix4.fromTranslation(Vector3.unitY * chestLength),
+        'head': Matrix4.fromTranslation(Vector3.unitY * neckLength),
       }.entries,
     );
   }
@@ -65,9 +65,9 @@ class DollRigBuilder {
     return root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'rHip': Matrix4.fromTranslation(Vector3(hip, 0.0, 0.0)),
-        'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
-        'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
+        'rCoxa': Matrix4.fromTranslation(coxaPosition),
+        'knee': Matrix4.fromTranslation(Vector3.unitY * -thighLength),
+        'ankle': Matrix4.fromTranslation(Vector3.unitY * -shankLength),
       }.entries,
     );
   }
@@ -78,9 +78,9 @@ class DollRigBuilder {
     return root.addLimb(
       path: 'pelvis',
       joints: <String, Matrix4>{
-        'lHip': Matrix4.fromTranslation(Vector3(-hip, 0.0, 0.0)),
-        'knee': Matrix4.fromTranslation(Vector3.unitY * -knee),
-        'ankle': Matrix4.fromTranslation(Vector3.unitY * -ankle),
+        'lCoxa': Matrix4.fromTranslation(coxaPosition.mirrored()),
+        'knee': Matrix4.fromTranslation(Vector3.unitY * -thighLength),
+        'ankle': Matrix4.fromTranslation(Vector3.unitY * -shankLength),
       }.entries,
     );
   }
@@ -91,10 +91,10 @@ class DollRigBuilder {
     return root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
-        'rSc': Matrix4.fromTranslation(Vector3(0.0, 0.0, collar)),
-        'shoulder': Matrix4.fromTranslation(Vector3(shoulder, 0.0, -collar)),
-        'elbow': Matrix4.fromTranslation(Vector3.unitX * elbow),
-        'wrist': Matrix4.fromTranslation(Vector3.unitX * wrist),
+        'rSc': Matrix4.fromTranslation(scPosition),
+        'shoulder': Matrix4.fromTranslation(shoulderPosition),
+        'elbow': Matrix4.fromTranslation(Vector3.unitX * upperArmLength),
+        'wrist': Matrix4.fromTranslation(Vector3.unitX * foreArmLength),
       }.entries,
     );
   }
@@ -105,10 +105,10 @@ class DollRigBuilder {
     return root.addLimb(
       path: 'pelvis.chest.neck',
       joints: <String, Matrix4>{
-        'lSc': Matrix4.fromTranslation(Vector3(0.0, 0.0, collar)),
-        'shoulder': Matrix4.fromTranslation(Vector3(-shoulder, 0.0, -collar)),
-        'elbow': Matrix4.fromTranslation(Vector3.unitX * -elbow),
-        'wrist': Matrix4.fromTranslation(Vector3.unitX * -wrist),
+        'lSc': Matrix4.fromTranslation(scPosition.mirrored()),
+        'shoulder': Matrix4.fromTranslation(shoulderPosition.mirrored()),
+        'elbow': Matrix4.fromTranslation(Vector3.unitX * -upperArmLength),
+        'wrist': Matrix4.fromTranslation(Vector3.unitX * -foreArmLength),
       }.entries,
     );
   }
@@ -145,12 +145,12 @@ class DollMeshBuilder {
   static const lElbow = 'pelvis.chest.neck.lSc.shoulder.elbow';
   static const rWrist = 'pelvis.chest.neck.rSc.shoulder.elbow.wrist';
   static const lWrist = 'pelvis.chest.neck.lSc.shoulder.elbow.wrist';
-  static const rHip = 'pelvis.rHip';
-  static const lHip = 'pelvis.lHip';
-  static const rKnee = 'pelvis.rHip.knee';
-  static const lKnee = 'pelvis.lHip.knee';
-  static const rAnkle = 'pelvis.rHip.knee.ankle';
-  static const lAnkle = 'pelvis.lHip.knee.ankle';
+  static const rCoxa = 'pelvis.rCoxa';
+  static const lCoxa = 'pelvis.lCoxa';
+  static const rKnee = 'pelvis.rCoxa.knee';
+  static const lKnee = 'pelvis.lCoxa.knee';
+  static const rAnkle = 'pelvis.rCoxa.knee.ankle';
+  static const lAnkle = 'pelvis.lCoxa.knee.ankle';
 
   final Node root;
   final MeshData? headMesh;
@@ -231,7 +231,7 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeRLeg() {
     final buffer = <String, List<MeshData>>{};
-    buffer['rThigh'] = makePin(origin: rHip, target: rKnee);
+    buffer['rThigh'] = makePin(origin: rCoxa, target: rKnee);
     buffer['rShank'] = makePin(origin: rKnee, target: rAnkle);
     // todo: foot
     return buffer;
@@ -240,7 +240,7 @@ class DollMeshBuilder {
   @protected
   Map<String, List<MeshData>> makeLLeg() {
     final buffer = <String, List<MeshData>>{};
-    buffer['lThigh'] = makePin(origin: lHip, target: lKnee);
+    buffer['lThigh'] = makePin(origin: lCoxa, target: lKnee);
     buffer['lShank'] = makePin(origin: lKnee, target: lAnkle);
     // todo: foot
     return buffer;
