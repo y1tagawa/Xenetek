@@ -37,30 +37,37 @@ class Doll {
   static const rAnkle = 'pelvis.rCoxa.knee.ankle';
   static const lAnkle = 'pelvis.lCoxa.knee.ankle';
 
-  // ドールのパラメタ
+  // 骨格
   final Vector3 pelvisPosition; // rootから仙骨への相対位置
   final double bellyLength; // 腹部の長さ
   final double chestLength; // 胸郭の長さ
   final double neckLength; // 頸部の長さ
   final Vector3 scPosition; // 首の根から胸鎖関節の相対位置（胸の厚さ）
   final Vector3 shoulderPosition; // 胸鎖関節から右肩関節の相対位置（肩幅）
-  // 右上肢
+  // 右上肢（左は反転）
   final double upperArmLength; // 上腕の長さ
   final double foreArmLength; // 前腕の長さ
-  final double shoulderRadius;
-  final double elbowRadius;
-  final double wristRadius;
-  // 右下肢
+  // 右下肢（左は反転）
   final Vector3 coxaPosition; // 仙骨から右股関節への相対位置
   final double thighLength; // 大腿長
   final double shankLength; // 下腿長
-  // 左は右の反転
+  // 頸の太さ
+  final double neckRadius;
+  // 上肢の太さ
+  final double shoulderRadius;
+  final double elbowRadius;
+  final double wristRadius;
+  // 下肢の太さ
+  final double coxaRadius;
+  final double kneeRadius;
+  final double ankleRadius;
   // メッシュ
   final MeshData? headMesh; // 頭
 
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
   const Doll({
+    // 骨格
     this.pelvisPosition = Vector3.zero,
     this.bellyLength = 0.3,
     this.chestLength = 0.5,
@@ -73,9 +80,15 @@ class Doll {
     this.thighLength = 0.6,
     this.shankLength = 0.7,
     //
-    this.shoulderRadius = 0.12,
-    this.elbowRadius = 0.1,
-    this.wristRadius = 0.08,
+    this.neckRadius = 0.06,
+    //
+    this.shoulderRadius = 0.08,
+    this.elbowRadius = 0.08,
+    this.wristRadius = 0.06,
+    //
+    this.coxaRadius = 0.1,
+    this.kneeRadius = 0.1,
+    this.ankleRadius = 0.08,
     //
     this.headMesh,
   });
@@ -145,7 +158,7 @@ class Doll {
     return Pin(
       origin: origin,
       target: target,
-      scale: const Vector3(0.25, 1, 0.25),
+      scale: const Vector3(0.2, 1, 0.2),
     ).toMeshData(root: root);
   }
 
@@ -191,19 +204,50 @@ class Doll {
     // 胴体・頭
     buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
     buffer['chest'] = makePin(root: root, origin: chest, target: neck);
-    buffer['neck'] = makePin(root: root, origin: neck, target: head);
+    buffer['neck'] = makeTube(
+      root: root,
+      origin: neck,
+      target: head,
+      beginRadius: neckRadius,
+      endRadius: neckRadius,
+    );
     if (headMesh != null) {
       buffer['head'] = makeMesh(root: root, origin: head, data: headMesh!);
     }
     // 右下肢
-    buffer['rThigh'] = makePin(root: root, origin: rCoxa, target: rKnee);
-    buffer['rShank'] = makePin(root: root, origin: rKnee, target: rAnkle);
+    buffer['rThigh'] = makeTube(
+      root: root,
+      origin: rCoxa,
+      target: rKnee,
+      beginRadius: coxaRadius,
+      endRadius: kneeRadius,
+    );
+    buffer['rShank'] = makeTube(
+      root: root,
+      origin: rKnee,
+      target: rAnkle,
+      beginRadius: kneeRadius,
+      endRadius: ankleRadius,
+    );
     // todo:foot
     // 左下肢
-    buffer['lThigh'] = makePin(root: root, origin: lCoxa, target: lKnee);
-    buffer['lShank'] = makePin(root: root, origin: lKnee, target: lAnkle);
+    buffer['lThigh'] = makeTube(
+      root: root,
+      origin: lCoxa,
+      target: lKnee,
+      beginRadius: coxaRadius,
+      endRadius: kneeRadius,
+    );
+    buffer['lShank'] = makeTube(
+      root: root,
+      origin: lKnee,
+      target: lAnkle,
+      beginRadius: kneeRadius,
+      endRadius: ankleRadius,
+    );
     // todo:foot
     // 右上肢
+    //buffer['rCollarBone'] = makePin(root: root, origin: rSc, target: rShoulder);
     buffer['rUpperArm'] = makeTube(
       root: root,
       origin: rShoulder,
