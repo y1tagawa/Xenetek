@@ -13,7 +13,7 @@ import '../../mi_boilerplates.dart';
 ///
 /// カスタマイズの基底クラス。
 /// todo: copyWithなど
-class DollBuilder {
+class Doll {
   // ignore: unused_field
   static final _logger = Logger('DollBuilder');
 
@@ -47,6 +47,9 @@ class DollBuilder {
   // 右上肢
   final double upperArmLength; // 上腕の長さ
   final double foreArmLength; // 前腕の長さ
+  final double shoulderRadius;
+  final double elbowRadius;
+  final double wristRadius;
   // 右下肢
   final Vector3 coxaPosition; // 仙骨から右股関節への相対位置
   final double thighLength; // 大腿長
@@ -57,7 +60,7 @@ class DollBuilder {
 
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
-  const DollBuilder({
+  const Doll({
     this.pelvisPosition = Vector3.zero,
     this.bellyLength = 0.3,
     this.chestLength = 0.5,
@@ -69,6 +72,11 @@ class DollBuilder {
     this.coxaPosition = const Vector3(0.1, 0.0, 0.0),
     this.thighLength = 0.6,
     this.shankLength = 0.7,
+    //
+    this.shoulderRadius = 0.12,
+    this.elbowRadius = 0.1,
+    this.wristRadius = 0.08,
+    //
     this.headMesh,
   });
 
@@ -122,7 +130,7 @@ class DollBuilder {
         'wrist': Matrix4.fromTranslation(Vector3.unitX * -foreArmLength),
       }.entries,
     );
-    // 出来上がり
+    // TODO: ゼロポジションに
     return root;
   }
 
@@ -134,19 +142,29 @@ class DollBuilder {
     required String origin,
     required String target,
   }) {
-    // return Tube(
-    //   origin: origin,
-    //   target: target,
-    //   beginRadius: 0.12,
-    //   endRadius: 0.1,
-    //   heightDivision: 8,
-    //   beginShape: const ConeEnd(height: 0.4, division: 8),
-    //   endShape: const ConeEnd(height: 0.2, division: 3),
-    // ).toMeshData(root: root);
     return Pin(
       origin: origin,
       target: target,
       scale: const Vector3(0.25, 1, 0.25),
+    ).toMeshData(root: root);
+  }
+
+  @protected
+  List<MeshData> makeTube({
+    required Node root,
+    required String origin,
+    required String target,
+    required double beginRadius,
+    required double endRadius,
+  }) {
+    return Tube(
+      origin: origin,
+      target: target,
+      beginRadius: beginRadius,
+      endRadius: endRadius,
+      heightDivision: 1, // todo
+      beginShape: const DomeEnd(),
+      endShape: const DomeEnd(),
     ).toMeshData(root: root);
   }
 
@@ -165,8 +183,9 @@ class DollBuilder {
   }
 
   // メッシュデータ生成
+
   Map<String, List<MeshData>> toMeshData({
-    required Node root,
+    required final Node root,
   }) {
     final buffer = <String, List<MeshData>>{};
     // 胴体・頭
@@ -185,13 +204,36 @@ class DollBuilder {
     buffer['lShank'] = makePin(root: root, origin: lKnee, target: lAnkle);
     // todo:foot
     // 右上肢
-    buffer['rCollarBone'] = makePin(root: root, origin: rSc, target: rShoulder);
-    buffer['rUpperArm'] = makePin(root: root, origin: rShoulder, target: rElbow);
-    buffer['rForeArm'] = makePin(root: root, origin: rElbow, target: rWrist);
+    buffer['rUpperArm'] = makeTube(
+      root: root,
+      origin: rShoulder,
+      target: rElbow,
+      beginRadius: shoulderRadius,
+      endRadius: elbowRadius,
+    );
+    buffer['rForeArm'] = makeTube(
+      root: root,
+      origin: rElbow,
+      target: rWrist,
+      beginRadius: elbowRadius,
+      endRadius: wristRadius,
+    );
     // 左上肢
-    buffer['lCollarBone'] = makePin(root: root, origin: lSc, target: lShoulder);
-    buffer['lUpperArm'] = makePin(root: root, origin: lShoulder, target: lElbow);
-    buffer['lForeArm'] = makePin(root: root, origin: lElbow, target: lWrist);
+    //buffer['lCollarBone'] = makePin(root: root, origin: lSc, target: lShoulder);
+    buffer['lUpperArm'] = makeTube(
+      root: root,
+      origin: lShoulder,
+      target: lElbow,
+      beginRadius: shoulderRadius,
+      endRadius: elbowRadius,
+    );
+    buffer['lForeArm'] = makeTube(
+      root: root,
+      origin: lElbow,
+      target: lWrist,
+      beginRadius: elbowRadius,
+      endRadius: wristRadius,
+    );
     return buffer;
   }
 }

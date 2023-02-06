@@ -174,7 +174,7 @@ Future<void> _setup(StringSink sink) async {
   final headMesh =
       mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
 
-  final dollBuilder = mi.DollBuilder(headMesh: headMesh);
+  final dollBuilder = mi.Doll(headMesh: headMesh);
   final root = dollBuilder.makeRig();
   // 本来はここでポージング
   //logger.fine('root');

@@ -140,8 +140,7 @@ class Cube extends Shape {
       var scale_ = scale;
       if (fill) {
         final length = target_.translation.length;
-        final k = length / scale.y;
-        scale_ = Vector3(scale.x * k, length, scale.z * k);
+        scale_ = Vector3(scale.x, length, scale.z);
       }
       // モデルをスケールし、targetに向けて回転させ、root空間に変換する。
       final data_ = scaleMeshData(data: data, scale: scale_);
