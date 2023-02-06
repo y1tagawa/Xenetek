@@ -7,8 +7,9 @@ import 'dart:math' as math;
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 
-// スクリプト的モデラ、回転体(Surface of Revolution)メッシュデータ生成
+// スクリプト的モデラ、回転体メッシュデータ生成
 
+/// 回転体(Surface of Revolution)メッシュデータビルダ
 class SorBuilder {
   static final logger = Logger('SorBuilder');
 
@@ -26,6 +27,7 @@ class SorBuilder {
     this.reverse = false,
   });
 
+  /// メッシュデータ生成
   MeshData build() {
     assert(division >= 3);
     assert(vertices.length >= 2);
@@ -65,12 +67,40 @@ class SorBuilder {
   }
 }
 
+/// 回転体
+
+//
+abstract class EndShape {
+  const EndShape();
+}
+
+class OpenEnd extends EndShape {
+  const OpenEnd();
+}
+
+class ConeEnd extends EndShape {
+  final double height;
+  final int division;
+  const ConeEnd({this.height = 0.0, this.division = 1});
+}
+
+class DomeEnd extends EndShape {
+  final double height;
+  final int division;
+  const DomeEnd({this.height = double.infinity, this.division = 4});
+}
+
+/// 円筒
+///
+/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
 class Tube extends Cube {
   final double beginRadius;
   final double endRadius;
   final double height;
-  final int circumDivision;
+  final int circleDivision;
   final int heightDivision;
+  final EndShape beginShape;
+  final EndShape endShape;
   final bool smooth;
   final bool reverse;
 
@@ -82,28 +112,73 @@ class Tube extends Cube {
     this.beginRadius = 0.5,
     this.endRadius = 0.5,
     this.height = 1.0,
-    this.circumDivision = 12,
+    this.circleDivision = 12,
     this.heightDivision = 1,
+    this.beginShape = const OpenEnd(),
+    this.endShape = const OpenEnd(),
     this.smooth = true,
     this.reverse = false,
   });
 
   @override
   List<MeshData> toMeshData({required final Node root}) {
-    assert(circumDivision >= 3);
+    assert(circleDivision >= 3);
     assert(heightDivision >= 1);
-    final vertices = <Vector3>[
-      for (int i = 0; i < heightDivision; ++i)
-        run(() {
-          final t = i.toDouble() / heightDivision;
-          return Vector3((endRadius - beginRadius) * t + beginRadius, t * height, 0.0);
-        }),
-      Vector3(endRadius, height, 0.0),
-    ];
 
+    // 母線頂点生成
+    final vertices = <Vector3>[];
+    //　始端
+    switch (beginShape.runtimeType) {
+      case ConeEnd:
+        final coneEnd = beginShape as ConeEnd;
+        for (int i = 0; i < coneEnd.division; ++i) {
+          final t = i.toDouble() / coneEnd.division;
+          vertices.add(Vector3(t * beginRadius, (1.0 - t) * -coneEnd.height, 0.0));
+        }
+        break;
+      case DomeEnd:
+        final domeEnd = beginShape as DomeEnd;
+        final domeHeight = domeEnd.height == double.infinity ? beginRadius : domeEnd.height;
+        for (int i = 0; i < domeEnd.division; ++i) {
+          final t = i.toDouble() / domeEnd.division;
+          final a = (1.0 - t) * math.pi * 0.5;
+          vertices.add(Vector3(math.cos(a) * beginRadius, math.sin(a) * -domeHeight, 0.0));
+        }
+        break;
+      default:
+        break;
+    }
+    // 胴
+    for (int i = 0; i < heightDivision; ++i) {
+      final t = i.toDouble() / heightDivision;
+      vertices.add(Vector3((endRadius - beginRadius) * t + beginRadius, t * height, 0.0));
+    }
+    vertices.add(Vector3(endRadius, height, 0.0));
+    // 終端
+    switch (endShape.runtimeType) {
+      case ConeEnd:
+        final coneEnd = endShape as ConeEnd;
+        for (int i = 1; i <= coneEnd.division; ++i) {
+          final t = i.toDouble() / coneEnd.division;
+          vertices.add(Vector3((1.0 - t) * endRadius, t * coneEnd.height + height, 0.0));
+        }
+        break;
+      case DomeEnd:
+        final domeEnd = endShape as DomeEnd;
+        final domeHeight = domeEnd.height == double.infinity ? beginRadius : domeEnd.height;
+        for (int i = 1; i <= domeEnd.division; ++i) {
+          final t = i.toDouble() / domeEnd.division;
+          final a = t * math.pi * 0.5;
+          vertices.add(Vector3(math.cos(a) * endRadius, math.sin(a) * domeHeight + height, 0.0));
+        }
+        break;
+      default:
+        break;
+    }
+    // メッシュデータ生成
     final data = SorBuilder(
       vertices: vertices,
-      division: circumDivision,
+      division: circleDivision,
       smooth: smooth,
       reverse: reverse,
     ).build();

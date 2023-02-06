@@ -171,6 +171,8 @@ class DollMeshBuilder {
       beginRadius: 0.12,
       endRadius: 0.1,
       heightDivision: 8,
+      beginShape: const ConeEnd(height: 0.4, division: 8),
+      endShape: const ConeEnd(height: 0.2, division: 3),
     ).toMeshData(root: root);
     // return Pin(
     //   origin: origin,
