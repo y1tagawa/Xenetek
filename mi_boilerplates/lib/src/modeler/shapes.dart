@@ -273,6 +273,16 @@ class Pin extends Cube {
     super.fill = true,
   });
 
+  // ピンの半径は長さに比例するようにする
+  @override
+  MeshData scaleMeshData({
+    required final MeshData data,
+    required final Vector3 scale,
+  }) =>
+      data.transformed(Matrix4.fromScale(
+        Vector3(scale.y * 0.25, scale.y, scale.y * 0.25),
+      ));
+
   @override
   List<MeshData> toMeshData({required final Node root}) {
     final vertices = _octahedronVertices

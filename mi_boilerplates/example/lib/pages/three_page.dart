@@ -12,7 +12,6 @@ import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
 import 'package:mi_boilerplates/mi_boilerplates.dart' show Vector3, Matrix4, Node, Shape, Pin;
 import 'package:path_provider/path_provider.dart';
-import 'package:vector_math/vector_math.dart' as vm;
 
 import 'ex_app_bar.dart' as ex;
 
@@ -137,16 +136,6 @@ class _BunnyTab extends ConsumerWidget {
 //
 
 //<editor-fold>
-
-const _x = mi.Vector3.unitX;
-const _y = mi.Vector3.unitY;
-const _z = mi.Vector3.unitZ;
-const _identity = mi.Matrix4.identity;
-final _xz = _x + _z;
-
-mi.Matrix4 _rotation(mi.Vector3 axis, double angleDegree) =>
-    mi.Matrix4.fromAxisAngleRotation(axis, vm.radians(angleDegree));
-mi.Matrix4 _position(mi.Vector3 position) => mi.Matrix4.fromTranslation(position);
 
 extension CubeMeshHelper on cube.Mesh {
   mi.MeshData toMeshData() {

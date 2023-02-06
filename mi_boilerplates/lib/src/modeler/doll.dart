@@ -158,7 +158,6 @@ class Doll {
     return Pin(
       origin: origin,
       target: target,
-      scale: const Vector3(0.2, 1, 0.2),
     ).toMeshData(root: root);
   }
 
