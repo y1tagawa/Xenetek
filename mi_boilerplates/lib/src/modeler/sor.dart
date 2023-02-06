@@ -165,7 +165,7 @@ class Tube extends Cube {
         break;
       case DomeEnd:
         final domeEnd = endShape as DomeEnd;
-        final domeHeight = domeEnd.height == double.infinity ? beginRadius : domeEnd.height;
+        final domeHeight = domeEnd.height == double.infinity ? endRadius : domeEnd.height;
         for (int i = 1; i <= domeEnd.division; ++i) {
           final t = i.toDouble() / domeEnd.division;
           final a = t * math.pi * 0.5;

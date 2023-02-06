@@ -76,7 +76,7 @@ class Doll {
     this.shoulderPosition = const Vector3(0.25, 0.02, 0.2),
     this.upperArmLength = 0.4,
     this.foreArmLength = 0.5,
-    this.coxaPosition = const Vector3(0.1, 0.0, 0.0),
+    this.coxaPosition = const Vector3(0.13, 0.0, 0.0),
     this.thighLength = 0.6,
     this.shankLength = 0.7,
     //
