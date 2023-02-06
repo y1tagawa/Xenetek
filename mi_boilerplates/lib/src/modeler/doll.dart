@@ -5,7 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-import '../mi_boilerplates.dart';
+import '../../mi_boilerplates.dart';
 
 // スクリプト的ドールモデラ
 
