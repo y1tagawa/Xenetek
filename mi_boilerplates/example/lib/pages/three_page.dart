@@ -151,6 +151,8 @@ Future<void> _setup(StringSink sink) async {
   // ポージング
   root = mi.Doll.bendRShoulder(root: root, degrees: 30.0);
   root = mi.Doll.bendLShoulder(root: root, degrees: 45.0);
+  root = mi.Doll.bendRElbow(root: root, degrees: 60.0);
+  root = mi.Doll.bendLElbow(root: root, degrees: 120.0);
 
   //
   final meshDataArray = dollBuilder.toMeshData(root: root);

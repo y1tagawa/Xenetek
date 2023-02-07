@@ -280,7 +280,7 @@ class Doll {
     return buffer;
   }
 
-  //
+  // ポージング
 
   static Node bendRShoulder({required Node root, double? radians, double? degrees}) =>
       root.transform(
@@ -297,6 +297,24 @@ class Doll {
         path: lShoulder,
         matrix: Matrix4.fromAxisAngleRotation(
           axis: Vector3.unitZ,
+          radians: radians,
+          degrees: degrees,
+        ),
+      );
+
+  static Node bendRElbow({required Node root, double? radians, double? degrees}) => root.transform(
+        path: rElbow,
+        matrix: Matrix4.fromAxisAngleRotation(
+          axis: Vector3.unitY,
+          radians: radians,
+          degrees: degrees,
+        ),
+      );
+
+  static Node bendLElbow({required Node root, double? radians, double? degrees}) => root.transform(
+        path: lElbow,
+        matrix: Matrix4.fromAxisAngleRotation(
+          axis: -Vector3.unitY,
           radians: radians,
           degrees: degrees,
         ),
