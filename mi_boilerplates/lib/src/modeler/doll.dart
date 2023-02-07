@@ -5,7 +5,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-import '../../mi_boilerplates.dart';
+import 'basic.dart';
+import 'shapes.dart';
+import 'sor.dart';
 
 // スクリプト的ドール(mk1)モデラ
 

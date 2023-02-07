@@ -5,7 +5,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
+
+import 'color_helper.dart';
+import 'scope_functions.dart';
 
 extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;

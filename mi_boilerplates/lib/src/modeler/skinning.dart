@@ -1,6 +1,10 @@
-import '../../mi_boilerplates.dart';
+// Copyright 2023 Xenetek. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-///
+import 'basic.dart';
+import 'shapes.dart';
+
 /// スキニング
 ///
 /// Meshと合体しても良いかもだ

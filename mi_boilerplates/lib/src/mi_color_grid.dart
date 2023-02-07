@@ -5,7 +5,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import '../mi_boilerplates.dart' as mi;
+import 'mi_dialogs.dart' as mi;
+import 'mi_tabs.dart' as mi;
+import 'mi_widgets.dart' as mi;
+import 'scope_functions.dart';
 
 /// カラーグリッド
 class ColorGrid extends StatelessWidget {
@@ -38,7 +41,7 @@ class ColorGrid extends StatelessWidget {
             onTap: () {
               onChanged?.call(i);
             },
-            child: mi.run(
+            child: run(
               () {
                 Widget item = mi.ColorChip(
                   color: colors[i],

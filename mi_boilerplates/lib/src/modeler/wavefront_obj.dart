@@ -4,7 +4,8 @@
 
 import 'package:logging/logging.dart';
 
-import '../../mi_boilerplates.dart';
+import '../scope_functions.dart';
+import 'basic.dart';
 
 extension MeshDataHelper on MeshData {
   // ignore: unused_field

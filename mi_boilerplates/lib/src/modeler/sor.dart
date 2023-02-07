@@ -5,7 +5,9 @@
 import 'dart:math' as math;
 
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+
+import 'basic.dart';
+import 'shapes.dart';
 
 // スクリプト的モデラ、回転体メッシュデータ生成
 

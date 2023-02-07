@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-import '../mi_boilerplates.dart' as mi;
+import 'package:flutter/material.dart';
 
 /// const版 Transform.rotate
 class Rotate extends StatelessWidget {
   final double? angle;
-  // toRadian()はconstにならないので度でも受けられるようにしておく。
   final double? angleDegree;
   final Offset? origin;
   final AlignmentGeometry? alignment;
@@ -31,7 +30,7 @@ class Rotate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.rotate(
-      angle: angle ?? angleDegree!.toRadian(),
+      angle: angle ?? (angleDegree! * math.pi / 180.0),
       alignment: alignment,
       origin: origin,
       transformHitTests: transformHitTests,

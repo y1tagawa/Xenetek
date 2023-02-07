@@ -5,22 +5,11 @@
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart' hide Row;
+import 'package:flutter/material.dart' hide Drawer, Row;
 import 'package:flutter/material.dart' as material show Drawer, Row;
 import 'package:logging/logging.dart';
 
-Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
-
-T run<T>(T Function() fun) => fun();
-
-extension ScopeFunctions<T> on T {
-  T also(void Function(T it) fun) {
-    fun(this);
-    return this;
-  }
-
-  U let<U>(U Function(T it) fun) => fun(this);
-}
+import 'scope_functions.dart';
 
 extension DoubleHelper on double {
   static const degreeToRadian = math.pi / 180.0;

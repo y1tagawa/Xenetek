@@ -6,7 +6,8 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+
+import 'gradient_helper.dart';
 
 /// [ColorSlider]の状態変数
 ///

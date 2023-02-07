@@ -30,4 +30,5 @@ export 'src/modeler/shapes.dart';
 export 'src/modeler/sor.dart';
 export 'src/modeler/wavefront_obj.dart';
 export 'src/primary_color_names.dart';
+export 'src/scope_functions.dart';
 export 'src/x11_colors.dart';

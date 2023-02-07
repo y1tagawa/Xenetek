@@ -4,7 +4,8 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+
+import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
 

@@ -5,8 +5,6 @@
 import 'package:flutter/material.dart' hide ToggleButtons;
 import 'package:flutter/material.dart' as material show ToggleButtons;
 
-import '../mi_boilerplates.dart' as mi;
-
 /// カスタムToggleButtons
 ///
 /// * [enabled]
@@ -83,7 +81,7 @@ class RadioToggleButtons extends StatelessWidget {
     return ToggleButtons(
       enabled: enabled,
       split: split,
-      isSelected: mi.iota(children.length).map((it) => it == initiallySelected).toList(),
+      isSelected: List<bool>.generate(children.length, (index) => index == initiallySelected),
       onPressed: onPressed,
       renderBorder: renderBorder,
       children: children,

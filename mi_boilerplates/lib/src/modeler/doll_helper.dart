@@ -4,8 +4,9 @@ import './doll.dart';
 // スクリプト的ドール(mk1)モデラ拡張
 
 extension NodeHelper on Node {
-// ポージング
+  // ポージング
 
+  // (略記)
   Node _rotate(String path, Vector3 axis, double? radians, double? degrees) => transform(
         path: Doll.rShoulder,
         matrix: Matrix4.fromAxisAngleRotation(
@@ -14,6 +15,8 @@ extension NodeHelper on Node {
           degrees: degrees,
         ),
       );
+
+  // 上肢
 
   Node bendRShoulder({double? radians, double? degrees}) =>
       _rotate(Doll.rShoulder, -Vector3.unitZ, radians, degrees);
