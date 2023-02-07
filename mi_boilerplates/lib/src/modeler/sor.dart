@@ -4,7 +4,6 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
@@ -30,20 +29,6 @@ class SorBuilder {
     this.reverse = false,
   });
 
-  /// 稜線生成
-  @protected
-  List<Vector3> makeRidge(int index) {
-    final vertices_ = <Vector3>[];
-    final matrix = Matrix4.fromAxisAngleRotation(
-      axis: axis,
-      radians: index * 2.0 * math.pi / division,
-    );
-    for (final vertex in vertices) {
-      vertices_.add(vertex.transformed(matrix));
-    }
-    return vertices_;
-  }
-
   /// メッシュデータ生成
   MeshData build() {
     assert(division >= 3);
@@ -51,7 +36,13 @@ class SorBuilder {
     // 頂点生成
     final vertices_ = <Vector3>[];
     for (int i = 0; i < division; ++i) {
-      vertices_.addAll(makeRidge(i));
+      final matrix = Matrix4.fromAxisAngleRotation(
+        axis: axis,
+        radians: i * 2.0 * math.pi / division,
+      );
+      for (final vertex in vertices) {
+        vertices_.add(vertex.transformed(matrix));
+      }
     }
     // 面生成
     final faces = <MeshFace>[];
