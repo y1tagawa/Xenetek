@@ -56,10 +56,6 @@ class HumanRig {
   final double bellyLength; // 腹部の長さ
   final double chestLength; // 胸郭の長さ
   final double neckLength; // 頸部の長さ
-  // 脊椎ゼロポジション
-  final double bellyAngle; // 腹部の傾き
-  final double chestAngle; // 胸部の傾き
-  final double neckAngle; // 頸椎の傾き
   // 右上肢（左は反転）
   final Vector3 scPosition; // 首の根から胸鎖関節の相対位置（胸の厚さ）
   final Vector3 shoulderPosition; // 胸鎖関節から右肩関節の相対位置（肩幅）
@@ -69,6 +65,12 @@ class HumanRig {
   final Vector3 coxaPosition; // 仙骨から右股関節への相対位置
   final double thighLength; // 大腿長
   final double shankLength; // 下腿長
+  // ゼロポジション
+  final double bellyAngle; // 腹部の傾き
+  final double chestAngle; // 胸部の傾き
+  final double neckAngle; // 頸部の傾き
+  final double thighAngle; // 大腿の傾き
+  final double footAngle; // 足首の傾き
   // 頸の太さ
   final double neckRadius;
   // 上肢の太さ
@@ -91,9 +93,6 @@ class HumanRig {
     this.bellyLength = 0.3,
     this.chestLength = 0.5,
     this.neckLength = 0.2,
-    this.bellyAngle = -10.0 * math.pi / 180.0,
-    this.chestAngle = 20.0 * math.pi / 180.0,
-    this.neckAngle = -10.0 * math.pi / 180.0,
     this.scPosition = const Vector3(0.0, -0.02, -0.15),
     this.shoulderPosition = const Vector3(0.25, 0.02, 0.15),
     this.upperArmLength = 0.4,
@@ -101,13 +100,16 @@ class HumanRig {
     this.coxaPosition = const Vector3(0.13, 0.0, -0.05),
     this.thighLength = 0.6,
     this.shankLength = 0.7,
+    this.bellyAngle = -10.0 * math.pi / 180.0,
+    this.chestAngle = 20.0 * math.pi / 180.0,
+    this.neckAngle = -10.0 * math.pi / 180.0,
+    this.thighAngle = 5.0 * math.pi / 180.0,
+    this.footAngle = 5.0 * math.pi / 180.0,
     //
     this.neckRadius = 0.06,
-    //
     this.shoulderRadius = 0.08,
     this.elbowRadius = 0.08,
     this.wristRadius = 0.06,
-    //
     this.coxaRadius = 0.1,
     this.kneeRadius = 0.1,
     this.ankleRadius = 0.08,
@@ -170,10 +172,10 @@ class HumanRig {
         ._rotateX(pelvis, bellyAngle)
         ._rotateX(chest, chestAngle)
         ._rotateX(neck, neckAngle)
-        ._rotateX(rCoxa, -bellyAngle * 0.5)
-        ._rotateX(rAnkle, -bellyAngle * 0.5)
-        ._rotateX(lCoxa, -bellyAngle * 0.5)
-        ._rotateX(lAnkle, -bellyAngle * 0.5);
+        ._rotateX(rCoxa, thighAngle)
+        ._rotateX(rAnkle, footAngle)
+        ._rotateX(lCoxa, thighAngle)
+        ._rotateX(lAnkle, footAngle);
     return root;
   }
 
