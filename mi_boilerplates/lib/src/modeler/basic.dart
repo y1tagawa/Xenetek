@@ -122,6 +122,7 @@ class Vector3 {
 }
 
 extension Vector3ListHelper on Iterable<Vector3> {
+  List<Vector3> mirrored() => map((value) => value.mirrored()).toList();
   List<Vector3> transformed(Matrix4 matrix) => map((value) => value.transformed(matrix)).toList();
 }
 
@@ -611,12 +612,16 @@ class MeshData {
   });
 
   /// 変換
-  MeshData transformed(Matrix4 matrix) {
-    return copyWith(
-      vertices: vertices.transformed(matrix),
-      normals: normals.transformed(matrix.rotation),
-    );
-  }
+  MeshData transformed(Matrix4 matrix) => copyWith(
+        vertices: vertices.transformed(matrix),
+        normals: normals.transformed(matrix.rotation),
+      );
+
+  /// 左右反転したコピーを返す。
+  MeshData mirrored() => copyWith(
+        vertices: vertices.mirrored(),
+        normals: normals.mirrored(),
+      ).reversed();
 
   /// 面を表裏反転したコピーを返す。
   MeshData reversed() {

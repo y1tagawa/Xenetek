@@ -78,8 +78,11 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
+    - assets/3d/foot.obj
+    - assets/3d/head.obj
+    - assets/3d/stanford-bunny.obj
+    - assets/3d/stanford-bunny.mtl
     - assets/eye_close.png
-    - assets/head.obj
     - assets/lottie_icon.png
     - assets/lottie/
     - assets/more_grid.png
@@ -87,8 +90,6 @@ flutter:
     - assets/pandemonium.json
     - assets/shore_lines.svg
     - assets/snake.webp
-    - assets/stanford-bunny.obj
-    - assets/stanford-bunny.mtl
     - assets/walk64x64/
     - assets/worker_cat1.png
     - assets/worker_cat2.png

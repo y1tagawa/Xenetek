@@ -99,7 +99,7 @@ class _BunnyTab extends ConsumerWidget {
             child: cube.Cube(
               onSceneCreated: (cube.Scene scene) {
                 final bunny = cube.Object(
-                  fileName: 'assets/stanford-bunny.obj',
+                  fileName: 'assets/3d/stanford-bunny.obj',
                   lighting: true,
                 );
                 _logger.fine('bunny.mesh.colors=${bunny.mesh.colors}');
@@ -139,11 +139,16 @@ class _BunnyTab extends ConsumerWidget {
 Future<void> _setup(StringSink sink) async {
   final logger = Logger('_setup');
 
-  final headObj = await rootBundle.loadString('assets/head.obj');
+  final headObj = await rootBundle.loadString('assets/3d/head.obj');
   final headMesh =
       mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
+  final footObj = await rootBundle.loadString('assets/3d/foot.obj');
+  final footMesh = mi.MeshDataHelper.fromWavefrontObj(footObj);
 
-  final dollBuilder = mi.HumanRig(headMesh: headMesh);
+  final dollBuilder = mi.HumanRig(
+    headMesh: headMesh,
+    footMesh: footMesh,
+  );
   var root = dollBuilder.build();
   //logger.fine('root');
   //logger.fine(root.format(sink: StringBuffer()).toString());

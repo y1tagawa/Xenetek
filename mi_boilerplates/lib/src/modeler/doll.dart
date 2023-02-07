@@ -81,6 +81,7 @@ class HumanRig {
   final double ankleRadius;
   // メッシュ
   final MeshData? headMesh; // 頭
+  final MeshData? footMesh; // 右足
 
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
@@ -112,6 +113,7 @@ class HumanRig {
     this.ankleRadius = 0.08,
     //
     this.headMesh,
+    this.footMesh,
   });
 
   /// リグ生成
@@ -257,6 +259,9 @@ class HumanRig {
       beginRadius: kneeRadius,
       endRadius: ankleRadius,
     );
+    if (footMesh != null) {
+      buffer['rFoot'] = makeMesh(root: root, origin: rAnkle, data: footMesh!);
+    }
     // todo:foot
     // 左下肢
     buffer['lThigh'] = makeTube(
@@ -273,7 +278,9 @@ class HumanRig {
       beginRadius: kneeRadius,
       endRadius: ankleRadius,
     );
-    // todo:foot
+    if (footMesh != null) {
+      buffer['lFoot'] = makeMesh(root: root, origin: lAnkle, data: footMesh!.mirrored());
+    }
     // 右上肢
     buffer['rCollarBone'] = makePin(root: root, origin: rSc, target: rShoulder);
     buffer['rUpperArm'] = makeTube(
