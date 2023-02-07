@@ -74,11 +74,11 @@ class Doll {
     this.bellyLength = 0.3,
     this.chestLength = 0.5,
     this.neckLength = 0.2,
-    this.scPosition = const Vector3(0.0, -0.02, -0.2),
-    this.shoulderPosition = const Vector3(0.25, 0.02, 0.2),
+    this.scPosition = const Vector3(0.0, -0.02, -0.15),
+    this.shoulderPosition = const Vector3(0.25, 0.02, 0.15),
     this.upperArmLength = 0.4,
     this.foreArmLength = 0.5,
-    this.coxaPosition = const Vector3(0.13, 0.0, 0.0),
+    this.coxaPosition = const Vector3(0.13, 0.0, -0.05),
     this.thighLength = 0.6,
     this.shankLength = 0.7,
     //
@@ -196,6 +196,7 @@ class Doll {
   }
 
   // メッシュデータ生成
+  // todo: extensionへ
 
   Map<String, List<MeshData>> toMeshData({
     required final Node root,
@@ -247,7 +248,7 @@ class Doll {
     );
     // todo:foot
     // 右上肢
-    //buffer['rCollarBone'] = makePin(root: root, origin: rSc, target: rShoulder);
+    buffer['rCollarBone'] = makePin(root: root, origin: rSc, target: rShoulder);
     buffer['rUpperArm'] = makeTube(
       root: root,
       origin: rShoulder,
@@ -263,7 +264,7 @@ class Doll {
       endRadius: wristRadius,
     );
     // 左上肢
-    //buffer['lCollarBone'] = makePin(root: root, origin: lSc, target: lShoulder);
+    buffer['lCollarBone'] = makePin(root: root, origin: lSc, target: lShoulder);
     buffer['lUpperArm'] = makeTube(
       root: root,
       origin: lShoulder,

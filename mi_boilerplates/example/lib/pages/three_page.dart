@@ -150,6 +150,7 @@ Future<void> _setup(StringSink sink) async {
 
   // ポージング
   root = root
+      .bendNeck(degrees: 20)
       .bendRShoulder(degrees: 30.0)
       .bendLShoulder(degrees: 45.0)
       .bendRElbow(degrees: 60.0)
