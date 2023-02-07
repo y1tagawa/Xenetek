@@ -155,12 +155,21 @@ Future<void> _setup(StringSink sink) async {
 
   // ポージング
   root = root
-      // .bendNeck(degrees: 20)
+      .bendNeck(degrees: 10)
+      .twistNeck(degrees: 30)
+      //
+      .twistRCoxa(degrees: -10)
+      .swingRCoxa(degrees: 5)
+      .swingRAnkle(degrees: -5)
+      //
+      .twistLCoxa(degrees: 10)
+      .swingLCoxa(degrees: -5)
+      .swingLAnkle(degrees: 5)
+      //
       .bendRShoulder(degrees: 30.0)
       .bendLShoulder(degrees: 45.0)
       .bendRElbow(degrees: 60.0)
       .bendLElbow(degrees: 120.0);
-
   //
   final meshDataArray = dollBuilder.toMeshData(root: root);
   meshDataArray.toWavefrontObj(sink);
