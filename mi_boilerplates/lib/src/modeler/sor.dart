@@ -68,6 +68,7 @@ class SorBuilder {
 }
 
 /// 回転体
+// todo
 
 //
 abstract class EndShape {
