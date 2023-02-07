@@ -200,13 +200,14 @@ class HumanRig {
     required String target,
     required double beginRadius,
     required double endRadius,
+    int heightDivision = 1,
   }) {
     return Tube(
       origin: origin,
       target: target,
       beginRadius: beginRadius,
       endRadius: endRadius,
-      heightDivision: 1, // todo
+      heightDivision: heightDivision,
       beginShape: const DomeEnd(),
       endShape: const DomeEnd(),
     ).toMeshData(root: root);
@@ -242,6 +243,7 @@ class HumanRig {
       target: head,
       beginRadius: neckRadius,
       endRadius: neckRadius,
+      heightDivision: 4,
     );
     if (headMesh != null) {
       buffer['head'] = makeMesh(root: root, origin: head, data: headMesh!);
