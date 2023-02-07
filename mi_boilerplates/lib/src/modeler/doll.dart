@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
@@ -11,11 +13,21 @@ import 'sor.dart';
 
 // スクリプト的ドール(mk1)モデラ
 
+extension _NodeHelper on Node {
+  Node _rotateX(String path, double radians) => transform(
+        path: path,
+        matrix: Matrix4.fromAxisAngleRotation(
+          axis: Vector3.unitX,
+          radians: radians,
+        ),
+      );
+}
+
 /// ドールモデル(mk1)を生成する。
 ///
 /// カスタマイズの基底クラス。
 /// todo: copyWithなど
-class Doll {
+class HumanRig {
   // ignore: unused_field
   static final _logger = Logger('DollBuilder');
 
@@ -44,9 +56,13 @@ class Doll {
   final double bellyLength; // 腹部の長さ
   final double chestLength; // 胸郭の長さ
   final double neckLength; // 頸部の長さ
+  // 脊椎ゼロポジション
+  final double bellyAngle; // 腹部の傾き
+  final double chestAngle; // 胸部の傾き
+  final double neckAngle; // 頸椎の傾き
+  // 右上肢（左は反転）
   final Vector3 scPosition; // 首の根から胸鎖関節の相対位置（胸の厚さ）
   final Vector3 shoulderPosition; // 胸鎖関節から右肩関節の相対位置（肩幅）
-  // 右上肢（左は反転）
   final double upperArmLength; // 上腕の長さ
   final double foreArmLength; // 前腕の長さ
   // 右下肢（左は反転）
@@ -68,12 +84,15 @@ class Doll {
 
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
-  const Doll({
+  const HumanRig({
     // 骨格
     this.pelvisPosition = Vector3.zero,
     this.bellyLength = 0.3,
     this.chestLength = 0.5,
     this.neckLength = 0.2,
+    this.bellyAngle = -10.0 * math.pi / 180.0,
+    this.chestAngle = 20.0 * math.pi / 180.0,
+    this.neckAngle = -10.0 * math.pi / 180.0,
     this.scPosition = const Vector3(0.0, -0.02, -0.15),
     this.shoulderPosition = const Vector3(0.25, 0.02, 0.15),
     this.upperArmLength = 0.4,
@@ -96,7 +115,7 @@ class Doll {
   });
 
   /// リグ生成
-  Node makeRig() {
+  Node build() {
     Node root = const Node()
         // 脊柱
         .addLimb(
@@ -144,7 +163,15 @@ class Doll {
             'elbow': Matrix4.fromTranslation(Vector3.unitX * -upperArmLength),
             'wrist': Matrix4.fromTranslation(Vector3.unitX * -foreArmLength),
           }.entries,
-        );
+        )
+        // ゼロポジション
+        ._rotateX(pelvis, bellyAngle)
+        ._rotateX(chest, chestAngle)
+        ._rotateX(neck, neckAngle)
+        ._rotateX(rCoxa, -bellyAngle * 0.5)
+        ._rotateX(rAnkle, -bellyAngle * 0.5)
+        ._rotateX(lCoxa, -bellyAngle * 0.5)
+        ._rotateX(lAnkle, -bellyAngle * 0.5);
     return root;
   }
 

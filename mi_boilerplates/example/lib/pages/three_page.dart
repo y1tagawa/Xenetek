@@ -143,14 +143,14 @@ Future<void> _setup(StringSink sink) async {
   final headMesh =
       mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
 
-  final dollBuilder = mi.Doll(headMesh: headMesh);
-  var root = dollBuilder.makeRig();
+  final dollBuilder = mi.HumanRig(headMesh: headMesh);
+  var root = dollBuilder.build();
   //logger.fine('root');
   //logger.fine(root.format(sink: StringBuffer()).toString());
 
   // ポージング
   root = root
-      .bendNeck(degrees: 20)
+      // .bendNeck(degrees: 20)
       .bendRShoulder(degrees: 30.0)
       .bendLShoulder(degrees: 45.0)
       .bendRElbow(degrees: 60.0)

@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
@@ -29,27 +30,32 @@ class SorBuilder {
     this.reverse = false,
   });
 
+  /// 稜線生成
+  @protected
+  List<Vector3> makeRidge(int index) {
+    final vertices_ = <Vector3>[];
+    final matrix = Matrix4.fromAxisAngleRotation(
+      axis: axis,
+      radians: index * 2.0 * math.pi / division,
+    );
+    for (final vertex in vertices) {
+      vertices_.add(vertex.transformed(matrix));
+    }
+    return vertices_;
+  }
+
   /// メッシュデータ生成
   MeshData build() {
     assert(division >= 3);
     assert(vertices.length >= 2);
-
     // 頂点生成
-    final n = vertices.length;
     final vertices_ = <Vector3>[];
     for (int i = 0; i < division; ++i) {
-      final matrix = Matrix4.fromAxisAngleRotation(
-        axis: axis,
-        radians: i * 2.0 * math.pi / division,
-      );
-      for (final vertex in vertices) {
-        vertices_.add(vertex.transformed(matrix));
-      }
+      vertices_.addAll(makeRidge(i));
     }
-
     // 面生成
     final faces = <MeshFace>[];
-
+    final n = vertices.length;
     void addFaces(final int j0, final int j1) {
       for (int i = 0; i < n - 1; ++i) {
         faces.add(<MeshVertex>[
@@ -66,7 +72,6 @@ class SorBuilder {
       addFaces(i * n, (i + 1) * n);
     }
     addFaces(i * n, 0);
-
     final data = MeshData(vertices: vertices_, faces: faces, smooth: smooth);
     return reverse ? data.reversed() : data;
   }
@@ -151,7 +156,7 @@ class Tube extends Cube {
           vertices.add(Vector3(math.cos(a) * beginRadius, math.sin(a) * -domeHeight, 0.0));
         }
         break;
-      default:
+      default: // OpenEnd
         break;
     }
     // 胴
@@ -178,7 +183,7 @@ class Tube extends Cube {
           vertices.add(Vector3(math.cos(a) * endRadius, math.sin(a) * domeHeight + height, 0.0));
         }
         break;
-      default:
+      default: // OpenEnd
         break;
     }
     // メッシュデータ生成
