@@ -10,7 +10,6 @@ import 'package:flutter_cube/flutter_cube.dart' as cube;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
-import 'package:mi_boilerplates/mi_boilerplates.dart' show Vector3, Matrix4, Node, Shape, Pin;
 import 'package:path_provider/path_provider.dart';
 
 import 'ex_app_bar.dart' as ex;
@@ -137,25 +136,6 @@ class _BunnyTab extends ConsumerWidget {
 
 //<editor-fold>
 
-extension CubeMeshHelper on cube.Mesh {
-  mi.MeshData toMeshData() {
-    final vertices_ = vertices.map((it) => Vector3(it.x, it.y, it.z)).toList(growable: false);
-    final faces = indices
-        .map(
-          (it) => <mi.MeshVertex>[
-            mi.MeshVertex(it.vertex0, -1, -1),
-            mi.MeshVertex(it.vertex1, -1, -1),
-            mi.MeshVertex(it.vertex2, -1, -1),
-          ],
-        )
-        .toList(growable: false);
-    return mi.MeshData(
-      vertices: vertices_,
-      faces: faces,
-    );
-  }
-}
-
 Future<void> _setup(StringSink sink) async {
   final logger = Logger('_setup');
 
@@ -164,10 +144,15 @@ Future<void> _setup(StringSink sink) async {
       mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
 
   final dollBuilder = mi.Doll(headMesh: headMesh);
-  final root = dollBuilder.makeRig();
-  // 本来はここでポージング
+  var root = dollBuilder.makeRig();
   //logger.fine('root');
   //logger.fine(root.format(sink: StringBuffer()).toString());
+
+  // ポージング
+  root = mi.Doll.bendRShoulder(root: root, degrees: 30.0);
+  root = mi.Doll.bendLShoulder(root: root, degrees: 45.0);
+
+  //
   final meshDataArray = dollBuilder.toMeshData(root: root);
   meshDataArray.toWavefrontObj(sink);
 }

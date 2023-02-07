@@ -36,7 +36,10 @@ class SorBuilder {
     final n = vertices.length;
     final vertices_ = <Vector3>[];
     for (int i = 0; i < division; ++i) {
-      final matrix = Matrix4.fromAxisAngleRotation(axis, i * 2.0 * math.pi / division);
+      final matrix = Matrix4.fromAxisAngleRotation(
+        axis: axis,
+        radians: i * 2.0 * math.pi / division,
+      );
       for (final vertex in vertices) {
         vertices_.add(vertex.transformed(matrix));
       }

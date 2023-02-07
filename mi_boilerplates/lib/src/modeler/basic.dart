@@ -138,17 +138,20 @@ class Matrix4 {
   const Matrix4._(this.elements);
 
   /// 回転行列
-  static Matrix4 fromAxisAngleRotation(Vector3 axis, double radians) => Matrix4.fromVmMatrix(
-        vm.Matrix4.compose(
-          vm.Vector3.zero(),
-          vm.Quaternion.axisAngle(axis.toVmVector(), radians),
-          vm.Vector3(1, 1, 1),
-        ),
-      );
-
-  /// 回転行列
-  static Matrix4 fromAxisAngleDegreeRotation(Vector3 axis, double degrees) =>
-      fromAxisAngleRotation(axis, vm.radians(degrees));
+  static Matrix4 fromAxisAngleRotation({
+    required Vector3 axis,
+    double? radians,
+    double? degrees,
+  }) {
+    assert(radians != null || degrees != null || !(radians != null && degrees != null));
+    return Matrix4.fromVmMatrix(
+      vm.Matrix4.compose(
+        vm.Vector3.zero(),
+        vm.Quaternion.axisAngle(axis.toVmVector(), radians ?? degrees! * math.pi / 180.0),
+        vm.Vector3(1, 1, 1),
+      ),
+    );
+  }
 
   /// 回転行列
   static Matrix4 fromForwardTargetRotation({

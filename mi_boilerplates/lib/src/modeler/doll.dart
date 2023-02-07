@@ -279,4 +279,26 @@ class Doll {
     );
     return buffer;
   }
+
+  //
+
+  static Node bendRShoulder({required Node root, double? radians, double? degrees}) =>
+      root.transform(
+        path: rShoulder,
+        matrix: Matrix4.fromAxisAngleRotation(
+          axis: -Vector3.unitZ,
+          radians: radians,
+          degrees: degrees,
+        ),
+      );
+
+  static Node bendLShoulder({required Node root, double? radians, double? degrees}) =>
+      root.transform(
+        path: lShoulder,
+        matrix: Matrix4.fromAxisAngleRotation(
+          axis: Vector3.unitZ,
+          radians: radians,
+          degrees: degrees,
+        ),
+      );
 }
