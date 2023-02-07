@@ -149,10 +149,11 @@ Future<void> _setup(StringSink sink) async {
   //logger.fine(root.format(sink: StringBuffer()).toString());
 
   // ポージング
-  root = mi.Doll.bendRShoulder(root: root, degrees: 30.0);
-  root = mi.Doll.bendLShoulder(root: root, degrees: 45.0);
-  root = mi.Doll.bendRElbow(root: root, degrees: 60.0);
-  root = mi.Doll.bendLElbow(root: root, degrees: 120.0);
+  root = root
+      .bendRShoulder(degrees: 30.0)
+      .bendLShoulder(degrees: 45.0)
+      .bendRElbow(degrees: 60.0)
+      .bendLElbow(degrees: 120.0);
 
   //
   final meshDataArray = dollBuilder.toMeshData(root: root);

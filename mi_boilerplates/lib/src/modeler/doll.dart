@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 
 import '../../mi_boilerplates.dart';
 
-// スクリプト的ドールモデラ
+// スクリプト的ドール(mk1)モデラ
 
 /// ドールモデル(mk1)を生成する。
 ///
@@ -95,55 +95,54 @@ class Doll {
 
   /// リグ生成
   Node makeRig() {
-    Node root = const Node();
-    // 脊柱
-    root = root.addLimb(
-      joints: <String, Matrix4>{
-        'pelvis': Matrix4.fromTranslation(pelvisPosition),
-        'chest': Matrix4.fromTranslation(Vector3.unitY * bellyLength),
-        'neck': Matrix4.fromTranslation(Vector3.unitY * chestLength),
-        'head': Matrix4.fromTranslation(Vector3.unitY * neckLength),
-      }.entries,
-    );
-    // 右下肢
-    root = root.addLimb(
-      path: 'pelvis',
-      joints: <String, Matrix4>{
-        'rCoxa': Matrix4.fromTranslation(coxaPosition),
-        'knee': Matrix4.fromTranslation(Vector3.unitY * -thighLength),
-        'ankle': Matrix4.fromTranslation(Vector3.unitY * -shankLength),
-      }.entries,
-    );
-    // 左下肢
-    root = root.addLimb(
-      path: 'pelvis',
-      joints: <String, Matrix4>{
-        'lCoxa': Matrix4.fromTranslation(coxaPosition.mirrored()),
-        'knee': Matrix4.fromTranslation(Vector3.unitY * -thighLength),
-        'ankle': Matrix4.fromTranslation(Vector3.unitY * -shankLength),
-      }.entries,
-    );
-    // 右上肢
-    root = root.addLimb(
-      path: 'pelvis.chest.neck',
-      joints: <String, Matrix4>{
-        'rSc': Matrix4.fromTranslation(scPosition),
-        'shoulder': Matrix4.fromTranslation(shoulderPosition),
-        'elbow': Matrix4.fromTranslation(Vector3.unitX * upperArmLength),
-        'wrist': Matrix4.fromTranslation(Vector3.unitX * foreArmLength),
-      }.entries,
-    );
-    // 左上肢
-    root = root.addLimb(
-      path: 'pelvis.chest.neck',
-      joints: <String, Matrix4>{
-        'lSc': Matrix4.fromTranslation(scPosition.mirrored()),
-        'shoulder': Matrix4.fromTranslation(shoulderPosition.mirrored()),
-        'elbow': Matrix4.fromTranslation(Vector3.unitX * -upperArmLength),
-        'wrist': Matrix4.fromTranslation(Vector3.unitX * -foreArmLength),
-      }.entries,
-    );
-    // TODO: ゼロポジションに
+    Node root = const Node()
+        // 脊柱
+        .addLimb(
+          joints: <String, Matrix4>{
+            'pelvis': Matrix4.fromTranslation(pelvisPosition),
+            'chest': Matrix4.fromTranslation(Vector3.unitY * bellyLength),
+            'neck': Matrix4.fromTranslation(Vector3.unitY * chestLength),
+            'head': Matrix4.fromTranslation(Vector3.unitY * neckLength),
+          }.entries,
+        )
+        // 右下肢
+        .addLimb(
+          path: 'pelvis',
+          joints: <String, Matrix4>{
+            'rCoxa': Matrix4.fromTranslation(coxaPosition),
+            'knee': Matrix4.fromTranslation(Vector3.unitY * -thighLength),
+            'ankle': Matrix4.fromTranslation(Vector3.unitY * -shankLength),
+          }.entries,
+        )
+        // 左下肢
+        .addLimb(
+          path: 'pelvis',
+          joints: <String, Matrix4>{
+            'lCoxa': Matrix4.fromTranslation(coxaPosition.mirrored()),
+            'knee': Matrix4.fromTranslation(Vector3.unitY * -thighLength),
+            'ankle': Matrix4.fromTranslation(Vector3.unitY * -shankLength),
+          }.entries,
+        )
+        // 右上肢
+        .addLimb(
+          path: 'pelvis.chest.neck',
+          joints: <String, Matrix4>{
+            'rSc': Matrix4.fromTranslation(scPosition),
+            'shoulder': Matrix4.fromTranslation(shoulderPosition),
+            'elbow': Matrix4.fromTranslation(Vector3.unitX * upperArmLength),
+            'wrist': Matrix4.fromTranslation(Vector3.unitX * foreArmLength),
+          }.entries,
+        )
+        // 左上肢
+        .addLimb(
+          path: 'pelvis.chest.neck',
+          joints: <String, Matrix4>{
+            'lSc': Matrix4.fromTranslation(scPosition.mirrored()),
+            'shoulder': Matrix4.fromTranslation(shoulderPosition.mirrored()),
+            'elbow': Matrix4.fromTranslation(Vector3.unitX * -upperArmLength),
+            'wrist': Matrix4.fromTranslation(Vector3.unitX * -foreArmLength),
+          }.entries,
+        );
     return root;
   }
 
@@ -279,44 +278,4 @@ class Doll {
     );
     return buffer;
   }
-
-  // ポージング
-
-  static Node bendRShoulder({required Node root, double? radians, double? degrees}) =>
-      root.transform(
-        path: rShoulder,
-        matrix: Matrix4.fromAxisAngleRotation(
-          axis: -Vector3.unitZ,
-          radians: radians,
-          degrees: degrees,
-        ),
-      );
-
-  static Node bendLShoulder({required Node root, double? radians, double? degrees}) =>
-      root.transform(
-        path: lShoulder,
-        matrix: Matrix4.fromAxisAngleRotation(
-          axis: Vector3.unitZ,
-          radians: radians,
-          degrees: degrees,
-        ),
-      );
-
-  static Node bendRElbow({required Node root, double? radians, double? degrees}) => root.transform(
-        path: rElbow,
-        matrix: Matrix4.fromAxisAngleRotation(
-          axis: Vector3.unitY,
-          radians: radians,
-          degrees: degrees,
-        ),
-      );
-
-  static Node bendLElbow({required Node root, double? radians, double? degrees}) => root.transform(
-        path: lElbow,
-        matrix: Matrix4.fromAxisAngleRotation(
-          axis: -Vector3.unitY,
-          radians: radians,
-          degrees: degrees,
-        ),
-      );
 }

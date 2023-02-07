@@ -25,6 +25,7 @@ export 'src/mi_transforms.dart';
 export 'src/mi_widgets.dart';
 export 'src/modeler/basic.dart';
 export 'src/modeler/doll.dart';
+export 'src/modeler/doll_helper.dart';
 export 'src/modeler/shapes.dart';
 export 'src/modeler/sor.dart';
 export 'src/modeler/wavefront_obj.dart';
