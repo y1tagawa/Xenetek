@@ -4,6 +4,7 @@
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
@@ -11,7 +12,8 @@ import 'package:vector_math/vector_math_64.dart' as vm;
 //
 // 繰り返して試行、再現できるよう、パラメタのみでモデルを生成する。
 
-/// 不変３次元ベクトル
+/// immutableの３次元ベクトル
+@immutable
 class Vector3 {
   static const unitX = Vector3(1, 0, 0);
   static const unitY = Vector3(0, 1, 0);
@@ -126,7 +128,8 @@ extension Vector3ListHelper on Iterable<Vector3> {
   List<Vector3> transformed(Matrix4 matrix) => map((value) => value.transformed(matrix)).toList();
 }
 
-/// 不変4x4行列
+/// immutableの4x4行列
+@immutable
 class Matrix4 {
   // ignore: unused_field
   static final _logger = Logger('Matrix4');
@@ -189,7 +192,7 @@ class Matrix4 {
   }
 
   /// 要素リストから変換(並びはvm.Matrix4と同様。[12][13][14]が併進成分)
-  Matrix4.fromList(this.elements) : assert(elements.length == 16);
+  const Matrix4.fromList(this.elements) : assert(elements.length == 16);
 
   /// vm.Matrix4から変換
   Matrix4.fromVmMatrix(vm.Matrix4 value) : elements = value.storage;
@@ -288,6 +291,7 @@ class Matrix4 {
 // リグ
 
 /// ノード検索結果
+@immutable
 class NodeFind {
   final Node node;
   final Matrix4 matrix;
@@ -300,10 +304,11 @@ class NodeFind {
   });
 }
 
-/// 不変ノード
+/// ノード
 ///
 /// モデルの制御点（関節）を定義する。
 /// [matrix]は親ノードからの相対的な変換を表す。
+@immutable
 class Node {
   static const pathDelimiter = '.';
 
@@ -533,11 +538,12 @@ List<Matrix4> _makeBend(Matrix4 matrix, int segment) {
 
 // メッシュデータ
 
-/// 不変メッシュ頂点データ
+/// メッシュ頂点データ
 ///
 /// 大体Wavefront .objの頂点データ。ただし、
 /// - インデックスは0から。
 /// - テクスチャ、法線インデックスを省略する場合は-1。
+@immutable
 class MeshVertex {
   final int vertexIndex;
   final int textureVertexIndex;
@@ -606,7 +612,8 @@ class MeshVertex {
 /// メッシュ面データ
 typedef MeshFace = List<MeshVertex>;
 
-/// 不変メッシュデータ
+/// メッシュデータ
+@immutable
 class MeshData {
   // ignore: unused_field
   static final _logger = Logger('MeshData');

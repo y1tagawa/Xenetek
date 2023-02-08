@@ -123,7 +123,7 @@ class Tube extends Cube {
   });
 
   @override
-  List<MeshData> toMeshData({required final Node root}) {
+  MeshData get data {
     assert(circleDivision >= 3);
     assert(heightDivision >= 1);
 
@@ -178,12 +178,11 @@ class Tube extends Cube {
         break;
     }
     // メッシュデータ生成
-    final data = SorBuilder(
+    return SorBuilder(
       vertices: vertices,
       division: circleDivision,
       smooth: smooth,
       reverse: reverse,
     ).build();
-    return makeMeshData(root: root, data: data);
   }
 }

@@ -9,7 +9,8 @@ import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
 
-/// 立体図形の基底クラス
+/// 図形の基底クラス
+@immutable
 abstract class Shape {
   const Shape();
 
@@ -17,10 +18,60 @@ abstract class Shape {
   List<MeshData> toMeshData({required final Node root});
 }
 
+/// 始端終端を持つ図形の基底クラス
+@immutable
+abstract class _Beam extends Shape {
+  // ignore: unused_field
+  static final _logger = Logger('_Beam');
+
+  final String origin;
+  final String target;
+  final bool fill;
+
+  const _Beam({
+    required this.origin,
+    this.target = '',
+    this.fill = true,
+  });
+
+  MeshData get data;
+
+  /// メッシュデータを[origin]から[target]まで延長
+  ///
+  /// 基底では単にY軸に沿って拡縮するだけなので、必要に応じてカスタマイズする。
+  @protected
+  MeshData _fillMeshData({
+    required final MeshData data,
+    required final double length,
+  }) =>
+      data.transformed(Matrix4.fromScale(Vector3(1, length, 1)));
+
+  /// [origin]の原点位置に置かれた[data]を[target]に向け回転、延長し、
+  /// [root]空間に頂点・法線変換したメッシュデータを返す。
+  @override
+  List<MeshData> toMeshData({required final Node root}) {
+    // origin空間への変換マトリクス
+    final origin_ = root.find(path: origin)!.matrix;
+    if (target.isEmpty) {
+      return <MeshData>[data.transformed(origin_)];
+    }
+    // targetの変換行列を、origin空間にマップする。
+    final target_ = origin_.inverted() * root.find(path: target)!.matrix;
+    // 軸線終点をtargetに向ける。
+    final rotation = Matrix4.fromForwardTargetRotation(
+      forward: Vector3.unitY,
+      target: target_.translation,
+    );
+    // fillの場合、モデルをorigin原点からtarget原点までに延長し...
+    final data_ = fill ? _fillMeshData(data: data, length: target_.translation.length) : data;
+    // ...root空間に変換する。
+    return <MeshData>[data_.transformed(origin_ * rotation)];
+  }
+}
+
 // 立方体メッシュデータ
 //
 // (-0.5,0,-0.5)-(0.5,1,0.5)
-
 //<editor-fold>
 
 const _cubeVertices = <Vector3>[
@@ -92,71 +143,23 @@ const _cubeMeshData = MeshData(
 
 /// 直方体
 ///
-/// [origin]を底面中心、[target]を上面として直方体を生成する。
-class Cube extends Shape {
+/// [origin]を底面中心、[target]を上面として直方体を配置する。
+@immutable
+class Cube extends _Beam {
   // ignore: unused_field
   static final _logger = Logger('Cube');
 
-  final String origin;
-  final String target;
   final Vector3 scale;
-  final bool fill;
 
   const Cube({
-    required this.origin,
-    this.target = '',
+    required super.origin,
+    super.target = '',
     this.scale = Vector3.one,
-    this.fill = true,
+    super.fill = true,
   });
 
-  /// メッシュデータ拡縮
-  ///
-  /// ここでは単に拡縮するだけだが、図形によっては（面取りした直方体とか）カスタマイズできるかもしれない。
-  @protected
-  MeshData scaleMeshData({
-    required final MeshData data,
-    required final Vector3 scale,
-  }) =>
-      data.transformed(Matrix4.fromScale(scale));
-
-  /// メッシュデータ生成の下請け
-  ///
-  /// [origin]の原点位置に置かれた[data]を[target]に向け回転、拡縮し、[root]空間に頂点・法線変換した
-  /// メッシュデータを返す。
-  @protected
-  List<MeshData> makeMeshData({
-    required final Node root,
-    required final MeshData data,
-  }) {
-    final origin_ = root.find(path: origin)!.matrix;
-    if (target.isNotEmpty) {
-      // targetのroot空間からの変換行列を、origin空間にローカライズする。
-      final target_ = origin_.inverted() * root.find(path: target)!.matrix;
-      // モデルの上面をtargetの原点に向ける。
-      final rotation = Matrix4.fromForwardTargetRotation(
-        forward: Vector3.unitY,
-        target: target_.translation,
-      );
-      // fillの場合、モデルをorigin原点からtarget原点までに拡縮する。
-      var scale_ = scale;
-      if (fill) {
-        final length = target_.translation.length;
-        scale_ = Vector3(scale.x, length, scale.z);
-      }
-      // モデルをスケールし、targetに向けて回転させ、root空間に変換する。
-      final data_ = scaleMeshData(data: data, scale: scale_);
-      return <MeshData>[data_.transformed(origin_ * rotation)];
-    } else {
-      // targetが省略されたらoriginの原点からroot空間に変換する。
-      final data_ = scaleMeshData(data: data, scale: scale);
-      return <MeshData>[data_.transformed(origin_)];
-    }
-  }
-
   @override
-  List<MeshData> toMeshData({required final Node root}) {
-    return makeMeshData(root: root, data: _cubeMeshData);
-  }
+  MeshData get data => _cubeMeshData.transformed(Matrix4.fromScale(scale));
 
 //<editor-fold desc="Data Methods">
 
@@ -198,7 +201,6 @@ class Cube extends Shape {
 // 正八面体メッシュデータ
 //
 // (-0.5,0,-0.5)-(0.5,1,0.5)
-
 //<editor-fold>
 
 const _octahedronVertices = <Vector3>[
@@ -262,41 +264,27 @@ const _octahedronMeshData = MeshData(
 
 /// ピン
 ///
-/// [origin]を始端(底面)中心、[target]を終端(上面)として八面体のピンを生成する。
-class Pin extends Cube {
+/// [origin]を始端(底面)中心、[target]を終端(上面)として八面体のピンを配置する。
+@immutable
+class Pin extends _Beam {
   // ignore: unused_field
   static final _logger = Logger('Pin');
 
   const Pin({
     required super.origin,
     super.target = '',
-    super.scale = Vector3.one,
-    super.fill = true,
-  });
+  }) : super(fill: true);
 
-  // ピンの半径は長さに比例するようにする
   @override
-  MeshData scaleMeshData({
+  MeshData get data => _octahedronMeshData;
+
+  /// ピンの半径は長さに比例する。
+  @override
+  MeshData _fillMeshData({
     required final MeshData data,
-    required final Vector3 scale,
+    required final double length,
   }) =>
-      data.transformed(Matrix4.fromScale(
-        Vector3(scale.y * 0.25, scale.y, scale.y * 0.25),
-      ));
-
-  @override
-  List<MeshData> toMeshData({required final Node root}) {
-    final vertices = _octahedronVertices
-        .map((it) => Vector3(it.x, it.y == 0.5 ? 0.25 : it.y, it.z))
-        .toList(growable: false);
-    return makeMeshData(
-      root: root,
-      data: MeshData(
-        vertices: vertices,
-        faces: _octahedronFaces,
-      ),
-    );
-  }
+      data.transformed(Matrix4.fromScale(const Vector3(0.25, 1, 0.25) * length));
 
 //<editor-fold desc="Data Methods">
 
@@ -306,29 +294,23 @@ class Pin extends Cube {
       (other is Pin &&
           runtimeType == other.runtimeType &&
           origin == other.origin &&
-          target == other.target &&
-          scale == other.scale &&
-          fill == other.fill);
+          target == other.target);
 
   @override
-  int get hashCode => origin.hashCode ^ target.hashCode ^ scale.hashCode ^ fill.hashCode;
+  int get hashCode => origin.hashCode ^ target.hashCode;
 
   @override
   String toString() {
-    return 'Pin{ origin: $origin, target: $target, scale: $scale, fill: $fill}';
+    return 'Pin{ origin: $origin, target: $target}';
   }
 
   Pin copyWith({
     String? origin,
     String? target,
-    Vector3? scale,
-    bool? fill,
   }) {
     return Pin(
       origin: origin ?? this.origin,
       target: target ?? this.target,
-      scale: scale ?? this.scale,
-      fill: fill ?? this.fill,
     );
   }
 
@@ -337,24 +319,76 @@ class Pin extends Cube {
 
 /// メッシュデータ
 ///
-/// [root]空間における[origin]の原点に、[data]の(0,0,0)を置く。
-class Mesh extends Cube {
+/// [origin]を軸線始端、[target]を終端としてメッシュデータを配置する。
+@immutable
+class Mesh extends _Beam {
   // ignore: unused_field
   static final _logger = Logger('Mesh');
 
-  final MeshData data;
+  final MeshData _data;
 
   const Mesh({
     required super.origin,
     super.target = '',
-    super.scale = Vector3.one,
     super.fill = false,
-    required this.data,
-  });
+    required MeshData data,
+  }) : _data = data;
 
   @override
-  List<MeshData> toMeshData({required final Node root}) {
-    return makeMeshData(root: root, data: data);
+  MeshData get data => _data;
+}
+
+/// 回転体メッシュデータ生成
+abstract class _SorBuilder {
+  static final logger = Logger('_SorBuilder');
+
+  final int division;
+  final bool smooth;
+  final bool reverse;
+
+  const _SorBuilder({
+    required this.division,
+    required this.smooth,
+    required this.reverse,
+  });
+
+  /// 緯線頂点を生成する。
+  @protected
+  List<Vector3> makeLatitudeVertices({
+    required int index,
+  });
+
+  @protected
+  MeshData build() {
+    // 頂点生成
+    final vertices = <Vector3>[];
+    vertices.addAll(makeLatitudeVertices(index: 0));
+    final n = vertices.length;
+    for (int i = 1; i < division; ++i) {
+      final ridge = makeLatitudeVertices(index: i);
+      assert(ridge.length == n);
+      vertices.addAll(ridge);
+    }
+    // 面生成
+    final faces = <MeshFace>[];
+    void addFaces(final int j0, final int j1) {
+      for (int i = 0; i < n - 1; ++i) {
+        faces.add(<MeshVertex>[
+          MeshVertex(j0 + i, -1, -1),
+          MeshVertex(j1 + i, -1, -1),
+          MeshVertex(j1 + i + 1, -1, -1),
+          MeshVertex(j0 + i + 1, -1, -1),
+        ]);
+      }
+    }
+
+    int i = 0;
+    for (; i < division - 1; ++i) {
+      addFaces(i * n, (i + 1) * n);
+    }
+    addFaces(i * n, 0);
+    final data = MeshData(vertices: vertices, faces: faces, smooth: smooth);
+    return reverse ? data.reversed() : data;
   }
 }
 
