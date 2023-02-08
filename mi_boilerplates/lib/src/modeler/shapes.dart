@@ -693,7 +693,7 @@ class BoxBuilder extends _RadiataBuilder {
 
     // (0.0, 0.0)-(1.0, 1.0)
     Vector3 iToXz(final int index) {
-      int i = index;
+      int i = circleDivision - index;
       if (i <= widthDivision) {
         return Vector3(i.toDouble() / widthDivision, 0.0, 0.0).also((it) {
           _logger.fine('index=$index result=$it');
