@@ -36,6 +36,9 @@ abstract class _Beam extends Shape {
     this.fill = true,
   });
 
+  /// 原型となるメッシュデータ
+  ///
+  /// 生成は高価かもしれない。
   MeshData get data;
 
   /// メッシュデータを[origin]から[target]まで延長
@@ -395,7 +398,7 @@ abstract class _SorBuilder {
   }
 }
 
-/// 回転体メッシュデータ生成の基底クラス
+/// 回転体メッシュデータ生成
 @immutable
 class SorBuilder extends _SorBuilder {
   // ignore: unused_field
@@ -460,6 +463,7 @@ class DomeEnd extends EndShape {
 /// 円筒
 ///
 /// [origin]を軸線の始点、[target]を終点として円筒を生成する。
+/// todo: TubeBuilderとかにした方がよいかも
 class Tube extends _Beam {
   final double beginRadius;
   final double endRadius;
