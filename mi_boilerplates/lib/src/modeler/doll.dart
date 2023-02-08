@@ -265,7 +265,6 @@ class HumanRig {
     if (footMesh != null) {
       buffer['rFoot'] = makeMesh(root: root, origin: rAnkle, data: footMesh!);
     }
-    // todo:foot
     // 左下肢
     buffer['lThigh'] = makeTube(
       root: root,

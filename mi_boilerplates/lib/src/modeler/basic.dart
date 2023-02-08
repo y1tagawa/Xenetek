@@ -392,7 +392,8 @@ class Node {
     required dynamic path,
     required Node child,
   }) {
-    return _add(path: toPath(path), child: child);
+    final path_ = toPath(path);
+    return _add(path: path_, child: child);
   }
 
 //TODO: 必要ならremove
@@ -438,6 +439,9 @@ class Node {
     required Matrix4 matrix,
   }) {
     final path_ = toPath(path);
+    if (path_.isEmpty) {
+      return Node(matrix: matrix, children: children);
+    }
     final node = find(path: path_)!.node;
     return add(
       path: path_,
@@ -451,6 +455,9 @@ class Node {
     required Matrix4 matrix,
   }) {
     final path_ = toPath(path);
+    if (path_.isEmpty) {
+      return Node(matrix: this.matrix * matrix, children: children);
+    }
     final node = find(path: path_)!.node;
     return add(
       path: path_,

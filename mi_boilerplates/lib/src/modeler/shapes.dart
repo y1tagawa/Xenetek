@@ -346,7 +346,7 @@ class Mesh extends _Beam {
 /// 回転体メッシュデータ生成の基底クラス
 abstract class _SorBuilder {
   // ignore: unused_field
-  static final logger = Logger('_SorBuilder');
+  static final _logger = Logger('_SorBuilder');
 
   final int circleDivision;
   final bool smooth;
@@ -366,14 +366,16 @@ abstract class _SorBuilder {
 
   @protected
   MeshData build() {
+    assert(circleDivision >= 1);
     // 頂点生成
     final vertices = <Vector3>[];
     vertices.addAll(makeEdgeVertices(index: 0));
     final n = vertices.length;
+    assert(n >= 2);
     for (int i = 1; i < circleDivision; ++i) {
-      final ridge = makeEdgeVertices(index: i);
-      assert(ridge.length == n);
-      vertices.addAll(ridge);
+      final edge = makeEdgeVertices(index: i);
+      assert(edge.length == n);
+      vertices.addAll(edge);
     }
     // 面生成
     final faces = <MeshFace>[];
@@ -402,7 +404,7 @@ abstract class _SorBuilder {
 @immutable
 class SorBuilder extends _SorBuilder {
   // ignore: unused_field
-  static final logger = Logger('_SorBuilder');
+  static final _logger = Logger('SorBuilder');
 
   final List<Vector3> vertices;
   final Vector3 axis;
@@ -417,15 +419,15 @@ class SorBuilder extends _SorBuilder {
 
   @override
   List<Vector3> makeEdgeVertices({required int index}) {
-    final vertices = <Vector3>[];
+    final vertices_ = <Vector3>[];
     final matrix = Matrix4.fromAxisAngleRotation(
       axis: axis,
       radians: index * 2.0 * math.pi / circleDivision,
     );
     for (final vertex in vertices) {
-      vertices.add(vertex.transformed(matrix));
+      vertices_.add(vertex.transformed(matrix));
     }
-    return vertices;
+    return vertices_;
   }
 }
 
