@@ -155,12 +155,6 @@ Future<void> _setup(StringSink sink) async {
 
   // ポージング
   root = root
-      .transform(
-        matrix: mi.Matrix4.fromAxisAngleRotation(
-          axis: mi.Vector3.unitY,
-          degrees: 180,
-        ),
-      )
       .bendNeck(degrees: 10)
       .twistNeck(degrees: 30)
       //

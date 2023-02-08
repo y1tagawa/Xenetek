@@ -41,6 +41,9 @@ abstract class _Beam extends Shape {
   /// 生成は高価かもしれない。
   MeshData get data;
 
+  /// メッシュデータの軸線
+  Vector3 get axis;
+
   /// メッシュデータを[origin]から[target]まで延長
   ///
   /// 基底では単にY軸に沿って拡縮するだけなので、必要に応じてカスタマイズする。
@@ -166,6 +169,9 @@ class Cube extends _Beam {
   @override
   MeshData get data => _cubeMeshData.transformed(Matrix4.fromScale(scale));
 
+  @override
+  Vector3 get axis => Vector3.unitY;
+
 //<editor-fold desc="Data Methods">
 
   @override
@@ -283,6 +289,9 @@ class Pin extends _Beam {
   @override
   MeshData get data => _octahedronMeshData;
 
+  @override
+  Vector3 get axis => Vector3.unitY;
+
   /// ピンの半径は長さに比例する。
   @override
   MeshData _fillMeshData({
@@ -331,20 +340,26 @@ class Mesh extends _Beam {
   static final _logger = Logger('Mesh');
 
   final MeshData _data;
+  final Vector3 _axis;
 
   const Mesh({
     required super.origin,
     super.target = '',
     super.fill = false,
     required MeshData data,
-  }) : _data = data;
+    Vector3 axis = Vector3.unitY,
+  })  : _data = data,
+        _axis = axis;
 
   @override
   MeshData get data => _data;
+
+  @override
+  Vector3 get axis => _axis;
 }
 
-/// 回転体メッシュデータ生成の基底クラス
-abstract class _SorBuilder {
+/// 放射相称メッシュビルダ基底クラス
+abstract class _RadiataBuilder {
   // ignore: unused_field
   static final _logger = Logger('_SorBuilder');
 
@@ -352,7 +367,7 @@ abstract class _SorBuilder {
   final bool smooth;
   final bool reverse;
 
-  const _SorBuilder({
+  const _RadiataBuilder({
     required this.circleDivision,
     this.smooth = true,
     this.reverse = false,
@@ -400,22 +415,20 @@ abstract class _SorBuilder {
   }
 }
 
-/// 回転体メッシュデータ生成
+/// 回転体メッシュビルダ基底クラス
 @immutable
-class SorBuilder extends _SorBuilder {
+abstract class _SorBuilder extends _RadiataBuilder {
   // ignore: unused_field
   static final _logger = Logger('SorBuilder');
 
-  final List<Vector3> vertices;
-  final Vector3 axis;
-
-  const SorBuilder({
-    required this.vertices,
-    this.axis = Vector3.unitY,
+  const _SorBuilder({
     super.circleDivision = 12,
     super.smooth = true,
     super.reverse = false,
   });
+
+  List<Vector3> get vertices;
+  Vector3 get axis;
 
   @override
   List<Vector3> makeEdgeVertices({required int index}) {
@@ -429,6 +442,31 @@ class SorBuilder extends _SorBuilder {
     }
     return vertices_;
   }
+}
+
+/// 回転体メッシュビルダ基底クラス
+@immutable
+class SorBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('SorBuilder');
+
+  final List<Vector3> _vertices;
+  final Vector3 _axis;
+
+  const SorBuilder({
+    required List<Vector3> vertices,
+    Vector3 axis = Vector3.unitY,
+    super.circleDivision = 12,
+    super.smooth = true,
+    super.reverse = false,
+  })  : _vertices = vertices,
+        _axis = axis;
+
+  @override
+  List<Vector3> get vertices => _vertices;
+
+  @override
+  Vector3 get axis => _axis;
 }
 
 // 円筒などの末端形状
@@ -462,38 +500,31 @@ class DomeEnd extends EndShape {
   const DomeEnd({this.height = double.infinity, this.division = 4});
 }
 
-/// 円筒
-///
-/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
-/// todo: TubeBuilderとかにした方がよいかも
-class Tube extends _Beam {
+/// 円筒メッシュビルダ
+class TubeBuilder extends _SorBuilder {
+  final Vector3 _axis;
   final double beginRadius;
   final double endRadius;
   final double height;
-  final int circleDivision;
   final int heightDivision;
   final EndShape beginShape;
   final EndShape endShape;
-  final bool smooth;
-  final bool reverse;
 
-  const Tube({
-    required super.origin,
-    super.target = '',
-    super.fill = true,
+  const TubeBuilder({
+    Vector3 axis = Vector3.unitY,
     this.beginRadius = 0.5,
     this.endRadius = 0.5,
     this.height = 1.0,
-    this.circleDivision = 12,
+    super.circleDivision = 12,
     this.heightDivision = 1,
     this.beginShape = const OpenEnd(),
     this.endShape = const OpenEnd(),
-    this.smooth = true,
-    this.reverse = false,
-  });
+    super.smooth = true,
+    super.reverse = false,
+  }) : _axis = axis;
 
   @override
-  MeshData get data {
+  List<Vector3> get vertices {
     assert(circleDivision >= 3);
     assert(heightDivision >= 1);
 
@@ -551,14 +582,61 @@ class Tube extends _Beam {
       default: // OpenEnd
         break;
     }
+    return vertices;
+  }
 
-    return SorBuilder(
-      vertices: vertices,
+  @override
+  // TODO: implement axis
+  Vector3 get axis => _axis;
+}
+
+/// 円筒
+///
+/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
+class Tube extends _Beam {
+  final double beginRadius;
+  final double endRadius;
+  final double height;
+  final int circleDivision;
+  final int heightDivision;
+  final EndShape beginShape;
+  final EndShape endShape;
+  final bool smooth;
+  final bool reverse;
+
+  const Tube({
+    required super.origin,
+    super.target = '',
+    super.fill = true,
+    this.beginRadius = 0.5,
+    this.endRadius = 0.5,
+    this.height = 1.0,
+    this.circleDivision = 12,
+    this.heightDivision = 1,
+    this.beginShape = const OpenEnd(),
+    this.endShape = const OpenEnd(),
+    this.smooth = true,
+    this.reverse = false,
+  });
+
+  @override
+  MeshData get data {
+    return TubeBuilder(
+      axis: axis,
+      beginRadius: beginRadius,
+      endRadius: endRadius,
+      height: height,
       circleDivision: circleDivision,
+      heightDivision: heightDivision,
+      beginShape: beginShape,
+      endShape: endShape,
       smooth: smooth,
       reverse: reverse,
     ).build();
   }
+
+  @override
+  Vector3 get axis => Vector3.unitY;
 }
 
 /// 積み上げ式円筒メッシュデータ生成
