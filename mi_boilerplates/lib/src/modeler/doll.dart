@@ -213,6 +213,28 @@ class HumanRig {
   }
 
   @protected
+  List<MeshData> makeBox({
+    required Node root,
+    required String origin,
+    required String target,
+  }) {
+    return Box(
+      origin: origin,
+      target: target,
+      beginRect: math.Rectangle<double>(
+        -shoulderPosition.x,
+        scPosition.z,
+        shoulderPosition.x * 2.0,
+        -scPosition.z,
+      ),
+      height: chestLength,
+      widthDivision: 1,
+      heightDivision: 1,
+      depthDivision: 1,
+    ).toMeshData(root: root);
+  }
+
+  @protected
   List<MeshData> makeMesh({
     required Node root,
     required String origin,
@@ -235,7 +257,12 @@ class HumanRig {
     final buffer = <String, List<MeshData>>{};
     // 胴体・頭
     buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
-    buffer['chest'] = makePin(root: root, origin: chest, target: neck);
+    //buffer['chest'] = makePin(root: root, origin: chest, target: neck);
+    buffer['chest'] = makeBox(
+      root: root,
+      origin: chest,
+      target: neck,
+    );
     buffer['neck'] = makeTube(
       root: root,
       origin: neck,

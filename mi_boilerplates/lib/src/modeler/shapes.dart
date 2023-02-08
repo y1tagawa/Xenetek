@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'basic.dart';
 
@@ -347,7 +348,7 @@ class Mesh extends _Beam {
     super.target = '',
     super.fill = false,
     required MeshData data,
-    Vector3 axis = Vector3.unitY,
+    final Vector3 axis = Vector3.unitY,
   })  : _data = data,
         _axis = axis;
 
@@ -359,29 +360,28 @@ class Mesh extends _Beam {
 }
 
 /// 放射相称メッシュビルダ基底クラス
+@immutable
 abstract class _RadiataBuilder {
   // ignore: unused_field
-  static final _logger = Logger('_SorBuilder');
+  static final _logger = Logger('_RadiataBuilder');
 
-  final int circleDivision;
   final bool smooth;
   final bool reverse;
 
   const _RadiataBuilder({
-    required this.circleDivision,
     this.smooth = true,
     this.reverse = false,
   });
 
-  /// 稜線頂点を生成する。
-  @protected
-  List<Vector3> makeEdgeVertices({
-    required int index,
-  });
+  /// 周囲の分割数
+  int get circleDivision;
 
-  @protected
+  /// 稜線頂点を生成する。
+  List<Vector3> makeEdgeVertices({required final int index});
+
+  /// メッシュデータ生成
   MeshData build() {
-    assert(circleDivision >= 1);
+    assert(circleDivision >= 2);
     // 頂点生成
     final vertices = <Vector3>[];
     vertices.addAll(makeEdgeVertices(index: 0));
@@ -419,19 +419,27 @@ abstract class _RadiataBuilder {
 @immutable
 abstract class _SorBuilder extends _RadiataBuilder {
   // ignore: unused_field
-  static final _logger = Logger('SorBuilder');
+  static final _logger = Logger('_SorBuilder');
+
+  final int _circleDivision;
 
   const _SorBuilder({
-    super.circleDivision = 12,
+    final int circleDivision = 12,
     super.smooth = true,
     super.reverse = false,
-  });
+  }) : _circleDivision = circleDivision;
 
+  /// 母線頂点
   List<Vector3> get vertices;
+
+  /// 回転軸
   Vector3 get axis;
 
   @override
-  List<Vector3> makeEdgeVertices({required int index}) {
+  int get circleDivision => _circleDivision;
+
+  @override
+  List<Vector3> makeEdgeVertices({required final int index}) {
     final vertices_ = <Vector3>[];
     final matrix = Matrix4.fromAxisAngleRotation(
       axis: axis,
@@ -444,7 +452,7 @@ abstract class _SorBuilder extends _RadiataBuilder {
   }
 }
 
-/// 回転体メッシュビルダ基底クラス
+/// 回転体メッシュビルダ
 @immutable
 class SorBuilder extends _SorBuilder {
   // ignore: unused_field
@@ -502,6 +510,9 @@ class DomeEnd extends EndShape {
 
 /// 円筒メッシュビルダ
 class TubeBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('TubeBuilder');
+
   final Vector3 _axis;
   final double beginRadius;
   final double endRadius;
@@ -586,7 +597,6 @@ class TubeBuilder extends _SorBuilder {
   }
 
   @override
-  // TODO: implement axis
   Vector3 get axis => _axis;
 }
 
@@ -594,8 +604,11 @@ class TubeBuilder extends _SorBuilder {
 ///
 /// [origin]を軸線の始点、[target]を終点として円筒を生成する。
 class Tube extends _Beam {
+  // ignore: unused_field
+  static final _logger = Logger('Tube');
+
   final double beginRadius;
-  final double endRadius;
+  final double? endRadius;
   final double height;
   final int circleDivision;
   final int heightDivision;
@@ -609,7 +622,7 @@ class Tube extends _Beam {
     super.target = '',
     super.fill = true,
     this.beginRadius = 0.5,
-    this.endRadius = 0.5,
+    this.endRadius,
     this.height = 1.0,
     this.circleDivision = 12,
     this.heightDivision = 1,
@@ -624,10 +637,163 @@ class Tube extends _Beam {
     return TubeBuilder(
       axis: axis,
       beginRadius: beginRadius,
-      endRadius: endRadius,
+      endRadius: endRadius ?? beginRadius,
       height: height,
       circleDivision: circleDivision,
       heightDivision: heightDivision,
+      beginShape: beginShape,
+      endShape: endShape,
+      smooth: smooth,
+      reverse: reverse,
+    ).build();
+  }
+
+  @override
+  Vector3 get axis => Vector3.unitY;
+}
+
+/// 箱メッシュビルダ
+@immutable
+class BoxBuilder extends _RadiataBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('BoxBuilder');
+
+  final math.Rectangle<double> beginRect;
+  final math.Rectangle<double>? endRect;
+  final double height;
+  final int widthDivision;
+  final int heightDivision;
+  final int depthDivision;
+  final EndShape beginShape;
+  final EndShape endShape;
+
+  const BoxBuilder({
+    this.beginRect = const math.Rectangle<double>(-0.5, -0.5, 1.0, 1.0),
+    this.endRect,
+    this.height = 1.0,
+    this.widthDivision = 1,
+    this.heightDivision = 1,
+    this.depthDivision = 1,
+    this.beginShape = const FlatEnd(),
+    this.endShape = const FlatEnd(),
+    super.smooth = true,
+    super.reverse = false,
+  });
+
+  @override
+  int get circleDivision => ((widthDivision + depthDivision) * 2).also((it) {
+        _logger.fine('circleDivision=$it');
+      });
+
+  @override
+  List<Vector3> makeEdgeVertices({required final int index}) {
+    assert(widthDivision >= 1);
+    assert(heightDivision >= 1);
+    assert(depthDivision >= 1);
+
+    // (0.0, 0.0)-(1.0, 1.0)
+    Vector3 iToXz(final int index) {
+      int i = index;
+      if (i <= widthDivision) {
+        return Vector3(i.toDouble() / widthDivision, 0.0, 0.0).also((it) {
+          _logger.fine('index=$index result=$it');
+        });
+      }
+      i -= widthDivision;
+      if (i <= depthDivision) {
+        return Vector3(1.0, 0.0, i.toDouble() / depthDivision).also((it) {
+          _logger.fine('index=$index result=$it');
+        });
+      }
+      i -= depthDivision;
+      if (i <= widthDivision) {
+        return Vector3((widthDivision - i).toDouble() / widthDivision, 0.0, 1.0).also((it) {
+          _logger.fine('index=$index result=$it');
+        });
+      }
+      i -= widthDivision;
+      return Vector3(0.0, 0.0, (depthDivision - i).toDouble() / depthDivision).also((it) {
+        _logger.fine('index=$index result=$it');
+      });
+    }
+
+    // 断面
+    math.Rectangle<double> yToRect(final double y) {
+      final endRect_ = endRect ?? beginRect;
+      return math.Rectangle<double>(
+        y * (endRect_.left - beginRect.left) + beginRect.left,
+        y * (endRect_.top - beginRect.top) + beginRect.top,
+        y * (endRect_.width - beginRect.width) + beginRect.width,
+        y * (endRect_.height - beginRect.height) + beginRect.height,
+      ).also((it) {
+        _logger.fine('y=$y result=$it');
+      });
+    }
+
+    final vertices = <Vector3>[];
+    // todo: beginShape
+    // 側面
+    final xz = iToXz(index);
+    for (int h = 0; h <= heightDivision; ++h) {
+      final y = h.toDouble() / heightDivision;
+      final rect = yToRect(y);
+      vertices.add(
+        Vector3(
+          xz.x * rect.width + rect.left,
+          y * height,
+          xz.z * rect.height + rect.top,
+        ).also((it) {
+          _logger.fine('xz=$xz rect=$rect');
+          _logger.fine('p=$it');
+        }),
+      );
+    }
+    // todo: endShape
+
+    return vertices;
+  }
+}
+
+/// 箱
+///
+/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
+class Box extends _Beam {
+  final math.Rectangle<double> beginRect;
+  final math.Rectangle<double>? endRect;
+  final double height;
+  final int widthDivision;
+  final int heightDivision;
+  final int depthDivision;
+  final EndShape beginShape;
+  final EndShape endShape;
+  final bool smooth;
+  final bool reverse;
+
+  const Box({
+    required super.origin,
+    super.target = '',
+    super.fill = true,
+    this.beginRect = const math.Rectangle<double>(-0.5, -0.5, 1.0, 1.0),
+    this.endRect,
+    this.height = 1.0,
+    this.widthDivision = 1,
+    this.heightDivision = 1,
+    this.depthDivision = 1,
+    this.beginShape = const FlatEnd(),
+    this.endShape = const FlatEnd(),
+    this.smooth = false,
+    this.reverse = false,
+  });
+
+  @override
+  MeshData get data {
+    return BoxBuilder(
+      beginRect: beginRect,
+      endRect: endRect ?? beginRect,
+      height: height,
+      widthDivision: widthDivision,
+      heightDivision: heightDivision,
+      depthDivision: depthDivision,
       beginShape: beginShape,
       endShape: endShape,
       smooth: smooth,
