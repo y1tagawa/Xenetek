@@ -9,7 +9,6 @@ import 'package:logging/logging.dart';
 
 import 'basic.dart';
 import 'shapes.dart';
-import 'sor.dart';
 
 // スクリプト的ドール(mk1)モデラ
 

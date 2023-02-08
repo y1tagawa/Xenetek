@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
@@ -317,7 +319,7 @@ class Pin extends _Beam {
 //</editor-fold>
 }
 
-/// メッシュデータ
+/// メッシュ
 ///
 /// [origin]を軸線始端、[target]を終端としてメッシュデータを配置する。
 @immutable
@@ -338,23 +340,24 @@ class Mesh extends _Beam {
   MeshData get data => _data;
 }
 
-/// 回転体メッシュデータ生成
+/// 回転体メッシュデータ生成の基底クラス
 abstract class _SorBuilder {
+  // ignore: unused_field
   static final logger = Logger('_SorBuilder');
 
-  final int division;
+  final int circleDivision;
   final bool smooth;
   final bool reverse;
 
   const _SorBuilder({
-    required this.division,
-    required this.smooth,
-    required this.reverse,
+    required this.circleDivision,
+    this.smooth = true,
+    this.reverse = false,
   });
 
-  /// 緯線頂点を生成する。
+  /// 稜線頂点を生成する。
   @protected
-  List<Vector3> makeLatitudeVertices({
+  List<Vector3> makeEdgeVertices({
     required int index,
   });
 
@@ -362,10 +365,10 @@ abstract class _SorBuilder {
   MeshData build() {
     // 頂点生成
     final vertices = <Vector3>[];
-    vertices.addAll(makeLatitudeVertices(index: 0));
+    vertices.addAll(makeEdgeVertices(index: 0));
     final n = vertices.length;
-    for (int i = 1; i < division; ++i) {
-      final ridge = makeLatitudeVertices(index: i);
+    for (int i = 1; i < circleDivision; ++i) {
+      final ridge = makeEdgeVertices(index: i);
       assert(ridge.length == n);
       vertices.addAll(ridge);
     }
@@ -383,12 +386,172 @@ abstract class _SorBuilder {
     }
 
     int i = 0;
-    for (; i < division - 1; ++i) {
+    for (; i < circleDivision - 1; ++i) {
       addFaces(i * n, (i + 1) * n);
     }
     addFaces(i * n, 0);
     final data = MeshData(vertices: vertices, faces: faces, smooth: smooth);
     return reverse ? data.reversed() : data;
+  }
+}
+
+/// 回転体メッシュデータ生成の基底クラス
+@immutable
+class SorBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final logger = Logger('_SorBuilder');
+
+  final List<Vector3> vertices;
+  final Vector3 axis;
+
+  const SorBuilder({
+    required this.vertices,
+    this.axis = Vector3.unitY,
+    super.circleDivision = 12,
+    super.smooth = true,
+    super.reverse = false,
+  });
+
+  @override
+  List<Vector3> makeEdgeVertices({required int index}) {
+    final vertices = <Vector3>[];
+    final matrix = Matrix4.fromAxisAngleRotation(
+      axis: axis,
+      radians: index * 2.0 * math.pi / circleDivision,
+    );
+    for (final vertex in vertices) {
+      vertices.add(vertex.transformed(matrix));
+    }
+    return vertices;
+  }
+}
+
+// 円筒などの末端形状
+
+/// 末端形状の基底クラス
+abstract class EndShape {
+  const EndShape();
+}
+
+/// 開
+class OpenEnd extends EndShape {
+  const OpenEnd();
+}
+
+/// 錐
+class ConeEnd extends EndShape {
+  final double height;
+  final int division;
+  const ConeEnd({this.height = double.infinity, this.division = 1});
+}
+
+/// 閉
+class FlatEnd extends ConeEnd {
+  const FlatEnd({super.division = 1}) : super(height: 0.0);
+}
+
+/// 曲面
+class DomeEnd extends EndShape {
+  final double height;
+  final int division;
+  const DomeEnd({this.height = double.infinity, this.division = 4});
+}
+
+/// 円筒
+///
+/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
+class Tube extends _Beam {
+  final double beginRadius;
+  final double endRadius;
+  final double height;
+  final int circleDivision;
+  final int heightDivision;
+  final EndShape beginShape;
+  final EndShape endShape;
+  final bool smooth;
+  final bool reverse;
+
+  const Tube({
+    required super.origin,
+    super.target = '',
+    super.fill = true,
+    this.beginRadius = 0.5,
+    this.endRadius = 0.5,
+    this.height = 1.0,
+    this.circleDivision = 12,
+    this.heightDivision = 1,
+    this.beginShape = const OpenEnd(),
+    this.endShape = const OpenEnd(),
+    this.smooth = true,
+    this.reverse = false,
+  });
+
+  @override
+  MeshData get data {
+    assert(circleDivision >= 3);
+    assert(heightDivision >= 1);
+
+    // 母線頂点生成
+    final vertices = <Vector3>[];
+    //　始端
+    switch (beginShape.runtimeType) {
+      case ConeEnd:
+      case FlatEnd:
+        final coneEnd = beginShape as ConeEnd;
+        final coneHeight = coneEnd.height == double.infinity ? beginRadius : coneEnd.height;
+        for (int i = 0; i < coneEnd.division; ++i) {
+          final t = i.toDouble() / coneEnd.division;
+          vertices.add(Vector3(t * beginRadius, (1.0 - t) * -coneHeight, 0.0));
+        }
+        break;
+      case DomeEnd:
+        final domeEnd = beginShape as DomeEnd;
+        final domeHeight = domeEnd.height == double.infinity ? beginRadius : domeEnd.height;
+        for (int i = 0; i < domeEnd.division; ++i) {
+          final t = i.toDouble() / domeEnd.division;
+          final a = (1.0 - t) * math.pi * 0.5;
+          vertices.add(Vector3(math.cos(a) * beginRadius, math.sin(a) * -domeHeight, 0.0));
+        }
+        break;
+      default: // OpenEnd
+        break;
+    }
+    // 胴
+    for (int i = 0; i < heightDivision; ++i) {
+      final t = i.toDouble() / heightDivision;
+      vertices.add(Vector3((endRadius - beginRadius) * t + beginRadius, t * height, 0.0));
+    }
+    vertices.add(Vector3(endRadius, height, 0.0));
+    // 終端
+    switch (endShape.runtimeType) {
+      case ConeEnd:
+      case FlatEnd:
+        final coneEnd = endShape as ConeEnd;
+        final coneHeight = coneEnd.height == double.infinity ? beginRadius : coneEnd.height;
+        for (int i = 1; i <= coneEnd.division; ++i) {
+          final t = i.toDouble() / coneEnd.division;
+          vertices.add(Vector3((1.0 - t) * endRadius, t * coneHeight + height, 0.0));
+        }
+        break;
+      case DomeEnd:
+        final domeEnd = endShape as DomeEnd;
+        final domeHeight = domeEnd.height == double.infinity ? endRadius : domeEnd.height;
+        for (int i = 1; i <= domeEnd.division; ++i) {
+          final t = i.toDouble() / domeEnd.division;
+          final a = t * math.pi * 0.5;
+          vertices.add(Vector3(math.cos(a) * endRadius, math.sin(a) * domeHeight + height, 0.0));
+        }
+        break;
+      default: // OpenEnd
+        break;
+    }
+
+    return SorBuilder(
+      vertices: vertices,
+      circleDivision: circleDivision,
+      smooth: smooth,
+      reverse: reverse,
+    ).build();
   }
 }
 
