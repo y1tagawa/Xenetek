@@ -527,21 +527,21 @@ class Node {
 //</editor-fold>
 }
 
-// 試作: bend
-List<Matrix4> _makeBend(Matrix4 matrix, int segment) {
-  assert(segment > 1);
-  final rotation = vm.Quaternion.fromRotation(matrix.toVmMatrix().getRotation());
-  final axis = Vector3.fromVmVector(rotation.axis);
-  final r1 = rotation.radians / segment;
-  final t1 = matrix.translation * (1.0 / segment);
-  final matrices = <Matrix4>[];
-  for (int i = 0; i < segment; ++i) {
-    matrices.add(
-      Matrix4.fromTranslation(t1) * Matrix4.fromAxisAngleRotation(axis: axis, radians: r1),
-    );
-  }
-  return matrices;
-}
+// // 試作: bend
+// List<Matrix4> _makeBend(Matrix4 matrix, int segment) {
+//   assert(segment > 1);
+//   final rotation = vm.Quaternion.fromRotation(matrix.toVmMatrix().getRotation());
+//   final axis = Vector3.fromVmVector(rotation.axis);
+//   final r1 = rotation.radians / segment;
+//   final t1 = matrix.translation * (1.0 / segment);
+//   final matrices = <Matrix4>[];
+//   for (int i = 0; i < segment; ++i) {
+//     matrices.add(
+//       Matrix4.fromTranslation(t1) * Matrix4.fromAxisAngleRotation(axis: axis, radians: r1),
+//     );
+//   }
+//   return matrices;
+// }
 
 // メッシュデータ
 

@@ -805,6 +805,80 @@ class Box extends _Beam {
   Vector3 get axis => Vector3.unitY;
 }
 
+// /// ボーン
+// class Bone {
+//   final double radius;
+//   final double force;
+//   const Bone({
+//     this.radius = double.maxFinite,
+//     this.force = 1.0,
+//   });
+// }
+//
+// /// スキニング変形
+// class SkinTransformer {
+//   final MeshData data;
+//   final List<Matrix4> originPoints;
+//   final List<Matrix4> targetPoints;
+//   final List<Bone> bones;
+//
+//   const SkinTransformer({
+//     required this.data,
+//     required this.originPoints,
+//     required this.targetPoints,
+//     required this.bones,
+//   });
+//
+//   MeshData build() {
+//     assert(originPoints.length == targetPoints.length);
+//     assert(originPoints.length == bones.length);
+//
+//     // 頂点変形
+//     final vertices = <Vector3>[];
+//     for (final vertex in data.vertices) {
+//       // 試作: 頂点は各originPointsからの距離に
+//
+//       vertices.add(vertex);
+//     }
+//
+//     // TODO: 法線
+//     return data.copyWith(
+//       vertices: vertices,
+//       normals: const <Vector3>[],
+//     );
+//   }
+// }
+//
+// /// スキニング
+// class Skin extends Shape {
+//   final Map<String, Bone> bones;
+//   final MeshData data;
+//   final Node zeroPosition;
+//
+//   const Skin({
+//     required this.bones,
+//     required this.data,
+//     required this.zeroPosition,
+//   });
+//
+//   @override
+//   List<MeshData> toMeshData({required final Node root}) {
+//     // TODO: implement toMeshData
+//     throw UnimplementedError();
+//   }
+// }
+
+/// beam, mesh, skinは統一したい。
+///
+///
+/// mesh: meshDataを外から渡す
+/// beam: origin, target
+/// skin: bone、zeroPosition beamとは排他かな
+/// 統一すればいつでも切り替えられるようにできる。
+
+/// メッシュデータをListや<key, data>{}に統一できないか
+///
+
 /// 積み上げ式円筒メッシュデータ生成
 /// TODO: まずは回転体か
 ///

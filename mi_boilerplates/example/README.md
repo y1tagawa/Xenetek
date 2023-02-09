@@ -45,6 +45,9 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## TODO
 
+* まず
+  * Shape, _Beam, Meshを一つにし、MeshDataと分離する。
+
 * ConsumeStatefulWidgetで、initStateでrefでプロバイダ初期化できるか？（awaitできないから、
   初期値をゲットできないが初期化だけならできそう）
   * 非同期初期化できなきゃ余り意味ないか。FutureProviderがあるし。
