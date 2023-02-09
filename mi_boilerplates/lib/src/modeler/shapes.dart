@@ -6,20 +6,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../scope_functions.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
-
-/// 図形の基底クラス
-@immutable
-abstract class Shape {
-  const Shape();
-
-  /// メッシュデータ生成
-  List<MeshData> toMeshData({required final Node root});
-}
 
 /// 始端終端を持つ図形の基底クラス
 @immutable

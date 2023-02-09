@@ -726,3 +726,68 @@ class MeshData {
 
 //</editor-fold>
 }
+
+/// メッシュの基底クラス：
+///
+/// todo:削除
+@immutable
+abstract class Shape {
+  const Shape();
+
+  /// メッシュデータ生成
+  List<MeshData> toMeshData({required final Node root});
+}
+
+/// デフォルトのビーム変形
+MeshData _nop(
+  MeshData data,
+  Vector3 axis,
+  double length,
+) {
+  return data;
+}
+
+/// メッシュ
+///
+/// 軸線およびスキニングを一個で
+@immutable
+class Mesh_ extends Shape {
+  final MeshData data;
+  // Beam
+  final String origin;
+  final String target;
+  final Vector3 axis;
+  // これはむしろMeshDataの属性かも
+  final MeshData Function(MeshData, Vector3, double) beamTransform;
+  // todo: Skin
+
+  const Mesh_({
+    required this.data,
+    required this.origin,
+    this.target = '',
+    this.axis = Vector3.unitY,
+    this.beamTransform = _nop,
+  });
+
+  /// [origin]の原点位置に置かれた[data]を[target]に向け回転、延長し、
+  /// [root]空間に頂点・法線変換したメッシュデータを返す。
+  @override
+  List<MeshData> toMeshData({required final Node root}) {
+    // origin空間への変換マトリクス
+    final origin_ = root.find(path: origin)!.matrix;
+    if (target.isEmpty) {
+      return <MeshData>[data.transformed(origin_)];
+    }
+    // targetの変換行列を、origin空間にマップする。
+    final target_ = origin_.inverted() * root.find(path: target)!.matrix;
+    // 軸線終点をtargetに向ける。
+    final rotation = Matrix4.fromForwardTargetRotation(
+      forward: Vector3.unitY,
+      target: target_.translation,
+    );
+    // fillの場合、モデルをorigin原点からtarget原点までに延長し...
+    final data_ = beamTransform(data, axis, target_.translation.length);
+    // ...root空間に変換する。
+    return <MeshData>[data_.transformed(origin_ * rotation)];
+  }
+}
