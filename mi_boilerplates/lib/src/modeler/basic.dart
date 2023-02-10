@@ -763,52 +763,19 @@ class Mesh {
   }
 }
 
-//
-abstract class BeamModifierStyle {
-  const BeamModifierStyle();
-
-  MeshData transform({required MeshData data, required double length, required Vector3 axis});
-}
-
-// 向けるだけ
-class BeamModifierRotation extends BeamModifierStyle {
-  const BeamModifierRotation();
-
-  @override
-  MeshData transform({required MeshData data, required double length, required Vector3 axis}) {
-    return data;
-  }
-}
-
-class BeamModifierConnect extends BeamModifierStyle {
-  const BeamModifierConnect();
-
-  @override
-  MeshData transform({required MeshData data, required double length, required Vector3 axis}) {
-    return data.transformed(Matrix4.fromScale(Vector3(1, length, 1)));
-  }
-}
-
-class BeamModifierProportional extends BeamModifierStyle {
-  const BeamModifierProportional();
-
-  @override
-  MeshData transform({required MeshData data, required double length, required Vector3 axis}) {
-    return data.transformed(Matrix4.fromScale(length));
-  }
-}
-
 /// ビームモディファイア
 /// todo: modifiers.dart送り
 class BeamModifier extends MeshModifier {
   final String target;
-  final BeamModifierStyle style;
   final Vector3 axis;
+  final bool connect;
+  final bool proportional;
 
   const BeamModifier({
     required this.target,
-    this.style = const BeamModifierConnect(),
     this.axis = Vector3.unitY,
+    this.connect = false,
+    this.proportional = false,
   });
 
   @override
@@ -822,7 +789,10 @@ class BeamModifier extends MeshModifier {
       forward: Vector3.unitY, // todo: axis
       target: target_.translation,
     );
-    final data_ = style.transform(data: mesh.data, length: target_.translation.length, axis: axis);
-    return data_.transformed(origin_ * rotation);
+    // todo: axis
+    final scaleY = connect ? target_.translation.length : 1.0;
+    final scaleXZ = proportional ? scaleY : 1.0;
+    final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
+    return mesh.data.transformed(origin_ * rotation * scale);
   }
 }

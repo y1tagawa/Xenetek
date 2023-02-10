@@ -6,15 +6,22 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../scope_functions.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
 
-// 立方体メッシュデータ
-//
-// (-0.5,0,-0.5)-(0.5,1,0.5)
+/// メッシュビルダの基底クラス
+abstract class MeshBuilder {
+  const MeshBuilder();
+  MeshData build();
+}
+
+/// 立方体メッシュビルダ
+///
+/// (-0.5,0,-0.5)-(0.5,1,0.5)
 //<editor-fold>
 
 const _cubeVertices = <Vector3>[
@@ -81,6 +88,21 @@ const _cubeMeshData = MeshData(
   normals: _cubeNormals,
   faces: _cubeFaces,
 );
+
+class CubeBuilder extends MeshBuilder {
+  final Vector3 min; //leftBottomFront;
+  final Vector3 max; //leftBottomFront;
+
+  const CubeBuilder({
+    this.min = const Vector3(-0.5, 0, -0.5),
+    this.max = const Vector3(0.5, 1, 0.5),
+  });
+
+  @override
+  MeshData build() {
+    return _cubeMeshData;
+  }
+}
 
 //</editor-fold>
 

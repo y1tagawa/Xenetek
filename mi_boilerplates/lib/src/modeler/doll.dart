@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
-import 'mesh_builders.dart';
+import 'mesh_builder.dart';
 
 // スクリプト的ドール(mk1)モデラ
 
@@ -191,7 +191,8 @@ class HumanRig {
       origin: origin,
       modifier: BeamModifier(
         target: target,
-        style: const BeamModifierProportional(),
+        connect: true,
+        proportional: true,
       ),
       // todo: scale
     ).toMeshData(root: root);
@@ -215,7 +216,10 @@ class HumanRig {
         endShape: const DomeEnd(),
       ).build(),
       origin: origin,
-      modifier: BeamModifier(target: target),
+      modifier: BeamModifier(
+        target: target,
+        connect: true,
+      ),
       // todo: scale
     ).toMeshData(root: root);
   }
@@ -242,6 +246,7 @@ class HumanRig {
       origin: origin,
       modifier: BeamModifier(
         target: target,
+        connect: true,
       ),
     ).toMeshData(root: root);
   }
