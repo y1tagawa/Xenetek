@@ -733,6 +733,7 @@ abstract class MeshModifier {
   MeshData modify({required Mesh mesh, required Node root});
 }
 
+/// 基本のメッシュモディファイア
 class PlaceModifier extends MeshModifier {
   const PlaceModifier();
 
@@ -757,8 +758,8 @@ class Mesh {
     this.modifier = const PlaceModifier(),
   });
 
-  List<MeshData> toMeshData({required final Node root}) {
-    return [modifier.modify(mesh: this, root: root)];
+  MeshData toMeshData({required final Node root}) {
+    return modifier.modify(mesh: this, root: root);
   }
 }
 

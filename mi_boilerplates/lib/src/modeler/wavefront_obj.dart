@@ -98,7 +98,7 @@ extension MeshDataHelper on MeshData {
 }
 
 /// メッシュデータアレイ
-extension MeshDataArrayHelper on Map<String, List<MeshData>> {
+extension MeshDataArrayHelper on Map<String, MeshData> {
   // ignore: unused_field
   static final _logger = Logger('toWavefrontObj');
 
@@ -113,63 +113,62 @@ extension MeshDataArrayHelper on Map<String, List<MeshData>> {
     int normalIndex = 1;
     for (final entry in entries) {
       sink.writeln('# ${entry.key}');
-      for (final data in entry.value) {
-        sink.writeln('# ${data.comment}');
-        for (final vertex in data.vertices) {
-          sink.writeln(
-            'v'
-            ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
-            ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
-            ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
-          );
-        }
-        for (final textureVertex in data.textureVertices) {
-          sink.writeln(
-            'vt'
-            ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
-            ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
-            ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
-          );
-        }
-        for (final normal in data.normals) {
-          sink.writeln(
-            'vn'
-            ' ${normal.x.toStringAsFixed(_fractionDigits)}'
-            ' ${normal.y.toStringAsFixed(_fractionDigits)}'
-            ' ${normal.z.toStringAsFixed(_fractionDigits)}',
-          );
-        }
-        // smooth
-        sink.writeln('s ${data.smooth ? 1 : 0}');
-        // 面
-        for (final face in data.faces) {
-          assert(face.length >= 3);
-          sink.write('f');
-          for (final vertex in face) {
-            // 頂点インデックス
-            assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
-            sink.write(' ${vertex.vertexIndex + vertexIndex}');
-            if (vertex.normalIndex >= 0 || vertex.textureVertexIndex >= 0) {
-              sink.write('/');
-              // テクスチャ頂点インデックス
-              if (vertex.textureVertexIndex >= 0) {
-                assert(vertex.textureVertexIndex < data.textureVertices.length);
-                sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
-              }
-              sink.write('/');
-              // 法線インデックス
-              if (vertex.normalIndex >= 0) {
-                assert(vertex.normalIndex < data.normals.length);
-                sink.write('${vertex.normalIndex + normalIndex}');
-              }
+      final data = entry.value;
+      sink.writeln('# ${data.comment}');
+      for (final vertex in data.vertices) {
+        sink.writeln(
+          'v'
+          ' ${vertex.x.toStringAsFixed(_fractionDigits)}'
+          ' ${vertex.y.toStringAsFixed(_fractionDigits)}'
+          ' ${vertex.z.toStringAsFixed(_fractionDigits)}',
+        );
+      }
+      for (final textureVertex in data.textureVertices) {
+        sink.writeln(
+          'vt'
+          ' ${textureVertex.x.toStringAsFixed(_fractionDigits)}'
+          ' ${textureVertex.y.toStringAsFixed(_fractionDigits)}'
+          ' ${textureVertex.z.toStringAsFixed(_fractionDigits)}',
+        );
+      }
+      for (final normal in data.normals) {
+        sink.writeln(
+          'vn'
+          ' ${normal.x.toStringAsFixed(_fractionDigits)}'
+          ' ${normal.y.toStringAsFixed(_fractionDigits)}'
+          ' ${normal.z.toStringAsFixed(_fractionDigits)}',
+        );
+      }
+      // smooth
+      sink.writeln('s ${data.smooth ? 1 : 0}');
+      // 面
+      for (final face in data.faces) {
+        assert(face.length >= 3);
+        sink.write('f');
+        for (final vertex in face) {
+          // 頂点インデックス
+          assert(vertex.vertexIndex >= 0 && vertex.vertexIndex < data.vertices.length);
+          sink.write(' ${vertex.vertexIndex + vertexIndex}');
+          if (vertex.normalIndex >= 0 || vertex.textureVertexIndex >= 0) {
+            sink.write('/');
+            // テクスチャ頂点インデックス
+            if (vertex.textureVertexIndex >= 0) {
+              assert(vertex.textureVertexIndex < data.textureVertices.length);
+              sink.write('${vertex.textureVertexIndex + textureVertexIndex}');
+            }
+            sink.write('/');
+            // 法線インデックス
+            if (vertex.normalIndex >= 0) {
+              assert(vertex.normalIndex < data.normals.length);
+              sink.write('${vertex.normalIndex + normalIndex}');
             }
           }
-          sink.writeln();
         }
-        vertexIndex += data.vertices.length;
-        textureVertexIndex += data.textureVertices.length;
-        normalIndex += data.normals.length;
+        sink.writeln();
       }
+      vertexIndex += data.vertices.length;
+      textureVertexIndex += data.textureVertices.length;
+      normalIndex += data.normals.length;
     }
     _logger.fine(
       '[o] toWavefrontObj'

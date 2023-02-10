@@ -181,7 +181,7 @@ class HumanRig {
   // メッシュデータ
 
   @protected
-  List<MeshData> makePin({
+  MeshData makePin({
     required Node root,
     required String origin,
     required String target,
@@ -198,7 +198,7 @@ class HumanRig {
   }
 
   @protected
-  List<MeshData> makeTube({
+  MeshData makeTube({
     required Node root,
     required String origin,
     required String target,
@@ -221,7 +221,7 @@ class HumanRig {
   }
 
   @protected
-  List<MeshData> makeBox({
+  MeshData makeBox({
     required Node root,
     required String origin,
     required String target,
@@ -247,7 +247,7 @@ class HumanRig {
   }
 
   @protected
-  List<MeshData> makeMesh({
+  MeshData makeMesh({
     required Node root,
     required String origin,
     String target = '',
@@ -262,10 +262,10 @@ class HumanRig {
   // メッシュデータ生成
   // todo: extensionへ
 
-  Map<String, List<MeshData>> toMeshData({
+  Map<String, MeshData> toMeshData({
     required final Node root,
   }) {
-    final buffer = <String, List<MeshData>>{};
+    final buffer = <String, MeshData>{};
     // 胴体・頭
     buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
     //buffer['chest'] = makePin(root: root, origin: chest, target: neck);
