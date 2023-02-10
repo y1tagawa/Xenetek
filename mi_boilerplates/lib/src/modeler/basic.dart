@@ -727,30 +727,17 @@ class MeshData {
 //</editor-fold>
 }
 
-/// メッシュの基底クラス：
-///
-/// todo:削除
-@immutable
-abstract class Shape {
-  const Shape();
-
-  /// メッシュデータ生成
-  List<MeshData> toMeshData({required final Node root});
-}
-
 /// メッシュモディファイアの基底クラス
 abstract class MeshModifier {
   const MeshModifier();
-  MeshData modify({required Mesh_ mesh, required Node root});
+  MeshData modify({required Mesh mesh, required Node root});
 }
 
 class PlaceModifier extends MeshModifier {
-  static const PlaceModifier instance = PlaceModifier._();
-
-  const PlaceModifier._();
+  const PlaceModifier();
 
   @override
-  MeshData modify({required Mesh_ mesh, required Node root}) {
+  MeshData modify({required Mesh mesh, required Node root}) {
     final origin_ = root.find(path: mesh.origin)!.matrix;
     return mesh.data.transformed(origin_);
   }
@@ -759,18 +746,17 @@ class PlaceModifier extends MeshModifier {
 /// メッシュ
 ///
 @immutable
-class Mesh_ extends Shape {
+class Mesh {
   final MeshData data;
   final String origin;
   final MeshModifier modifier;
 
-  const Mesh_({
+  const Mesh({
     required this.data,
     required this.origin,
-    this.modifier = PlaceModifier.instance,
+    this.modifier = const PlaceModifier(),
   });
 
-  @override
   List<MeshData> toMeshData({required final Node root}) {
     return [modifier.modify(mesh: this, root: root)];
   }
@@ -825,7 +811,7 @@ class BeamModifier extends MeshModifier {
   });
 
   @override
-  MeshData modify({required Mesh_ mesh, required Node root}) {
+  MeshData modify({required Mesh mesh, required Node root}) {
     // origin空間への変換マトリクス
     final origin_ = root.find(path: mesh.origin)!.matrix;
     // targetの変換行列を、origin空間にマップする。

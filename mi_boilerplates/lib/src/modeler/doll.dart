@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
-import 'shapes.dart';
+import 'mesh_builders.dart';
 
 // スクリプト的ドール(mk1)モデラ
 
@@ -186,7 +186,7 @@ class HumanRig {
     required String origin,
     required String target,
   }) {
-    return Mesh_(
+    return Mesh(
       data: pinMeshData,
       origin: origin,
       modifier: BeamModifier(
@@ -195,11 +195,6 @@ class HumanRig {
       ),
       // todo: scale
     ).toMeshData(root: root);
-    //
-    // return Pin(
-    //   origin: origin,
-    //   target: target,
-    // ).toMeshData(root: root);
   }
 
   @protected
@@ -211,7 +206,7 @@ class HumanRig {
     required double endRadius,
     int heightDivision = 1,
   }) {
-    return Mesh_(
+    return Mesh(
       data: TubeBuilder(
         beginRadius: beginRadius,
         endRadius: endRadius,
@@ -223,15 +218,6 @@ class HumanRig {
       modifier: BeamModifier(target: target),
       // todo: scale
     ).toMeshData(root: root);
-    // return Tube(
-    //   origin: origin,
-    //   target: target,
-    //   beginRadius: beginRadius,
-    //   endRadius: endRadius,
-    //   heightDivision: heightDivision,
-    //   beginShape: const DomeEnd(),
-    //   endShape: const DomeEnd(),
-    // ).toMeshData(root: root);
   }
 
   @protected
@@ -240,7 +226,7 @@ class HumanRig {
     required String origin,
     required String target,
   }) {
-    return Mesh_(
+    return Mesh(
       data: BoxBuilder(
         beginRect: math.Rectangle<double>(
           -shoulderPosition.x * 0.8,
@@ -258,20 +244,6 @@ class HumanRig {
         target: target,
       ),
     ).toMeshData(root: root);
-    // return Box(
-    //   origin: origin,
-    //   target: target,
-    //   beginRect: math.Rectangle<double>(
-    //     -shoulderPosition.x * 0.8,
-    //     scPosition.z,
-    //     shoulderPosition.x * 1.6,
-    //     -scPosition.z,
-    //   ),
-    //   height: 1.0,
-    //   widthDivision: 1,
-    //   heightDivision: 1,
-    //   depthDivision: 1,
-    // ).toMeshData(root: root);
   }
 
   @protected
@@ -281,7 +253,7 @@ class HumanRig {
     String target = '',
     required MeshData data,
   }) {
-    return Mesh_(
+    return Mesh(
       origin: origin,
       data: data,
     ).toMeshData(root: root);

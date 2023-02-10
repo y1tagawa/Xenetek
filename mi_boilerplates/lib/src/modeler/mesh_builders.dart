@@ -12,63 +12,6 @@ import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
 
-/// 始端終端を持つ図形の基底クラス
-@immutable
-abstract class _Beam extends Shape {
-  // ignore: unused_field
-  static final _logger = Logger('_Beam');
-
-  final String origin;
-  final String target;
-  final bool fill;
-
-  const _Beam({
-    required this.origin,
-    this.target = '',
-    this.fill = true,
-  });
-
-  /// 原型となるメッシュデータ
-  ///
-  /// 生成は高価かもしれない。
-  MeshData get data;
-
-  /// メッシュデータの軸線
-  Vector3 get axis;
-
-  /// メッシュデータを[origin]から[target]まで延長
-  ///
-  /// 基底では単にY軸に沿って拡縮するだけなので、必要に応じてカスタマイズする。
-  @protected
-  MeshData _fillMeshData({
-    required final MeshData data,
-    required final double length,
-  }) =>
-      data.transformed(Matrix4.fromScale(Vector3(1, length, 1)));
-
-  /// [origin]の原点位置に置かれた[data]を[target]に向け回転、延長し、
-  /// [root]空間に頂点・法線変換したメッシュデータを返す。
-  @override
-  List<MeshData> toMeshData({required final Node root}) {
-    // origin空間への変換マトリクス
-    final origin_ = root.find(path: origin)!.matrix;
-    if (target.isEmpty) {
-      return <MeshData>[data.transformed(origin_)];
-    }
-    // targetの変換行列を、origin空間にマップする。
-    final target_ = origin_.inverted() * root.find(path: target)!.matrix;
-    // 軸線終点をtargetに向ける。
-    final rotation = Matrix4.fromForwardTargetRotation(
-      forward: Vector3.unitY,
-      target: target_.translation,
-    );
-    // fillの場合、モデルをorigin原点からtarget原点までに延長し...
-    final data_ = fill ? _fillMeshData(data: data, length: target_.translation.length) : data;
-    // ...root空間に変換する。
-    return <MeshData>[data_.transformed(origin_ * rotation)];
-  }
-}
-
 // 立方体メッシュデータ
 //
 // (-0.5,0,-0.5)-(0.5,1,0.5)
@@ -141,66 +84,6 @@ const _cubeMeshData = MeshData(
 
 //</editor-fold>
 
-/// 直方体
-///
-/// [origin]を底面中心、[target]を上面として直方体を配置する。
-@immutable
-class Cube extends _Beam {
-  // ignore: unused_field
-  static final _logger = Logger('Cube');
-
-  final Vector3 scale;
-
-  const Cube({
-    required super.origin,
-    super.target = '',
-    this.scale = Vector3.one,
-    super.fill = true,
-  });
-
-  @override
-  MeshData get data => _cubeMeshData.transformed(Matrix4.fromScale(scale));
-
-  @override
-  Vector3 get axis => Vector3.unitY;
-
-//<editor-fold desc="Data Methods">
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Cube &&
-          runtimeType == other.runtimeType &&
-          origin == other.origin &&
-          target == other.target &&
-          scale == other.scale &&
-          fill == other.fill);
-
-  @override
-  int get hashCode => origin.hashCode ^ target.hashCode ^ scale.hashCode ^ fill.hashCode;
-
-  @override
-  String toString() {
-    return 'Cube{ origin: $origin, target: $target, scale: $scale, fill: $fill}';
-  }
-
-  Cube copyWith({
-    String? origin,
-    String? target,
-    Vector3? scale,
-    bool? fill,
-  }) {
-    return Cube(
-      origin: origin ?? this.origin,
-      target: target ?? this.target,
-      scale: scale ?? this.scale,
-      fill: fill ?? this.fill,
-    );
-  }
-
-//</editor-fold>
-}
-
 // 正八面体メッシュデータ
 //
 // (-0.5,0,-0.5)-(0.5,1,0.5)
@@ -267,91 +150,6 @@ const _octahedronMeshData = MeshData(
 
 MeshData get pinMeshData {
   return _octahedronMeshData.transformed(Matrix4.fromScale(const Vector3(0.25, 1, 0.25)));
-}
-
-/// ピン
-///
-/// [origin]を始端(底面)中心、[target]を終端(上面)として八面体のピンを配置する。
-@immutable
-class Pin extends _Beam {
-  // ignore: unused_field
-  static final _logger = Logger('Pin');
-
-  const Pin({
-    required super.origin,
-    super.target = '',
-  }) : super(fill: true);
-
-  @override
-  MeshData get data => _octahedronMeshData;
-
-  @override
-  Vector3 get axis => Vector3.unitY;
-
-  /// ピンの半径は長さに比例する。
-  @override
-  MeshData _fillMeshData({
-    required final MeshData data,
-    required final double length,
-  }) =>
-      data.transformed(Matrix4.fromScale(const Vector3(0.25, 1, 0.25) * length));
-
-//<editor-fold desc="Data Methods">
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Pin &&
-          runtimeType == other.runtimeType &&
-          origin == other.origin &&
-          target == other.target);
-
-  @override
-  int get hashCode => origin.hashCode ^ target.hashCode;
-
-  @override
-  String toString() {
-    return 'Pin{ origin: $origin, target: $target}';
-  }
-
-  Pin copyWith({
-    String? origin,
-    String? target,
-  }) {
-    return Pin(
-      origin: origin ?? this.origin,
-      target: target ?? this.target,
-    );
-  }
-
-//</editor-fold>
-}
-
-/// メッシュ
-///
-/// [origin]を軸線始端、[target]を終端としてメッシュデータを配置する。
-@immutable
-class Mesh extends _Beam {
-  // ignore: unused_field
-  static final _logger = Logger('Mesh');
-
-  final MeshData _data;
-  final Vector3 _axis;
-
-  const Mesh({
-    required super.origin,
-    super.target = '',
-    super.fill = false,
-    required MeshData data,
-    final Vector3 axis = Vector3.unitY,
-  })  : _data = data,
-        _axis = axis;
-
-  @override
-  MeshData get data => _data;
-
-  @override
-  Vector3 get axis => _axis;
 }
 
 /// 放射相称メッシュビルダ基底クラス
@@ -595,58 +393,6 @@ class TubeBuilder extends _SorBuilder {
   Vector3 get axis => _axis;
 }
 
-/// 円筒
-///
-/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
-class Tube extends _Beam {
-  // ignore: unused_field
-  static final _logger = Logger('Tube');
-
-  final double beginRadius;
-  final double? endRadius;
-  final double height;
-  final int circleDivision;
-  final int heightDivision;
-  final EndShape beginShape;
-  final EndShape endShape;
-  final bool smooth;
-  final bool reverse;
-
-  const Tube({
-    required super.origin,
-    super.target = '',
-    super.fill = true,
-    this.beginRadius = 0.5,
-    this.endRadius,
-    this.height = 1.0,
-    this.circleDivision = 12,
-    this.heightDivision = 1,
-    this.beginShape = const OpenEnd(),
-    this.endShape = const OpenEnd(),
-    this.smooth = true,
-    this.reverse = false,
-  });
-
-  @override
-  MeshData get data {
-    return TubeBuilder(
-      axis: axis,
-      beginRadius: beginRadius,
-      endRadius: endRadius ?? beginRadius,
-      height: height,
-      circleDivision: circleDivision,
-      heightDivision: heightDivision,
-      beginShape: beginShape,
-      endShape: endShape,
-      smooth: smooth,
-      reverse: reverse,
-    ).build();
-  }
-
-  @override
-  Vector3 get axis => Vector3.unitY;
-}
-
 /// 箱メッシュビルダ
 @immutable
 class BoxBuilder extends _RadiataBuilder {
@@ -747,57 +493,6 @@ class BoxBuilder extends _RadiataBuilder {
 
     return vertices;
   }
-}
-
-/// 箱
-///
-/// [origin]を軸線の始点、[target]を終点として円筒を生成する。
-class Box extends _Beam {
-  final math.Rectangle<double> beginRect;
-  final math.Rectangle<double>? endRect;
-  final double height;
-  final int widthDivision;
-  final int heightDivision;
-  final int depthDivision;
-  final EndShape beginShape;
-  final EndShape endShape;
-  final bool smooth;
-  final bool reverse;
-
-  const Box({
-    required super.origin,
-    super.target = '',
-    super.fill = true,
-    this.beginRect = const math.Rectangle<double>(-0.5, -0.5, 1.0, 1.0),
-    this.endRect,
-    this.height = 1.0,
-    this.widthDivision = 1,
-    this.heightDivision = 1,
-    this.depthDivision = 1,
-    this.beginShape = const FlatEnd(),
-    this.endShape = const FlatEnd(),
-    this.smooth = false,
-    this.reverse = false,
-  });
-
-  @override
-  MeshData get data {
-    return BoxBuilder(
-      beginRect: beginRect,
-      endRect: endRect ?? beginRect,
-      height: height,
-      widthDivision: widthDivision,
-      heightDivision: heightDivision,
-      depthDivision: depthDivision,
-      beginShape: beginShape,
-      endShape: endShape,
-      smooth: smooth,
-      reverse: reverse,
-    ).build();
-  }
-
-  @override
-  Vector3 get axis => Vector3.unitY;
 }
 
 // /// ボーン
