@@ -738,56 +738,104 @@ abstract class Shape {
   List<MeshData> toMeshData({required final Node root});
 }
 
-/// デフォルトのビーム変形
-MeshData _nop(
-  MeshData data,
-  Vector3 axis,
-  double length,
-) {
-  return data;
+/// メッシュモディファイアの基底クラス
+abstract class MeshModifier {
+  const MeshModifier();
+  MeshData modify({required Mesh_ mesh, required Node root});
+}
+
+class PlaceModifier extends MeshModifier {
+  static const PlaceModifier instance = PlaceModifier._();
+
+  const PlaceModifier._();
+
+  @override
+  MeshData modify({required Mesh_ mesh, required Node root}) {
+    final origin_ = root.find(path: mesh.origin)!.matrix;
+    return mesh.data.transformed(origin_);
+  }
 }
 
 /// メッシュ
 ///
-/// 軸線およびスキニングを一個で
 @immutable
 class Mesh_ extends Shape {
   final MeshData data;
-  // Beam
   final String origin;
-  final String target;
-  final Vector3 axis;
-  // これはむしろMeshDataの属性かも
-  final MeshData Function(MeshData, Vector3, double) beamTransform;
-  // todo: Skin
+  final MeshModifier modifier;
 
   const Mesh_({
     required this.data,
     required this.origin,
-    this.target = '',
-    this.axis = Vector3.unitY,
-    this.beamTransform = _nop,
+    this.modifier = PlaceModifier.instance,
   });
 
-  /// [origin]の原点位置に置かれた[data]を[target]に向け回転、延長し、
-  /// [root]空間に頂点・法線変換したメッシュデータを返す。
   @override
   List<MeshData> toMeshData({required final Node root}) {
+    return [modifier.modify(mesh: this, root: root)];
+  }
+}
+
+//
+abstract class BeamModifierStyle {
+  const BeamModifierStyle();
+
+  MeshData transform({required MeshData data, required double length, required Vector3 axis});
+}
+
+// 向けるだけ
+class BeamModifierRotation extends BeamModifierStyle {
+  const BeamModifierRotation();
+
+  @override
+  MeshData transform({required MeshData data, required double length, required Vector3 axis}) {
+    return data;
+  }
+}
+
+class BeamModifierConnect extends BeamModifierStyle {
+  const BeamModifierConnect();
+
+  @override
+  MeshData transform({required MeshData data, required double length, required Vector3 axis}) {
+    return data.transformed(Matrix4.fromScale(Vector3(1, length, 1)));
+  }
+}
+
+class BeamModifierProportional extends BeamModifierStyle {
+  const BeamModifierProportional();
+
+  @override
+  MeshData transform({required MeshData data, required double length, required Vector3 axis}) {
+    return data.transformed(Matrix4.fromScale(length));
+  }
+}
+
+/// ビームモディファイア
+/// todo: modifiers.dart送り
+class BeamModifier extends MeshModifier {
+  final String target;
+  final BeamModifierStyle style;
+  final Vector3 axis;
+
+  const BeamModifier({
+    required this.target,
+    this.style = const BeamModifierConnect(),
+    this.axis = Vector3.unitY,
+  });
+
+  @override
+  MeshData modify({required Mesh_ mesh, required Node root}) {
     // origin空間への変換マトリクス
-    final origin_ = root.find(path: origin)!.matrix;
-    if (target.isEmpty) {
-      return <MeshData>[data.transformed(origin_)];
-    }
+    final origin_ = root.find(path: mesh.origin)!.matrix;
     // targetの変換行列を、origin空間にマップする。
     final target_ = origin_.inverted() * root.find(path: target)!.matrix;
     // 軸線終点をtargetに向ける。
     final rotation = Matrix4.fromForwardTargetRotation(
-      forward: Vector3.unitY,
+      forward: Vector3.unitY, // todo: axis
       target: target_.translation,
     );
-    // fillの場合、モデルをorigin原点からtarget原点までに延長し...
-    final data_ = beamTransform(data, axis, target_.translation.length);
-    // ...root空間に変換する。
-    return <MeshData>[data_.transformed(origin_ * rotation)];
+    final data_ = style.transform(data: mesh.data, length: target_.translation.length, axis: axis);
+    return data_.transformed(origin_ * rotation);
   }
 }

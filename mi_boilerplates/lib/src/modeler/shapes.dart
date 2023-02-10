@@ -265,6 +265,10 @@ const _octahedronMeshData = MeshData(
 
 //</editor-fold>
 
+MeshData get pinMeshData {
+  return _octahedronMeshData.transformed(Matrix4.fromScale(const Vector3(0.25, 1, 0.25)));
+}
+
 /// ピン
 ///
 /// [origin]を始端(底面)中心、[target]を終端(上面)として八面体のピンを配置する。
