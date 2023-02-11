@@ -36,22 +36,22 @@ class LookAtModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    // root空間におけるorigin空間への変換マトリクス
-    final origin_ = root.find(path: mesh.origin)!.matrix;
+    // originからrootへの変換行列
+    final originMatrix = root.find(path: mesh.origin)!.matrix;
     // targetの変換行列を、origin空間にマップする。
-    final target_ = origin_.inverted() * root.find(path: target)!.matrix;
+    final targetMatrix = originMatrix.inverted() * root.find(path: target)!.matrix;
     // origin空間において、軸線終点をtargetに向ける。
     final rotation = Matrix4.fromForwardTargetRotation(
       forward: Vector3.unitY, // todo: axis
-      target: target_.translation,
+      target: targetMatrix.translation,
     );
     // todo: axis
     // 必要に応じて変形し...
-    final scaleY = connect ? target_.translation.length : 1.0;
+    final scaleY = connect ? targetMatrix.translation.length : 1.0;
     final scaleXZ = proportional ? scaleY : 1.0;
     final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
-    // 全体をルート空間にマップする。
-    return data.transformed(origin_ * rotation * scale);
+    // 全体をroot空間にマップする。
+    return data.transformed(originMatrix * rotation * scale);
   }
 }
 
@@ -61,18 +61,18 @@ class BoneData {
   final double power;
   const BoneData({
     this.radius = double.maxFinite,
-    this.power = 2.0,
+    this.power = 0.5,
   });
 }
 
 /// スキンモディファイア
 class SkinModifier extends MeshModifier {
   final List<MapEntry<String, BoneData>> bones;
-  final Node init; // 初期姿勢のrootノード
+  final Node initRoot; // 初期姿勢のrootノード
 
   const SkinModifier({
     required this.bones,
-    required this.init,
+    required this.initRoot,
   });
 
   @override
@@ -81,45 +81,44 @@ class SkinModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    // 初期空間におけるoriginへの変換行列
-    final zeroOrigin_ = init.find(path: mesh.origin)!.matrix;
-    final zi = zeroOrigin_.inverted();
-    // 初期空間への各ボーンの変換行列
-    final zeros_ = bones.map((it) => zi * init.find(path: it.key)!.matrix).toList();
-    // root空間におけるoriginへの変換行列
-    final origin_ = init.find(path: mesh.origin)!.matrix;
-    final oi = origin_.inverted();
-    // root空間への各ボーンの変換行列
-    final targets_ = bones.map((it) => oi * root.find(path: it.key)!.matrix).toList();
+    // 初期姿勢のrootからoriginへの変換行列
+    final initOriginMatrix = initRoot.find(path: mesh.origin)!.matrix;
+    // 初期姿勢の各ボーンからrootへの変換行列
+    final initBoneMatrices = bones.map((it) => initRoot.find(path: it.key)!.matrix).toList();
+    // rootからoriginへの変換行列
+    final originMatrix = root.find(path: mesh.origin)!.matrix;
+    // 各ボーンからrootの変換行列
+    final boneMatrices = bones.map((it) => root.find(path: it.key)!.matrix).toList();
 
-    // 各頂点について...
+    // 各頂点について、
     final vertices = <Vector3>[];
     for (final vertex in data.vertices) {
-      // 初期姿勢の位置
-      final zPos = vertex.transformed(zeroOrigin_);
-      // rootにおける各ボーンからの相対位置と影響
-      final targetValues = <MapEntry<Vector3, double>>[];
-      var dominator = 0.0;
+      // 各ボーンからの相対位置と影響を集計する。
+      final boneValues = <MapEntry<Vector3, double>>[];
+      var dominator = 0.0; // 影響の総和
+      // 各ボーンについて...
+      final initPos = vertex.transformed(initOriginMatrix);
       for (int i = 0; i < bones.length; ++i) {
-        // 初期姿勢における各ボーンからの相対位置
-        final pos = zPos - zeros_[i].translation;
+        // 初期姿勢におけるボーンからの相対位置を...
+        final pos = initPos - initBoneMatrices[i].translation;
         final d = pos.length;
-        if (d > 1e-4 && d <= bones[i].value.radius) {
-          final value = 1.0 / math.pow(d, bones[i].value.power);
-          targetValues.add(MapEntry(pos.transformed(targets_[i]), value));
+        if (d <= bones[i].value.radius) {
+          final value = math.pow(d, bones[i].value.power).toDouble();
+          // rootにおけるボーンからの相対位置に変換してリストアップ
+          boneValues.add(MapEntry(pos.transformed(boneMatrices[i]), value));
           dominator += value;
         }
       }
-      if (targetValues.isEmpty) {
+      if (boneValues.isEmpty) {
         // ボーンから影響を受けなかった
-        vertices.add(zPos);
+        vertices.add(vertex.transformed(originMatrix));
       } else {
         // ボーンからの影響の加重平均
         var pos = Vector3.zero;
-        for (final targetValue in targetValues) {
-          pos = pos + targetValue.key * targetValue.value;
+        for (final value in boneValues) {
+          pos = pos + value.key * value.value;
         }
-        vertices.add(pos * (1.0 / dominator));
+        vertices.add(pos / dominator);
       }
     }
 

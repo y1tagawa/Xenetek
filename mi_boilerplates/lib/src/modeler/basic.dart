@@ -48,6 +48,9 @@ class Vector3 {
     }
   }
 
+  /// スカラ商
+  Vector3 operator /(double other) => this * (1.0 / other);
+
   /// ドット積
   double dot(Vector3 other) => x * other.x + y * other.y + z * other.z;
 

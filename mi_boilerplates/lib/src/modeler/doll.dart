@@ -256,7 +256,7 @@ class HumanRig {
           chest: const BoneData(),
           neck: const BoneData(),
         }.entries.toList(),
-        init: initRoot,
+        initRoot: initRoot,
       ),
     ).toMeshData(root: root);
   }

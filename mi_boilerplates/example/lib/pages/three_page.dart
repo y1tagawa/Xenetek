@@ -157,7 +157,7 @@ Future<void> _setup(StringSink sink) async {
   // ポージング
   root = root
       .bendNeck(degrees: 10)
-      .twistNeck(degrees: 90)
+      .twistNeck(degrees: 60)
       //
       .twistRCoxa(degrees: -10)
       .swingRCoxa(degrees: 5)
