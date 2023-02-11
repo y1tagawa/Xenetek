@@ -58,9 +58,11 @@ class LookAtModifier extends MeshModifier {
 /// ボーンデータ
 class BoneData {
   final double radius;
+  final double force;
   final double power;
   const BoneData({
     this.radius = double.maxFinite,
+    this.force = 1.0,
     this.power = 0.5,
   });
 }
@@ -85,6 +87,7 @@ class SkinModifier extends MeshModifier {
     final initOriginMatrix = initRoot.find(path: mesh.origin)!.matrix;
     // 初期姿勢のrootから各ボーンへの変換行列
     final initBoneMatrices = bones.map((it) => initRoot.find(path: it.key)!.matrix).toList();
+    final initInvBoneMatrices = initBoneMatrices.map((it) => it.inverted()).toList();
     // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
     // 各ボーンからrootの変換行列
@@ -100,10 +103,12 @@ class SkinModifier extends MeshModifier {
       final initPos = vertex.transformed(initOriginMatrix);
       for (int i = 0; i < bones.length; ++i) {
         // 初期姿勢におけるボーンからの相対位置を...
-        final pos = initPos - initBoneMatrices[i].translation;
+        //final pos = initPos - initBoneMatrices[i].translation;
+        final pos = initPos.transformed(initInvBoneMatrices[i]);
         final d = pos.length;
         if (d <= bones[i].value.radius) {
-          final value = math.pow(d, bones[i].value.power).toDouble();
+          // 影響力
+          final value = bones[i].value.force * math.pow(d, bones[i].value.power).toDouble();
           // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
           boneValues.add(MapEntry(pos.transformed(boneMatrices[i]), value));
           dominator += value;

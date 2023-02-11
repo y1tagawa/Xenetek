@@ -253,8 +253,8 @@ class HumanRig {
       // ),
       modifier: SkinModifier(
         bones: {
-          chest: const BoneData(),
-          neck: const BoneData(),
+          chest: const BoneData(radius: 0.3, power: 0.1),
+          neck: const BoneData(radius: 0.3, power: 0.1),
         }.entries.toList(),
         initRoot: initRoot,
       ),
