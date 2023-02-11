@@ -61,7 +61,7 @@ class BoneData {
   final double power;
   const BoneData({
     this.radius = double.maxFinite,
-    this.power = 1.0,
+    this.power = 2.0,
   });
 }
 
@@ -88,7 +88,7 @@ class SkinModifier extends MeshModifier {
     final zeros_ = bones.map((it) => zi * init.find(path: it.key)!.matrix).toList();
     // root空間におけるoriginへの変換行列
     final origin_ = init.find(path: mesh.origin)!.matrix;
-    final oi = zeroOrigin_.inverted();
+    final oi = origin_.inverted();
     // root空間への各ボーンの変換行列
     final targets_ = bones.map((it) => oi * root.find(path: it.key)!.matrix).toList();
 
