@@ -191,6 +191,7 @@ class HumanRig {
   }) {
     return Mesh(
       origin: origin,
+      data: const PinBuilder(),
       modifier: BeamModifier(
         target: target,
         connect: true,
@@ -210,7 +211,7 @@ class HumanRig {
     int heightDivision = 1,
   }) {
     return Mesh(
-      meshBuilder: TubeBuilder(
+      data: TubeBuilder(
         beginRadius: beginRadius,
         endRadius: endRadius,
         heightDivision: heightDivision,
@@ -233,7 +234,7 @@ class HumanRig {
     required String target,
   }) {
     return Mesh(
-      meshBuilder: BoxBuilder(
+      data: BoxBuilder(
         beginRect: math.Rectangle<double>(
           -shoulderPosition.x * 0.8,
           scPosition.z,
@@ -262,7 +263,7 @@ class HumanRig {
   }) {
     return Mesh(
       origin: origin,
-      meshBuilder: data,
+      data: data,
     ).toMeshData(root: root);
   }
 
