@@ -241,7 +241,7 @@ class HumanRig {
           shoulderPosition.x * 1.6,
           -scPosition.z,
         ),
-        height: 1.0,
+        height: chestLength,
         widthDivision: 4,
         heightDivision: 4,
         depthDivision: 4,
@@ -254,7 +254,7 @@ class HumanRig {
       modifier: SkinModifier(
         bones: {
           chest: const BoneData(),
-          head: const BoneData(),
+          neck: const BoneData(),
         }.entries.toList(),
         init: initRoot,
       ),
