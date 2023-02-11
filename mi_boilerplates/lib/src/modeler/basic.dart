@@ -286,6 +286,7 @@ class Matrix4 {
 //</editor-fold>
 }
 
+//
 // リグ
 //
 
@@ -622,7 +623,7 @@ typedef MeshFace = List<MeshVertex>;
 
 /// メッシュデータ
 @immutable
-class MeshData extends MeshBuilder {
+class MeshData {
   // ignore: unused_field
   static final _logger = Logger('MeshData');
 
@@ -662,21 +663,6 @@ class MeshData extends MeshBuilder {
       faces_.add([face[0], ...face.skip(1).toList().reversed]);
     }
     return copyWith(faces: faces_);
-  }
-
-  /// 頂点リストを追加したコピーを返す。
-  MeshData addVertices(List<Vector3> vertices) {
-    return copyWith(vertices: <Vector3>[...this.vertices, ...vertices]);
-  }
-
-  /// 面リストを追加したコピーを返す。
-  MeshData addFaces(List<MeshFace> faces) {
-    return copyWith(faces: <MeshFace>[...this.faces, ...faces]);
-  }
-
-  @override
-  MeshData build() {
-    return this;
   }
 
 //<editor-fold desc="Data Methods">
@@ -733,29 +719,16 @@ class MeshData extends MeshBuilder {
 //</editor-fold>
 }
 
-//
-// メッシュ
-//
-
-/// メッシュビルダの基底クラス
-@immutable
-abstract class MeshBuilder {
-  const MeshBuilder();
-  MeshData build();
-}
-
-// 正八面体メッシュデータ
-//
-// (-0.5,0,-0.5)-(0.5,1,0.5)
+/// ピンメッシュデータ (-0.1,0,-0.1)-(0.1,1,0.1)
 //<editor-fold>
 
-const _octahedronVertices = <Vector3>[
-  Vector3(0.5, 0.5, 0),
-  Vector3(-0.5, 0.5, 0),
+const _pinVertices = <Vector3>[
+  Vector3(0.1, 0.25, 0),
+  Vector3(-0.1, 0.25, 0),
   Vector3(0, 1, 0),
   Vector3(0, 0, 0),
-  Vector3(0, 0.5, 0.5),
-  Vector3(0, 0.5, -0.5),
+  Vector3(0, 0.25, 0.1),
+  Vector3(0, 0.25, -0.1),
 ];
 
 const _octahedronFaces = <MeshFace>[
@@ -801,26 +774,22 @@ const _octahedronFaces = <MeshFace>[
   ],
 ];
 
-const _octahedronMeshData = MeshData(
-  vertices: _octahedronVertices,
+const _pinMeshData = MeshData(
+  vertices: _pinVertices,
   faces: _octahedronFaces,
 );
 
 //</editor-fold>
 
-/// デフォルトのメッシュビルダ
+//
+// メッシュ
+//
+
+/// メッシュビルダの基底クラス
 @immutable
-class PinBuilder extends MeshBuilder {
-  static final _data = _octahedronMeshData.transformed(Matrix4.fromScale(
-    const Vector3(0.25, 1, 0.25),
-  ));
-
-  const PinBuilder();
-
-  @override
-  MeshData build() {
-    return _data;
-  }
+abstract class MeshBuilder {
+  const MeshBuilder();
+  MeshData build();
 }
 
 /// メッシュモディファイアの基底クラス
@@ -857,20 +826,20 @@ class _OriginModifier extends MeshModifier {
 /// リグ上にメッシュデータを配置する。
 @immutable
 class Mesh {
-  final MeshBuilder meshBuilder;
+  final dynamic data;
   final String origin;
   final MeshModifier modifier;
 
   const Mesh({
-    this.meshBuilder = const PinBuilder(),
+    this.data = _pinMeshData,
     required this.origin,
     this.modifier = const _OriginModifier(),
-  });
+  }) : assert(data is MeshData || data is MeshBuilder);
 
   MeshData toMeshData({required final Node root}) {
     return modifier.transform(
       mesh: this,
-      data: meshBuilder.build(),
+      data: data is MeshBuilder ? (data as MeshBuilder).build() : data as MeshData,
       root: root,
     );
   }
