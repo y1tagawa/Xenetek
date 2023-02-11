@@ -12,20 +12,18 @@ import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
 
-/// 立方体メッシュビルダ
-///
-/// (-0.5,0,-0.5)-(0.5,1,0.5)
+// 立方体メッシュデータ (0,0,0)-(1,1,1)
 //<editor-fold>
 
 const _cubeVertices = <Vector3>[
-  Vector3(0.5, 1, -0.5),
-  Vector3(0.5, 0, -0.5),
-  Vector3(0.5, 1, 0.5),
-  Vector3(0.5, 0, 0.5),
-  Vector3(-0.5, 1, -0.5),
-  Vector3(-0.5, 0, -0.5),
-  Vector3(-0.5, 1, 0.5),
-  Vector3(-0.5, 0, 0.5),
+  Vector3(1, 1, 0),
+  Vector3(1, 0, 0),
+  Vector3(1, 1, 1),
+  Vector3(1, 0, 1),
+  Vector3(0, 1, 0),
+  Vector3(0, 0, 0),
+  Vector3(0, 1, 1),
+  Vector3(0, 0, 1),
 ];
 
 const _cubeNormals = <Vector3>[
@@ -82,9 +80,12 @@ const _cubeMeshData = MeshData(
   faces: _cubeFaces,
 );
 
+//</editor-fold>
+
+/// 立方体メッシュビルダ
 class CubeBuilder extends MeshBuilder {
-  final Vector3 min; //leftBottomFront;
-  final Vector3 max; //leftBottomFront;
+  final Vector3 min;
+  final Vector3 max;
 
   const CubeBuilder({
     this.min = const Vector3(-0.5, 0, -0.5),
@@ -93,14 +94,20 @@ class CubeBuilder extends MeshBuilder {
 
   @override
   MeshData build() {
-    return _cubeMeshData;
+    final vertices = _cubeVertices
+        .map(
+          (it) => Vector3(
+            it.x == 0 ? min.x : max.x,
+            it.y == 0 ? min.y : max.y,
+            it.z == 0 ? min.z : max.z,
+          ),
+        )
+        .toList();
+    return _cubeMeshData.copyWith(vertices: vertices);
   }
 }
 
-//</editor-fold>
-
 // 正八面体メッシュデータ
-//
 // (-0.5,0,-0.5)-(0.5,1,0.5)
 //<editor-fold>
 
@@ -162,10 +169,6 @@ const _octahedronMeshData = MeshData(
 );
 
 //</editor-fold>
-
-MeshData get pinMeshData {
-  return _octahedronMeshData.transformed(Matrix4.fromScale(const Vector3(0.25, 1, 0.25)));
-}
 
 /// 放射相称メッシュビルダ基底クラス
 @immutable

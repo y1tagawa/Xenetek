@@ -191,7 +191,6 @@ class HumanRig {
   }) {
     return Mesh(
       origin: origin,
-      data: const PinBuilder(),
       modifier: BeamModifier(
         target: target,
         connect: true,
