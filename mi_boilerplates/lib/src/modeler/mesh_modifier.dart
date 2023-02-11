@@ -30,8 +30,10 @@ class BeamModifier extends MeshModifier {
   @override
   MeshData transform({
     required Mesh mesh,
+    required MeshData data,
     required Node root,
   }) {
+    // todo: originへの変換はmeshでやっておく
     // origin空間への変換マトリクス
     final origin_ = root.find(path: mesh.origin)!.matrix;
     // targetの変換行列を、origin空間にマップする。
@@ -45,6 +47,6 @@ class BeamModifier extends MeshModifier {
     final scaleY = connect ? target_.translation.length : 1.0;
     final scaleXZ = proportional ? scaleY : 1.0;
     final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
-    return mesh.data.transformed(origin_ * rotation * scale);
+    return data.transformed(origin_ * rotation * scale);
   }
 }

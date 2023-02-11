@@ -6,18 +6,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../scope_functions.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
-
-/// メッシュビルダの基底クラス
-abstract class MeshBuilder {
-  const MeshBuilder();
-  MeshData build();
-}
 
 /// 立方体メッシュビルダ
 ///
@@ -176,7 +169,7 @@ MeshData get pinMeshData {
 
 /// 放射相称メッシュビルダ基底クラス
 @immutable
-abstract class _RadiataBuilder {
+abstract class _RadiataBuilder extends MeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('_RadiataBuilder');
 
@@ -195,6 +188,7 @@ abstract class _RadiataBuilder {
   List<Vector3> makeEdgeVertices({required final int index});
 
   /// メッシュデータ生成
+  @override
   MeshData build() {
     assert(circleDivision >= 2);
     // 頂点生成

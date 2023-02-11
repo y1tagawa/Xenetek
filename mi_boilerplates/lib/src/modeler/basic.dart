@@ -287,6 +287,7 @@ class Matrix4 {
 }
 
 // リグ
+//
 
 /// ノード検索結果
 @immutable
@@ -541,7 +542,9 @@ class Node {
 //   return matrices;
 // }
 
+//
 // メッシュデータ
+//
 
 /// メッシュ頂点データ
 ///
@@ -619,7 +622,7 @@ typedef MeshFace = List<MeshVertex>;
 
 /// メッシュデータ
 @immutable
-class MeshData {
+class MeshData extends MeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('MeshData');
 
@@ -669,6 +672,11 @@ class MeshData {
   /// 面リストを追加したコピーを返す。
   MeshData addFaces(List<MeshFace> faces) {
     return copyWith(faces: <MeshFace>[...this.faces, ...faces]);
+  }
+
+  @override
+  MeshData build() {
+    return this;
   }
 
 //<editor-fold desc="Data Methods">
@@ -725,26 +733,122 @@ class MeshData {
 //</editor-fold>
 }
 
+//
+// メッシュ
+//
+
+/// メッシュビルダの基底クラス
+@immutable
+abstract class MeshBuilder {
+  const MeshBuilder();
+  MeshData build();
+}
+
+// 正八面体メッシュデータ
+//
+// (-0.5,0,-0.5)-(0.5,1,0.5)
+//<editor-fold>
+
+const _octahedronVertices = <Vector3>[
+  Vector3(0.5, 0.5, 0),
+  Vector3(-0.5, 0.5, 0),
+  Vector3(0, 1, 0),
+  Vector3(0, 0, 0),
+  Vector3(0, 0.5, 0.5),
+  Vector3(0, 0.5, -0.5),
+];
+
+const _octahedronFaces = <MeshFace>[
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(0, -1, -1),
+    MeshVertex(2, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(2, -1, -1),
+    MeshVertex(1, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(1, -1, -1),
+    MeshVertex(3, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(4, -1, -1),
+    MeshVertex(3, -1, -1),
+    MeshVertex(0, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(2, -1, -1),
+    MeshVertex(0, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(1, -1, -1),
+    MeshVertex(2, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(3, -1, -1),
+    MeshVertex(1, -1, -1),
+  ],
+  <MeshVertex>[
+    MeshVertex(5, -1, -1),
+    MeshVertex(0, -1, -1),
+    MeshVertex(3, -1, -1),
+  ],
+];
+
+const _octahedronMeshData = MeshData(
+  vertices: _octahedronVertices,
+  faces: _octahedronFaces,
+);
+
+//</editor-fold>
+
+/// デフォルトのメッシュビルダ
+@immutable
+class PinBuilder extends MeshBuilder {
+  static final _data = _octahedronMeshData.transformed(Matrix4.fromScale(
+    const Vector3(0.25, 1, 0.25),
+  ));
+
+  const PinBuilder();
+
+  @override
+  MeshData build() {
+    return _data;
+  }
+}
+
 /// メッシュモディファイアの基底クラス
+@immutable
 abstract class MeshModifier {
   const MeshModifier();
   MeshData transform({
     required Mesh mesh,
+    required MeshData data,
     required Node root,
   });
 }
 
 /// デフォルトのメッシュモディファイア
+///
+/// [origin]の原点にメッシュデータを配置する。
+@immutable
 class _OriginModifier extends MeshModifier {
   const _OriginModifier();
 
   @override
   MeshData transform({
     required Mesh mesh,
+    required MeshData data,
     required Node root,
   }) {
     final origin_ = root.find(path: mesh.origin)!.matrix;
-    return mesh.data.transformed(origin_);
+    return data.transformed(origin_);
   }
 }
 
@@ -753,17 +857,21 @@ class _OriginModifier extends MeshModifier {
 /// リグ上にメッシュデータを配置する。
 @immutable
 class Mesh {
-  final MeshData data;
+  final MeshBuilder meshBuilder;
   final String origin;
   final MeshModifier modifier;
 
   const Mesh({
-    required this.data,
+    this.meshBuilder = const PinBuilder(),
     required this.origin,
     this.modifier = const _OriginModifier(),
   });
 
   MeshData toMeshData({required final Node root}) {
-    return modifier.transform(mesh: this, root: root);
+    return modifier.transform(
+      mesh: this,
+      data: meshBuilder.build(),
+      root: root,
+    );
   }
 }
