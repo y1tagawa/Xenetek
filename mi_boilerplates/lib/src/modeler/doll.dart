@@ -191,7 +191,7 @@ class HumanRig {
   }) {
     return Mesh(
       origin: origin,
-      modifier: BeamModifier(
+      modifier: LookAtModifier(
         target: target,
         connect: true,
         proportional: true,
@@ -218,7 +218,7 @@ class HumanRig {
         endShape: const DomeEnd(),
       ),
       origin: origin,
-      modifier: BeamModifier(
+      modifier: LookAtModifier(
         target: target,
         connect: true,
       ),
@@ -229,6 +229,7 @@ class HumanRig {
   @protected
   MeshData makeBox({
     required Node root,
+    required Node initRoot,
     required String origin,
     required String target,
   }) {
@@ -241,14 +242,21 @@ class HumanRig {
           -scPosition.z,
         ),
         height: 1.0,
-        widthDivision: 1,
-        heightDivision: 1,
-        depthDivision: 1,
+        widthDivision: 4,
+        heightDivision: 4,
+        depthDivision: 4,
       ),
       origin: origin,
-      modifier: BeamModifier(
-        target: target,
-        connect: true,
+      // modifier: LookAtModifier(
+      //   target: target,
+      //   connect: true,
+      // ),
+      modifier: SkinModifier(
+        bones: {
+          chest: const BoneData(),
+          head: const BoneData(),
+        }.entries.toList(),
+        init: initRoot,
       ),
     ).toMeshData(root: root);
   }
@@ -271,13 +279,17 @@ class HumanRig {
 
   Map<String, MeshData> toMeshData({
     required final Node root,
+    Node? initRoot, // 初期姿勢
   }) {
+    initRoot = initRoot ?? root;
+
     final buffer = <String, MeshData>{};
     // 胴体・頭
     buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
     //buffer['chest'] = makePin(root: root, origin: chest, target: neck);
     buffer['chest'] = makeBox(
       root: root,
+      initRoot: initRoot,
       origin: chest,
       target: neck,
     );

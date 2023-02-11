@@ -803,7 +803,7 @@ abstract class MeshModifier {
   });
 }
 
-/// デフォルトのメッシュモディファイア
+/// デフォルトメッシュモディファイア
 ///
 /// [origin]の原点にメッシュデータを配置する。
 @immutable

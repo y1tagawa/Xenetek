@@ -150,6 +150,7 @@ Future<void> _setup(StringSink sink) async {
     footMesh: footMesh,
   );
   var root = dollBuilder.build();
+  final initRoot = root;
   //logger.fine('root');
   //logger.fine(root.format(sink: StringBuffer()).toString());
 
@@ -171,7 +172,7 @@ Future<void> _setup(StringSink sink) async {
       .bendRElbow(degrees: 60.0)
       .bendLElbow(degrees: 120.0);
   //
-  final meshDataArray = dollBuilder.toMeshData(root: root);
+  final meshDataArray = dollBuilder.toMeshData(root: root, initRoot: initRoot);
   meshDataArray.toWavefrontObj(sink);
 }
 
