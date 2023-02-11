@@ -7,7 +7,6 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-import '../scope_functions.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
@@ -441,9 +440,7 @@ class BoxBuilder extends _RadiataBuilder {
   });
 
   @override
-  int get circleDivision => ((widthDivision + depthDivision) * 2).also((it) {
-        _logger.fine('circleDivision=$it');
-      });
+  int get circleDivision => ((widthDivision + depthDivision) * 2);
 
   @override
   List<Vector3> makeEdgeVertices({required final int index}) {
@@ -455,26 +452,18 @@ class BoxBuilder extends _RadiataBuilder {
     Vector3 iToXz(final int index) {
       int i = circleDivision - index;
       if (i <= widthDivision) {
-        return Vector3(i.toDouble() / widthDivision, 0.0, 0.0).also((it) {
-          _logger.fine('index=$index result=$it');
-        });
+        return Vector3(i.toDouble() / widthDivision, 0.0, 0.0);
       }
       i -= widthDivision;
       if (i <= depthDivision) {
-        return Vector3(1.0, 0.0, i.toDouble() / depthDivision).also((it) {
-          _logger.fine('index=$index result=$it');
-        });
+        return Vector3(1.0, 0.0, i.toDouble() / depthDivision);
       }
       i -= depthDivision;
       if (i <= widthDivision) {
-        return Vector3((widthDivision - i).toDouble() / widthDivision, 0.0, 1.0).also((it) {
-          _logger.fine('index=$index result=$it');
-        });
+        return Vector3((widthDivision - i).toDouble() / widthDivision, 0.0, 1.0);
       }
       i -= widthDivision;
-      return Vector3(0.0, 0.0, (depthDivision - i).toDouble() / depthDivision).also((it) {
-        _logger.fine('index=$index result=$it');
-      });
+      return Vector3(0.0, 0.0, (depthDivision - i).toDouble() / depthDivision);
     }
 
     // 断面
@@ -485,9 +474,7 @@ class BoxBuilder extends _RadiataBuilder {
         y * (endRect_.top - beginRect.top) + beginRect.top,
         y * (endRect_.width - beginRect.width) + beginRect.width,
         y * (endRect_.height - beginRect.height) + beginRect.height,
-      ).also((it) {
-        _logger.fine('y=$y result=$it');
-      });
+      );
     }
 
     final vertices = <Vector3>[];
@@ -502,10 +489,7 @@ class BoxBuilder extends _RadiataBuilder {
           xz.x * rect.width + rect.left,
           y * height,
           xz.z * rect.height + rect.top,
-        ).also((it) {
-          _logger.fine('xz=$xz rect=$rect');
-          _logger.fine('p=$it');
-        }),
+        ),
       );
     }
     // todo: endShape

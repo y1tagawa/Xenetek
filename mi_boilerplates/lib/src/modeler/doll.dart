@@ -191,7 +191,7 @@ class HumanRig {
   }) {
     return Mesh(
       origin: origin,
-      modifier: LookAtModifier(
+      modifiers: LookAtModifier(
         target: target,
         connect: true,
         proportional: true,
@@ -218,7 +218,7 @@ class HumanRig {
         endShape: const DomeEnd(),
       ),
       origin: origin,
-      modifier: LookAtModifier(
+      modifiers: LookAtModifier(
         target: target,
         connect: true,
       ),
@@ -242,19 +242,22 @@ class HumanRig {
           -scPosition.z,
         ),
         height: chestLength,
-        widthDivision: 4,
-        heightDivision: 4,
-        depthDivision: 4,
+        widthDivision: 16,
+        heightDivision: 16,
+        depthDivision: 8,
       ),
       origin: origin,
       // modifier: LookAtModifier(
       //   target: target,
       //   connect: true,
       // ),
-      modifier: SkinModifier(
+      modifiers: SkinModifier(
         bones: {
-          chest: const BoneData(radius: 0.3, power: 0.1),
-          neck: const BoneData(radius: 0.3, power: 0.1),
+          // 原点chestにボーンを置くと原点の回転と重なって強すぎるが、neck一個だけだとそっちに全て引っぱられてしまう
+          chest: const BoneData(force: 0.5, radius: 0.3),
+          neck: const BoneData(),
+          // rShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
+          // lShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
         }.entries.toList(),
         initRoot: initRoot,
       ),

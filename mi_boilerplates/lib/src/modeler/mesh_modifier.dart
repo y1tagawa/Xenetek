@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
-
 import 'basic.dart';
 
 // スクリプト的モデラ
@@ -59,12 +57,12 @@ class LookAtModifier extends MeshModifier {
 class BoneData {
   final double radius;
   final double force;
-  final double power;
+  final bool dragging;
   const BoneData({
-    this.radius = double.maxFinite,
+    this.radius = 1.0,
     this.force = 1.0,
-    this.power = 0.5,
-  });
+    this.dragging = true,
+  }) : assert(radius >= 1e-4);
 }
 
 /// スキンモディファイア
@@ -85,12 +83,12 @@ class SkinModifier extends MeshModifier {
   }) {
     // 初期姿勢のrootからoriginへの変換行列
     final initOriginMatrix = initRoot.find(path: mesh.origin)!.matrix;
-    // 初期姿勢のrootから各ボーンへの変換行列
+    // 初期姿勢のrootから各ボーンへの変換行列とその逆
     final initBoneMatrices = bones.map((it) => initRoot.find(path: it.key)!.matrix).toList();
     final initInvBoneMatrices = initBoneMatrices.map((it) => it.inverted()).toList();
     // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
-    // 各ボーンからrootの変換行列
+    // rootから各ボーンへの変換行列
     final boneMatrices = bones.map((it) => root.find(path: it.key)!.matrix).toList();
 
     // 各頂点について、
@@ -102,15 +100,24 @@ class SkinModifier extends MeshModifier {
       // 各ボーンについて...
       final initPos = vertex.transformed(initOriginMatrix);
       for (int i = 0; i < bones.length; ++i) {
+        final bone = bones[i].value;
         // 初期姿勢におけるボーンからの相対位置を...
-        //final pos = initPos - initBoneMatrices[i].translation;
-        final pos = initPos.transformed(initInvBoneMatrices[i]);
+        final pos = bone.dragging
+            ? initPos.transformed(initInvBoneMatrices[i])
+            : initPos - initBoneMatrices[i].translation;
         final d = pos.length;
-        if (d <= bones[i].value.radius) {
+        if (d <= bone.radius) {
           // 影響力
-          final value = bones[i].value.force * math.pow(d, bones[i].value.power).toDouble();
+          //final value = bone.force * math.pow(d, bone.power).toDouble();
+          // radiusまでの距離に反比例（todo: exp）
+          final value = bone.force * d / bone.radius;
           // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
-          boneValues.add(MapEntry(pos.transformed(boneMatrices[i]), value));
+          boneValues.add(
+            MapEntry(
+              bone.dragging ? pos.transformed(boneMatrices[i]) : pos + boneMatrices[i].translation,
+              value,
+            ),
+          );
           dominator += value;
         }
       }
@@ -131,5 +138,27 @@ class SkinModifier extends MeshModifier {
       vertices: vertices,
       normals: <Vector3>[], //todo:
     );
+  }
+}
+
+/// マグネットモディファイア
+class MagnetModifier extends MeshModifier {
+  final List<MapEntry<String, BoneData>> magnets;
+
+  const MagnetModifier({required this.magnets});
+
+  @override
+  MeshData transform({
+    required Mesh mesh,
+    required MeshData data,
+    required Node root,
+  }) {
+    // rootからoriginへの変換行列
+    final originMatrix = root.find(path: mesh.origin)!.matrix;
+    // rootから各磁力中心への変換行列
+    final magnetMatrices = magnets.map((it) => root.find(path: it.key)!.matrix).toList();
+
+    // TODO: implement transform
+    throw UnimplementedError();
   }
 }

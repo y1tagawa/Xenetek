@@ -831,19 +831,24 @@ class _OriginModifier extends MeshModifier {
 class Mesh {
   final dynamic data;
   final String origin;
-  final MeshModifier modifier;
+  final dynamic modifiers;
 
   const Mesh({
     this.data = _pinMeshData,
     required this.origin,
-    this.modifier = const _OriginModifier(),
-  }) : assert(data is MeshData || data is MeshBuilder);
+    this.modifiers = const _OriginModifier(),
+  })  : assert(data is MeshData || data is MeshBuilder),
+        assert(modifiers is MeshModifier || modifiers is List<MeshModifier>);
 
   MeshData toMeshData({required final Node root}) {
-    return modifier.transform(
-      mesh: this,
-      data: data is MeshBuilder ? (data as MeshBuilder).build() : data as MeshData,
-      root: root,
-    );
+    var data_ = data is MeshBuilder ? (data as MeshBuilder).build() : data as MeshData;
+    if (modifiers is MeshModifier) {
+      data_ = (modifiers as MeshModifier).transform(mesh: this, data: data_, root: root);
+    } else {
+      for (final modifier in (modifiers as List<MeshModifier>)) {
+        data_ = modifier.transform(mesh: this, data: data_, root: root);
+      }
+    }
+    return data_;
   }
 }
