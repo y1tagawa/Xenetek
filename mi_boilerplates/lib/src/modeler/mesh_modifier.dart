@@ -36,21 +36,21 @@ class LookAtModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    // originからrootへの変換行列
+    // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
-    // targetの変換行列を、origin空間にマップする。
+    // rootからtargetの変換行列を、origin原点に変換
     final targetMatrix = originMatrix.inverted() * root.find(path: target)!.matrix;
-    // origin空間において、軸線終点をtargetに向ける。
+    // origin原点から軸線終点をtargetに向ける回転行列
     final rotation = Matrix4.fromForwardTargetRotation(
       forward: Vector3.unitY, // todo: axis
       target: targetMatrix.translation,
     );
     // todo: axis
-    // 必要に応じて変形し...
+    // メッシュ拡縮行列
     final scaleY = connect ? targetMatrix.translation.length : 1.0;
     final scaleXZ = proportional ? scaleY : 1.0;
     final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
-    // 全体をroot空間にマップする。
+    // 全体をroot座標に変換
     return data.transformed(originMatrix * rotation * scale);
   }
 }
@@ -83,7 +83,7 @@ class SkinModifier extends MeshModifier {
   }) {
     // 初期姿勢のrootからoriginへの変換行列
     final initOriginMatrix = initRoot.find(path: mesh.origin)!.matrix;
-    // 初期姿勢の各ボーンからrootへの変換行列
+    // 初期姿勢のrootから各ボーンへの変換行列
     final initBoneMatrices = bones.map((it) => initRoot.find(path: it.key)!.matrix).toList();
     // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
@@ -93,9 +93,9 @@ class SkinModifier extends MeshModifier {
     // 各頂点について、
     final vertices = <Vector3>[];
     for (final vertex in data.vertices) {
-      // 各ボーンからの相対位置と影響を集計する。
+      // 各ボーンからの相対位置と影響力を集計する。
       final boneValues = <MapEntry<Vector3, double>>[];
-      var dominator = 0.0; // 影響の総和
+      var dominator = 0.0; // 影響力の総和
       // 各ボーンについて...
       final initPos = vertex.transformed(initOriginMatrix);
       for (int i = 0; i < bones.length; ++i) {
@@ -104,7 +104,7 @@ class SkinModifier extends MeshModifier {
         final d = pos.length;
         if (d <= bones[i].value.radius) {
           final value = math.pow(d, bones[i].value.power).toDouble();
-          // rootにおけるボーンからの相対位置に変換してリストアップ
+          // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
           boneValues.add(MapEntry(pos.transformed(boneMatrices[i]), value));
           dominator += value;
         }
@@ -113,7 +113,7 @@ class SkinModifier extends MeshModifier {
         // ボーンから影響を受けなかった
         vertices.add(vertex.transformed(originMatrix));
       } else {
-        // ボーンからの影響の加重平均
+        // ボーンからの影響力による加重平均
         var pos = Vector3.zero;
         for (final value in boneValues) {
           pos = pos + value.key * value.value;
