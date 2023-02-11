@@ -45,8 +45,10 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## TODO
 
-* まず
-  * Shape, _Beam, Meshを一つにし、MeshDataと分離する。
+* MeshData → MeshBuilderに
+  * SorBuilderおよびTubeBuilderは複雑なので別ファイルに
+* MeshModifierを別ファイルに
+* スキンモディファイア
 
 * ConsumeStatefulWidgetで、initStateでrefでプロバイダ初期化できるか？（awaitできないから、
   初期値をゲットできないが初期化だけならできそう）

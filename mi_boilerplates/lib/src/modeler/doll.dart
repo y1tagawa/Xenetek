@@ -9,8 +9,11 @@ import 'package:logging/logging.dart';
 
 import 'basic.dart';
 import 'mesh_builder.dart';
+import 'mesh_modifier.dart';
 
-// スクリプト的ドール(mk1)モデラ
+// スクリプト的モデラ
+//
+// ドール(mk1)
 
 extension _NodeHelper on Node {
   Node _rotateX(String path, double radians) => transform(

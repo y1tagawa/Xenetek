@@ -9,8 +9,6 @@ import 'package:logging/logging.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 // スクリプト的モデラ
-//
-// 繰り返して試行、再現できるよう、パラメタのみでモデルを生成する。
 
 /// immutableの３次元ベクトル
 @immutable
@@ -730,15 +728,21 @@ class MeshData {
 /// メッシュモディファイアの基底クラス
 abstract class MeshModifier {
   const MeshModifier();
-  MeshData modify({required Mesh mesh, required Node root});
+  MeshData transform({
+    required Mesh mesh,
+    required Node root,
+  });
 }
 
-/// 基本のメッシュモディファイア
-class PlaceModifier extends MeshModifier {
-  const PlaceModifier();
+/// デフォルトのメッシュモディファイア
+class _OriginModifier extends MeshModifier {
+  const _OriginModifier();
 
   @override
-  MeshData modify({required Mesh mesh, required Node root}) {
+  MeshData transform({
+    required Mesh mesh,
+    required Node root,
+  }) {
     final origin_ = root.find(path: mesh.origin)!.matrix;
     return mesh.data.transformed(origin_);
   }
@@ -746,6 +750,7 @@ class PlaceModifier extends MeshModifier {
 
 /// メッシュ
 ///
+/// リグ上にメッシュデータを配置する。
 @immutable
 class Mesh {
   final MeshData data;
@@ -755,44 +760,10 @@ class Mesh {
   const Mesh({
     required this.data,
     required this.origin,
-    this.modifier = const PlaceModifier(),
+    this.modifier = const _OriginModifier(),
   });
 
   MeshData toMeshData({required final Node root}) {
-    return modifier.modify(mesh: this, root: root);
-  }
-}
-
-/// ビームモディファイア
-/// todo: modifiers.dart送り
-class BeamModifier extends MeshModifier {
-  final String target;
-  final Vector3 axis;
-  final bool connect;
-  final bool proportional;
-
-  const BeamModifier({
-    required this.target,
-    this.axis = Vector3.unitY,
-    this.connect = false,
-    this.proportional = false,
-  });
-
-  @override
-  MeshData modify({required Mesh mesh, required Node root}) {
-    // origin空間への変換マトリクス
-    final origin_ = root.find(path: mesh.origin)!.matrix;
-    // targetの変換行列を、origin空間にマップする。
-    final target_ = origin_.inverted() * root.find(path: target)!.matrix;
-    // 軸線終点をtargetに向ける。
-    final rotation = Matrix4.fromForwardTargetRotation(
-      forward: Vector3.unitY, // todo: axis
-      target: target_.translation,
-    );
-    // todo: axis
-    final scaleY = connect ? target_.translation.length : 1.0;
-    final scaleXZ = proportional ? scaleY : 1.0;
-    final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
-    return mesh.data.transformed(origin_ * rotation * scale);
+    return modifier.transform(mesh: this, root: root);
   }
 }
