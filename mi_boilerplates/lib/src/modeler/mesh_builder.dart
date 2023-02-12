@@ -173,20 +173,19 @@ const _octahedronMeshData = MeshData(
 
 /// 放射相称メッシュビルダ基底クラス
 @immutable
-abstract class _RadiataBuilder extends MeshBuilder {
+abstract class RadiataBuilder extends MeshBuilder {
   // ignore: unused_field
-  static final _logger = Logger('_RadiataBuilder');
+  static final _logger = Logger('RadiataBuilder');
 
+  final int circleDivision;
   final bool smooth;
   final bool reverse;
 
-  const _RadiataBuilder({
+  const RadiataBuilder({
+    required this.circleDivision,
     this.smooth = true,
     this.reverse = false,
   });
-
-  /// 周囲の分割数
-  int get circleDivision;
 
   /// 稜線頂点を生成する。
   List<Vector3> makeEdgeVertices({required final int index});
@@ -210,10 +209,10 @@ abstract class _RadiataBuilder extends MeshBuilder {
     void addFaces(final int j0, final int j1) {
       for (int i = 0; i < n - 1; ++i) {
         faces.add(<MeshVertex>[
-          MeshVertex(j0 + i, -1, -1),
-          MeshVertex(j1 + i, -1, -1),
-          MeshVertex(j1 + i + 1, -1, -1),
-          MeshVertex(j0 + i + 1, -1, -1),
+          MeshVertex(j0 + i),
+          MeshVertex(j1 + i),
+          MeshVertex(j1 + i + 1),
+          MeshVertex(j0 + i + 1),
         ]);
       }
     }
@@ -230,26 +229,21 @@ abstract class _RadiataBuilder extends MeshBuilder {
 
 /// 回転体メッシュビルダ基底クラス
 @immutable
-abstract class _SorBuilder extends _RadiataBuilder {
+abstract class _SorBuilder extends RadiataBuilder {
   // ignore: unused_field
   static final _logger = Logger('_SorBuilder');
 
-  final int _circleDivision;
-
   const _SorBuilder({
-    final int circleDivision = 12,
+    super.circleDivision = 12,
     super.smooth = true,
     super.reverse = false,
-  }) : _circleDivision = circleDivision;
+  });
 
   /// 母線頂点
   List<Vector3> get vertices;
 
   /// 回転軸
   Vector3 get axis;
-
-  @override
-  int get circleDivision => _circleDivision;
 
   @override
   List<Vector3> makeEdgeVertices({required final int index}) {
@@ -415,7 +409,7 @@ class TubeBuilder extends _SorBuilder {
 
 /// 箱メッシュビルダ
 @immutable
-class BoxBuilder extends _RadiataBuilder {
+class BoxBuilder extends RadiataBuilder {
   // ignore: unused_field
   static final _logger = Logger('BoxBuilder');
 
@@ -439,10 +433,7 @@ class BoxBuilder extends _RadiataBuilder {
     this.endShape = const FlatEnd(),
     super.smooth = true,
     super.reverse = false,
-  });
-
-  @override
-  int get circleDivision => ((widthDivision + depthDivision) * 2);
+  }) : super(circleDivision: (widthDivision + depthDivision) * 2);
 
   @override
   List<Vector3> makeEdgeVertices({required final int index}) {

@@ -234,17 +234,22 @@ class HumanRig {
     required String target,
   }) {
     return Mesh(
-      data: BoxBuilder(
-        beginRect: math.Rectangle<double>(
-          -shoulderPosition.x * 0.8,
-          scPosition.z,
-          shoulderPosition.x * 1.6,
-          -scPosition.z,
-        ),
-        height: chestLength,
-        widthDivision: 16,
-        heightDivision: 16,
-        depthDivision: 8,
+      // data: BoxBuilder(
+      //   beginRect: math.Rectangle<double>(
+      //     -shoulderPosition.x * 0.8,
+      //     scPosition.z,
+      //     shoulderPosition.x * 1.6,
+      //     -scPosition.z,
+      //   ),
+      //   height: chestLength,
+      //   widthDivision: 16,
+      //   heightDivision: 16,
+      //   depthDivision: 8,
+      // ),
+      data: CubeBuilder(
+        min: Vector3(-shoulderPosition.x * 0.8, 0, scPosition.z),
+        max: Vector3(shoulderPosition.x * 0.8, chestLength, -scPosition.z * 0.5),
+        tessellationLevel: 3,
       ),
       origin: origin,
       // modifier: LookAtModifier(
