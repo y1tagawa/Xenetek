@@ -253,10 +253,9 @@ class HumanRig {
       // ),
       modifiers: SkinModifier(
         bones: {
-          chest: const BoneData(power: 4),
-          neck: const BoneData(power: 4),
-          // rShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
-          // lShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
+          chest: const BoneData(power: -8),
+          rSc: const BoneData(power: -8),
+          lSc: const BoneData(power: -8),
         }.entries.toList(),
         initRoot: initRoot,
       ),
@@ -289,10 +288,10 @@ class HumanRig {
       // ),
       modifiers: SkinModifier(
         bones: {
-          pelvis: const BoneData(power: 8),
-          chest: const BoneData(power: 8),
-          rCoxa: const BoneData(power: 8),
-          lCoxa: const BoneData(power: 8),
+          pelvis: const BoneData(power: -6),
+          chest: const BoneData(power: -6),
+          rCoxa: const BoneData(power: -6),
+          lCoxa: const BoneData(power: -6),
         }.entries.toList(),
         initRoot: initRoot,
       ),
