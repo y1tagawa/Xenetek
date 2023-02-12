@@ -82,6 +82,7 @@ const _cubeMeshData = MeshData(
 //</editor-fold>
 
 /// 立方体メッシュビルダ
+@immutable
 class CubeBuilder extends MeshBuilder {
   final Vector3 min;
   final Vector3 max;
@@ -171,36 +172,64 @@ const _octahedronMeshData = MeshData(
 
 //</editor-fold>
 
-/// 放射相称メッシュビルダ基底クラス
+/// 回転体メッシュビルダ基底クラス
 @immutable
-abstract class RadiataBuilder extends MeshBuilder {
+abstract class _SorBuilder extends MeshBuilder {
   // ignore: unused_field
-  static final _logger = Logger('RadiataBuilder');
+  static final _logger = Logger('_SorBuilder');
 
-  final int circleDivision;
+  final int revolutionDivision;
+  final Vector3 axis;
   final bool smooth;
   final bool reverse;
 
-  const RadiataBuilder({
-    required this.circleDivision,
+  const _SorBuilder({
+    this.revolutionDivision = 12,
+    this.axis = Vector3.unitY,
     this.smooth = true,
     this.reverse = false,
-  });
+  }) : assert(revolutionDivision >= 2);
 
-  /// 稜線頂点を生成する。
-  List<Vector3> makeEdgeVertices({required final int index});
+  /// 母線頂点(Y軸周り)
+  List<Vector3> makeGeneratingLine();
+
+  /// 頂点生成
+  List<Vector3> makeOutline({
+    required final List<Vector3> generatingLine,
+    required final int index,
+  }) {
+    final vertices_ = <Vector3>[];
+    final matrix = Matrix4.fromAxisAngleRotation(
+      axis: axis,
+      radians: index * 2.0 * math.pi / revolutionDivision,
+    );
+    for (final vertex in generatingLine) {
+      vertices_.add(vertex.transformed(matrix));
+    }
+    return vertices_;
+  }
 
   /// メッシュデータ生成
+  /// todo: axis
   @override
   MeshData build() {
-    assert(circleDivision >= 2);
+    assert(revolutionDivision >= 2);
     // 頂点生成
+    final generatingLine = makeGeneratingLine();
     final vertices = <Vector3>[];
-    vertices.addAll(makeEdgeVertices(index: 0));
+    vertices.addAll(
+      makeOutline(
+        generatingLine: generatingLine,
+        index: 0,
+      ),
+    );
     final n = vertices.length;
     assert(n >= 2);
-    for (int i = 1; i < circleDivision; ++i) {
-      final edge = makeEdgeVertices(index: i);
+    for (int i = 1; i < revolutionDivision; ++i) {
+      final edge = makeOutline(
+        generatingLine: generatingLine,
+        index: i,
+      );
       assert(edge.length == n);
       vertices.addAll(edge);
     }
@@ -218,44 +247,12 @@ abstract class RadiataBuilder extends MeshBuilder {
     }
 
     int i = 0;
-    for (; i < circleDivision - 1; ++i) {
+    for (; i < revolutionDivision - 1; ++i) {
       addFaces(i * n, (i + 1) * n);
     }
     addFaces(i * n, 0);
     final data = MeshData(vertices: vertices, faces: faces, smooth: smooth);
     return reverse ? data.reversed() : data;
-  }
-}
-
-/// 回転体メッシュビルダ基底クラス
-@immutable
-abstract class _SorBuilder extends RadiataBuilder {
-  // ignore: unused_field
-  static final _logger = Logger('_SorBuilder');
-
-  const _SorBuilder({
-    super.circleDivision = 12,
-    super.smooth = true,
-    super.reverse = false,
-  });
-
-  /// 母線頂点
-  List<Vector3> get vertices;
-
-  /// 回転軸
-  Vector3 get axis;
-
-  @override
-  List<Vector3> makeEdgeVertices({required final int index}) {
-    final vertices_ = <Vector3>[];
-    final matrix = Matrix4.fromAxisAngleRotation(
-      axis: axis,
-      radians: index * 2.0 * math.pi / circleDivision,
-    );
-    for (final vertex in vertices) {
-      vertices_.add(vertex.transformed(matrix));
-    }
-    return vertices_;
   }
 }
 
@@ -265,23 +262,51 @@ class SorBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('SorBuilder');
 
-  final List<Vector3> _vertices;
-  final Vector3 _axis;
+  final List<Vector3> vertices;
 
   const SorBuilder({
-    required List<Vector3> vertices,
-    Vector3 axis = Vector3.unitY,
-    super.circleDivision = 12,
+    required this.vertices,
+    super.axis = Vector3.unitY,
+    super.revolutionDivision = 12,
     super.smooth = true,
     super.reverse = false,
-  })  : _vertices = vertices,
-        _axis = axis;
+  }) : assert(vertices.length >= 2);
 
+  /// 母線頂点(Y軸周り)
+  /// todo: axisに合わせてverticesを回転
   @override
-  List<Vector3> get vertices => _vertices;
+  List<Vector3> makeGeneratingLine() => vertices;
+}
 
+/// 経緯球メッシュビルダ
+@immutable
+class LongLatSphereBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('LongLatSphereBuilder');
+
+  final dynamic radius;
+  final int latitudeDivision;
+
+  const LongLatSphereBuilder({
+    super.axis = Vector3.unitY,
+    this.radius = Vector3.one,
+    this.latitudeDivision = 6,
+    int longitudeDivision = 12,
+    super.smooth = true,
+    super.reverse = false,
+  })  : assert(latitudeDivision >= 2),
+        super(revolutionDivision: longitudeDivision);
+
+  /// 母線頂点(Y軸周り)
   @override
-  Vector3 get axis => _axis;
+  List<Vector3> makeGeneratingLine() {
+    final vertices = <Vector3>[];
+    for (int i = 0; i < latitudeDivision; ++i) {
+      final t = i * math.pi / latitudeDivision;
+      vertices.add(Vector3(math.cos(t), math.sin(t), 0.0));
+    }
+    return vertices;
+  }
 }
 
 // 円筒などの末端形状
@@ -320,7 +345,6 @@ class TubeBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('TubeBuilder');
 
-  final Vector3 _axis;
   final double beginRadius;
   final double endRadius;
   final double height;
@@ -329,26 +353,26 @@ class TubeBuilder extends _SorBuilder {
   final EndShape endShape;
 
   const TubeBuilder({
-    Vector3 axis = Vector3.unitY,
+    super.axis = Vector3.unitY,
     this.beginRadius = 0.5,
     this.endRadius = 0.5,
     this.height = 1.0,
-    super.circleDivision = 12,
+    super.revolutionDivision = 12,
     this.heightDivision = 1,
     this.beginShape = const OpenEnd(),
     this.endShape = const OpenEnd(),
     super.smooth = true,
     super.reverse = false,
-  }) : _axis = axis;
+  });
 
   @override
-  List<Vector3> get vertices {
-    assert(circleDivision >= 3);
+  List<Vector3> makeGeneratingLine() {
+    assert(revolutionDivision >= 3);
     assert(heightDivision >= 1);
 
     // 母線頂点生成
     final vertices = <Vector3>[];
-    //　始端
+    // 始端
     switch (beginShape.runtimeType) {
       case ConeEnd:
       case FlatEnd:
@@ -402,94 +426,92 @@ class TubeBuilder extends _SorBuilder {
     }
     return vertices;
   }
-
-  @override
-  Vector3 get axis => _axis;
 }
 
-/// 箱メッシュビルダ
-@immutable
-class BoxBuilder extends RadiataBuilder {
-  // ignore: unused_field
-  static final _logger = Logger('BoxBuilder');
-
-  final math.Rectangle<double> beginRect;
-  final math.Rectangle<double>? endRect;
-  final double height;
-  final int widthDivision;
-  final int heightDivision;
-  final int depthDivision;
-  final EndShape beginShape;
-  final EndShape endShape;
-
-  const BoxBuilder({
-    this.beginRect = const math.Rectangle<double>(-0.5, -0.5, 1.0, 1.0),
-    this.endRect,
-    this.height = 1.0,
-    this.widthDivision = 1,
-    this.heightDivision = 1,
-    this.depthDivision = 1,
-    this.beginShape = const FlatEnd(),
-    this.endShape = const FlatEnd(),
-    super.smooth = true,
-    super.reverse = false,
-  }) : super(circleDivision: (widthDivision + depthDivision) * 2);
-
-  @override
-  List<Vector3> makeEdgeVertices({required final int index}) {
-    assert(widthDivision >= 1);
-    assert(heightDivision >= 1);
-    assert(depthDivision >= 1);
-
-    // (0.0, 0.0)-(1.0, 1.0)
-    Vector3 iToXz(final int index) {
-      int i = circleDivision - index;
-      if (i <= widthDivision) {
-        return Vector3(i.toDouble() / widthDivision, 0.0, 0.0);
-      }
-      i -= widthDivision;
-      if (i <= depthDivision) {
-        return Vector3(1.0, 0.0, i.toDouble() / depthDivision);
-      }
-      i -= depthDivision;
-      if (i <= widthDivision) {
-        return Vector3((widthDivision - i).toDouble() / widthDivision, 0.0, 1.0);
-      }
-      i -= widthDivision;
-      return Vector3(0.0, 0.0, (depthDivision - i).toDouble() / depthDivision);
-    }
-
-    // 断面
-    math.Rectangle<double> yToRect(final double y) {
-      final endRect_ = endRect ?? beginRect;
-      return math.Rectangle<double>(
-        y * (endRect_.left - beginRect.left) + beginRect.left,
-        y * (endRect_.top - beginRect.top) + beginRect.top,
-        y * (endRect_.width - beginRect.width) + beginRect.width,
-        y * (endRect_.height - beginRect.height) + beginRect.height,
-      );
-    }
-
-    final vertices = <Vector3>[];
-    // todo: beginShape
-    // 側面
-    final xz = iToXz(index);
-    for (int h = 0; h <= heightDivision; ++h) {
-      final y = h.toDouble() / heightDivision;
-      final rect = yToRect(y);
-      vertices.add(
-        Vector3(
-          xz.x * rect.width + rect.left,
-          y * height,
-          xz.z * rect.height + rect.top,
-        ),
-      );
-    }
-    // todo: endShape
-
-    return vertices;
-  }
-}
+// /// 箱メッシュビルダ
+// todo: radiataを削除し、_Sorからの派生でなんとかする。
+// @immutable
+// class BoxBuilder extends RadiataBuilder {
+//   // ignore: unused_field
+//   static final _logger = Logger('BoxBuilder');
+//
+//   final math.Rectangle<double> beginRect;
+//   final math.Rectangle<double>? endRect;
+//   final double height;
+//   final int widthDivision;
+//   final int heightDivision;
+//   final int depthDivision;
+//   final EndShape beginShape;
+//   final EndShape endShape;
+//
+//   const BoxBuilder({
+//     this.beginRect = const math.Rectangle<double>(-0.5, -0.5, 1.0, 1.0),
+//     this.endRect,
+//     this.height = 1.0,
+//     this.widthDivision = 1,
+//     this.heightDivision = 1,
+//     this.depthDivision = 1,
+//     this.beginShape = const FlatEnd(),
+//     this.endShape = const FlatEnd(),
+//     super.smooth = true,
+//     super.reverse = false,
+//   }) : super(circleDivision: (widthDivision + depthDivision) * 2);
+//
+//   @override
+//   List<Vector3> makeEdge({required final int index}) {
+//     assert(widthDivision >= 1);
+//     assert(heightDivision >= 1);
+//     assert(depthDivision >= 1);
+//
+//     // (0.0, 0.0)-(1.0, 1.0)
+//     Vector3 iToXz(final int index) {
+//       int i = circleDivision - index;
+//       if (i <= widthDivision) {
+//         return Vector3(i.toDouble() / widthDivision, 0.0, 0.0);
+//       }
+//       i -= widthDivision;
+//       if (i <= depthDivision) {
+//         return Vector3(1.0, 0.0, i.toDouble() / depthDivision);
+//       }
+//       i -= depthDivision;
+//       if (i <= widthDivision) {
+//         return Vector3((widthDivision - i).toDouble() / widthDivision, 0.0, 1.0);
+//       }
+//       i -= widthDivision;
+//       return Vector3(0.0, 0.0, (depthDivision - i).toDouble() / depthDivision);
+//     }
+//
+//     // 断面
+//     math.Rectangle<double> yToRect(final double y) {
+//       final endRect_ = endRect ?? beginRect;
+//       return math.Rectangle<double>(
+//         y * (endRect_.left - beginRect.left) + beginRect.left,
+//         y * (endRect_.top - beginRect.top) + beginRect.top,
+//         y * (endRect_.width - beginRect.width) + beginRect.width,
+//         y * (endRect_.height - beginRect.height) + beginRect.height,
+//       );
+//     }
+//
+//     final vertices = <Vector3>[];
+//     // todo: beginShape
+//     // 側面
+//     final xz = iToXz(index);
+//     for (int h = 0; h <= heightDivision; ++h) {
+//       final y = h.toDouble() / heightDivision;
+//       final rect = yToRect(y);
+//       vertices.add(
+//         Vector3(
+//           xz.x * rect.width + rect.left,
+//           y * height,
+//           xz.z * rect.height + rect.top,
+//         ),
+//       );
+//     }
+//     // todo: endShape
+//
+//     return vertices;
+//   }
+// }
 
 // /// ボーン
 // class Bone {

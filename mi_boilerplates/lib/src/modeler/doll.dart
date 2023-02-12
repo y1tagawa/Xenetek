@@ -234,28 +234,12 @@ class HumanRig {
     required String target,
   }) {
     return Mesh(
-      // data: BoxBuilder(
-      //   beginRect: math.Rectangle<double>(
-      //     -shoulderPosition.x * 0.8,
-      //     scPosition.z,
-      //     shoulderPosition.x * 1.6,
-      //     -scPosition.z,
-      //   ),
-      //   height: chestLength,
-      //   widthDivision: 16,
-      //   heightDivision: 16,
-      //   depthDivision: 8,
-      // ),
       data: CubeBuilder(
         min: Vector3(-shoulderPosition.x * 0.8, 0, scPosition.z),
         max: Vector3(shoulderPosition.x * 0.8, chestLength, -scPosition.z * 0.5),
         tessellationLevel: 3,
       ),
       origin: origin,
-      // modifier: LookAtModifier(
-      //   target: target,
-      //   connect: true,
-      // ),
       modifiers: SkinModifier(
         bones: {
           chest: const BoneData(power: -8),
@@ -274,23 +258,12 @@ class HumanRig {
     required String origin,
   }) {
     return Mesh(
-      data: BoxBuilder(
-        beginRect: math.Rectangle<double>(
-          -coxaPosition.x * 1.5,
-          scPosition.z,
-          coxaPosition.x * 3.0,
-          -scPosition.z,
-        ),
-        height: bellyLength,
-        widthDivision: 8,
-        heightDivision: 8,
-        depthDivision: 8,
+      data: CubeBuilder(
+        min: Vector3(-coxaPosition.x * 1.5, 0, scPosition.z),
+        max: Vector3(coxaPosition.x * 1.5, bellyLength, -scPosition.z * 0.5),
+        tessellationLevel: 3,
       ),
       origin: origin,
-      // modifier: LookAtModifier(
-      //   target: target,
-      //   connect: true,
-      // ),
       modifiers: SkinModifier(
         bones: {
           pelvis: const BoneData(power: -6),
