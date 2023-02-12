@@ -85,11 +85,13 @@ const _cubeMeshData = MeshData(
 class CubeBuilder extends MeshBuilder {
   final Vector3 min;
   final Vector3 max;
+  final int tessellationLevel;
 
   const CubeBuilder({
     this.min = const Vector3(-0.5, 0, -0.5),
     this.max = const Vector3(0.5, 1, 0.5),
-  });
+    this.tessellationLevel = 0,
+  }) : assert(tessellationLevel >= 0);
 
   @override
   MeshData build() {
@@ -102,7 +104,7 @@ class CubeBuilder extends MeshBuilder {
           ),
         )
         .toList();
-    return _cubeMeshData.copyWith(vertices: vertices);
+    return _cubeMeshData.copyWith(vertices: vertices).tessellated(tessellationLevel);
   }
 }
 

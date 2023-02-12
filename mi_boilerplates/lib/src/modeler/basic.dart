@@ -562,10 +562,10 @@ class MeshVertex {
   final int normalIndex;
 
   const MeshVertex(
-    this.vertexIndex,
-    this.textureVertexIndex,
-    this.normalIndex,
-  );
+    this.vertexIndex, [
+    this.textureVertexIndex = -1,
+    this.normalIndex = -1,
+  ]);
 
   //<editor-fold desc="Data Methods">
 
@@ -668,6 +668,89 @@ class MeshData {
     return copyWith(faces: faces_);
   }
 
+  /// 面を再分割する。
+  ///
+  /// 三角ポリゴンは三鱗型、四角ポリゴンは田の字型に分割する。
+  /// todo: normals, textureVertices
+  MeshData tessellated([final int level = 0]) {
+    assert(level >= 0);
+    if (level == 0) return this;
+
+    // 辺と中点のリスト
+    final vertices_ = vertices.toList();
+    final midPoints = <MapEntry<int, int>, int>{};
+    int getMidPoint(final int v0, final int v1) {
+      assert(v0 >= 0 && v0 < vertices_.length);
+      assert(v1 >= 0 && v1 < vertices_.length);
+      assert(v0 != v1);
+      final key = v0 < v1 ? MapEntry(v0, v1) : MapEntry(v1, v0);
+      final vertexIndex = midPoints[key];
+      if (vertexIndex != null) {
+        return vertexIndex;
+      }
+      vertices_.add((vertices_[v0] + vertices_[v1]) * 0.5);
+      midPoints[key] = vertices_.length - 1;
+      return vertices_.length - 1;
+    }
+
+    final faces_ = <MeshFace>[];
+    for (final face in faces) {
+      switch (face.length) {
+        case 3:
+          //    v0
+          //  v3  v5
+          // v1 v4 v2
+          final v0 = face[0].vertexIndex;
+          final v1 = face[1].vertexIndex;
+          final v2 = face[2].vertexIndex;
+          final v3 = getMidPoint(v0, v1);
+          final v4 = getMidPoint(v1, v2);
+          final v5 = getMidPoint(v2, v0);
+          faces_.addAll(
+            <MeshFace>[
+              <MeshVertex>[MeshVertex(v0), MeshVertex(v3), MeshVertex(v5)],
+              <MeshVertex>[MeshVertex(v1), MeshVertex(v4), MeshVertex(v3)],
+              <MeshVertex>[MeshVertex(v2), MeshVertex(v5), MeshVertex(v4)],
+              <MeshVertex>[MeshVertex(v3), MeshVertex(v4), MeshVertex(v5)],
+            ],
+          );
+          break;
+        case 4:
+          // v0 v7 v3
+          // v4 v8 v6
+          // v1 v5 v2
+          final v0 = face[0].vertexIndex;
+          final v1 = face[1].vertexIndex;
+          final v2 = face[2].vertexIndex;
+          final v3 = face[3].vertexIndex;
+          final v4 = getMidPoint(v0, v1);
+          final v5 = getMidPoint(v1, v2);
+          final v6 = getMidPoint(v2, v3);
+          final v7 = getMidPoint(v3, v0);
+          final v8 = getMidPoint(v4, v6);
+          faces_.addAll(
+            <MeshFace>[
+              <MeshVertex>[MeshVertex(v0), MeshVertex(v4), MeshVertex(v8), MeshVertex(v7)],
+              <MeshVertex>[MeshVertex(v1), MeshVertex(v5), MeshVertex(v8), MeshVertex(v4)],
+              <MeshVertex>[MeshVertex(v2), MeshVertex(v6), MeshVertex(v8), MeshVertex(v5)],
+              <MeshVertex>[MeshVertex(v3), MeshVertex(v7), MeshVertex(v8), MeshVertex(v6)],
+            ],
+          );
+          break;
+        default:
+          //todo:
+          assert(false);
+      }
+    }
+
+    return copyWith(
+      vertices: vertices_,
+      faces: faces_,
+      textureVertices: const <Vector3>[], //todo:
+      normals: const <Vector3>[], //todo:
+    ).tessellated(level - 1);
+  }
+
 //<editor-fold desc="Data Methods">
 
   @override
@@ -735,46 +818,14 @@ const _pinVertices = <Vector3>[
 ];
 
 const _octahedronFaces = <MeshFace>[
-  <MeshVertex>[
-    MeshVertex(4, -1, -1),
-    MeshVertex(0, -1, -1),
-    MeshVertex(2, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(4, -1, -1),
-    MeshVertex(2, -1, -1),
-    MeshVertex(1, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(4, -1, -1),
-    MeshVertex(1, -1, -1),
-    MeshVertex(3, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(4, -1, -1),
-    MeshVertex(3, -1, -1),
-    MeshVertex(0, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(5, -1, -1),
-    MeshVertex(2, -1, -1),
-    MeshVertex(0, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(5, -1, -1),
-    MeshVertex(1, -1, -1),
-    MeshVertex(2, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(5, -1, -1),
-    MeshVertex(3, -1, -1),
-    MeshVertex(1, -1, -1),
-  ],
-  <MeshVertex>[
-    MeshVertex(5, -1, -1),
-    MeshVertex(0, -1, -1),
-    MeshVertex(3, -1, -1),
-  ],
+  <MeshVertex>[MeshVertex(4), MeshVertex(0), MeshVertex(2)],
+  <MeshVertex>[MeshVertex(4), MeshVertex(2), MeshVertex(1)],
+  <MeshVertex>[MeshVertex(4), MeshVertex(1), MeshVertex(3)],
+  <MeshVertex>[MeshVertex(4), MeshVertex(3), MeshVertex(0)],
+  <MeshVertex>[MeshVertex(5), MeshVertex(2), MeshVertex(0)],
+  <MeshVertex>[MeshVertex(5), MeshVertex(1), MeshVertex(2)],
+  <MeshVertex>[MeshVertex(5), MeshVertex(3), MeshVertex(1)],
+  <MeshVertex>[MeshVertex(5), MeshVertex(0), MeshVertex(3)],
 ];
 
 const _pinMeshData = MeshData(
