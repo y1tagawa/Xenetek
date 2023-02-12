@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:math' as math;
+
 import 'basic.dart';
 
 // スクリプト的モデラ
@@ -57,10 +59,12 @@ class LookAtModifier extends MeshModifier {
 class BoneData {
   final double radius;
   final double force;
+  final double power;
   final bool dragging;
   const BoneData({
     this.radius = 1.0,
     this.force = 1.0,
+    this.power = 0.5,
     this.dragging = true,
   }) : assert(radius >= 1e-4);
 }
@@ -108,9 +112,9 @@ class SkinModifier extends MeshModifier {
         final d = pos.length;
         if (d <= bone.radius) {
           // 影響力
-          //final value = bone.force * math.pow(d, bone.power).toDouble();
+          final value = bone.force * math.pow(d, bone.power).toDouble();
           // radiusまでの距離に反比例（todo: exp）
-          final value = bone.force * d / bone.radius;
+          //final value = bone.force * d / bone.radius;
           // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
           boneValues.add(
             MapEntry(

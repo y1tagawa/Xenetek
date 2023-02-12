@@ -227,7 +227,7 @@ class HumanRig {
   }
 
   @protected
-  MeshData makeBox({
+  MeshData makeChest({
     required Node root,
     required Node initRoot,
     required String origin,
@@ -254,10 +254,46 @@ class HumanRig {
       modifiers: SkinModifier(
         bones: {
           // 原点chestにボーンを置くと原点の回転と重なって強すぎるが、neck一個だけだとそっちに全て引っぱられてしまう
-          chest: const BoneData(force: 0.5, radius: 0.3),
-          neck: const BoneData(),
+          chest: const BoneData(power: 0),
+          neck: const BoneData(power: 0),
           // rShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
           // lShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
+        }.entries.toList(),
+        initRoot: initRoot,
+      ),
+    ).toMeshData(root: root);
+  }
+
+  @protected
+  MeshData makeBelly({
+    required Node root,
+    required Node initRoot,
+    required String origin,
+  }) {
+    return Mesh(
+      data: BoxBuilder(
+        beginRect: math.Rectangle<double>(
+          -coxaPosition.x * 1.3,
+          scPosition.z,
+          coxaPosition.x * 2.6,
+          -scPosition.z,
+        ),
+        height: bellyLength,
+        widthDivision: 8,
+        heightDivision: 8,
+        depthDivision: 8,
+      ),
+      origin: origin,
+      // modifier: LookAtModifier(
+      //   target: target,
+      //   connect: true,
+      // ),
+      modifiers: SkinModifier(
+        bones: {
+          pelvis: const BoneData(power: 0),
+          chest: const BoneData(power: 0),
+          //rCoxa: const BoneData(power: 0.6),
+          //lCoxa: const BoneData(power: 0.6),
         }.entries.toList(),
         initRoot: initRoot,
       ),
@@ -288,9 +324,14 @@ class HumanRig {
 
     final buffer = <String, MeshData>{};
     // 胴体・頭
-    buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
+    //buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
+    buffer['belly'] = makeBelly(
+      root: root,
+      initRoot: initRoot,
+      origin: pelvis,
+    );
     //buffer['chest'] = makePin(root: root, origin: chest, target: neck);
-    buffer['chest'] = makeBox(
+    buffer['chest'] = makeChest(
       root: root,
       initRoot: initRoot,
       origin: chest,
