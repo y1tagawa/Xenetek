@@ -111,8 +111,9 @@ class SkinModifier extends MeshModifier {
             : initPos - initBoneMatrices[i].translation;
         final d = pos.length;
         if (d <= bone.radius) {
-          // 影響力
-          final value = bone.force * math.pow(d, bone.power).toDouble();
+          // 影響力(距離0において1.0、以後距離に反比例して0に漸近)
+          // gnuplot> plot [0:2][0:1] 1/(x+1)**0.5
+          final value = bone.force / math.pow(d + 1.0, bone.power).toDouble();
           // radiusまでの距離に反比例（todo: exp）
           //final value = bone.force * d / bone.radius;
           // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ

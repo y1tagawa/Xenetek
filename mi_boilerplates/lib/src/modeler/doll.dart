@@ -253,9 +253,8 @@ class HumanRig {
       // ),
       modifiers: SkinModifier(
         bones: {
-          // 原点chestにボーンを置くと原点の回転と重なって強すぎるが、neck一個だけだとそっちに全て引っぱられてしまう
-          chest: const BoneData(power: 0),
-          neck: const BoneData(power: 0),
+          chest: const BoneData(power: 4),
+          neck: const BoneData(power: 4),
           // rShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
           // lShoulder: const BoneData(radius: 0.1, power: 0.3, dragging: false),
         }.entries.toList(),
@@ -273,9 +272,9 @@ class HumanRig {
     return Mesh(
       data: BoxBuilder(
         beginRect: math.Rectangle<double>(
-          -coxaPosition.x * 1.3,
+          -coxaPosition.x * 1.5,
           scPosition.z,
-          coxaPosition.x * 2.6,
+          coxaPosition.x * 3.0,
           -scPosition.z,
         ),
         height: bellyLength,
@@ -290,10 +289,10 @@ class HumanRig {
       // ),
       modifiers: SkinModifier(
         bones: {
-          pelvis: const BoneData(power: 0),
-          chest: const BoneData(power: 0),
-          //rCoxa: const BoneData(power: 0.6),
-          //lCoxa: const BoneData(power: 0.6),
+          pelvis: const BoneData(power: 8),
+          chest: const BoneData(power: 8),
+          rCoxa: const BoneData(power: 8),
+          lCoxa: const BoneData(power: 8),
         }.entries.toList(),
         initRoot: initRoot,
       ),
