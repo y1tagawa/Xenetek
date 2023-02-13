@@ -161,6 +161,14 @@ Future<void> _setup(StringSink sink) async {
       ),
     ),
   );
+  root = root.add(
+    path: 'ball.magnet',
+    child: mi.Node(
+      matrix: mi.Matrix4.fromTranslation(
+        const mi.Vector3(1, 0, 0),
+      ),
+    ),
+  );
 
   //logger.fine('root');
   //logger.fine(root.format(sink: StringBuffer()).toString());
@@ -184,12 +192,18 @@ Future<void> _setup(StringSink sink) async {
       .bendLElbow(degrees: 120.0);
   //
   final meshDataArray = dollBuilder.toMeshData(root: root, initRoot: initRoot);
-  meshDataArray['ball'] = const mi.Mesh(
+
+  meshDataArray['ball'] = mi.Mesh(
     origin: 'ball',
-    data: mi.LongLatSphereBuilder(
+    data: const mi.LongLatSphereBuilder(
       radius: 0.5, //mi.Vector3(0.5, 0.7, 0.3),
       longitudeDivision: 36,
       latitudeDivision: 24,
+    ),
+    modifiers: mi.MagnetModifier(
+      magnets: const <String, mi.BoneData>{
+        'ball.magnet': mi.BoneData(),
+      }.entries.toList(),
     ),
   ).toMeshData(root: root);
 

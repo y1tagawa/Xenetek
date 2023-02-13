@@ -62,7 +62,7 @@ class BoneData {
   final double power;
   final Vector3 shape;
   const BoneData({
-    this.radius = 1.0,
+    this.radius = double.maxFinite,
     this.force = 1.0,
     this.power = -2,
     this.shape = Vector3.one,
@@ -112,8 +112,6 @@ class SkinModifier extends MeshModifier {
           // 影響力(距離0において1.0、以後距離のpower乗に比例して0に漸近)
           // gnuplot> plot [0:2][0:1] (x+1)**-2
           final value = bone.force * math.pow(d + 1.0, bone.power).toDouble();
-          // radiusまでの距離に反比例（todo: exp）
-          //final value = bone.force * d / bone.radius;
           // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
           boneValues.add(
             MapEntry(
@@ -160,15 +158,30 @@ class MagnetModifier extends MeshModifier {
     final originMatrix = root.find(path: mesh.origin)!.matrix;
     // rootから各磁石への変換行列
     final magnetMatrices = magnets.map((it) => root.find(path: it.key)!.matrix).toList();
+    final invMagnetMatrices = magnetMatrices.map((it) => it.inverted()).toList();
 
     // 頂点変形
     final vertices = <Vector3>[];
     // 各頂点について...
     for (final vertex in data.vertices) {
-      // 各磁石の影響力を
+      final pos = vertex.transformed(originMatrix);
+      // 各磁石からの力を集計
+      var delta = Vector3.zero;
+      for (int i = 0; i < magnets.length; ++i) {
+        final magnet = magnets[i].value;
+        final pos_ = pos.transformed(invMagnetMatrices[i]);
+        final d = pos_.length;
+        if (d < magnet.radius) {
+          final value = magnet.force * math.pow(d + 1.0, magnet.power).toDouble();
+          // todo: shape
+          delta = delta + pos_ * value;
+        }
+      }
+      vertices.add(pos + delta);
     }
-
-    // TODO: implement transform
-    throw UnimplementedError();
+    return data.copyWith(
+      vertices: vertices,
+      normals: <Vector3>[],
+    );
   }
 }
