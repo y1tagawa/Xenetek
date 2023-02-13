@@ -178,17 +178,17 @@ abstract class _SorBuilder extends MeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('_SorBuilder');
 
-  final int revolutionDivision;
+  final int longitudeDivision;
   final Vector3 axis;
   final bool smooth;
   final bool reverse;
 
   const _SorBuilder({
-    this.revolutionDivision = 12,
+    this.longitudeDivision = 12,
     this.axis = Vector3.unitY,
     this.smooth = true,
     this.reverse = false,
-  }) : assert(revolutionDivision >= 2);
+  }) : assert(longitudeDivision >= 2);
 
   /// 母線頂点(Y軸周り)
   List<Vector3> makeGeneratingLine();
@@ -201,7 +201,7 @@ abstract class _SorBuilder extends MeshBuilder {
     final vertices_ = <Vector3>[];
     final matrix = Matrix4.fromAxisAngleRotation(
       axis: axis,
-      radians: index * 2.0 * math.pi / revolutionDivision,
+      radians: index * 2.0 * math.pi / longitudeDivision,
     );
     for (final vertex in generatingLine) {
       vertices_.add(vertex.transformed(matrix));
@@ -222,7 +222,7 @@ abstract class _SorBuilder extends MeshBuilder {
     );
     final n = vertices.length;
     assert(n >= 2);
-    for (int i = 1; i < revolutionDivision; ++i) {
+    for (int i = 1; i < longitudeDivision; ++i) {
       final outline = makeOutline(
         generatingLine: generatingLine,
         index: i,
@@ -238,7 +238,7 @@ abstract class _SorBuilder extends MeshBuilder {
   /// todo: axis
   @override
   MeshData build() {
-    assert(revolutionDivision >= 2);
+    assert(longitudeDivision >= 2);
     // 頂点生成
     final generatingLine = makeGeneratingLine();
     final outlines = makeVertices(generatingLine: generatingLine);
@@ -258,7 +258,7 @@ abstract class _SorBuilder extends MeshBuilder {
     }
 
     int i = 0;
-    for (; i < revolutionDivision - 1; ++i) {
+    for (; i < longitudeDivision - 1; ++i) {
       addFaces(i * n, (i + 1) * n);
     }
     addFaces(i * n, 0);
@@ -278,7 +278,7 @@ class SorBuilder extends _SorBuilder {
   const SorBuilder({
     required this.vertices,
     super.axis = Vector3.unitY,
-    super.revolutionDivision = 12,
+    super.longitudeDivision = 12,
     super.smooth = true,
     super.reverse = false,
   }) : assert(vertices.length >= 2);
@@ -302,12 +302,11 @@ class LongLatSphereBuilder extends _SorBuilder {
     super.axis = Vector3.unitY,
     this.radius = Vector3.one,
     this.latitudeDivision = 6,
-    int longitudeDivision = 12,
+    super.longitudeDivision = 12,
     super.smooth = true,
     super.reverse = false,
   })  : assert(latitudeDivision >= 2),
-        assert(radius is num || radius is Vector3),
-        super(revolutionDivision: longitudeDivision);
+        assert(radius is num || radius is Vector3);
 
   /// 母線頂点(Y軸周り)
   @override
@@ -333,16 +332,19 @@ class LongLatSphereBuilder extends _SorBuilder {
 // 円筒などの末端形状
 
 /// 末端形状の基底クラス
+@immutable
 abstract class EndShape {
   const EndShape();
 }
 
 /// 開
+@immutable
 class OpenEnd extends EndShape {
   const OpenEnd();
 }
 
 /// 錐
+@immutable
 class ConeEnd extends EndShape {
   final double height;
   final int division;
@@ -350,11 +352,13 @@ class ConeEnd extends EndShape {
 }
 
 /// 閉
+@immutable
 class FlatEnd extends ConeEnd {
   const FlatEnd({super.division = 1}) : super(height: 0.0);
 }
 
 /// 曲面
+@immutable
 class DomeEnd extends EndShape {
   final double height;
   final int division;
@@ -362,6 +366,7 @@ class DomeEnd extends EndShape {
 }
 
 /// 円筒メッシュビルダ
+@immutable
 class TubeBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('TubeBuilder');
@@ -378,7 +383,7 @@ class TubeBuilder extends _SorBuilder {
     this.beginRadius = 0.5,
     this.endRadius = 0.5,
     this.height = 1.0,
-    super.revolutionDivision = 12,
+    super.longitudeDivision = 12,
     this.heightDivision = 1,
     this.beginShape = const OpenEnd(),
     this.endShape = const OpenEnd(),
@@ -388,7 +393,7 @@ class TubeBuilder extends _SorBuilder {
 
   @override
   List<Vector3> makeGeneratingLine() {
-    assert(revolutionDivision >= 3);
+    assert(longitudeDivision >= 3);
     assert(heightDivision >= 1);
 
     // 母線頂点生成
