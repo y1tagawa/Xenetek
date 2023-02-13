@@ -193,7 +193,7 @@ abstract class _SorBuilder extends MeshBuilder {
   /// 母線頂点(Y軸周り)
   List<Vector3> makeGeneratingLine();
 
-  /// 頂点生成
+  /// 輪郭線生成
   List<Vector3> makeOutline({
     required final List<Vector3> generatingLine,
     required final int index,
@@ -209,13 +209,10 @@ abstract class _SorBuilder extends MeshBuilder {
     return vertices_;
   }
 
-  /// メッシュデータ生成
-  /// todo: axis
-  @override
-  MeshData build() {
-    assert(revolutionDivision >= 2);
-    // 頂点生成
-    final generatingLine = makeGeneratingLine();
+  /// 頂点生成
+  MapEntry<int, List<Vector3>> makeVertices({
+    required final List<Vector3> generatingLine,
+  }) {
     final vertices = <Vector3>[];
     vertices.addAll(
       makeOutline(
@@ -226,13 +223,27 @@ abstract class _SorBuilder extends MeshBuilder {
     final n = vertices.length;
     assert(n >= 2);
     for (int i = 1; i < revolutionDivision; ++i) {
-      final edge = makeOutline(
+      final outline = makeOutline(
         generatingLine: generatingLine,
         index: i,
       );
-      assert(edge.length == n);
-      vertices.addAll(edge);
+      // 全ての輪郭線の頂点数は同じでなきゃならぬ
+      assert(outline.length == n);
+      vertices.addAll(outline);
     }
+    return MapEntry(n, vertices);
+  }
+
+  /// メッシュデータ生成
+  /// todo: axis
+  @override
+  MeshData build() {
+    assert(revolutionDivision >= 2);
+    // 頂点生成
+    final generatingLine = makeGeneratingLine();
+    final outlines = makeVertices(generatingLine: generatingLine);
+    final n = outlines.key;
+    final vertices = outlines.value;
     // 面生成
     final faces = <MeshFace>[];
     void addFaces(final int j0, final int j1) {
@@ -295,17 +306,27 @@ class LongLatSphereBuilder extends _SorBuilder {
     super.smooth = true,
     super.reverse = false,
   })  : assert(latitudeDivision >= 2),
+        assert(radius is num || radius is Vector3),
         super(revolutionDivision: longitudeDivision);
 
   /// 母線頂点(Y軸周り)
   @override
   List<Vector3> makeGeneratingLine() {
     final vertices = <Vector3>[];
-    for (int i = 0; i < latitudeDivision; ++i) {
+    for (int i = 0; i <= latitudeDivision; ++i) {
       final t = i * math.pi / latitudeDivision;
-      vertices.add(Vector3(math.cos(t), math.sin(t), 0.0));
+      vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
     }
     return vertices;
+  }
+
+  /// 頂点生成
+  @override
+  MapEntry<int, List<Vector3>> makeVertices({
+    required List<Vector3> generatingLine,
+  }) {
+    final vertices = super.makeVertices(generatingLine: generatingLine);
+    return MapEntry(vertices.key, vertices.value.transformed(Matrix4.fromScale(radius)));
   }
 }
 
