@@ -5,10 +5,10 @@
 import 'dart:math' as math;
 
 import 'basic.dart';
-import 'doll.dart';
+import 'human_rig.dart';
 
 // スクリプト的ドール(mk1)モデラ拡張
-// todo: むしろこの辺はdool.dartに
+// todo: むしろこの辺はdoll.dartに
 
 extension NodeHelper on Node {
   // ポージング

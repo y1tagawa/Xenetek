@@ -55,17 +55,17 @@ class LookAtModifier extends MeshModifier {
   }
 }
 
-/// ボーンデータ
+/// ボーン
 class BoneData {
   final double radius;
   final double force;
   final double power;
-  final bool dragging;
+  final Vector3 shape;
   const BoneData({
     this.radius = 1.0,
     this.force = 1.0,
     this.power = -2,
-    this.dragging = true,
+    this.shape = Vector3.one,
   }) : assert(radius >= 1e-4);
 }
 
@@ -106,9 +106,7 @@ class SkinModifier extends MeshModifier {
       for (int i = 0; i < bones.length; ++i) {
         final bone = bones[i].value;
         // 初期姿勢におけるボーンからの相対位置を...
-        final pos = bone.dragging
-            ? initPos.transformed(initInvBoneMatrices[i])
-            : initPos - initBoneMatrices[i].translation;
+        final pos = initPos.transformed(initInvBoneMatrices[i]);
         final d = pos.length;
         if (d <= bone.radius) {
           // 影響力(距離0において1.0、以後距離のpower乗に比例して0に漸近)
@@ -119,7 +117,7 @@ class SkinModifier extends MeshModifier {
           // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
           boneValues.add(
             MapEntry(
-              bone.dragging ? pos.transformed(boneMatrices[i]) : pos + boneMatrices[i].translation,
+              pos.transformed(boneMatrices[i]),
               value,
             ),
           );
@@ -160,8 +158,15 @@ class MagnetModifier extends MeshModifier {
   }) {
     // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
-    // rootから各磁力中心への変換行列
+    // rootから各磁石への変換行列
     final magnetMatrices = magnets.map((it) => root.find(path: it.key)!.matrix).toList();
+
+    // 頂点変形
+    final vertices = <Vector3>[];
+    // 各頂点について...
+    for (final vertex in data.vertices) {
+      // 各磁石の影響力を
+    }
 
     // TODO: implement transform
     throw UnimplementedError();
