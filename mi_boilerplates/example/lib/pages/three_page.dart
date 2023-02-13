@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart' hide Matrix4;
@@ -186,7 +187,7 @@ Future<void> _setup(StringSink sink) async {
   meshDataArray['ball'] = const mi.Mesh(
     origin: 'ball',
     data: mi.LongLatSphereBuilder(
-      radius: 0.3, //mi.Vector3(0.5, 0.7, 0.3),
+      radius: 0.5, //mi.Vector3(0.5, 0.7, 0.3),
       longitudeDivision: 36,
       latitudeDivision: 24,
     ),
@@ -195,65 +196,82 @@ Future<void> _setup(StringSink sink) async {
   meshDataArray.toWavefrontObj(sink);
 }
 
-final _documentsDirectoryProvider = FutureProvider<Directory>((ref) async {
-  return await getApplicationDocumentsDirectory();
-});
+Future<String> _getModelTempFileDir() async {
+  final docDir = await getApplicationDocumentsDirectory();
+  return docDir.path;
+}
 
-final _updateProvider = StateProvider((ref) => false);
+int _cubeKey = 0;
+
+Future<cube.Cube> _getCube() async {
+  final tempDir = await _getModelTempFileDir();
+  ++_cubeKey;
+  return cube.Cube(
+    key: Key(_cubeKey.toString()),
+    onSceneCreated: (cube.Scene scene) {
+      scene.camera = cube.Camera(
+        position: cube.Vector3(-0.05, 0.3, 1.5),
+        target: cube.Vector3(-0.05, 0.3, 0),
+        fov: 35.0,
+      );
+      scene.world.add(
+        cube.Object(
+          fileName: '$tempDir/temp.obj',
+          isAsset: false,
+          lighting: true,
+        ),
+      );
+    },
+  );
+}
+
+final _cubeDataStream = StreamController<cube.Cube>();
+final _cubeDataProvider = StreamProvider<cube.Cube>(
+  (ref) async* {
+    _cubeDataStream.add(await _getCube());
+    await for (final cube in _cubeDataStream.stream) {
+      yield cube;
+    }
+  },
+);
 
 class _ModelerTab extends ConsumerWidget {
+  // ignore: unused_field
   static final _logger = Logger((_ModelerTab).toString());
 
   const _ModelerTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final documentsDirectory = ref.watch(_documentsDirectoryProvider);
-    return documentsDirectory.when(
-      data: (data) {
-        final tempFilePath = '${documentsDirectory.value!.path}/temp.obj';
-        _logger.fine('temp file path=$tempFilePath');
-
-        return Column(
-          children: [
-            mi.ButtonListTile(
-              enabled: documentsDirectory.hasValue,
-              text: const Text('Update'),
-              onPressed: () async {
-                final file = File(tempFilePath);
-                final sink = file.openWrite();
-                await _setup(sink);
-                await sink.close();
-                ref.watch(_updateProvider.notifier).update((state) => !state);
+    _logger.fine('[i] build');
+    final cubeData = ref.watch(_cubeDataProvider);
+    return Column(
+      children: [
+        mi.ButtonListTile(
+          enabled: cubeData.hasValue,
+          text: const Text('Update'),
+          onPressed: () async {
+            final tempDir = await _getModelTempFileDir();
+            final file = File('$tempDir/temp.obj');
+            final sink = file.openWrite();
+            await _setup(sink);
+            await sink.close();
+            _cubeDataStream.add(await _getCube());
+          },
+        ),
+        Expanded(
+          child: Center(
+            child: cubeData.when(
+              data: (data) => data,
+              error: (error, stackTrace) {
+                debugPrintStack(label: error.toString(), stackTrace: stackTrace);
+                return Text(error.toString());
               },
+              loading: () => const CircularProgressIndicator(),
             ),
-            Expanded(
-              child: Center(
-                child: cube.Cube(
-                  onSceneCreated: (cube.Scene scene) {
-                    final model = cube.Object(
-                      fileName: tempFilePath,
-                      isAsset: false,
-                      lighting: true,
-                    );
-                    scene.world.add(model);
-                    scene.camera = cube.Camera(
-                      position: cube.Vector3(-0.05, 0.3, 1.5),
-                      target: cube.Vector3(-0.05, 0.3, 0),
-                      fov: 35.0,
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-      error: (error, stackTrace) {
-        debugPrintStack(stackTrace: stackTrace, label: error.toString());
-        return Text(error.toString());
-      },
-      loading: () => const CircularProgressIndicator(),
+          ),
+        ),
+      ],
     );
   }
 }
