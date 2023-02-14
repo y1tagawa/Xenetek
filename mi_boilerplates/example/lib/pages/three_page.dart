@@ -243,23 +243,18 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
     origin: 'ball',
     data: const mi.LongLatSphereBuilder(
       radius: 0.5, //mi.Vector3(0.5, 0.7, 0.3),
-      longitudeDivision: 36,
+      longitudeDivision: 48,
       latitudeDivision: 24,
     ),
     modifiers: mi.MagnetModifier(
       magnets: const <String, mi.BoneData>{
-        'ball.magnet': mi.BoneData(),
+        'ball.magnet': mi.BoneData(force: 1),
       }.entries.toList(),
     ),
   ).toMeshData(root: root);
 
   meshDataArray['magnet'] = const mi.Mesh(
     origin: 'ball.magnet',
-    // data: mi.LongLatSphereBuilder(
-    //   radius: mi.Vector3(0.05, 0.3, 0.1),
-    //   longitudeDivision: 8,
-    //   latitudeDivision: 4,
-    // ),
   ).toMeshData(root: root);
 
   meshDataArray.toWavefrontObj(sink);
