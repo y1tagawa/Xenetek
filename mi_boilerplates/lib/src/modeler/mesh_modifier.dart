@@ -157,6 +157,7 @@ class MagnetModifier extends MeshModifier {
   }) {
     // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
+    final invOriginMatrix = originMatrix.inverted();
     // rootから各磁石への変換行列
     final magnetMatrices = magnets.map((it) => root.find(path: it.key)!.matrix).toList();
     final invMagnetMatrices = magnetMatrices.map((it) => it.inverted()).toList();
@@ -165,20 +166,20 @@ class MagnetModifier extends MeshModifier {
     final vertices = <Vector3>[];
     // 各頂点について...
     for (final vertex in data.vertices) {
-      final pos = vertex.transformed(originMatrix);
+      //final pos = vertex.transformed(originMatrix);
       // 各磁石からの力を集計
       var delta = Vector3.zero;
       for (int i = 0; i < magnets.length; ++i) {
         final magnet = magnets[i].value;
-        final pos_ = pos.transformed(invMagnetMatrices[i]);
-        final d = pos_.length;
+        final p = vertex.transformed(invMagnetMatrices[i] * originMatrix);
+        final d = p.length;
         if (d < magnet.radius) {
           final value = magnet.force * math.pow(d + 1.0, magnet.power).toDouble();
           // todo: shape
-          delta = delta + pos_ * value;
+          delta = delta + p * value;
         }
       }
-      vertices.add(pos + delta);
+      vertices.add((vertex + delta).transformed(originMatrix));
     }
     return data.copyWith(
       vertices: vertices,

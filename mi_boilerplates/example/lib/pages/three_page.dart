@@ -137,7 +137,48 @@ class _BunnyTab extends ConsumerWidget {
 
 //<editor-fold>
 
-Future<void> _setup(StringSink sink) async {
+cube.Mesh _toMesh(Map<String, mi.MeshData> meshDataArray) {
+  final vertices = <cube.Vector3>[];
+  final indices = <cube.Polygon>[];
+  int vertexIndex = 0;
+  for (final data in meshDataArray.values) {
+    vertices.addAll(data.vertices.map((it) => cube.Vector3(it.x, it.y, it.z)));
+    for (final face in data.faces) {
+      for (int i = 1; i < face.length - 1; ++i) {
+        indices.add(cube.Polygon(
+          face[0].vertexIndex + vertexIndex,
+          face[i].vertexIndex + vertexIndex,
+          face[i + 1].vertexIndex + vertexIndex,
+        ));
+      }
+    }
+    vertexIndex += data.vertices.length;
+  }
+  return cube.Mesh(vertices: vertices, indices: indices);
+}
+
+cube.Cube _toCube(Map<String, mi.MeshData> meshDataArray) {
+  final mesh = _toMesh(meshDataArray);
+  ++_cubeKey;
+  return cube.Cube(
+    key: Key(_cubeKey.toString()),
+    onSceneCreated: (cube.Scene scene) {
+      scene.camera = cube.Camera(
+        position: cube.Vector3(-0.05, 0.3, 1.5),
+        target: cube.Vector3(-0.05, 0.3, 0),
+        fov: 35.0,
+      );
+      scene.world.add(
+        cube.Object(
+          mesh: mesh,
+          lighting: true,
+        ),
+      );
+    },
+  );
+}
+
+Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   final logger = Logger('_setup');
 
   final headObj = await rootBundle.loadString('assets/3d/head.obj');
@@ -222,6 +263,8 @@ Future<void> _setup(StringSink sink) async {
   ).toMeshData(root: root);
 
   meshDataArray.toWavefrontObj(sink);
+
+  return meshDataArray;
 }
 
 Future<String> _getModelTempFileDir() async {
@@ -282,8 +325,9 @@ class _ModelerTab extends ConsumerWidget {
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();
-            await _setup(sink);
+            final meshDataArray = await _setup(sink);
             await sink.close();
+            //_cubeDataStream.add(_toCube(meshDataArray));
             _cubeDataStream.add(await _getCube());
           },
         ),

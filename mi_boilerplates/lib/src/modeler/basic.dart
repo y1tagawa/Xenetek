@@ -475,8 +475,8 @@ class Node {
     Vector3 forward = Vector3.unitY, // todo: -unitZ
   }) {
     final path_ = toPath(path);
-    final targetPath_ = toPath(targetPath);
     final matrix = find(path: path_)!.matrix;
+    final targetPath_ = toPath(targetPath);
     final targetMatrix = find(path: targetPath_)!.matrix;
     return transform(
       path: path_,
