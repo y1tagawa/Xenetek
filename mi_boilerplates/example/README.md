@@ -45,10 +45,8 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 ## TODO
 
-* MeshData → MeshBuilderに
-  * SorBuilderおよびTubeBuilderは複雑なので別ファイルに
-* MeshModifierを別ファイルに
-* スキンモディファイア
+* normalはmodifierと合いが悪い...削除すべきか？
+  * 折れ目を考えると回転体もいまいちな感じ。ちょっと考える。
 
 * ConsumeStatefulWidgetで、initStateでrefでプロバイダ初期化できるか？（awaitできないから、
   初期値をゲットできないが初期化だけならできそう）

@@ -191,6 +191,11 @@ Future<void> _setup(StringSink sink) async {
       .bendRElbow(degrees: 60.0)
       .bendLElbow(degrees: 120.0);
   //
+  root = root.lookAt(
+    path: 'ball.magnet',
+    targetPath: 'ball',
+  );
+  //
   final meshDataArray = dollBuilder.toMeshData(root: root, initRoot: initRoot);
 
   meshDataArray['ball'] = mi.Mesh(
@@ -205,6 +210,15 @@ Future<void> _setup(StringSink sink) async {
         'ball.magnet': mi.BoneData(),
       }.entries.toList(),
     ),
+  ).toMeshData(root: root);
+
+  meshDataArray['magnet'] = const mi.Mesh(
+    origin: 'ball.magnet',
+    // data: mi.LongLatSphereBuilder(
+    //   radius: mi.Vector3(0.05, 0.3, 0.1),
+    //   longitudeDivision: 8,
+    //   latitudeDivision: 4,
+    // ),
   ).toMeshData(root: root);
 
   meshDataArray.toWavefrontObj(sink);

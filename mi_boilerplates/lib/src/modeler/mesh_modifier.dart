@@ -55,7 +55,7 @@ class LookAtModifier extends MeshModifier {
   }
 }
 
-/// ボーン
+/// ボーン(マグネット)
 class BoneData {
   final double radius;
   final double force;
@@ -109,6 +109,7 @@ class SkinModifier extends MeshModifier {
         final pos = initPos.transformed(initInvBoneMatrices[i]);
         final d = pos.length;
         if (d <= bone.radius) {
+          // todo: shape
           // 影響力(距離0において1.0、以後距離のpower乗に比例して0に漸近)
           // gnuplot> plot [0:2][0:1] (x+1)**-2
           final value = bone.force * math.pow(d + 1.0, bone.power).toDouble();

@@ -468,6 +468,25 @@ class Node {
     );
   }
 
+  /// [path]で指定したノードが、[targetPath]の原点を向くよう変換したコピーを返す。
+  Node lookAt({
+    dynamic path = const <String>[],
+    required dynamic targetPath,
+    Vector3 forward = Vector3.unitY, // todo: -unitZ
+  }) {
+    final path_ = toPath(path);
+    final targetPath_ = toPath(targetPath);
+    final matrix = find(path: path_)!.matrix;
+    final targetMatrix = find(path: targetPath_)!.matrix;
+    return transform(
+      path: path_,
+      matrix: Matrix4.fromForwardTargetRotation(
+        forward: forward,
+        target: (matrix.inverted() * targetMatrix).translation,
+      ),
+    );
+  }
+
   /// 可読だが正確でない出力
   StringSink format({
     required StringSink sink,
