@@ -247,8 +247,8 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
       latitudeDivision: 24,
     ),
     modifiers: mi.MagnetModifier(
-      magnets: const <String, mi.BoneData>{
-        'ball.magnet': mi.BoneData(force: -1, shape: mi.Vector3(0.1, 1, 0.1)),
+      magnets: const <String, mi.MagnetData>{
+        'ball.magnet': mi.MagnetData(force: -1, shape: mi.Vector3(0.1, 1, 0.1)),
       }.entries.toList(),
     ),
   ).toMeshData(root: root);

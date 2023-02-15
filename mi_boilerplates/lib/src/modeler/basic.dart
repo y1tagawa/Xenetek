@@ -933,7 +933,9 @@ class Mesh {
         assert(modifiers is MeshModifier || modifiers is List<MeshModifier>);
 
   MeshData toMeshData({required final Node root}) {
+    // メッシュデータ生成
     var data_ = data is MeshBuilder ? (data as MeshBuilder).build() : data as MeshData;
+    // 変形
     if (modifiers is MeshModifier) {
       data_ = (modifiers as MeshModifier).transform(mesh: this, data: data_, root: root);
     } else {
@@ -941,6 +943,7 @@ class Mesh {
         data_ = modifier.transform(mesh: this, data: data_, root: root);
       }
     }
+    // root座標に変換
     return data_.transformed(root.find(path: origin)!.matrix);
   }
 }

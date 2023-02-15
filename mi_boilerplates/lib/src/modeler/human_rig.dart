@@ -240,14 +240,21 @@ class HumanRig {
         tessellationLevel: 3,
       ),
       origin: origin,
-      modifiers: SkinModifier(
-        bones: {
-          chest: const BoneData(power: -8),
-          rSc: const BoneData(power: -8),
-          lSc: const BoneData(power: -8),
-        }.entries.toList(),
-        initRoot: initRoot,
-      ),
+      modifiers: [
+        SkinModifier(
+          bones: {
+            chest: const BoneData(power: -8),
+            rSc: const BoneData(power: -8),
+            lSc: const BoneData(power: -8),
+          }.entries.toList(),
+          initRoot: initRoot,
+        ),
+        // MagnetModifier(
+        //   magnets: <String, BoneData>{
+        //     head: const BoneData(force: -1),
+        //   }.entries.toList(),
+        // ),
+      ],
     ).toMeshData(root: root);
   }
 

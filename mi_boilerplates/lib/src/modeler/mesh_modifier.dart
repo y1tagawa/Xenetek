@@ -19,6 +19,7 @@ import 'basic.dart';
 /// メッシュデータの[axis]が[origin]から[target]を向くように回転させる。
 /// [connect]が`true`であるとき、Y=0.0~1.0が[origin]と[target]になるよう延長する。
 /// [proportional]が`true`であるとき、延長に合わせて全体を拡縮する。
+@immutable
 class LookAtModifier extends MeshModifier {
   final String target;
   final Vector3 axis; //todo:
@@ -39,40 +40,41 @@ class LookAtModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    // rootからoriginへの変換行列
+    // originからrootへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
-    // rootからtargetの変換行列を、origin原点に変換
+    // targetからrootの変換行列を、origin原点に変換
     final targetMatrix = originMatrix.inverted() * root.find(path: target)!.matrix;
     // origin原点から軸線終点をtargetに向ける回転行列
+    // todo: rotationでaxisをunitYに変換
     final rotation = Matrix4.fromForwardTargetRotation(
-      forward: Vector3.unitY, // todo: axis
+      forward: Vector3.unitY,
       target: targetMatrix.translation,
     );
-    // todo: axis
     // メッシュ拡縮行列
     final scaleY = connect ? targetMatrix.translation.length : 1.0;
     final scaleXZ = proportional ? scaleY : 1.0;
     final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
     // 全体をroot座標に変換
+    // todo: rotationでunitYをaxisに戻す
     return data.transformed(rotation * scale);
   }
 }
 
-/// ボーン(マグネット)
+/// ボーン
+@immutable
 class BoneData {
   final double radius;
   final double force;
   final double power;
-  final Vector3 shape;
   const BoneData({
     this.radius = double.maxFinite,
     this.force = 1.0,
     this.power = -2,
-    this.shape = Vector3.one,
   }) : assert(radius >= 1e-4);
 }
 
 /// スキンモディファイア
+@immutable
 class SkinModifier extends MeshModifier {
   final List<MapEntry<String, BoneData>> bones;
   final Node initRoot; // 初期姿勢のrootノード
@@ -88,14 +90,14 @@ class SkinModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    // 初期姿勢のrootからoriginへの変換行列
+    // 初期姿勢のoriginからrootへの変換行列
     final initOriginMatrix = initRoot.find(path: mesh.origin)!.matrix;
-    // 初期姿勢のrootから各ボーンへの変換行列とその逆
+    // 初期姿勢の各ボーンからrootへの変換行列とその逆
     final initBoneMatrices = bones.map((it) => initRoot.find(path: it.key)!.matrix).toList();
     final initInvBoneMatrices = initBoneMatrices.map((it) => it.inverted()).toList();
-    // rootからoriginへの変換行列
+    // originからrootへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
-    // rootから各ボーンへの変換行列
+    // 各ボーンからrootへの変換行列
     final boneMatrices = bones.map((it) => root.find(path: it.key)!.matrix).toList();
 
     // 各頂点について、
@@ -141,9 +143,27 @@ class SkinModifier extends MeshModifier {
 
     return data.copyWith(
       vertices: vertices,
-      normals: <Vector3>[], //todo:
+      normals: <Vector3>[],
     ).transformed(originMatrix.inverted());
   }
+}
+
+/// 磁石
+@immutable
+class MagnetData {
+  final double radius;
+  final double force;
+  final double power;
+  final Vector3 shape;
+  final bool mirror;
+
+  const MagnetData({
+    this.radius = double.maxFinite,
+    this.force = 1.0,
+    this.power = -2,
+    this.shape = Vector3.one,
+    this.mirror = false,
+  }) : assert(radius >= 1e-4);
 }
 
 /// マグネットモディファイア
@@ -152,7 +172,7 @@ class MagnetModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('MagnetModifier');
 
-  final List<MapEntry<String, BoneData>> magnets;
+  final List<MapEntry<String, MagnetData>> magnets;
 
   const MagnetModifier({required this.magnets});
 
@@ -177,6 +197,7 @@ class MagnetModifier extends MeshModifier {
       // 各磁石からの力を集計
       var delta = Vector3.zero;
       for (int i = 0; i < magnets.length; ++i) {
+        // 各磁石について...
         final magnet = magnets[i].value;
         // 磁石から見た頂点の方向
         // todo: shape
