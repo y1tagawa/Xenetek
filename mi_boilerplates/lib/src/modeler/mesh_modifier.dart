@@ -154,14 +154,14 @@ class MagnetData {
   final double radius;
   final double force;
   final double power;
-  final Vector3 shape;
+  final Vector3 polarization;
   final bool mirror;
 
   const MagnetData({
     this.radius = double.maxFinite,
     this.force = 1.0,
     this.power = -2,
-    this.shape = Vector3.one,
+    this.polarization = Vector3.one,
     this.mirror = false,
   }) : assert(radius >= 1e-4);
 }
@@ -186,8 +186,6 @@ class MagnetModifier extends MeshModifier {
     final originMatrix = root.find(path: mesh.origin)!.matrix;
     // rootから各磁石への変換行列
     final magnetMatrices = magnets.map((it) => root.find(path: it.key)!.matrix).toList();
-    final magnetRotations = magnetMatrices.map((it) => it.rotation).toList();
-    final invMagnetRotations = magnetRotations.map((it) => it.inverted()).toList();
 
     // 頂点変形
     final vertices = <Vector3>[];
@@ -199,15 +197,16 @@ class MagnetModifier extends MeshModifier {
       for (int i = 0; i < magnets.length; ++i) {
         // 各磁石について...
         final magnet = magnets[i].value;
-        // 磁石から見た頂点の方向
-        // todo: shape
+        // 磁石から見た頂点の方向（引力が+）
         final v = p - magnetMatrices[i].translation;
         final d = v.length;
         if (d >= 1e-6 && d <= magnet.radius) {
-          delta = delta + v * magnet.force * math.pow(d + 1.0, magnet.power);
+          // 分極および距離による減衰
+          final pv = v.normalized() * magnet.polarization.transformed(magnetMatrices[i].rotation);
+          delta += pv * magnet.force * math.pow(d + 1.0, magnet.power);
         }
       }
-      vertices.add(p - delta);
+      vertices.add(p + delta);
     }
     return data.copyWith(
       vertices: vertices,

@@ -206,7 +206,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
     path: 'ball.magnet',
     child: mi.Node(
       matrix: mi.Matrix4.fromTranslation(
-        const mi.Vector3(1, 0, 0),
+        const mi.Vector3(0.6, 0, 0),
       ),
     ),
   );
@@ -248,7 +248,12 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
     ),
     modifiers: mi.MagnetModifier(
       magnets: const <String, mi.MagnetData>{
-        'ball.magnet': mi.MagnetData(force: -1, shape: mi.Vector3(0.1, 1, 0.1)),
+        'ball.magnet': mi.MagnetData(
+          radius: 1.0,
+          force: 1,
+          polarization: mi.Vector3(0.1, 1, 0.3),
+          power: -4,
+        ),
       }.entries.toList(),
     ),
   ).toMeshData(root: root);
