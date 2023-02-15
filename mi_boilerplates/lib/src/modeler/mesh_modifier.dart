@@ -202,8 +202,9 @@ class MagnetModifier extends MeshModifier {
         final d = v.length;
         if (d >= 1e-6 && d <= magnet.radius) {
           // 分極および距離による減衰
-          final pv = v.normalized() * magnet.polarization.transformed(magnetMatrices[i].rotation);
-          delta += pv * magnet.force * math.pow(d + 1.0, magnet.power);
+          final a = magnet.polarization
+              .transformed((originMatrix.inverted() * magnetMatrices[i]).rotation);
+          delta += (v.normalized() * a) * magnet.force * math.pow(d + 1.0, magnet.power);
         }
       }
       vertices.add(p + delta);

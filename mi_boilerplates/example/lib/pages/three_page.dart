@@ -205,9 +205,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   root = root.add(
     path: 'ball.magnet',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(
-        const mi.Vector3(0.6, 0, 0),
-      ),
+      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.6, 0, 0)),
     ),
   );
 
@@ -232,10 +230,15 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
       .bendRElbow(degrees: 60.0)
       .bendLElbow(degrees: 120.0);
   //
-  root = root.lookAt(
-    path: 'ball.magnet',
-    targetPath: 'ball',
-  );
+  root = root
+      .lookAt(
+        path: 'ball.magnet',
+        targetPath: 'ball',
+      )
+      .transform(
+        path: 'ball.magnet',
+        matrix: mi.Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitY, degrees: 30),
+      );
   //
   final meshDataArray = dollBuilder.toMeshData(root: root, initRoot: initRoot);
 
@@ -251,7 +254,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
         'ball.magnet': mi.MagnetData(
           radius: 1.0,
           force: 1,
-          polarization: mi.Vector3(0.1, 1, 0.3),
+          polarization: mi.Vector3(0.05, 1, 0.5),
           power: -4,
         ),
       }.entries.toList(),
