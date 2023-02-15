@@ -901,10 +901,10 @@ abstract class MeshModifier {
 
 /// デフォルトメッシュモディファイア
 ///
-/// [origin]の原点にメッシュデータを配置する。
+/// 何もしない
 @immutable
-class _OriginModifier extends MeshModifier {
-  const _OriginModifier();
+class _NopModifier extends MeshModifier {
+  const _NopModifier();
 
   @override
   MeshData transform({
@@ -912,8 +912,7 @@ class _OriginModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    final origin_ = root.find(path: mesh.origin)!.matrix;
-    return data.transformed(origin_);
+    return data;
   }
 }
 
@@ -929,7 +928,7 @@ class Mesh {
   const Mesh({
     this.data = _pinMeshData,
     required this.origin,
-    this.modifiers = const _OriginModifier(),
+    this.modifiers = const _NopModifier(),
   })  : assert(data is MeshData || data is MeshBuilder),
         assert(modifiers is MeshModifier || modifiers is List<MeshModifier>);
 
@@ -942,6 +941,6 @@ class Mesh {
         data_ = modifier.transform(mesh: this, data: data_, root: root);
       }
     }
-    return data_;
+    return data_.transformed(root.find(path: origin)!.matrix);
   }
 }

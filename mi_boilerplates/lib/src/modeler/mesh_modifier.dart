@@ -54,7 +54,7 @@ class LookAtModifier extends MeshModifier {
     final scaleXZ = proportional ? scaleY : 1.0;
     final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
     // 全体をroot座標に変換
-    return data.transformed(originMatrix * rotation * scale);
+    return data.transformed(rotation * scale);
   }
 }
 
@@ -128,21 +128,21 @@ class SkinModifier extends MeshModifier {
       }
       if (boneValues.isEmpty) {
         // ボーンから影響を受けなかった
-        vertices.add(vertex.transformed(originMatrix));
+        vertices.add(vertex);
       } else {
         // ボーンからの影響力による加重平均
-        var pos = Vector3.zero;
+        var p = Vector3.zero;
         for (final value in boneValues) {
-          pos = pos + value.key * value.value;
+          p = p + value.key * value.value;
         }
-        vertices.add(pos / dominator);
+        vertices.add(p / dominator);
       }
     }
 
     return data.copyWith(
       vertices: vertices,
       normals: <Vector3>[], //todo:
-    );
+    ).transformed(originMatrix.inverted());
   }
 }
 
@@ -191,6 +191,6 @@ class MagnetModifier extends MeshModifier {
     return data.copyWith(
       vertices: vertices,
       normals: <Vector3>[],
-    );
+    ).transformed(originMatrix.inverted());
   }
 }
