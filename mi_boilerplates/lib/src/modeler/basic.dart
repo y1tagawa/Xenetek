@@ -892,6 +892,7 @@ abstract class MeshBuilder {
 @immutable
 abstract class MeshModifier {
   const MeshModifier();
+
   MeshData transform({
     required Mesh mesh,
     required MeshData data,
