@@ -205,7 +205,19 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   root = root.add(
     path: 'ball.magnet',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.6, 0, 0)),
+      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.7, 0, 0)),
+    ),
+  );
+  root = root.add(
+    path: 'ball.magnet2',
+    child: mi.Node(
+      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.65, 0, -0.1)),
+    ),
+  );
+  root = root.add(
+    path: 'ball.magnet3',
+    child: mi.Node(
+      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.65, 0, 0.1)),
     ),
   );
 
@@ -246,24 +258,37 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
     origin: 'ball',
     data: const mi.LongLatSphereBuilder(
       radius: 0.5, //mi.Vector3(0.5, 0.7, 0.3),
-      longitudeDivision: 48,
-      latitudeDivision: 24,
+      longitudeDivision: 64,
+      latitudeDivision: 32,
     ),
-    modifiers: mi.MagnetModifier(
-      magnets: const <String, mi.MagnetData>{
-        'ball.magnet': mi.MagnetData(
-          radius: 1.0,
-          force: 1,
-          polarization: mi.Vector3(0.05, 1, 0.5),
-          power: -4,
-        ),
-      }.entries.toList(),
-    ),
+    modifiers: [
+      mi.MagnetModifier(
+        magnets: const <String, mi.MagnetData>{
+          'ball.magnet': mi.MagnetData(
+            force: 0.2,
+            power: -4,
+          ),
+          'ball.magnet2': mi.MagnetData(
+            radius: 0.1,
+            force: -0.2,
+            power: -2,
+          ),
+          'ball.magnet3': mi.MagnetData(
+            radius: 0.1,
+            force: -0.2,
+            power: -2,
+          ),
+        }.entries.toList(),
+      ),
+    ],
   ).toMeshData(root: root);
 
-  meshDataArray['magnet'] = const mi.Mesh(
-    origin: 'ball.magnet',
-  ).toMeshData(root: root);
+  // meshDataArray['magnet'] = const mi.Mesh(
+  //   origin: 'ball.magnet',
+  //   modifiers: mi.LookAtModifier(
+  //     target: 'ball',
+  //   ),
+  // ).toMeshData(root: root);
 
   meshDataArray.toWavefrontObj(sink);
 

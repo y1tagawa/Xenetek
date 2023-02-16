@@ -154,14 +154,12 @@ class MagnetData {
   final double radius;
   final double force;
   final double power;
-  final Vector3 polarization;
   final bool mirror;
 
   const MagnetData({
     this.radius = double.maxFinite,
     this.force = 1.0,
     this.power = -2,
-    this.polarization = Vector3.one,
     this.mirror = false,
   }) : assert(radius >= 1e-4);
 }
@@ -197,14 +195,11 @@ class MagnetModifier extends MeshModifier {
       for (int i = 0; i < magnets.length; ++i) {
         // 各磁石について...
         final magnet = magnets[i].value;
-        // 磁石から見た頂点の方向（引力が+）
-        final v = p - magnetMatrices[i].translation;
+        final v = magnetMatrices[i].translation - p;
         final d = v.length;
         if (d >= 1e-6 && d <= magnet.radius) {
-          // 分極および距離による減衰
-          final a = magnet.polarization
-              .transformed((originMatrix.inverted() * magnetMatrices[i]).rotation);
-          delta += (v.normalized() * a) * magnet.force * math.pow(d + 1.0, magnet.power);
+          // 距離による減衰
+          delta += v.normalized() * magnet.force * math.pow(d + 1.0, magnet.power);
         }
       }
       vertices.add(p + delta);
