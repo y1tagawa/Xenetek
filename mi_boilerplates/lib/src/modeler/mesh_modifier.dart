@@ -64,6 +64,7 @@ class BoxModifier extends MeshModifier {
 /// メッシュデータの[axis]が[origin]から[target]を向くように回転させる。
 /// [connect]が`true`であるとき、Y=0.0~1.0が[origin]と[target]になるよう延長する。
 /// [proportional]が`true`であるとき、延長に合わせて全体を拡縮する。
+/// [minSlice], [maxSlice]がともに指定されたとき、その間の頂点のみ延長される。
 @immutable
 class LookAtModifier extends MeshModifier {
   static final _logger = Logger('LookAtModifier');
@@ -74,7 +75,6 @@ class LookAtModifier extends MeshModifier {
   final bool proportional;
   final double minSlice;
   final double maxSlice;
-  //todo: 9-slice-scaling, minMargin, maxMargin axisに沿ってminMargin以下、maxMargon以上は端からの距離が変わらないようにする
 
   const LookAtModifier({
     required this.target,
@@ -108,6 +108,7 @@ class LookAtModifier extends MeshModifier {
       _logger.fine('scaleY=$scaleY');
       final scaleXZ = proportional ? scaleY : 1.0;
       if (minSlice != double.infinity && maxSlice != double.infinity) {
+        // スライス拡縮
         data_ = data.copyWith(
           vertices: data.vertices.map((it) {
             if (it.y < minSlice) {
@@ -120,6 +121,7 @@ class LookAtModifier extends MeshModifier {
           }).toList(),
         );
       } else {
+        // 一様拡縮
         data_ = data.transformed(Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ)));
       }
     }
