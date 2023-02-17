@@ -222,6 +222,8 @@ class HumanRig {
       modifiers: LookAtModifier(
         target: target,
         connect: true,
+        minSlice: 0.0,
+        maxSlice: 1.0,
       ),
       // todo: scale
     ).toMeshData(root: root);

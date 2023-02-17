@@ -451,7 +451,7 @@ class TubeBuilder extends _SorBuilder {
       case ConeEnd:
       case FlatEnd:
         final coneEnd = endShape as ConeEnd;
-        final coneHeight = coneEnd.height == double.infinity ? beginRadius : coneEnd.height;
+        final coneHeight = coneEnd.height == double.infinity ? endRadius : coneEnd.height;
         for (int i = 1; i <= coneEnd.division; ++i) {
           final t = i.toDouble() / coneEnd.division;
           vertices.add(Vector3((1.0 - t) * endRadius, t * coneHeight + height, 0.0));

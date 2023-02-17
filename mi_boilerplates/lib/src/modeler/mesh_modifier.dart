@@ -66,18 +66,24 @@ class BoxModifier extends MeshModifier {
 /// [proportional]が`true`であるとき、延長に合わせて全体を拡縮する。
 @immutable
 class LookAtModifier extends MeshModifier {
+  static final _logger = Logger('LookAtModifier');
+
   final String target;
   final Vector3 axis; //todo:
   final bool connect;
   final bool proportional;
-  //todo: minMargin, maxMargin axisに沿ってminMargin以下、maxMargon以上は端からの距離が変わらないようにする
+  final double minSlice;
+  final double maxSlice;
+  //todo: 9-slice-scaling, minMargin, maxMargin axisに沿ってminMargin以下、maxMargon以上は端からの距離が変わらないようにする
 
   const LookAtModifier({
     required this.target,
     this.axis = Vector3.unitY,
     this.connect = false,
     this.proportional = false,
-  });
+    this.minSlice = double.infinity,
+    this.maxSlice = double.infinity,
+  }) : assert((minSlice == double.infinity) == (maxSlice == double.infinity));
 
   @override
   MeshData transform({
@@ -95,13 +101,31 @@ class LookAtModifier extends MeshModifier {
       forward: Vector3.unitY,
       target: targetMatrix.translation,
     );
-    // メッシュ拡縮行列
-    final scaleY = connect ? targetMatrix.translation.length : 1.0;
-    final scaleXZ = proportional ? scaleY : 1.0;
-    final scale = Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ));
+    // メッシュ拡縮
+    MeshData data_ = data;
+    if (connect) {
+      final scaleY = connect ? targetMatrix.translation.length : 1.0;
+      _logger.fine('scaleY=$scaleY');
+      final scaleXZ = proportional ? scaleY : 1.0;
+      if (minSlice != double.infinity && maxSlice != double.infinity) {
+        data_ = data.copyWith(
+          vertices: data.vertices.map((it) {
+            if (it.y < minSlice) {
+              return Vector3(it.x * scaleXZ, it.y, it.z * scaleXZ);
+            } else if (it.y < maxSlice) {
+              return Vector3(it.x * scaleXZ, (it.y - minSlice) * scaleY + minSlice, it.z * scaleXZ);
+            } else {
+              return Vector3(it.x * scaleXZ, (it.y - maxSlice) + scaleY * maxSlice, it.z * scaleXZ);
+            }
+          }).toList(),
+        );
+      } else {
+        data_ = data.transformed(Matrix4.fromScale(Vector3(scaleXZ, scaleY, scaleXZ)));
+      }
+    }
     // 全体をroot座標に変換
     // todo: rotationでunitYをaxisに戻す
-    return data.transformed(rotation * scale);
+    return data_.transformed(rotation);
   }
 }
 
