@@ -55,8 +55,11 @@ class Vector3 {
   double dot(Vector3 other) => x * other.x + y * other.y + z * other.z;
 
   /// クロス積
-  Vector3 cross(Vector3 other) =>
-      Vector3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
+  Vector3 cross(Vector3 other) => Vector3(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x,
+      );
 
   /// 左右反転
   Vector3 mirrored() => Vector3(-x, y, z);
@@ -65,9 +68,8 @@ class Vector3 {
   Vector3 normalized() => Vector3.fromVmVector(toVmVector().normalized());
 
   /// 変換結果
-  Vector3 transformed(Matrix4 matrix) {
-    return Vector3.fromVmVector(matrix.toVmMatrix().transform3(toVmVector()));
-  }
+  Vector3 transformed(Matrix4 matrix) =>
+      Vector3.fromVmVector(matrix.toVmMatrix().transform3(toVmVector()));
 
   /// vm.Vector3から変換
   Vector3.fromVmVector(vm.Vector3 value)
@@ -345,28 +347,28 @@ class Node {
     this.children = const <String, Node>{},
   });
 
-  // ノード検索の下請け
-  NodeFind? _find({
-    required Iterable<String> path,
-    required Matrix4 matrix,
-    Node? parent,
-  }) {
-    if (path.isEmpty) {
-      return NodeFind(node: this, matrix: matrix * this.matrix, parent: parent);
-    }
-    final child = children[path.first];
-    if (child == null) {
-      return null;
-    }
-    return child._find(path: path.skip(1), matrix: matrix * this.matrix, parent: this);
-  }
-
   /// [path]で指定するノードを検索し、(対象のノード, ルートからの相対変換, 直接の親)を返す。
   /// 見つからなければ`null`を返す。
   NodeFind? find({
     dynamic path,
   }) {
-    return _find(path: toPath(path), matrix: Matrix4.identity, parent: null);
+    NodeFind? find_({
+      required Node this_,
+      required Iterable<String> path,
+      required Matrix4 matrix,
+      Node? parent,
+    }) {
+      if (path.isEmpty) {
+        return NodeFind(node: this_, matrix: matrix * this_.matrix, parent: parent);
+      }
+      final child = this_.children[path.first];
+      if (child == null) {
+        return null;
+      }
+      return find_(this_: child, path: path.skip(1), matrix: matrix * this_.matrix, parent: this_);
+    }
+
+    return find_(this_: this, path: toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
   // ノード追加コピーの下請け
