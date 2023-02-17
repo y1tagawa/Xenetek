@@ -257,11 +257,15 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   meshDataArray['ball'] = mi.Mesh(
     origin: 'ball',
     data: const mi.LongLatSphereBuilder(
-      radius: 0.5, //mi.Vector3(0.5, 0.7, 0.3),
+      radius: 1.0, //mi.Vector3(0.5, 0.7, 0.3),
       longitudeDivision: 64,
       latitudeDivision: 32,
     ),
     modifiers: [
+      const mi.BoxModifier(
+        min: mi.Vector3(-0.5, -0.5, -0.5),
+        max: mi.Vector3(0.5, 0.5, 0.5),
+      ),
       mi.MagnetModifier(
         magnets: const <String, mi.MagnetData>{
           'ball.magnet': mi.MagnetData(

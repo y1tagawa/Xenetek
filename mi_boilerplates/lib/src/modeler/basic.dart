@@ -124,30 +124,8 @@ class Vector3 {
 //</editor-fold>
 }
 
-/// 三次元の最大最小(todo: record)
-class MinMax3 {
-  final Vector3 min;
-  final Vector3 max;
-  const MinMax3({required this.min, required this.max});
-  bool get isValid => min.x <= max.x && min.y <= max.y && min.z <= max.z;
-}
-
 ///
 extension Vector3ListHelper on Iterable<Vector3> {
-  MinMax3 minMax() {
-    if (isEmpty) {
-      return MinMax3(min: Vector3.one, max: -Vector3.one);
-    }
-    var min = first;
-    var max = min;
-    skip(1);
-    for (final t in this) {
-      min = Vector3(math.min(t.x, min.x), math.min(t.y, min.y), math.min(t.z, min.z));
-      max = Vector3(math.max(t.x, max.x), math.min(t.y, max.y), math.min(t.z, max.z));
-    }
-    return MinMax3(min: min, max: max);
-  }
-
   List<Vector3> mirrored() => map((value) => value.mirrored()).toList();
   List<Vector3> transformed(Matrix4 matrix) => map((value) => value.transformed(matrix)).toList();
 }

@@ -248,7 +248,7 @@ class HumanRig {
             rSc: const BoneData(power: -8),
             lSc: const BoneData(power: -8),
           }.entries.toList(),
-          initRoot: initRoot,
+          rRoot: initRoot,
         ),
         // MagnetModifier(
         //   magnets: <String, BoneData>{
@@ -279,7 +279,7 @@ class HumanRig {
           rCoxa: const BoneData(power: -6),
           lCoxa: const BoneData(power: -6),
         }.entries.toList(),
-        initRoot: initRoot,
+        rRoot: initRoot,
       ),
     ).toMeshData(root: root);
   }

@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'basic.dart';
 
@@ -13,6 +14,50 @@ import 'basic.dart';
 // メッシュモディファイア
 //
 // リグ上に配置したメッシュデータを変換する。
+
+/// ボックスモディファイア
+///
+/// メッシュデータを[min]-[max]をバウンディングボックスとする直方体の中にマップする。
+/// 頂点は面に使用されていなくともよい。
+@immutable
+class BoxModifier extends MeshModifier {
+  final Vector3 min;
+  final Vector3 max;
+  const BoxModifier({
+    required this.min,
+    required this.max,
+  });
+
+  @override
+  MeshData transform({
+    required Mesh mesh,
+    required MeshData data,
+    required Node root,
+  }) {
+    if (data.vertices.isEmpty) {
+      return data;
+    }
+    Vector3 vMin = data.vertices.first, vMax = vMin;
+    for (final v in data.vertices.skip(1)) {
+      vMin = Vector3(math.min(v.x, vMin.x), math.min(v.y, vMin.y), math.min(v.z, vMin.z));
+      vMax = Vector3(math.max(v.x, vMax.x), math.max(v.y, vMax.y), math.max(v.z, vMax.z));
+    }
+    final box = max - min;
+    final w = (vMax.x - vMin.x).let((it) => it.abs() < 1e-4 ? 0.0 : it);
+    final h = (vMax.y - vMin.y).let((it) => it.abs() < 1e-4 ? 0.0 : it);
+    final d = (vMax.z - vMin.z).let((it) => it.abs() < 1e-4 ? 0.0 : it);
+    final vertices = data.vertices
+        .map(
+          (it) => Vector3(
+            w == 0.0 ? it.x : (it.x - vMin.x) * box.x / w + min.x,
+            h == 0.0 ? it.y : (it.y - vMin.y) * box.y / h + min.y,
+            d == 0.0 ? it.z : (it.z - vMin.z) * box.z / d + min.z,
+          ),
+        )
+        .toList();
+    return data.copyWith(vertices: vertices);
+  }
+}
 
 /// 方向モディファイア
 ///
@@ -77,11 +122,11 @@ class BoneData {
 @immutable
 class SkinModifier extends MeshModifier {
   final List<MapEntry<String, BoneData>> bones;
-  final Node initRoot; // 初期姿勢のrootノード
+  final Node rRoot; // 初期姿勢のrootノード
 
   const SkinModifier({
     required this.bones,
-    required this.initRoot,
+    required this.rRoot,
   });
 
   @override
@@ -91,10 +136,10 @@ class SkinModifier extends MeshModifier {
     required Node root,
   }) {
     // 初期姿勢のoriginからrootへの変換行列
-    final initOriginMatrix = initRoot.find(path: mesh.origin)!.matrix;
+    final rOriginMatrix = rRoot.find(path: mesh.origin)!.matrix;
     // 初期姿勢の各ボーンからrootへの変換行列とその逆
-    final initBoneMatrices = bones.map((it) => initRoot.find(path: it.key)!.matrix).toList();
-    final initInvBoneMatrices = initBoneMatrices.map((it) => it.inverted()).toList();
+    final rBoneMatrices = bones.map((it) => rRoot.find(path: it.key)!.matrix).toList();
+    final rInvBoneMatrices = rBoneMatrices.map((it) => it.inverted()).toList();
     // originからrootへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
     // 各ボーンからrootへの変換行列
@@ -107,11 +152,11 @@ class SkinModifier extends MeshModifier {
       final boneValues = <MapEntry<Vector3, double>>[];
       var dominator = 0.0; // 影響力の総和
       // 各ボーンについて...
-      final initPos = vertex.transformed(initOriginMatrix);
+      final rPos = vertex.transformed(rOriginMatrix);
       for (int i = 0; i < bones.length; ++i) {
         final bone = bones[i].value;
         // 初期姿勢におけるボーンからの相対位置を...
-        final p = initPos.transformed(initInvBoneMatrices[i]);
+        final p = rPos.transformed(rInvBoneMatrices[i]);
         final d = p.length;
         if (d <= bone.radius) {
           // todo: shape
