@@ -191,6 +191,7 @@ class HumanRig {
   }) {
     return Mesh(
       origin: origin,
+      data: pinMeshData,
       modifiers: LookAtModifier(
         target: target,
         connect: true,

@@ -847,36 +847,6 @@ class MeshData {
 //</editor-fold>
 }
 
-/// ピンメッシュデータ (-0.1,0,-0.1)-(0.1,1,0.1)
-//<editor-fold>
-
-const _pinVertices = <Vector3>[
-  Vector3(0.1, 0.25, 0),
-  Vector3(-0.1, 0.25, 0),
-  Vector3(0, 1, 0),
-  Vector3(0, 0, 0),
-  Vector3(0, 0.25, 0.1),
-  Vector3(0, 0.25, -0.1),
-];
-
-const _octahedronFaces = <MeshFace>[
-  <MeshVertex>[MeshVertex(4), MeshVertex(0), MeshVertex(2)],
-  <MeshVertex>[MeshVertex(4), MeshVertex(2), MeshVertex(1)],
-  <MeshVertex>[MeshVertex(4), MeshVertex(1), MeshVertex(3)],
-  <MeshVertex>[MeshVertex(4), MeshVertex(3), MeshVertex(0)],
-  <MeshVertex>[MeshVertex(5), MeshVertex(2), MeshVertex(0)],
-  <MeshVertex>[MeshVertex(5), MeshVertex(1), MeshVertex(2)],
-  <MeshVertex>[MeshVertex(5), MeshVertex(3), MeshVertex(1)],
-  <MeshVertex>[MeshVertex(5), MeshVertex(0), MeshVertex(3)],
-];
-
-const _pinMeshData = MeshData(
-  vertices: _pinVertices,
-  faces: _octahedronFaces,
-);
-
-//</editor-fold>
-
 //
 // メッシュ
 //
@@ -927,7 +897,7 @@ class Mesh {
   final dynamic modifiers;
 
   const Mesh({
-    this.data = _pinMeshData,
+    required this.data,
     required this.origin,
     this.modifiers = const _NopModifier(),
   })  : assert(data is MeshData || data is MeshBuilder),

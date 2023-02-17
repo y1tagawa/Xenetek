@@ -49,6 +49,8 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
   * rigに対しては、長さ・捻り角・曲げ方向・曲げ角度・分割数を指定。
     * 分割した曲げの結果を足したというか掛け合わせたものをmatrixとする。（つまり途中を省略した感じ）その逆行列も取れる。
     * スキンモディファイアはできたら対応したい
+* lattice modifier
+  * [y: xzOffset,xzScale] 折れ線でなく曲線nurbsにしたい
 * cutter modifier
   * magnetに近いが、質点でなく一定の距離にする（スカルプト）
   * 点でなく三角形とかできないか

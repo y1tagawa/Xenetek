@@ -172,6 +172,25 @@ const _octahedronMeshData = MeshData(
 
 //</editor-fold>
 
+/// ピンメッシュデータ (-0.1,0,-0.1)-(0.1,1,0.1)
+//<editor-fold>
+
+const _pinVertices = <Vector3>[
+  Vector3(0.1, 0.25, 0),
+  Vector3(-0.1, 0.25, 0),
+  Vector3(0, 1, 0),
+  Vector3(0, 0, 0),
+  Vector3(0, 0.25, 0.1),
+  Vector3(0, 0.25, -0.1),
+];
+
+const pinMeshData = MeshData(
+  vertices: _pinVertices,
+  faces: _octahedronFaces,
+);
+
+//</editor-fold>
+
 /// 回転体メッシュビルダ基底クラス
 @immutable
 abstract class _SorBuilder extends MeshBuilder {
