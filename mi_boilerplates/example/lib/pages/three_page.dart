@@ -195,6 +195,14 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   final initRoot = root;
 
   root = root.add(
+    path: 'spindle',
+    child: mi.Node(
+      matrix: mi.Matrix4.fromTranslation(
+        const mi.Vector3(-1, 1, 0),
+      ),
+    ),
+  );
+  root = root.add(
     path: 'ball',
     child: mi.Node(
       matrix: mi.Matrix4.fromTranslation(
@@ -254,9 +262,16 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   //
   final meshDataArray = dollBuilder.toMeshData(root: root, initRoot: initRoot);
 
+  meshDataArray['spindle'] = const mi.Mesh(
+    origin: 'spindle',
+    data: mi.SorBuilder(
+      side: mi.SorSide.spindle,
+    ),
+  ).toMeshData(root: root);
   meshDataArray['ball'] = mi.Mesh(
     origin: 'ball',
-    data: const mi.LongLatSphereBuilder(
+    data: const mi.SorBuilder(
+      side: mi.SorSide.ellipsoid,
       radius: 1.0, //mi.Vector3(0.5, 0.7, 0.3),
       longitudeDivision: 64,
       latitudeDivision: 32,
