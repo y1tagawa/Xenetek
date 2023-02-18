@@ -273,12 +273,12 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
             power: -4,
           ),
           'ball.magnet2': mi.MagnetData(
-            radius: 0.1,
+            radius: 0.5,
             force: -0.2,
             power: -2,
           ),
           'ball.magnet3': mi.MagnetData(
-            radius: 0.1,
+            radius: 0.5,
             force: -0.2,
             power: -2,
           ),

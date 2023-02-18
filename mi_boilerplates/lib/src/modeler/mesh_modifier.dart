@@ -185,7 +185,6 @@ class SkinModifier extends MeshModifier {
         final p = rPos.transformed(rInvBoneMatrices[i]);
         final d = p.length;
         if (d <= bone.radius) {
-          // todo: shape
           // 影響力(距離0において1.0、以後距離のpower乗に比例して0に漸近)
           // gnuplot> plot [0:2][0:1] (x+1)**-2
           final value = bone.force * math.pow(d + 1.0, bone.power);
@@ -253,31 +252,33 @@ class MagnetModifier extends MeshModifier {
   }) {
     // rootからoriginへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
-    // rootから各磁石への変換行列
-    final magnetMatrices = magnets.map((it) => root.find(path: it.key)!.matrix).toList();
+    final invOriginMatrix = originMatrix.inverted();
+    // originから各磁石への変換行列
+    final magnetMatrices =
+        magnets.map((it) => invOriginMatrix * root.find(path: it.key)!.matrix).toList();
 
     // 頂点変形
     final vertices = <Vector3>[];
     // 各頂点について...
     for (final vertex in data.vertices) {
-      final p = vertex.transformed(originMatrix);
+      //final p = vertex.transformed(originMatrix);
       // 各磁石からの力を集計
       var delta = Vector3.zero;
       for (int i = 0; i < magnets.length; ++i) {
         // 各磁石について...
         final magnet = magnets[i].value;
-        final v = magnetMatrices[i].translation - p;
+        final v = magnetMatrices[i].translation - vertex;
         final d = v.length;
         if (d >= 1e-6 && d <= magnet.radius) {
           // 距離による減衰
           delta += v.normalized() * magnet.force * math.pow(d + 1.0, magnet.power);
         }
       }
-      vertices.add(p + delta);
+      vertices.add(vertex + delta);
     }
     return data.copyWith(
       vertices: vertices,
       normals: <Vector3>[],
-    ).transformed(originMatrix.inverted());
+    );
   }
 }
