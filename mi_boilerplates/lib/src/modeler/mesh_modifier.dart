@@ -6,8 +6,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../scope_functions.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ
