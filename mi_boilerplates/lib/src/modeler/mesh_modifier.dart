@@ -254,8 +254,14 @@ class MagnetModifier extends MeshModifier {
     final originMatrix = root.find(path: mesh.origin)!.matrix;
     final invOriginMatrix = originMatrix.inverted();
     // originから各磁石への変換行列
-    final magnetMatrices =
-        magnets.map((it) => invOriginMatrix * root.find(path: it.key)!.matrix).toList();
+    final magnets_ = <MapEntry<Vector3, MagnetData>>[];
+    for (final magnet in magnets) {
+      final p = (invOriginMatrix * root.find(path: magnet.key)!.matrix).translation;
+      magnets_.add(MapEntry(p, magnet.value));
+      if (magnet.value.mirror) {
+        magnets_.add(MapEntry(p.mirrored(), magnet.value));
+      }
+    }
 
     // 頂点変形
     final vertices = <Vector3>[];
@@ -264,14 +270,12 @@ class MagnetModifier extends MeshModifier {
       //final p = vertex.transformed(originMatrix);
       // 各磁石からの力を集計
       var delta = Vector3.zero;
-      for (int i = 0; i < magnets.length; ++i) {
-        // 各磁石について...
-        final magnet = magnets[i].value;
-        final v = magnetMatrices[i].translation - vertex;
+      for (final magnet in magnets_) {
+        final v = magnet.key - vertex;
         final d = v.length;
-        if (d >= 1e-6 && d <= magnet.radius) {
+        if (d >= 1e-6 && d <= magnet.value.radius) {
           // 距離による減衰
-          delta += v.normalized() * magnet.force * math.pow(d + 1.0, magnet.power);
+          delta += v.normalized() * magnet.value.force * math.pow(d + 1.0, magnet.value.power);
         }
       }
       vertices.add(vertex + delta);
