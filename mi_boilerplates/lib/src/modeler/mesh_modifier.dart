@@ -15,6 +15,32 @@ import 'basic.dart';
 //
 // リグ上に配置したメッシュデータを変換する。
 
+/// 芯材モディファイア
+///
+/// Y軸に沿ってNURBSによって変形する。
+@immutable
+class WickModifier extends MeshModifier {
+  // ignore: unused_field
+  static final _logger = Logger('name');
+
+  final List<MapEntry<double, Vector3>> wicking; // Y=[0,1]に対応する中心線
+  final List<MapEntry<double, Vector3>> radius; // Y=[0,1]に対応するXZ半径(Yは無視される)
+
+  const WickModifier({
+    required this.wicking,
+    this.radius = const <MapEntry<double, Vector3>>[
+      MapEntry(0.0, Vector3.one),
+      MapEntry(1.0, Vector3.one),
+    ],
+  });
+
+  @override
+  MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
+    // TODO: implement transform
+    throw UnimplementedError();
+  }
+}
+
 /// ボックスモディファイア
 ///
 /// メッシュデータを[min]-[max]をバウンディングボックスとする直方体の中にマップする。

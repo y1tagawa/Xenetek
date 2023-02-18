@@ -374,25 +374,23 @@ class Node {
   /// [path]で指定するノードを[child]で置換または削除したコピーを返す。
   Node _addOrRemove({
     required Iterable<String> path,
-    required Node? child,
+    required Node Function(Node, String) onFind,
   }) {
     assert(path.isNotEmpty);
     // [path]が指すノードの親であれば
     if (path.length == 1) {
       // 指定の子を追加、置換または削除する。
       final children_ = {...children};
-      if (child != null) {
-        children_[path.first] = child;
-      } else {
-        children_.remove(path.first);
-      }
-      return Node(matrix: matrix, children: children_);
+      return onFind(this, path.first);
     }
     // パスを途中で辿れなくなったらエラー
     assert(children.containsKey(path.first));
     // パスの途中の子を更新して返す
     final children_ = {...children};
-    children_[path.first] = children[path.first]!._addOrRemove(path: path.skip(1), child: child);
+    children_[path.first] = children[path.first]!._addOrRemove(
+      path: path.skip(1),
+      onFind: onFind,
+    );
     return Node(matrix: matrix, children: children_);
   }
 
@@ -403,16 +401,13 @@ class Node {
     required Node child,
   }) {
     final path_ = toPath(path);
-    return _addOrRemove(path: path_, child: child);
-  }
-
-  /// [path]で指定するノードを削除したコピーを返す。
-  /// 親までの[path]が見つからなければ例外送出。
-  Node remove({
-    required dynamic path,
-  }) {
-    final path_ = toPath(path);
-    return _addOrRemove(path: path_, child: null);
+    return _addOrRemove(
+        path: path_,
+        onFind: (node, key) {
+          final children_ = {...node.children};
+          children_[key] = child;
+          return node.copyWith(children: children_);
+        });
   }
 
   // 連続した関節ノードを生成する。
@@ -449,22 +444,6 @@ class Node {
       child: child.value,
     );
   }
-
-  // /// [path]で指定するノードの変換行列を変更したコピーを返す。
-  // Node setMatrix({
-  //   dynamic path = const <String>[],
-  //   required Matrix4 matrix,
-  // }) {
-  //   final path_ = toPath(path);
-  //   if (path_.isEmpty) {
-  //     return Node(matrix: matrix, children: children);
-  //   }
-  //   final node = find(path: path_)!.node;
-  //   return add(
-  //     path: path_,
-  //     child: Node(matrix: matrix, children: node.children),
-  //   );
-  // }
 
   /// [path]で指定するノードを変換したコピーを返す。
   Node transform({
