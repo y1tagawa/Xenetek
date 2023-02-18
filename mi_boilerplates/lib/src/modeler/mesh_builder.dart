@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import 'basic.dart';
 
@@ -192,13 +193,12 @@ const pinMeshData = MeshData(
 //</editor-fold>
 
 /// 回転面側断面形状
-enum SorSide {
+enum SorShape {
   ellipsoid,
   spindle,
-  sin,
 }
 
-/// 回転体メッシュビルダ基底クラス
+/// 回転体メッシュビルダ
 @immutable
 class SorBuilder extends MeshBuilder {
   // ignore: unused_field
@@ -209,7 +209,7 @@ class SorBuilder extends MeshBuilder {
   final double height;
   final double radius;
   final Vector3 axis;
-  final SorSide? side;
+  final SorShape? shape;
   final List<Vector3>? _generatingLine;
   final bool smooth;
   final bool reverse;
@@ -220,23 +220,61 @@ class SorBuilder extends MeshBuilder {
     this.height = 1.0,
     this.radius = 0.5,
     this.axis = Vector3.unitY,
-    this.side,
+    this.shape,
     List<Vector3>? generatingLine,
     this.smooth = true,
     this.reverse = false,
   })  : assert(longitudeDivision >= 2),
         assert(latitudeDivision >= 2),
-        assert((side != null) != (generatingLine != null)),
         _generatingLine = generatingLine;
+
+  const SorBuilder.ellipsoid({
+    int longitudeDivision = 24,
+    int latitudeDivision = 12,
+    double height = 1.0,
+    double radius = 0.5,
+    Vector3 axis = Vector3.unitY,
+    bool smooth = true,
+    bool reverse = false,
+  }) : this(
+          longitudeDivision: longitudeDivision,
+          latitudeDivision: latitudeDivision,
+          height: height,
+          radius: radius,
+          axis: axis,
+          smooth: smooth,
+          reverse: reverse,
+          shape: SorShape.ellipsoid,
+        );
+
+  const SorBuilder.spindle({
+    int longitudeDivision = 24,
+    int heightDivision = 12,
+    double height = 1.0,
+    double radius = 0.5,
+    Vector3 axis = Vector3.unitY,
+    bool smooth = true,
+    bool reverse = false,
+  }) : this(
+          longitudeDivision: longitudeDivision,
+          latitudeDivision: heightDivision,
+          height: height,
+          radius: radius,
+          axis: axis,
+          smooth: smooth,
+          reverse: reverse,
+          shape: SorShape.spindle,
+        );
 
   /// 母線頂点(Y軸周り)
   List<Vector3> get generatingLine {
+    assert((shape != null) != (_generatingLine != null));
     if (_generatingLine != null) {
       return _generatingLine!;
     }
-    assert(side != null);
-    switch (side!) {
-      case SorSide.ellipsoid:
+    assert(shape != null);
+    switch (shape!) {
+      case SorShape.ellipsoid:
         // 扁球面
         final vertices = <Vector3>[Vector3.zero];
         final h_ = height * 0.5;
@@ -246,21 +284,8 @@ class SorBuilder extends MeshBuilder {
         }
         vertices.add(Vector3.unitY * height);
         return vertices;
-      case SorSide.spindle:
-        // 紡錘面
-        final vertices = <Vector3>[Vector3.zero];
-        final h_ = height * 0.5;
-        final x0 = (h_ * h_ - radius * radius) / (2.0 * radius) + radius;
-        vertices.add(Vector3.zero);
-        for (int i = 1; i < latitudeDivision; ++i) {
-          final y = i.toDouble() / latitudeDivision - h_;
-          final x = math.sqrt(x0 * x0 + y * y);
-          vertices.add(Vector3(x, y, 0));
-        }
-        vertices.add(Vector3.unitY * height);
-        return vertices;
-      case SorSide.sin:
-        // 正弦曲線回転面
+      case SorShape.spindle:
+        // 紡錘面(正弦曲線)
         final vertices = <Vector3>[Vector3.zero];
         for (int i = 1; i < latitudeDivision; ++i) {
           final t = i * math.pi / latitudeDivision;
@@ -344,44 +369,6 @@ class SorBuilder extends MeshBuilder {
   }
 }
 
-/// 経緯球メッシュビルダ
-///
-/// ellipsoid radius-3
-/// spindle h,rx,rz
-/// sin h,rx,rz
-@immutable
-class LongLatSphereBuilder extends SorBuilder {
-  // ignore: unused_field
-  static final _logger = Logger('LongLatSphereBuilder');
-
-  const LongLatSphereBuilder({
-    super.axis = Vector3.unitY,
-    super.longitudeDivision = 12,
-    super.smooth = true,
-    super.reverse = false,
-  });
-
-  /// 母線頂点(Y軸周り)
-  @override
-  List<Vector3> makeGeneratingLine() {
-    final vertices = <Vector3>[];
-    for (int i = 0; i <= latitudeDivision; ++i) {
-      final t = i * math.pi / latitudeDivision;
-      vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
-    }
-    return vertices;
-  }
-
-  /// 頂点生成
-  @override
-  MapEntry<int, List<Vector3>> makeVertices({
-    required List<Vector3> generatingLine,
-  }) {
-    final vertices = super.makeVertices(generatingLine: generatingLine);
-    return MapEntry(vertices.key, vertices.value.transformed(Matrix4.fromScale(radius)));
-  }
-}
-
 // 円筒などの末端形状
 
 /// 末端形状の基底クラス
@@ -441,7 +428,7 @@ class TubeBuilder extends SorBuilder {
     this.endShape = const OpenEnd(),
     super.smooth = true,
     super.reverse = false,
-  }) : super(side: SorSide.ellipsoid); // todo: dummy
+  });
 
   @override
   List<Vector3> get generatingLine {

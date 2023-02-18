@@ -265,13 +265,16 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   meshDataArray['spindle'] = const mi.Mesh(
     origin: 'spindle',
     data: mi.SorBuilder(
-      side: mi.SorSide.spindle,
+      shape: mi.SorShape.spindle,
+      radius: 0.2,
+      longitudeDivision: 64,
+      latitudeDivision: 32,
     ),
   ).toMeshData(root: root);
   meshDataArray['ball'] = mi.Mesh(
     origin: 'ball',
     data: const mi.SorBuilder(
-      side: mi.SorSide.ellipsoid,
+      shape: mi.SorShape.ellipsoid,
       radius: 1.0, //mi.Vector3(0.5, 0.7, 0.3),
       longitudeDivision: 64,
       latitudeDivision: 32,
