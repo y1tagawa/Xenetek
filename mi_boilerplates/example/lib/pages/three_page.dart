@@ -268,7 +268,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
       shape: mi.SorShape.spindle,
       radius: 0.2,
       longitudeDivision: 64,
-      latitudeDivision: 32,
+      heightDivision: 32,
     ),
   ).toMeshData(root: root);
   meshDataArray['ball'] = mi.Mesh(
@@ -277,7 +277,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
       shape: mi.SorShape.ellipsoid,
       radius: 1.0, //mi.Vector3(0.5, 0.7, 0.3),
       longitudeDivision: 64,
-      latitudeDivision: 32,
+      heightDivision: 32,
     ),
     modifiers: [
       const mi.BoxModifier(
