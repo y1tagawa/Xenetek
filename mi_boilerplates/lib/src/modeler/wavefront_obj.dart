@@ -143,9 +143,7 @@ extension MeshDataArrayHelper on Map<String, MeshData> {
       // smooth
       sink.writeln('s ${data.smooth ? 1 : 0}');
       // 面
-      if (data.material.isNotEmpty) {
-        sink.writeln('usemtl ${data.material}');
-      }
+      sink.writeln('usemtl ${data.material}'); // マテリアルが空ならデフォルトに戻る
       for (final face in data.faces) {
         assert(face.length >= 3);
         sink.write('f');
