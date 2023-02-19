@@ -126,7 +126,6 @@ class Vector3 {
 //</editor-fold>
 }
 
-///
 extension Vector3ListHelper on Iterable<Vector3> {
   List<Vector3> mirrored() => map((value) => value.mirrored()).toList();
   List<Vector3> transformed(Matrix4 matrix) => map((value) => value.transformed(matrix)).toList();
@@ -290,6 +289,70 @@ class Matrix4 {
   }
 
 //</editor-fold>
+}
+
+/// Bezier補間(double)
+@immutable
+class BezierDouble {
+  final List<double> points;
+
+  const BezierDouble({
+    required this.points,
+  }) : assert(points.length >= 1);
+
+  double transform(double t) {
+    assert(points.isNotEmpty);
+    final n = points.length - 1;
+    t = math.min(1.0, math.max(0.0, t));
+    final t_ = 1.0 - t;
+    switch (n) {
+      case 0:
+        return points[0];
+      case 1:
+        return points[0] * (1.0 - t) + points[1] * t;
+      case 2:
+        return points[0] * (t_ * t_) + points[1] * (2.0 * t * t_) + points[2] * (t * t);
+      case 3:
+        return points[0] * (t_ * t_ * t_) +
+            points[1] * (3.0 * t * t_ * t_) +
+            points[2] * (3.0 * t * t * t_) +
+            points[3] * (t * t * t);
+      default:
+        throw UnimplementedError();
+    }
+  }
+}
+
+/// Bezier補間(Vector3)
+@immutable
+class BezierVector3 {
+  final List<Vector3> points;
+
+  const BezierVector3({
+    required this.points,
+  }) : assert(points.length >= 1);
+
+  Vector3 transform(double t) {
+    assert(points.isNotEmpty);
+    final n = points.length - 1;
+    t = math.min(1.0, math.max(0.0, t));
+    final t_ = 1.0 - t;
+    switch (n) {
+      case 0:
+        return points[0];
+      case 1:
+        return points[0] * (1.0 - t) + points[1] * t;
+      case 2:
+        return points[0] * (t_ * t_) + points[1] * (2.0 * t * t_) + points[2] * (t * t);
+      case 3:
+        return points[0] * (t_ * t_ * t_) +
+            points[1] * (3.0 * t * t_ * t_) +
+            points[2] * (3.0 * t * t * t_) +
+            points[3] * (t * t * t);
+      default:
+        throw UnimplementedError();
+    }
+  }
 }
 
 //

@@ -17,27 +17,50 @@ import 'basic.dart';
 
 /// 芯材モディファイア
 ///
-/// Y軸に沿ってNURBSによって変形する。
+/// Y軸[0,1]に沿ってBスプラインによって変形する。
 @immutable
 class WickModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('name');
 
-  final List<MapEntry<double, Vector3>> wicking; // Y=[0,1]に対応する中心線
-  final List<MapEntry<double, Vector3>> radius; // Y=[0,1]に対応するXZ半径(Yは無視される)
+  final List<Vector3> wicking; // Y=[0,1]に対応する中心線
+  final List<double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
+  final List<double> width; // Y=[0,1]に対応するX半径
+  final List<double> depth; // Y=[0,1]に対応するX半径
+  final int heightDivision;
 
   const WickModifier({
     required this.wicking,
-    this.radius = const <MapEntry<double, Vector3>>[
-      MapEntry(0.0, Vector3.one),
-      MapEntry(1.0, Vector3.one),
-    ],
+    this.twist = const <double>[0.0],
+    this.width = const <double>[1.0],
+    this.depth = const <double>[1.0],
+    this.heightDivision = 12,
   });
 
   @override
   MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
-    // TODO: implement transform
-    throw UnimplementedError();
+    final wicking_ = BezierVector3(points: wicking);
+    final twist_ = BezierDouble(points: twist);
+    final width_ = BezierDouble(points: width);
+    final depth_ = BezierDouble(points: depth);
+    final vertices = <Vector3>[];
+    // todo: rotation
+    for (final vertex in data.vertices) {
+      final t = vertex.y / heightDivision; // 0.0-1.0
+      final p = wicking_.transform(t);
+      final p1 = wicking_.transform(t - 0.01);
+      final p2 = wicking_.transform(t + 0.01);
+      vertices.add(vertex.transformed(
+        Matrix4.fromTranslation(p) *
+            Matrix4.fromForwardTargetRotation(forward: p - p1, target: p2 - p) *
+            Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist_.transform(t)) *
+            Matrix4.fromScale(Vector3(width_.transform(t), 1, depth_.transform(t))),
+      ));
+    }
+    return data.copyWith(
+      vertices: vertices,
+      normals: <Vector3>[],
+    );
   }
 }
 
@@ -93,6 +116,7 @@ class BoxModifier extends MeshModifier {
 /// [minSlice], [maxSlice]がともに指定されたとき、その間の頂点のみ延長される。
 @immutable
 class LookAtModifier extends MeshModifier {
+  // ignore: unused_field
   static final _logger = Logger('LookAtModifier');
 
   final String target;
@@ -131,7 +155,6 @@ class LookAtModifier extends MeshModifier {
     MeshData data_ = data;
     if (connect) {
       final scaleY = connect ? targetMatrix.translation.length : 1.0;
-      _logger.fine('scaleY=$scaleY');
       final scaleXZ = proportional ? scaleY : 1.0;
       if (minSlice != double.infinity && maxSlice != double.infinity) {
         // スライス拡縮

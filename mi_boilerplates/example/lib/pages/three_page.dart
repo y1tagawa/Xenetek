@@ -270,6 +270,16 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
       longitudeDivision: 64,
       heightDivision: 32,
     ),
+    modifiers: [
+      mi.WickModifier(
+        wicking: <mi.Vector3>[
+          mi.Vector3(0, 0, 0),
+          mi.Vector3(2, 0, 0),
+          mi.Vector3(2, 1, 0),
+          mi.Vector3(1, 1, 0),
+        ],
+      ),
+    ],
   ).toMeshData(root: root);
   meshDataArray['ball'] = mi.Mesh(
     origin: 'ball',
