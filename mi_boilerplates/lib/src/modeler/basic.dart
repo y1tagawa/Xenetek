@@ -127,8 +127,25 @@ class Vector3 {
 }
 
 extension Vector3ListHelper on Iterable<Vector3> {
-  List<Vector3> mirrored() => map((value) => value.mirrored()).toList();
-  List<Vector3> transformed(Matrix4 matrix) => map((value) => value.transformed(matrix)).toList();
+  Iterable<Vector3> scaled(dynamic scale) {
+    switch (scale.runtimeType) {
+      case double:
+        final a = scale as double;
+        return map((it) => Vector3(a * it.x, a * it.y, a * it.z));
+      case int:
+        final a = (scale as int).toDouble();
+        return map((it) => Vector3(a * it.x, a * it.y, a * it.z));
+      case Vector3:
+        final a = scale as Vector3;
+        return map((it) => Vector3(a.x * it.x, a.y * it.y, a.z * it.z));
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  Iterable<Vector3> mirrored() => map((value) => value.mirrored()).toList();
+  Iterable<Vector3> transformed(Matrix4 matrix) =>
+      map((value) => value.transformed(matrix)).toList();
 }
 
 /// immutableの4x4行列
@@ -721,14 +738,14 @@ class MeshData {
 
   /// 変換
   MeshData transformed(Matrix4 matrix) => copyWith(
-        vertices: vertices.transformed(matrix),
-        normals: normals.transformed(matrix.rotation),
+        vertices: vertices.transformed(matrix).toList(),
+        normals: normals.transformed(matrix.rotation).toList(),
       );
 
   /// 左右反転したコピーを返す。
   MeshData mirrored() => copyWith(
-        vertices: vertices.mirrored(),
-        normals: normals.mirrored(),
+        vertices: vertices.mirrored().toList(),
+        normals: normals.mirrored().toList(),
       ).reversed();
 
   /// 面を表裏反転したコピーを返す。

@@ -180,6 +180,7 @@ cube.Cube _toCube(Map<String, mi.MeshData> meshDataArray) {
 }
 
 Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
+  // ignore: unused_local_variable
   final logger = Logger('_setup');
 
   final headObj = await rootBundle.loadString('assets/3d/head.obj');
@@ -265,8 +266,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
 
   meshDataArray['spindle'] = const mi.Mesh(
     origin: 'spindle',
-    data: mi.SorBuilder(
-      shape: mi.SorShape.spindle,
+    data: mi.SpindleBuilder(
       radius: 0.2,
       longitudeDivision: 12,
       heightDivision: 6,

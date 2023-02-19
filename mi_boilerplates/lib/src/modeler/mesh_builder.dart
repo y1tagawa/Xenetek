@@ -82,7 +82,7 @@ const _cubeMeshData = MeshData(
 
 //</editor-fold>
 
-/// 立方体メッシュビルダ
+/// 直方体メッシュビルダ
 @immutable
 class CubeBuilder extends MeshBuilder {
   final Vector3 min;
@@ -194,7 +194,7 @@ const pinMeshData = MeshData(
 
 /// 回転体メッシュビルダ
 @immutable
-abstract class AbstractSorBuilder extends MeshBuilder {
+abstract class _SorBuilder extends MeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('AbstractSorBuilder');
 
@@ -203,7 +203,7 @@ abstract class AbstractSorBuilder extends MeshBuilder {
   final bool smooth;
   final bool reverse;
 
-  const AbstractSorBuilder({
+  const _SorBuilder({
     this.longitudeDivision = 24,
     this.axis = Vector3.unitY,
     this.smooth = true,
@@ -286,59 +286,72 @@ abstract class AbstractSorBuilder extends MeshBuilder {
   }
 }
 
-/// 回転面側断面形状
-enum SorShape {
-  ellipsoid,
-  spindle,
+/// 扁球体メッシュビルダ
+@immutable
+class EllipsoidBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('EllipsoidBuilder');
+
+  final int latitudeDivision;
+  final dynamic radius;
+
+  const EllipsoidBuilder({
+    super.longitudeDivision = 24,
+    this.latitudeDivision = 12,
+    this.radius = 0.5,
+    super.axis = Vector3.unitY,
+    super.smooth = true,
+    super.reverse = false,
+  })  : assert(longitudeDivision >= 2),
+        assert(latitudeDivision >= 1),
+        assert(radius is double || radius is Vector3);
+
+  /// 母線頂点(Y軸周り)
+  @override
+  List<Vector3> get generatingLine {
+    // 扁球面
+    final vertices = <Vector3>[Vector3.zero];
+    for (int i = 1; i < latitudeDivision; ++i) {
+      final t = i * math.pi / latitudeDivision;
+      vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
+    }
+    vertices.add(Vector3.unitY);
+    return vertices.scaled(radius).toList();
+  }
 }
 
-/// 回転体メッシュビルダ
+/// 紡錘体メッシュビルダ
 @immutable
-class SorBuilder extends AbstractSorBuilder {
+class SpindleBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('SorBuilder');
 
   final int heightDivision;
   final double height;
   final double radius;
-  final SorShape shape;
 
-  const SorBuilder({
+  const SpindleBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     this.height = 1.0,
     this.radius = 0.5,
-    required this.shape,
     super.axis = Vector3.unitY,
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1);
 
-  /// 母線頂点(Y軸周り)
+  /// 母線頂点リスト(Y軸周り)
   @override
   List<Vector3> get generatingLine {
-    switch (shape) {
-      case SorShape.ellipsoid:
-        // 扁球面
-        final vertices = <Vector3>[Vector3.zero];
-        final h_ = height * 0.5;
-        for (int i = 1; i < heightDivision; ++i) {
-          final t = i * math.pi / heightDivision;
-          vertices.add(Vector3(math.sin(t) * radius, -math.cos(t) * h_ + h_, 0.0));
-        }
-        vertices.add(Vector3.unitY * height);
-        return vertices;
-      case SorShape.spindle:
-        // 紡錘面(正弦曲線)
-        final vertices = <Vector3>[Vector3.zero];
-        for (int i = 1; i < heightDivision; ++i) {
-          final t = i * math.pi / heightDivision;
-          vertices.add(Vector3(math.sin(t) * radius, i * height / heightDivision, 0.0));
-        }
-        vertices.add(Vector3.unitY * height);
-        return vertices;
+    // 紡錘面(正弦曲線)
+    final vertices = <Vector3>[Vector3.zero];
+    for (int i = 0; i < heightDivision; ++i) {
+      final h = i / heightDivision;
+      vertices.add(Vector3(math.sin(h * math.pi) * radius, h * height, 0.0));
     }
+    vertices.add(Vector3(0.0, height, 0.0));
+    return vertices;
   }
 }
 
@@ -380,7 +393,7 @@ class DomeEnd extends EndShape {
 
 /// 円筒メッシュビルダ
 @immutable
-class TubeBuilder extends AbstractSorBuilder {
+class TubeBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('TubeBuilder');
 
