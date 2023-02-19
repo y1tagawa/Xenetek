@@ -267,7 +267,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   meshDataArray['spindle'] = const mi.Mesh(
     origin: 'spindle',
     data: mi.SpindleBuilder(
-      radius: 0.2,
+      radius: 0.5,
       longitudeDivision: 12,
       heightDivision: 6,
     ),

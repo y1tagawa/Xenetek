@@ -287,6 +287,8 @@ abstract class _SorBuilder extends MeshBuilder {
 }
 
 /// 扁球体メッシュビルダ
+///
+/// 原点を中心とする扁球体
 @immutable
 class EllipsoidBuilder extends _SorBuilder {
   // ignore: unused_field
@@ -310,17 +312,19 @@ class EllipsoidBuilder extends _SorBuilder {
   @override
   List<Vector3> get generatingLine {
     // 扁球面
-    final vertices = <Vector3>[Vector3.zero];
+    final vertices = <Vector3>[const Vector3(0.0, -0.5, 0.0)];
     for (int i = 1; i < latitudeDivision; ++i) {
       final t = i * math.pi / latitudeDivision;
       vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
     }
-    vertices.add(Vector3.unitY);
+    vertices.add(const Vector3(0.0, 0.5, 0.0));
     return vertices.scaled(radius).toList();
   }
 }
 
 /// 紡錘体メッシュビルダ
+///
+/// 原点を始点とする、母線が正弦曲線の紡錘形。
 @immutable
 class SpindleBuilder extends _SorBuilder {
   // ignore: unused_field
@@ -328,18 +332,33 @@ class SpindleBuilder extends _SorBuilder {
 
   final int heightDivision;
   final double height;
-  final double radius;
+  final double width;
+  final double depth;
 
-  const SpindleBuilder({
+  const SpindleBuilder.elliptic({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     this.height = 1.0,
-    this.radius = 0.5,
+    this.width = 1.0,
+    this.depth = 1.0,
     super.axis = Vector3.unitY,
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1);
+
+  const SpindleBuilder({
+    super.longitudeDivision = 24,
+    this.heightDivision = 12,
+    this.height = 1.0,
+    double radius = 0.5,
+    super.axis = Vector3.unitY,
+    super.smooth = true,
+    super.reverse = false,
+  })  : assert(longitudeDivision >= 2),
+        assert(heightDivision >= 1),
+        width = radius * 2.0,
+        depth = radius * 2.0;
 
   /// 母線頂点リスト(Y軸周り)
   @override
@@ -348,10 +367,10 @@ class SpindleBuilder extends _SorBuilder {
     final vertices = <Vector3>[Vector3.zero];
     for (int i = 0; i < heightDivision; ++i) {
       final h = i / heightDivision;
-      vertices.add(Vector3(math.sin(h * math.pi) * radius, h * height, 0.0));
+      vertices.add(Vector3(math.sin(h * math.pi) * 0.5, h, 0.0));
     }
-    vertices.add(Vector3(0.0, height, 0.0));
-    return vertices;
+    vertices.add(Vector3.unitY);
+    return vertices.scaled(Vector3(width, height, depth)).toList();
   }
 }
 
