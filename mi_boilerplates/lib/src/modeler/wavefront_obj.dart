@@ -108,6 +108,7 @@ extension MeshDataArrayHelper on Map<String, MeshData> {
   /// Wavefront .obj出力
   void toWavefrontObj(StringSink sink) {
     _logger.fine('[i] toWavefrontObj $length entries');
+    sink.writeln('mtllib x11.mtl');
     int vertexIndex = 1;
     int textureVertexIndex = 1;
     int normalIndex = 1;
@@ -142,6 +143,9 @@ extension MeshDataArrayHelper on Map<String, MeshData> {
       // smooth
       sink.writeln('s ${data.smooth ? 1 : 0}');
       // 面
+      if (data.material.isNotEmpty) {
+        sink.writeln('usemtl ${data.material}');
+      }
       for (final face in data.faces) {
         assert(face.length >= 3);
         sink.write('f');

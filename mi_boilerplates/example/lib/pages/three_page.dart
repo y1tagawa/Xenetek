@@ -138,6 +138,31 @@ class _BunnyTab extends ConsumerWidget {
 
 //<editor-fold>
 
+Future<void> _createMtl() async {
+  final tempDir = await _getModelTempFileDir();
+  final file = File('$tempDir/x11.mtl');
+  final sink = file.openWrite();
+
+  for (int i = 0; i < mi.X11Colors.colors.length; ++i) {
+    final c = mi.X11Colors.colors[i];
+    sink.writeln('newmtl ${mi.x11ColorNames[i]}');
+    sink.writeln('Ka 1 1 1');
+    sink.writeln(
+      'Kd '
+      '${(c.red / 255.0).toStringAsFixed(4)} '
+      '${(c.green / 255.0).toStringAsFixed(4)} '
+      '${(c.blue / 255.0).toStringAsFixed(4)} ',
+    );
+    //Ks 0.5 0.5 0.5
+    //#Ns 96.078431
+    //#Ni 1
+    sink.writeln('d 1\n');
+    //#illum 0
+  }
+
+  await sink.close();
+}
+
 cube.Mesh _toMesh(Map<String, mi.MeshData> meshDataArray) {
   final vertices = <cube.Vector3>[];
   final indices = <cube.Polygon>[];
@@ -282,7 +307,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
         twist: <double>[0.0, math.pi],
       ),
     ],
-  ).toMeshData(root: root);
+  ).toMeshData(root: root).copyWith(material: 'firebrick');
   // meshDataArray['ball'] = mi.Mesh(
   //   origin: 'ball',
   //   data: const mi.SorBuilder(
@@ -379,6 +404,7 @@ class _ModelerTab extends ConsumerWidget {
           enabled: cubeData.hasValue,
           text: const Text('Update'),
           onPressed: () async {
+            //await _createMtl();
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();

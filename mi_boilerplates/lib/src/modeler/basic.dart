@@ -458,7 +458,6 @@ class Node {
     // [path]が指すノードの親であれば
     if (path.length == 1) {
       // 指定の子を追加、置換または削除する。
-      final children_ = {...children};
       return onFind(this, path.first);
     }
     // パスを途中で辿れなくなったらエラー
@@ -620,22 +619,6 @@ class Node {
 //</editor-fold>
 }
 
-// // 試作: bend
-// List<Matrix4> _makeBend(Matrix4 matrix, int segment) {
-//   assert(segment > 1);
-//   final rotation = vm.Quaternion.fromRotation(matrix.toVmMatrix().getRotation());
-//   final axis = Vector3.fromVmVector(rotation.axis);
-//   final r1 = rotation.radians / segment;
-//   final t1 = matrix.translation * (1.0 / segment);
-//   final matrices = <Matrix4>[];
-//   for (int i = 0; i < segment; ++i) {
-//     matrices.add(
-//       Matrix4.fromTranslation(t1) * Matrix4.fromAxisAngleRotation(axis: axis, radians: r1),
-//     );
-//   }
-//   return matrices;
-// }
-
 //
 // メッシュデータ
 //
@@ -725,6 +708,7 @@ class MeshData {
   final List<Vector3> textureVertices;
   final List<MeshFace> faces;
   final bool smooth;
+  final String material;
   final String comment;
 
   const MeshData({
@@ -733,6 +717,7 @@ class MeshData {
     this.textureVertices = const <Vector3>[],
     this.faces = const <MeshFace>[],
     this.smooth = false,
+    this.material = '',
     this.comment = '',
   });
 
@@ -853,6 +838,7 @@ class MeshData {
           vertices == other.vertices &&
           faces == other.faces &&
           smooth == other.smooth &&
+          material == other.material &&
           comment == other.comment);
 
   @override
@@ -862,6 +848,7 @@ class MeshData {
       textureVertices.hashCode ^
       faces.hashCode ^
       smooth.hashCode ^
+      material.hashCode ^
       comment.hashCode;
 
   @override
@@ -871,6 +858,7 @@ class MeshData {
         'textureVertices: $textureVertices, '
         'faces: $faces, '
         'smooth: $smooth, '
+        'material: $material, '
         'comment: $comment}';
   }
 
@@ -880,6 +868,7 @@ class MeshData {
     List<Vector3>? textureVertices,
     List<MeshFace>? faces,
     bool? smooth,
+    String? material,
     String? comment,
   }) {
     return MeshData(
@@ -888,6 +877,7 @@ class MeshData {
       textureVertices: textureVertices ?? this.textureVertices,
       faces: faces ?? this.faces,
       smooth: smooth ?? this.smooth,
+      material: material ?? this.material,
       comment: comment ?? this.comment,
     );
   }
