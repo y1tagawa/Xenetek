@@ -303,7 +303,6 @@ class BezierDouble {
   double transform(double t) {
     assert(points.isNotEmpty);
     final n = points.length - 1;
-    t = math.min(1.0, math.max(0.0, t));
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
@@ -335,7 +334,6 @@ class BezierVector3 {
   Vector3 transform(double t) {
     assert(points.isNotEmpty);
     final n = points.length - 1;
-    t = math.min(1.0, math.max(0.0, t));
     final t_ = 1.0 - t;
     switch (n) {
       case 0:

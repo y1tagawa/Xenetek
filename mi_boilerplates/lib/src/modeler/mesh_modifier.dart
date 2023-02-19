@@ -27,14 +27,12 @@ class WickModifier extends MeshModifier {
   final List<double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
   final List<double> width; // Y=[0,1]に対応するX半径
   final List<double> depth; // Y=[0,1]に対応するX半径
-  final int heightDivision;
 
   const WickModifier({
     required this.wicking,
     this.twist = const <double>[0.0],
     this.width = const <double>[1.0],
     this.depth = const <double>[1.0],
-    this.heightDivision = 12,
   });
 
   @override
@@ -44,9 +42,8 @@ class WickModifier extends MeshModifier {
     final width_ = BezierDouble(points: width);
     final depth_ = BezierDouble(points: depth);
     final vertices = <Vector3>[];
-    // todo: rotation
     for (final vertex in data.vertices) {
-      final t = vertex.y / heightDivision; // 0.0-1.0
+      final t = vertex.y; // 0.0-1.0
       final p = wicking_.transform(t);
       final p1 = wicking_.transform(t - 0.01);
       final p2 = wicking_.transform(t + 0.01);

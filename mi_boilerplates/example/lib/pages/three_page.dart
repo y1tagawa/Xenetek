@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart' hide Matrix4;
 import 'package:flutter/services.dart';
@@ -267,48 +268,49 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
     data: mi.SorBuilder(
       shape: mi.SorShape.spindle,
       radius: 0.2,
-      longitudeDivision: 64,
-      heightDivision: 32,
+      longitudeDivision: 12,
+      heightDivision: 6,
     ),
     modifiers: [
       mi.WickModifier(
         wicking: <mi.Vector3>[
           mi.Vector3(0, 0, 0),
-          mi.Vector3(2, 0, 0),
-          mi.Vector3(2, 1, 0),
+          mi.Vector3(0, 1, 0),
+          mi.Vector3(0, 1, 0),
           mi.Vector3(1, 1, 0),
         ],
+        twist: <double>[0.0, math.pi],
       ),
     ],
   ).toMeshData(root: root);
-  meshDataArray['ball'] = mi.Mesh(
-    origin: 'ball',
-    data: const mi.SorBuilder(
-      shape: mi.SorShape.ellipsoid,
-      radius: 1.0, //mi.Vector3(0.5, 0.7, 0.3),
-      longitudeDivision: 64,
-      heightDivision: 32,
-    ),
-    modifiers: [
-      const mi.BoxModifier(
-        min: mi.Vector3(-0.5, -0.5, -0.5),
-        max: mi.Vector3(0.5, 0.5, 0.5),
-      ),
-      mi.MagnetModifier(
-        magnets: const <String, mi.MagnetData>{
-          'ball.magnet': mi.MagnetData(
-            force: 0.2,
-            power: -4,
-          ),
-          'ball.magnet2': mi.MagnetData(
-            force: -0.3,
-            power: -2,
-            mirror: true,
-          ),
-        }.entries.toList(),
-      ),
-    ],
-  ).toMeshData(root: root);
+  // meshDataArray['ball'] = mi.Mesh(
+  //   origin: 'ball',
+  //   data: const mi.SorBuilder(
+  //     shape: mi.SorShape.ellipsoid,
+  //     radius: 1.0, //mi.Vector3(0.5, 0.7, 0.3),
+  //     longitudeDivision: 64,
+  //     heightDivision: 32,
+  //   ),
+  //   modifiers: [
+  //     const mi.BoxModifier(
+  //       min: mi.Vector3(-0.5, -0.5, -0.5),
+  //       max: mi.Vector3(0.5, 0.5, 0.5),
+  //     ),
+  //     mi.MagnetModifier(
+  //       magnets: const <String, mi.MagnetData>{
+  //         'ball.magnet': mi.MagnetData(
+  //           force: 0.2,
+  //           power: -4,
+  //         ),
+  //         'ball.magnet2': mi.MagnetData(
+  //           force: -0.3,
+  //           power: -2,
+  //           mirror: true,
+  //         ),
+  //       }.entries.toList(),
+  //     ),
+  //   ],
+  // ).toMeshData(root: root);
 
   // meshDataArray['magnet'] = const mi.Mesh(
   //   origin: 'ball.magnet',
