@@ -371,6 +371,8 @@ class SpindleBuilder extends _SorBuilder {
     this.height = 1.0,
     double radius = 0.5,
     super.axis = Vector3.unitY,
+    super.materialLibrary = '',
+    super.material = '',
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),

@@ -163,46 +163,46 @@ Future<void> _createMtl() async {
   await sink.close();
 }
 
-cube.Mesh _toMesh(Map<String, mi.MeshData> meshDataArray) {
-  final vertices = <cube.Vector3>[];
-  final indices = <cube.Polygon>[];
-  int vertexIndex = 0;
-  for (final data in meshDataArray.values) {
-    vertices.addAll(data.vertices.map((it) => cube.Vector3(it.x, it.y, it.z)));
-    for (final face in data.faces) {
-      for (int i = 1; i < face.length - 1; ++i) {
-        indices.add(cube.Polygon(
-          face[0].vertexIndex + vertexIndex,
-          face[i].vertexIndex + vertexIndex,
-          face[i + 1].vertexIndex + vertexIndex,
-        ));
-      }
-    }
-    vertexIndex += data.vertices.length;
-  }
-  return cube.Mesh(vertices: vertices, indices: indices);
-}
-
-cube.Cube _toCube(Map<String, mi.MeshData> meshDataArray) {
-  final mesh = _toMesh(meshDataArray);
-  ++_cubeKey;
-  return cube.Cube(
-    key: Key(_cubeKey.toString()),
-    onSceneCreated: (cube.Scene scene) {
-      scene.camera = cube.Camera(
-        position: cube.Vector3(-0.05, 0.3, 1.5),
-        target: cube.Vector3(-0.05, 0.3, 0),
-        fov: 35.0,
-      );
-      scene.world.add(
-        cube.Object(
-          mesh: mesh,
-          lighting: true,
-        ),
-      );
-    },
-  );
-}
+// cube.Mesh _toMesh(Map<String, mi.MeshData> meshDataArray) {
+//   final vertices = <cube.Vector3>[];
+//   final indices = <cube.Polygon>[];
+//   int vertexIndex = 0;
+//   for (final data in meshDataArray.values) {
+//     vertices.addAll(data.vertices.map((it) => cube.Vector3(it.x, it.y, it.z)));
+//     for (final face in data.faces) {
+//       for (int i = 1; i < face.length - 1; ++i) {
+//         indices.add(cube.Polygon(
+//           face[0].vertexIndex + vertexIndex,
+//           face[i].vertexIndex + vertexIndex,
+//           face[i + 1].vertexIndex + vertexIndex,
+//         ));
+//       }
+//     }
+//     vertexIndex += data.vertices.length;
+//   }
+//   return cube.Mesh(vertices: vertices, indices: indices);
+// }
+//
+// cube.Cube _toCube(Map<String, mi.MeshData> meshDataArray) {
+//   final mesh = _toMesh(meshDataArray);
+//   ++_cubeKey;
+//   return cube.Cube(
+//     key: Key(_cubeKey.toString()),
+//     onSceneCreated: (cube.Scene scene) {
+//       scene.camera = cube.Camera(
+//         position: cube.Vector3(-0.05, 0.3, 1.5),
+//         target: cube.Vector3(-0.05, 0.3, 0),
+//         fov: 35.0,
+//       );
+//       scene.world.add(
+//         cube.Object(
+//           mesh: mesh,
+//           lighting: true,
+//         ),
+//       );
+//     },
+//   );
+// }
 
 Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   // ignore: unused_local_variable
@@ -292,6 +292,8 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   meshDataArray['spindle'] = const mi.Mesh(
     origin: 'spindle',
     data: mi.SpindleBuilder(
+      materialLibrary: 'x11.mtl',
+      material: 'fireBrick',
       radius: 0.5,
       longitudeDivision: 12,
       heightDivision: 6,
@@ -307,7 +309,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
         twist: <double>[0.0, math.pi],
       ),
     ],
-  ).toMeshData(root: root).copyWith(material: 'firebrick');
+  ).toMeshData(root: root);
   // meshDataArray['ball'] = mi.Mesh(
   //   origin: 'ball',
   //   data: const mi.SorBuilder(
