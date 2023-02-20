@@ -308,15 +308,35 @@ class Matrix4 {
 //</editor-fold>
 }
 
-/// Bezier補間(double)
+/// Bezier補間
 @immutable
-class BezierDouble {
+abstract class Bezier<T> {
+  factory Bezier({
+    required List<T> points,
+  }) {
+    switch (points.runtimeType) {
+      case List<double>:
+        return _BezierDouble(points: points as List<double>) as Bezier<T>;
+      case List<Vector3>:
+        return _BezierVector3(points: points as List<Vector3>) as Bezier<T>;
+      default:
+        throw UnimplementedError();
+    }
+  }
+
+  T transform(double t);
+}
+
+// Bezier補間(double)
+@immutable
+class _BezierDouble implements Bezier<double> {
   final List<double> points;
 
-  const BezierDouble({
+  const _BezierDouble({
     required this.points,
   }) : assert(points.length >= 1);
 
+  @override
   double transform(double t) {
     assert(points.isNotEmpty);
     final n = points.length - 1;
@@ -339,15 +359,16 @@ class BezierDouble {
   }
 }
 
-/// Bezier補間(Vector3)
+// Bezier補間(Vector3)
 @immutable
-class BezierVector3 {
+class _BezierVector3 implements Bezier<Vector3> {
   final List<Vector3> points;
 
-  const BezierVector3({
+  const _BezierVector3({
     required this.points,
   }) : assert(points.length >= 1);
 
+  @override
   Vector3 transform(double t) {
     assert(points.isNotEmpty);
     final n = points.length - 1;

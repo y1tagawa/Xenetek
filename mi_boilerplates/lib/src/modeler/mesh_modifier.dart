@@ -37,10 +37,10 @@ class WickModifier extends MeshModifier {
 
   @override
   MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
-    final wicking_ = BezierVector3(points: wicking);
-    final twist_ = BezierDouble(points: twist);
-    final width_ = BezierDouble(points: width);
-    final depth_ = BezierDouble(points: depth);
+    final wicking_ = Bezier<Vector3>(points: wicking);
+    final twist_ = Bezier<double>(points: twist);
+    final width_ = Bezier<double>(points: width);
+    final depth_ = Bezier<double>(points: depth);
     final vertices = <Vector3>[];
     for (final vertex in data.vertices) {
       final t = vertex.y; // 0.0-1.0
