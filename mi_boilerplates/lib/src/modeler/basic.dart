@@ -729,6 +729,7 @@ class MeshData {
   final List<Vector3> textureVertices;
   final List<MeshFace> faces;
   final bool smooth;
+  final String materialLibrary;
   final String material;
   final String comment;
 
@@ -738,6 +739,7 @@ class MeshData {
     this.textureVertices = const <Vector3>[],
     this.faces = const <MeshFace>[],
     this.smooth = false,
+    this.materialLibrary = '',
     this.material = '',
     this.comment = '',
   });
@@ -859,6 +861,7 @@ class MeshData {
           vertices == other.vertices &&
           faces == other.faces &&
           smooth == other.smooth &&
+          materialLibrary == other.materialLibrary &&
           material == other.material &&
           comment == other.comment);
 
@@ -869,6 +872,7 @@ class MeshData {
       textureVertices.hashCode ^
       faces.hashCode ^
       smooth.hashCode ^
+      materialLibrary.hashCode ^
       material.hashCode ^
       comment.hashCode;
 
@@ -879,6 +883,7 @@ class MeshData {
         'textureVertices: $textureVertices, '
         'faces: $faces, '
         'smooth: $smooth, '
+        'materialLibrary: $materialLibrary, '
         'material: $material, '
         'comment: $comment}';
   }
@@ -889,6 +894,7 @@ class MeshData {
     List<Vector3>? textureVertices,
     List<MeshFace>? faces,
     bool? smooth,
+    String? materialLibrary,
     String? material,
     String? comment,
   }) {
@@ -898,6 +904,7 @@ class MeshData {
       textureVertices: textureVertices ?? this.textureVertices,
       faces: faces ?? this.faces,
       smooth: smooth ?? this.smooth,
+      materialLibrary: materialLibrary ?? this.materialLibrary,
       material: material ?? this.material,
       comment: comment ?? this.comment,
     );
