@@ -49,8 +49,17 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
   * rigに対しては、長さ・捻り角・曲げ方向・曲げ角度・分割数を指定。
     * 分割した曲げの結果を足したというか掛け合わせたものをmatrixとする。（つまり途中を省略した感じ）その逆行列も取れる。
     * スキンモディファイアはできたら対応したい
-* lattice modifier
-  * [y: xzOffset,xzScale] 折れ線でなく曲線nurbsにしたい
+* 今のMeshDataで出来ない事
+  * 使い途によってListになったりMapになったり。一個でカバーしたい→HumanRigメッシュとかの出力結果
+  * 一方名無しデータも簡単に作りたい。MeshBuilderのため。
+    * 名無しである必要は無いのでは？
+    * 安価なJoin
+  * マテリアルマッピング
+    * mtllib, usemtlによるグループ化→HumanRigメッシュとかの出力結果
+  * Sによるグループ化
+  * 複数データを一個に
+    * HumanRigへのmesh設定結果をtoMeshDataで一気にできない
+    * マテリアルを一個で管理しにくい
 * cutter modifier
   * magnetに近いが、質点でなく一定の距離にする（スカルプト）
   * 点でなく三角形とかできないか
