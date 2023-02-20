@@ -800,13 +800,13 @@ class MeshData {
   final List<Vector3> vertices;
   final List<Vector3> normals;
   final List<Vector3> textureVertices;
-  final List<MeshFaceGroup> faceGroups;
+  final List<MapEntry<String, MeshFaceGroup>> faceGroups;
 
   const MeshData({
     this.vertices = const <Vector3>[],
     this.normals = const <Vector3>[],
     this.textureVertices = const <Vector3>[],
-    this.faceGroups = const <MeshFaceGroup>[],
+    this.faceGroups = const <MapEntry<String, MeshFaceGroup>>[],
   });
 
   /// 変換
@@ -823,7 +823,7 @@ class MeshData {
 
   /// 面を表裏反転したコピーを返す。
   MeshData reversed() => copyWith(
-        faceGroups: faceGroups.map((it) => it.reversed()).toList(),
+        faceGroups: faceGroups.map((it) => MapEntry(it.key, it.value.reversed())).toList(),
       );
 
   /// 面を再分割する。
@@ -851,10 +851,10 @@ class MeshData {
       return vertices_.length - 1;
     }
 
-    final faceGroups_ = <MeshFaceGroup>[];
+    final faceGroups_ = <MapEntry<String, MeshFaceGroup>>[];
     for (final faceGroup in faceGroups) {
       final faces_ = <MeshFace>[];
-      for (final face in faceGroup.faces) {
+      for (final face in faceGroup.value.faces) {
         switch (face.length) {
           case 3:
             //    v0
@@ -902,7 +902,9 @@ class MeshData {
             assert(false);
         }
       }
-      faceGroups_.add(faceGroup.copyWith(faces: faces_));
+      faceGroups_.add(
+        MapEntry(faceGroup.key, faceGroup.value.copyWith(faces: faces_)),
+      );
     }
 
     return copyWith(
@@ -941,7 +943,7 @@ class MeshData {
     List<Vector3>? vertices,
     List<Vector3>? normals,
     List<Vector3>? textureVertices,
-    List<MeshFaceGroup>? faceGroups,
+    List<MapEntry<String, MeshFaceGroup>>? faceGroups,
   }) {
     return MeshData(
       vertices: vertices ?? this.vertices,
@@ -954,16 +956,14 @@ class MeshData {
 //</editor-fold>
 }
 
-extension MeshDataArrayHelper on Map<String, MeshData> {
-  MeshData join() {
+extension MeshDataArrayHelper on Iterable<MeshData> {
+  MeshData joinMeshData() {
     final vertices = <Vector3>[];
     final textureVertices = <Vector3>[];
     final normals = <Vector3>[];
-    final faceGroups = <MeshFaceGroup>[];
+    final faceGroups = <MapEntry<String, MeshFaceGroup>>[];
 
-    for (final entry in entries) {
-      final data = entry.value;
-
+    for (final data in this) {
       final vertexIndex = vertices.length;
       final textureVertexIndex = textureVertices.length;
       final normalIndex = normals.length;
@@ -973,7 +973,7 @@ extension MeshDataArrayHelper on Map<String, MeshData> {
       normals.addAll(data.normals);
       for (final faceGroup in data.faceGroups) {
         final faces = <MeshFace>[];
-        for (final face in faceGroup.faces) {
+        for (final face in faceGroup.value.faces) {
           faces.add(face
               .map(
                 (it) => MeshVertex(
@@ -984,7 +984,12 @@ extension MeshDataArrayHelper on Map<String, MeshData> {
               )
               .toList());
         }
-        faceGroups.add(faceGroup.copyWith(faces: faces));
+        faceGroups.add(
+          MapEntry(
+            faceGroup.key,
+            faceGroup.value.copyWith(faces: faces),
+          ),
+        );
       }
     }
 

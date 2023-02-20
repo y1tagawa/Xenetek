@@ -77,7 +77,9 @@ const _cubeFaces = <MeshFace>[
 const _cubeMeshData = MeshData(
   vertices: _cubeVertices,
   normals: _cubeNormals,
-  faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _cubeFaces)],
+  faceGroups: <MapEntry<String, MeshFaceGroup>>[
+    MapEntry('', MeshFaceGroup(faces: _cubeFaces)),
+  ],
 );
 
 //</editor-fold>
@@ -168,7 +170,9 @@ const _octahedronFaces = <MeshFace>[
 
 const _octahedronMeshData = MeshData(
   vertices: _octahedronVertices,
-  faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
+  faceGroups: <MapEntry<String, MeshFaceGroup>>[
+    MapEntry('', MeshFaceGroup(faces: _octahedronFaces)),
+  ],
 );
 
 //</editor-fold>
@@ -187,7 +191,9 @@ const _pinVertices = <Vector3>[
 
 const pinMeshData = MeshData(
   vertices: _pinVertices,
-  faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
+  faceGroups: <MapEntry<String, MeshFaceGroup>>[
+    MapEntry('', MeshFaceGroup(faces: _octahedronFaces)),
+  ],
 );
 
 //</editor-fold>
@@ -198,6 +204,7 @@ abstract class _SorBuilder extends MeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('AbstractSorBuilder');
 
+  final String key;
   final int longitudeDivision;
   final Vector3 axis;
   final String materialLibrary;
@@ -206,6 +213,7 @@ abstract class _SorBuilder extends MeshBuilder {
   final bool reverse;
 
   const _SorBuilder({
+    this.key = '',
     this.longitudeDivision = 24,
     this.axis = Vector3.unitY,
     this.materialLibrary = '',
@@ -287,12 +295,15 @@ abstract class _SorBuilder extends MeshBuilder {
     addFaces(i * n, 0);
     final data = MeshData(
       vertices: vertices,
-      faceGroups: <MeshFaceGroup>[
-        MeshFaceGroup(
-          faces: faces,
-          materialLibrary: materialLibrary,
-          material: material,
-          smooth: smooth,
+      faceGroups: <MapEntry<String, MeshFaceGroup>>[
+        MapEntry(
+          key,
+          MeshFaceGroup(
+            faces: faces,
+            materialLibrary: materialLibrary,
+            material: material,
+            smooth: smooth,
+          ),
         ),
       ],
     );

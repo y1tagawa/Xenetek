@@ -302,7 +302,7 @@ class HumanRig {
   // メッシュデータ生成
   // todo: extensionへ
 
-  Map<String, MeshData> toMeshData({
+  MeshData toMeshData({
     required final Node root,
     Node? initRoot, // 初期姿勢
   }) {
@@ -402,6 +402,6 @@ class HumanRig {
       beginRadius: elbowRadius,
       endRadius: wristRadius,
     );
-    return buffer;
+    return buffer.values.joinMeshData();
   }
 }

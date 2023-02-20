@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart' hide Matrix4;
 import 'package:flutter/services.dart';
@@ -204,7 +203,7 @@ Future<void> _createMtl() async {
 //   );
 // }
 
-Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
+Future<void> _setup(StringSink sink) async {
   // ignore: unused_local_variable
   final logger = Logger('_setup');
 
@@ -289,27 +288,27 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   //
   final meshDataArray = dollBuilder.toMeshData(root: root, initRoot: initRoot);
 
-  meshDataArray['spindle'] = const mi.Mesh(
-    origin: 'spindle',
-    data: mi.SpindleBuilder(
-      materialLibrary: 'x11.mtl',
-      material: 'firebrick',
-      radius: 0.5,
-      longitudeDivision: 12,
-      heightDivision: 6,
-    ),
-    modifiers: [
-      mi.WickModifier(
-        wicking: <mi.Vector3>[
-          mi.Vector3(0, 0, 0),
-          mi.Vector3(0, 1, 0),
-          mi.Vector3(0, 1, 0),
-          mi.Vector3(1, 1, 0),
-        ],
-        twist: <double>[0.0, math.pi],
-      ),
-    ],
-  ).toMeshData(root: root);
+  // meshDataArray['spindle'] = const mi.Mesh(
+  //   origin: 'spindle',
+  //   data: mi.SpindleBuilder(
+  //     materialLibrary: 'x11.mtl',
+  //     material: 'firebrick',
+  //     radius: 0.5,
+  //     longitudeDivision: 12,
+  //     heightDivision: 6,
+  //   ),
+  //   modifiers: [
+  //     mi.WickModifier(
+  //       wicking: <mi.Vector3>[
+  //         mi.Vector3(0, 0, 0),
+  //         mi.Vector3(0, 1, 0),
+  //         mi.Vector3(0, 1, 0),
+  //         mi.Vector3(1, 1, 0),
+  //       ],
+  //       twist: <double>[0.0, math.pi],
+  //     ),
+  //   ],
+  // ).toMeshData(root: root);
   // meshDataArray['ball'] = mi.Mesh(
   //   origin: 'ball',
   //   data: const mi.SorBuilder(
@@ -346,9 +345,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  meshDataArray.join().toWavefrontObj(sink);
-
-  return meshDataArray;
+  meshDataArray.toWavefrontObj(sink);
 }
 
 Future<String> _getModelTempFileDir() async {

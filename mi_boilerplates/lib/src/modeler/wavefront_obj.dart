@@ -88,7 +88,9 @@ extension MeshDataHelper on MeshData {
     return MeshData(
       vertices: vertices,
       normals: normals,
-      faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: faces)],
+      faceGroups: <MapEntry<String, MeshFaceGroup>>[
+        MapEntry('', MeshFaceGroup(faces: faces)),
+      ],
     ).also((it) {
       _logger.fine(
         '[o] fromWavefrontObj'
@@ -113,13 +115,13 @@ extension MeshDataHelper on MeshData {
     _logger.fine('${textureVertices.length} texture vertices');
     _logger.fine('${normals.length} normals');
     _logger.fine('${faceGroups.length} face groups');
-    _logger.fine('${faceGroups.fold(0, (value, it) => value + it.faces.length)} faces');
+    _logger.fine('${faceGroups.fold(0, (value, it) => value + it.value.faces.length)} faces');
 
     // 使用されているmtllibを最初にまとめてインポートする
     final materialLibraries = <String>{};
     for (var it in faceGroups) {
-      if (it.materialLibrary.isNotEmpty) {
-        materialLibraries.add(it.materialLibrary);
+      if (it.value.materialLibrary.isNotEmpty) {
+        materialLibraries.add(it.value.materialLibrary);
       }
     }
     for (var it in materialLibraries) {
@@ -153,10 +155,11 @@ extension MeshDataHelper on MeshData {
     }
     // 面グループ
     for (final faceGroup in faceGroups) {
-      sink.writeln('s ${faceGroup.smooth ? 1 : 0}');
-      sink.writeln('usemtl ${faceGroup.material}'); // マテリアルが空ならデフォルトに戻る
+      sink.writeln('# ${faceGroup.key}');
+      sink.writeln('s ${faceGroup.value.smooth ? 1 : 0}');
+      sink.writeln('usemtl ${faceGroup.value.material}'); // マテリアルが空ならデフォルトに戻る
       // 面頂点
-      for (final face in faceGroup.faces) {
+      for (final face in faceGroup.value.faces) {
         assert(face.length >= 3);
         sink.write('f');
         for (final vertex in face) {
