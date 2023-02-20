@@ -77,7 +77,7 @@ const _cubeFaces = <MeshFace>[
 const _cubeMeshData = MeshData(
   vertices: _cubeVertices,
   normals: _cubeNormals,
-  faces: _cubeFaces,
+  faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _cubeFaces)],
 );
 
 //</editor-fold>
@@ -168,7 +168,7 @@ const _octahedronFaces = <MeshFace>[
 
 const _octahedronMeshData = MeshData(
   vertices: _octahedronVertices,
-  faces: _octahedronFaces,
+  faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
 );
 
 //</editor-fold>
@@ -187,7 +187,7 @@ const _pinVertices = <Vector3>[
 
 const pinMeshData = MeshData(
   vertices: _pinVertices,
-  faces: _octahedronFaces,
+  faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
 );
 
 //</editor-fold>
@@ -200,12 +200,16 @@ abstract class _SorBuilder extends MeshBuilder {
 
   final int longitudeDivision;
   final Vector3 axis;
+  final String materialLibrary;
+  final String material;
   final bool smooth;
   final bool reverse;
 
   const _SorBuilder({
     this.longitudeDivision = 24,
     this.axis = Vector3.unitY,
+    this.materialLibrary = '',
+    this.material = '',
     this.smooth = true,
     this.reverse = false,
   }) : assert(longitudeDivision >= 2);
@@ -281,7 +285,17 @@ abstract class _SorBuilder extends MeshBuilder {
       addFaces(i * n, (i + 1) * n);
     }
     addFaces(i * n, 0);
-    final data = MeshData(vertices: vertices, faces: faces, smooth: smooth);
+    final data = MeshData(
+      vertices: vertices,
+      faceGroups: <MeshFaceGroup>[
+        MeshFaceGroup(
+          faces: faces,
+          materialLibrary: materialLibrary,
+          material: material,
+          smooth: smooth,
+        ),
+      ],
+    );
     return reverse ? data.reversed() : data;
   }
 }
@@ -302,6 +316,8 @@ class EllipsoidBuilder extends _SorBuilder {
     this.latitudeDivision = 12,
     this.radius = 0.5,
     super.axis = Vector3.unitY,
+    super.materialLibrary = '',
+    super.material = '',
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
@@ -342,6 +358,8 @@ class SpindleBuilder extends _SorBuilder {
     this.width = 1.0,
     this.depth = 1.0,
     super.axis = Vector3.unitY,
+    super.materialLibrary = '',
+    super.material = '',
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
@@ -432,6 +450,8 @@ class TubeBuilder extends _SorBuilder {
     this.heightDivision = 1,
     this.beginShape = const OpenEnd(),
     this.endShape = const OpenEnd(),
+    super.materialLibrary = '',
+    super.material = '',
     super.smooth = true,
     super.reverse = false,
   });

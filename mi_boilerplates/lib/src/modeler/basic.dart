@@ -644,7 +644,7 @@ class Node {
 // メッシュデータ
 //
 
-/// メッシュ頂点データ
+/// 頂点データ
 ///
 /// 大体Wavefront .objの頂点データ。ただし、
 /// - インデックスは0から。
@@ -715,8 +715,81 @@ class MeshVertex {
 //</editor-fold>
 }
 
-/// メッシュ面データ
+/// 面データ
 typedef MeshFace = List<MeshVertex>;
+
+/// 面グループ
+///
+/// マテリアル等を共有する面のグループ。
+@immutable
+class MeshFaceGroup {
+  // ignore: unused_field
+  static final _logger = Logger('MeshFaceGroup');
+
+  final List<MeshFace> faces;
+  final String materialLibrary;
+  final String material;
+  final bool smooth;
+
+  const MeshFaceGroup({
+    this.faces = const <MeshFace>[],
+    this.materialLibrary = '',
+    this.material = '',
+    this.smooth = false,
+  });
+
+  /// 面を表裏反転したコピーを返す。
+  MeshFaceGroup reversed() {
+    final faces_ = <MeshFace>[];
+    for (final face in faces) {
+      assert(face.isNotEmpty);
+      faces_.add([face[0], ...face.skip(1).toList().reversed]);
+    }
+    return copyWith(faces: faces_);
+  }
+
+//<editor-fold desc="Data Methods">
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MeshFaceGroup &&
+          runtimeType == other.runtimeType &&
+          faces == other.faces &&
+          materialLibrary == other.materialLibrary &&
+          material == other.material &&
+          smooth == other.smooth);
+
+  @override
+  int get hashCode =>
+      faces.hashCode ^ materialLibrary.hashCode ^ material.hashCode ^ smooth.hashCode;
+
+  @override
+  String toString() {
+    return 'MeshFaceGroup{'
+        ' faces: $faces,'
+        ' materialLibrary: $materialLibrary,'
+        ' material: $material,'
+        ' smooth: $smooth,'
+        '}';
+  }
+
+  MeshFaceGroup copyWith({
+    List<MeshFace>? faces,
+    String? materialLibrary,
+    String? material,
+    bool? smooth,
+  }) {
+    return MeshFaceGroup(
+      faces: faces ?? this.faces,
+      materialLibrary: materialLibrary ?? this.materialLibrary,
+      material: material ?? this.material,
+      smooth: smooth ?? this.smooth,
+    );
+  }
+
+//</editor-fold>
+}
 
 /// メッシュデータ
 @immutable
@@ -727,21 +800,13 @@ class MeshData {
   final List<Vector3> vertices;
   final List<Vector3> normals;
   final List<Vector3> textureVertices;
-  final List<MeshFace> faces;
-  final bool smooth;
-  final String materialLibrary;
-  final String material;
-  final String comment;
+  final List<MeshFaceGroup> faceGroups;
 
   const MeshData({
     this.vertices = const <Vector3>[],
     this.normals = const <Vector3>[],
     this.textureVertices = const <Vector3>[],
-    this.faces = const <MeshFace>[],
-    this.smooth = false,
-    this.materialLibrary = '',
-    this.material = '',
-    this.comment = '',
+    this.faceGroups = const <MeshFaceGroup>[],
   });
 
   /// 変換
@@ -757,19 +822,14 @@ class MeshData {
       ).reversed();
 
   /// 面を表裏反転したコピーを返す。
-  MeshData reversed() {
-    final faces_ = <MeshFace>[];
-    for (final face in faces) {
-      assert(face.isNotEmpty);
-      faces_.add([face[0], ...face.skip(1).toList().reversed]);
-    }
-    return copyWith(faces: faces_);
-  }
+  MeshData reversed() => copyWith(
+        faceGroups: faceGroups.map((it) => it.reversed()).toList(),
+      );
 
   /// 面を再分割する。
   ///
   /// 三角ポリゴンは三鱗型、四角ポリゴンは田の字型に分割する。
-  /// todo: normals, textureVertices
+  /// todo: normals, textureVertices, helper送り
   MeshData tessellated([final int level = 0]) {
     assert(level >= 0);
     if (level == 0) return this;
@@ -791,61 +851,65 @@ class MeshData {
       return vertices_.length - 1;
     }
 
-    final faces_ = <MeshFace>[];
-    for (final face in faces) {
-      switch (face.length) {
-        case 3:
-          //    v0
-          //  v3  v5
-          // v1 v4 v2
-          final v0 = face[0].vertexIndex;
-          final v1 = face[1].vertexIndex;
-          final v2 = face[2].vertexIndex;
-          final v3 = getMidPoint(v0, v1);
-          final v4 = getMidPoint(v1, v2);
-          final v5 = getMidPoint(v2, v0);
-          faces_.addAll(
-            <MeshFace>[
-              <MeshVertex>[MeshVertex(v0), MeshVertex(v3), MeshVertex(v5)],
-              <MeshVertex>[MeshVertex(v1), MeshVertex(v4), MeshVertex(v3)],
-              <MeshVertex>[MeshVertex(v2), MeshVertex(v5), MeshVertex(v4)],
-              <MeshVertex>[MeshVertex(v3), MeshVertex(v4), MeshVertex(v5)],
-            ],
-          );
-          break;
-        case 4:
-          // v0 v7 v3
-          // v4 v8 v6
-          // v1 v5 v2
-          final v0 = face[0].vertexIndex;
-          final v1 = face[1].vertexIndex;
-          final v2 = face[2].vertexIndex;
-          final v3 = face[3].vertexIndex;
-          final v4 = getMidPoint(v0, v1);
-          final v5 = getMidPoint(v1, v2);
-          final v6 = getMidPoint(v2, v3);
-          final v7 = getMidPoint(v3, v0);
-          final v8 = getMidPoint(v4, v6);
-          faces_.addAll(
-            <MeshFace>[
-              <MeshVertex>[MeshVertex(v0), MeshVertex(v4), MeshVertex(v8), MeshVertex(v7)],
-              <MeshVertex>[MeshVertex(v1), MeshVertex(v5), MeshVertex(v8), MeshVertex(v4)],
-              <MeshVertex>[MeshVertex(v2), MeshVertex(v6), MeshVertex(v8), MeshVertex(v5)],
-              <MeshVertex>[MeshVertex(v3), MeshVertex(v7), MeshVertex(v8), MeshVertex(v6)],
-            ],
-          );
-          break;
-        default:
-          //todo:
-          assert(false);
+    final faceGroups_ = <MeshFaceGroup>[];
+    for (final faceGroup in faceGroups) {
+      final faces_ = <MeshFace>[];
+      for (final face in faceGroup.faces) {
+        switch (face.length) {
+          case 3:
+            //    v0
+            //  v3  v5
+            // v1 v4 v2
+            final v0 = face[0].vertexIndex;
+            final v1 = face[1].vertexIndex;
+            final v2 = face[2].vertexIndex;
+            final v3 = getMidPoint(v0, v1);
+            final v4 = getMidPoint(v1, v2);
+            final v5 = getMidPoint(v2, v0);
+            faces_.addAll(
+              <MeshFace>[
+                <MeshVertex>[MeshVertex(v0), MeshVertex(v3), MeshVertex(v5)],
+                <MeshVertex>[MeshVertex(v1), MeshVertex(v4), MeshVertex(v3)],
+                <MeshVertex>[MeshVertex(v2), MeshVertex(v5), MeshVertex(v4)],
+                <MeshVertex>[MeshVertex(v3), MeshVertex(v4), MeshVertex(v5)],
+              ],
+            );
+            break;
+          case 4:
+            // v0 v7 v3
+            // v4 v8 v6
+            // v1 v5 v2
+            final v0 = face[0].vertexIndex;
+            final v1 = face[1].vertexIndex;
+            final v2 = face[2].vertexIndex;
+            final v3 = face[3].vertexIndex;
+            final v4 = getMidPoint(v0, v1);
+            final v5 = getMidPoint(v1, v2);
+            final v6 = getMidPoint(v2, v3);
+            final v7 = getMidPoint(v3, v0);
+            final v8 = getMidPoint(v4, v6);
+            faces_.addAll(
+              <MeshFace>[
+                <MeshVertex>[MeshVertex(v0), MeshVertex(v4), MeshVertex(v8), MeshVertex(v7)],
+                <MeshVertex>[MeshVertex(v1), MeshVertex(v5), MeshVertex(v8), MeshVertex(v4)],
+                <MeshVertex>[MeshVertex(v2), MeshVertex(v6), MeshVertex(v8), MeshVertex(v5)],
+                <MeshVertex>[MeshVertex(v3), MeshVertex(v7), MeshVertex(v8), MeshVertex(v6)],
+              ],
+            );
+            break;
+          default:
+            //todo:
+            assert(false);
+        }
       }
+      faceGroups_.add(faceGroup.copyWith(faces: faces_));
     }
 
     return copyWith(
       vertices: vertices_,
-      faces: faces_,
       textureVertices: const <Vector3>[], //todo:
       normals: const <Vector3>[], //todo:
+      faceGroups: faceGroups_,
     ).tessellated(level - 1);
   }
 
@@ -859,54 +923,31 @@ class MeshData {
           normals == other.normals &&
           textureVertices == other.textureVertices &&
           vertices == other.vertices &&
-          faces == other.faces &&
-          smooth == other.smooth &&
-          materialLibrary == other.materialLibrary &&
-          material == other.material &&
-          comment == other.comment);
+          faceGroups == other.faceGroups);
 
   @override
   int get hashCode =>
-      vertices.hashCode ^
-      normals.hashCode ^
-      textureVertices.hashCode ^
-      faces.hashCode ^
-      smooth.hashCode ^
-      materialLibrary.hashCode ^
-      material.hashCode ^
-      comment.hashCode;
+      vertices.hashCode ^ normals.hashCode ^ textureVertices.hashCode ^ faceGroups.hashCode;
 
   @override
   String toString() {
     return 'Mesh{ vertices: $vertices, '
         'normals: $normals, '
         'textureVertices: $textureVertices, '
-        'faces: $faces, '
-        'smooth: $smooth, '
-        'materialLibrary: $materialLibrary, '
-        'material: $material, '
-        'comment: $comment}';
+        'faceGroups: $faceGroups}';
   }
 
   MeshData copyWith({
     List<Vector3>? vertices,
     List<Vector3>? normals,
     List<Vector3>? textureVertices,
-    List<MeshFace>? faces,
-    bool? smooth,
-    String? materialLibrary,
-    String? material,
-    String? comment,
+    List<MeshFaceGroup>? faceGroups,
   }) {
     return MeshData(
       vertices: vertices ?? this.vertices,
       normals: normals ?? this.normals,
       textureVertices: textureVertices ?? this.textureVertices,
-      faces: faces ?? this.faces,
-      smooth: smooth ?? this.smooth,
-      materialLibrary: materialLibrary ?? this.materialLibrary,
-      material: material ?? this.material,
-      comment: comment ?? this.comment,
+      faceGroups: faceGroups ?? this.faceGroups,
     );
   }
 
