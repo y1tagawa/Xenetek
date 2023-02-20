@@ -293,7 +293,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
     origin: 'spindle',
     data: mi.SpindleBuilder(
       materialLibrary: 'x11.mtl',
-      material: 'fireBrick',
+      material: 'firebrick',
       radius: 0.5,
       longitudeDivision: 12,
       heightDivision: 6,
@@ -346,7 +346,7 @@ Future<Map<String, mi.MeshData>> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  meshDataArray.toWavefrontObj(sink);
+  meshDataArray.join().toWavefrontObj(sink);
 
   return meshDataArray;
 }

@@ -954,6 +954,49 @@ class MeshData {
 //</editor-fold>
 }
 
+extension MeshDataArrayHelper on Map<String, MeshData> {
+  MeshData join() {
+    final vertices = <Vector3>[];
+    final textureVertices = <Vector3>[];
+    final normals = <Vector3>[];
+    final faceGroups = <MeshFaceGroup>[];
+
+    for (final entry in entries) {
+      final data = entry.value;
+
+      final vertexIndex = vertices.length;
+      final textureVertexIndex = textureVertices.length;
+      final normalIndex = normals.length;
+
+      vertices.addAll(data.vertices);
+      textureVertices.addAll(data.textureVertices);
+      normals.addAll(data.normals);
+      for (final faceGroup in data.faceGroups) {
+        final faces = <MeshFace>[];
+        for (final face in faceGroup.faces) {
+          faces.add(face
+              .map(
+                (it) => MeshVertex(
+                  it.vertexIndex + vertexIndex,
+                  it.textureVertexIndex >= 0 ? it.textureVertexIndex + textureVertexIndex : -1,
+                  it.normalIndex >= 0 ? it.normalIndex + normalIndex : -1,
+                ),
+              )
+              .toList());
+        }
+        faceGroups.add(faceGroup.copyWith(faces: faces));
+      }
+    }
+
+    return MeshData(
+      vertices: vertices,
+      textureVertices: textureVertices,
+      normals: normals,
+      faceGroups: faceGroups,
+    );
+  }
+}
+
 //
 // メッシュ
 //

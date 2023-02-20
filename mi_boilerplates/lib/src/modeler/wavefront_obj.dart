@@ -118,7 +118,9 @@ extension MeshDataHelper on MeshData {
     // 使用されているmtllibを最初にまとめてインポートする
     final materialLibraries = <String>{};
     for (var it in faceGroups) {
-      materialLibraries.add(it.materialLibrary);
+      if (it.materialLibrary.isNotEmpty) {
+        materialLibraries.add(it.materialLibrary);
+      }
     }
     for (var it in materialLibraries) {
       sink.writeln('mtllib $it');
