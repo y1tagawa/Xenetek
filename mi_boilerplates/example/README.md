@@ -53,13 +53,18 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
   * 使い途によってListになったりMapになったり。一個でカバーしたい→HumanRigメッシュとかの出力結果
   * 一方名無しデータも簡単に作りたい。MeshBuilderのため。
     * 名無しである必要は無いのでは？
+      * MeshDataでなくMeshにkeyを入れておき、toMeshDataで生成
     * 安価なJoin
   * マテリアルマッピング
     * mtllib, usemtlによるグループ化→HumanRigメッシュとかの出力結果
   * Sによるグループ化
+  * グループが頂点を共有する必要は必ずしもない。まずは共有無しで考える
   * 複数データを一個に
     * HumanRigへのmesh設定結果をtoMeshDataで一気にできない
     * マテリアルを一個で管理しにくい
+  * 今のMeshDataにmtllib, usemtlを追加し、MeshObjectとする
+  * <String, List<MeshObject>>をMeshDataとする
+    * シンプルなコンストラクタ（個々の図形用）およびマップからのコンストラクタ
 * cutter modifier
   * magnetに近いが、質点でなく一定の距離にする（スカルプト）
   * 点でなく三角形とかできないか
