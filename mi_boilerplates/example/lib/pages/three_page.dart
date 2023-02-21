@@ -289,7 +289,7 @@ Future<void> _setup(StringSink sink) async {
   //
   final dollMeshBuilder = mi.HumanMeshBuilder(
     rigBuilder: dollBuilder,
-    rRoot: initRoot,
+    referencePosition: initRoot,
     root: root,
   );
   final dollMeshData = dollMeshBuilder.build();

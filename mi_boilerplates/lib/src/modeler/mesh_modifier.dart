@@ -194,11 +194,11 @@ class BoneData {
 @immutable
 class SkinModifier extends MeshModifier {
   final List<MapEntry<String, BoneData>> bones;
-  final Node rRoot; // 初期姿勢のrootノード
+  final Node referencePosition; // 基準位置のrootノード
 
   const SkinModifier({
     required this.bones,
-    required this.rRoot,
+    required this.referencePosition,
   });
 
   @override
@@ -207,10 +207,10 @@ class SkinModifier extends MeshModifier {
     required MeshData data,
     required Node root,
   }) {
-    // 初期姿勢のoriginからrootへの変換行列
-    final rOriginMatrix = rRoot.find(path: mesh.origin)!.matrix;
-    // 初期姿勢の各ボーンからrootへの変換行列とその逆
-    final rBoneMatrices = bones.map((it) => rRoot.find(path: it.key)!.matrix).toList();
+    // 基準位置のoriginからrootへの変換行列
+    final rOriginMatrix = referencePosition.find(path: mesh.origin)!.matrix;
+    // 基準位置の各ボーンからrootへの変換行列とその逆
+    final rBoneMatrices = bones.map((it) => referencePosition.find(path: it.key)!.matrix).toList();
     final rInvBoneMatrices = rBoneMatrices.map((it) => it.inverted()).toList();
     // originからrootへの変換行列
     final originMatrix = root.find(path: mesh.origin)!.matrix;
@@ -227,7 +227,7 @@ class SkinModifier extends MeshModifier {
       final rPos = vertex.transformed(rOriginMatrix);
       for (int i = 0; i < bones.length; ++i) {
         final bone = bones[i].value;
-        // 初期姿勢におけるボーンからの相対位置を...
+        // 基準位置におけるボーンからの相対位置を...
         final p = rPos.transformed(rInvBoneMatrices[i]);
         final d = p.length;
         if (d <= bone.radius) {

@@ -72,11 +72,17 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 * rig mesh builderのリファクタリングで分かった事
   * HumanMeshBuilderには初期姿勢rRootとポージング後のrootが必要。
     * まあ他のメッシュもNodeをrootに追加してからだからそんなに変じゃない
+    * MeshBuilderのbuildを、toMeshData同様rootを渡すようにした方が、統一性は増すかも？
   * rRootという名前は分かりにくい。要修正。
+    * basic configuration/initial posture/reference position 
   * リグのstatic変数(ノードパス)とインスタンス変数(サイズ系)の使い分けが意外と面倒。ただ統合すべきというほどでも。
   * 予定通りではあるが、上肢、下肢などサブルーチン化できるところはやるべき
   * カスタマイズのために<String, MeshData>{}の段階で一回関数呼ぶ。
     * keyでなくtagにするならリストにしてから
+    * FaceGroupでなくMeshDataにtagを付与したいが、joinすると消えてしまう。やっぱりverticesとかも分けるか、
+      MeshDataをMeshObjectのリストにするしかないのか？
+      * MeshBuilder.buildの戻り値、MeshModifier.transformのパラメタと戻り値、
+        transformed, mirrored, reversed, MeshData定数。大した数ではない。
 
 
 * cutter modifier

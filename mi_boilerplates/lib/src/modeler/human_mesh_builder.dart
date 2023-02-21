@@ -7,21 +7,19 @@ import 'mesh_modifier.dart';
 
 // スクリプト的モデラ
 //
-// ドール(mk1)リグに合わせてメッシュを配置する。
+// ドール(mk1)リグに合わせてメッシュを配置する一例。
 
 class HumanMeshBuilder extends MeshBuilder {
   // ignore: unused_field
   static final _logger = Logger('HumanMeshBuilder');
 
-  // 体格パラメタ
   final HumanRig rigBuilder;
-  // 初期姿勢root
-  final Node rRoot;
+  final Node referencePosition;
   final Node root;
 
   const HumanMeshBuilder({
     required this.rigBuilder,
-    required this.rRoot,
+    required this.referencePosition,
     required this.root,
   });
 
@@ -92,7 +90,7 @@ class HumanMeshBuilder extends MeshBuilder {
             HumanRig.rSc: const BoneData(power: -8),
             HumanRig.lSc: const BoneData(power: -8),
           }.entries.toList(),
-          rRoot: initRoot,
+          referencePosition: initRoot,
         ),
         // MagnetModifier(
         //   magnets: <String, BoneData>{
@@ -123,7 +121,7 @@ class HumanMeshBuilder extends MeshBuilder {
           HumanRig.rCoxa: const BoneData(power: -6),
           HumanRig.lCoxa: const BoneData(power: -6),
         }.entries.toList(),
-        rRoot: initRoot,
+        referencePosition: initRoot,
       ),
     ).toMeshData(root: root);
   }
@@ -147,12 +145,12 @@ class HumanMeshBuilder extends MeshBuilder {
     // 胴体・頭
     buffer['belly'] = makeBelly(
       root: root,
-      initRoot: rRoot,
+      initRoot: referencePosition,
       origin: HumanRig.pelvis,
     );
     buffer['chest'] = makeChest(
       root: root,
-      initRoot: rRoot,
+      initRoot: referencePosition,
       origin: HumanRig.chest,
       target: HumanRig.neck,
     );
