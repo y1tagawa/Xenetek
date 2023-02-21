@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
@@ -28,7 +27,6 @@ class HumanMeshBuilder extends MeshBuilder {
 
   // メッシュデータ
 
-  @protected
   MeshData makePin({
     required Node root,
     required String origin,
@@ -46,7 +44,6 @@ class HumanMeshBuilder extends MeshBuilder {
     ).toMeshData(root: root);
   }
 
-  @protected
   MeshData makeTube({
     required Node root,
     required String origin,
@@ -74,7 +71,6 @@ class HumanMeshBuilder extends MeshBuilder {
     ).toMeshData(root: root);
   }
 
-  @protected
   MeshData makeChest({
     required Node root,
     required Node initRoot,
@@ -107,7 +103,6 @@ class HumanMeshBuilder extends MeshBuilder {
     ).toMeshData(root: root);
   }
 
-  @protected
   MeshData makeBelly({
     required Node root,
     required Node initRoot,
@@ -133,7 +128,6 @@ class HumanMeshBuilder extends MeshBuilder {
     ).toMeshData(root: root);
   }
 
-  @protected
   MeshData makeMesh({
     required Node root,
     required String origin,
@@ -151,13 +145,11 @@ class HumanMeshBuilder extends MeshBuilder {
   MeshData build() {
     final buffer = <String, MeshData>{};
     // 胴体・頭
-    //buffer['waist'] = makePin(root: root, origin: pelvis, target: chest);
     buffer['belly'] = makeBelly(
       root: root,
       initRoot: rRoot,
       origin: HumanRig.pelvis,
     );
-    //buffer['chest'] = makePin(root: root, origin: chest, target: neck);
     buffer['chest'] = makeChest(
       root: root,
       initRoot: rRoot,
