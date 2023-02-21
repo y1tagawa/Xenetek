@@ -730,12 +730,14 @@ class MeshFaceGroup {
   final String materialLibrary;
   final String material;
   final bool smooth;
+  final String tag;
 
   const MeshFaceGroup({
     this.faces = const <MeshFace>[],
     this.materialLibrary = '',
     this.material = '',
     this.smooth = false,
+    this.tag = '',
   });
 
   /// 面を表裏反転したコピーを返す。
@@ -758,11 +760,16 @@ class MeshFaceGroup {
           faces == other.faces &&
           materialLibrary == other.materialLibrary &&
           material == other.material &&
+          tag == other.tag &&
           smooth == other.smooth);
 
   @override
   int get hashCode =>
-      faces.hashCode ^ materialLibrary.hashCode ^ material.hashCode ^ smooth.hashCode;
+      faces.hashCode ^
+      materialLibrary.hashCode ^
+      material.hashCode ^
+      smooth.hashCode ^
+      tag.hashCode;
 
   @override
   String toString() {
@@ -771,6 +778,7 @@ class MeshFaceGroup {
         ' materialLibrary: $materialLibrary,'
         ' material: $material,'
         ' smooth: $smooth,'
+        ' tag: $tag,'
         '}';
   }
 
@@ -779,12 +787,14 @@ class MeshFaceGroup {
     String? materialLibrary,
     String? material,
     bool? smooth,
+    String? tag,
   }) {
     return MeshFaceGroup(
       faces: faces ?? this.faces,
       materialLibrary: materialLibrary ?? this.materialLibrary,
       material: material ?? this.material,
       smooth: smooth ?? this.smooth,
+      tag: tag ?? this.tag,
     );
   }
 
@@ -800,13 +810,13 @@ class MeshData {
   final List<Vector3> vertices;
   final List<Vector3> normals;
   final List<Vector3> textureVertices;
-  final List<MapEntry<String, MeshFaceGroup>> faceGroups;
+  final List<MeshFaceGroup> faceGroups;
 
   const MeshData({
     this.vertices = const <Vector3>[],
     this.normals = const <Vector3>[],
     this.textureVertices = const <Vector3>[],
-    this.faceGroups = const <MapEntry<String, MeshFaceGroup>>[],
+    this.faceGroups = const <MeshFaceGroup>[],
   });
 
   /// 変換
@@ -823,7 +833,7 @@ class MeshData {
 
   /// 面を表裏反転したコピーを返す。
   MeshData reversed() => copyWith(
-        faceGroups: faceGroups.map((it) => MapEntry(it.key, it.value.reversed())).toList(),
+        faceGroups: faceGroups.map((it) => it.reversed()).toList(),
       );
 
   /// 面を再分割する。
@@ -851,10 +861,10 @@ class MeshData {
       return vertices_.length - 1;
     }
 
-    final faceGroups_ = <MapEntry<String, MeshFaceGroup>>[];
+    final faceGroups_ = <MeshFaceGroup>[];
     for (final faceGroup in faceGroups) {
       final faces_ = <MeshFace>[];
-      for (final face in faceGroup.value.faces) {
+      for (final face in faceGroup.faces) {
         switch (face.length) {
           case 3:
             //    v0
@@ -902,9 +912,7 @@ class MeshData {
             assert(false);
         }
       }
-      faceGroups_.add(
-        MapEntry(faceGroup.key, faceGroup.value.copyWith(faces: faces_)),
-      );
+      faceGroups_.add(faceGroup.copyWith(faces: faces_));
     }
 
     return copyWith(
@@ -943,7 +951,7 @@ class MeshData {
     List<Vector3>? vertices,
     List<Vector3>? normals,
     List<Vector3>? textureVertices,
-    List<MapEntry<String, MeshFaceGroup>>? faceGroups,
+    List<MeshFaceGroup>? faceGroups,
   }) {
     return MeshData(
       vertices: vertices ?? this.vertices,
@@ -961,7 +969,7 @@ extension MeshDataArrayHelper on Iterable<MeshData> {
     final vertices = <Vector3>[];
     final textureVertices = <Vector3>[];
     final normals = <Vector3>[];
-    final faceGroups = <MapEntry<String, MeshFaceGroup>>[];
+    final faceGroups = <MeshFaceGroup>[];
 
     for (final data in this) {
       final vertexIndex = vertices.length;
@@ -973,7 +981,7 @@ extension MeshDataArrayHelper on Iterable<MeshData> {
       normals.addAll(data.normals);
       for (final faceGroup in data.faceGroups) {
         final faces = <MeshFace>[];
-        for (final face in faceGroup.value.faces) {
+        for (final face in faceGroup.faces) {
           faces.add(face
               .map(
                 (it) => MeshVertex(
@@ -984,12 +992,7 @@ extension MeshDataArrayHelper on Iterable<MeshData> {
               )
               .toList());
         }
-        faceGroups.add(
-          MapEntry(
-            faceGroup.key,
-            faceGroup.value.copyWith(faces: faces),
-          ),
-        );
+        faceGroups.add(faceGroup.copyWith(faces: faces));
       }
     }
 
