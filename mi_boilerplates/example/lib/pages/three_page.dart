@@ -350,7 +350,7 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  <mi.MeshData>[dollMeshData, spindle].joinMeshData().toWavefrontObj(sink);
+  <mi.MeshData>[dollMeshData, spindle].toWavefrontObj(sink: sink);
 }
 
 Future<String> _getModelTempFileDir() async {

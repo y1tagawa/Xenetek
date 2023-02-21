@@ -73,7 +73,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
   * HumanMeshBuilderには初期姿勢rRootとポージング後のrootが必要。
     * まあ他のメッシュもNodeをrootに追加してからだからそんなに変じゃない
     * MeshBuilderのbuildを、toMeshData同様rootを渡すようにした方が、統一性は増すかも？
-  * rRootという名前は分かりにくい。要修正。
+  * ok rRootという名前は分かりにくい。要修正。
     * basic configuration/initial posture/reference position 
   * リグのstatic変数(ノードパス)とインスタンス変数(サイズ系)の使い分けが意外と面倒。ただ統合すべきというほどでも。
   * 予定通りではあるが、上肢、下肢などサブルーチン化できるところはやるべき
@@ -83,7 +83,9 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
       MeshDataをMeshObjectのリストにするしかないのか？
       * MeshBuilder.buildの戻り値、MeshModifier.transformのパラメタと戻り値、
         transformed, mirrored, reversed, MeshData定数。大した数ではない。
-
+        * BoxModifierみたいにVertices全体を参照することがある
+    * tagが欲しいのはWavefront保存のときだけだから、MeshDataに入れる必要はあまり無い。
+      * だめだ、Dollの中で結局joinしてる...
 
 * cutter modifier
   * magnetに近いが、質点でなく一定の距離にする（スカルプト）

@@ -730,14 +730,12 @@ class MeshFaceGroup {
   final String materialLibrary;
   final String material;
   final bool smooth;
-  final String tag;
 
   const MeshFaceGroup({
     this.faces = const <MeshFace>[],
     this.materialLibrary = '',
     this.material = '',
     this.smooth = false,
-    this.tag = '',
   });
 
   /// 面を表裏反転したコピーを返す。
@@ -760,16 +758,11 @@ class MeshFaceGroup {
           faces == other.faces &&
           materialLibrary == other.materialLibrary &&
           material == other.material &&
-          tag == other.tag &&
           smooth == other.smooth);
 
   @override
   int get hashCode =>
-      faces.hashCode ^
-      materialLibrary.hashCode ^
-      material.hashCode ^
-      smooth.hashCode ^
-      tag.hashCode;
+      faces.hashCode ^ materialLibrary.hashCode ^ material.hashCode ^ smooth.hashCode;
 
   @override
   String toString() {
@@ -778,7 +771,6 @@ class MeshFaceGroup {
         ' materialLibrary: $materialLibrary,'
         ' material: $material,'
         ' smooth: $smooth,'
-        ' tag: $tag,'
         '}';
   }
 
@@ -787,14 +779,12 @@ class MeshFaceGroup {
     String? materialLibrary,
     String? material,
     bool? smooth,
-    String? tag,
   }) {
     return MeshFaceGroup(
       faces: faces ?? this.faces,
       materialLibrary: materialLibrary ?? this.materialLibrary,
       material: material ?? this.material,
       smooth: smooth ?? this.smooth,
-      tag: tag ?? this.tag,
     );
   }
 
