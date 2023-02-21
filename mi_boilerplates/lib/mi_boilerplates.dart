@@ -25,6 +25,7 @@ export 'src/mi_transforms.dart';
 export 'src/mi_widgets.dart';
 export 'src/modeler/basic.dart';
 export 'src/modeler/doll_helper.dart';
+export 'src/modeler/human_mesh_builder.dart';
 export 'src/modeler/human_rig.dart';
 export 'src/modeler/mesh_builder.dart';
 export 'src/modeler/mesh_modifier.dart';

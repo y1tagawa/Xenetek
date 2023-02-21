@@ -287,9 +287,14 @@ Future<void> _setup(StringSink sink) async {
         matrix: mi.Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitY, degrees: 30),
       );
   //
-  var doll = dollBuilder.toMeshData(root: root, initRoot: initRoot);
+  final dollMeshBuilder = mi.HumanMeshBuilder(
+    rigBuilder: dollBuilder,
+    rRoot: initRoot,
+    root: root,
+  );
+  final dollMeshData = dollMeshBuilder.build();
 
-  var spindle = const mi.Mesh(
+  final spindle = const mi.Mesh(
     origin: 'spindle',
     data: mi.SpindleBuilder(
       materialLibrary: 'x11.mtl',
@@ -346,7 +351,7 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  <mi.MeshData>[doll, spindle].joinMeshData().toWavefrontObj(sink);
+  <mi.MeshData>[dollMeshData, spindle].joinMeshData().toWavefrontObj(sink);
 }
 
 Future<String> _getModelTempFileDir() async {
@@ -427,7 +432,9 @@ class _ModelerTab extends ConsumerWidget {
           ),
         ),
       ],
-    );
+    ).also((_) {
+      _logger.fine('[o] build');
+    });
   }
 }
 
