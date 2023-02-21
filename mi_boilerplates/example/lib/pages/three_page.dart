@@ -214,10 +214,7 @@ Future<void> _setup(StringSink sink) async {
   final footObj = await rootBundle.loadString('assets/3d/foot.obj');
   final footMesh = mi.MeshDataHelper.fromWavefrontObj(footObj);
 
-  final dollBuilder = mi.HumanRig(
-    headMesh: headMesh,
-    footMesh: footMesh,
-  );
+  const dollBuilder = mi.HumanRig();
   var root = dollBuilder.build();
   final initRoot = root;
 
@@ -291,6 +288,8 @@ Future<void> _setup(StringSink sink) async {
     rigBuilder: dollBuilder,
     referencePosition: initRoot,
     root: root,
+    headMesh: headMesh,
+    footMesh: footMesh,
   );
   final dollMeshData = dollMeshBuilder.build();
 

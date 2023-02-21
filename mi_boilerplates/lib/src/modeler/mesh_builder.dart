@@ -167,6 +167,7 @@ const _octahedronFaces = <MeshFace>[
   ],
 ];
 
+// ignore: unused_element
 const _octahedronMeshData = MeshData(
   vertices: _octahedronVertices,
   faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],

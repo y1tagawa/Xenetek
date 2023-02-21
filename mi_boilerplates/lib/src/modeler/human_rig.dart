@@ -80,9 +80,6 @@ class HumanRig {
   final double coxaRadius;
   final double kneeRadius;
   final double ankleRadius;
-  // メッシュ
-  final MeshData? headMesh; // 頭
-  final MeshData? footMesh; // 右足
 
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
@@ -113,9 +110,6 @@ class HumanRig {
     this.coxaRadius = 0.1,
     this.kneeRadius = 0.1,
     this.ankleRadius = 0.08,
-    //
-    this.headMesh,
-    this.footMesh,
   });
 
   /// リグ生成
