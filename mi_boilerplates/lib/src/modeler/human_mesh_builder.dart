@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
@@ -17,7 +18,7 @@ MeshData _pin({
 }) {
   return Mesh(
     origin: origin,
-    data: pinMeshData,
+    data: const [pinMeshObject],
     modifiers: LookAtModifier(
       target: target,
       connect: true,
@@ -233,6 +234,6 @@ class HumanMeshBuilder extends MeshBuilder {
       beginRadius: rigBuilder.elbowRadius,
       endRadius: rigBuilder.wristRadius,
     );
-    return buffer.values.joinMeshData();
+    return buffer.values.flattened.toList();
   }
 }

@@ -793,16 +793,16 @@ class MeshFaceGroup {
 
 /// メッシュデータ
 @immutable
-class MeshData {
+class MeshObject {
   // ignore: unused_field
-  static final _logger = Logger('MeshData');
+  static final _logger = Logger('MeshOnject');
 
   final List<Vector3> vertices;
   final List<Vector3> normals;
   final List<Vector3> textureVertices;
   final List<MeshFaceGroup> faceGroups;
 
-  const MeshData({
+  const MeshObject({
     this.vertices = const <Vector3>[],
     this.normals = const <Vector3>[],
     this.textureVertices = const <Vector3>[],
@@ -810,19 +810,19 @@ class MeshData {
   });
 
   /// 変換
-  MeshData transformed(Matrix4 matrix) => copyWith(
+  MeshObject transformed(Matrix4 matrix) => copyWith(
         vertices: vertices.transformed(matrix).toList(),
         normals: normals.transformed(matrix.rotation).toList(),
       );
 
   /// 左右反転したコピーを返す。
-  MeshData mirrored() => copyWith(
+  MeshObject mirrored() => copyWith(
         vertices: vertices.mirrored().toList(),
         normals: normals.mirrored().toList(),
       ).reversed();
 
   /// 面を表裏反転したコピーを返す。
-  MeshData reversed() => copyWith(
+  MeshObject reversed() => copyWith(
         faceGroups: faceGroups.map((it) => it.reversed()).toList(),
       );
 
@@ -830,7 +830,7 @@ class MeshData {
   ///
   /// 三角ポリゴンは三鱗型、四角ポリゴンは田の字型に分割する。
   /// todo: normals, textureVertices, helper送り
-  MeshData tessellated([final int level = 0]) {
+  MeshObject tessellated([final int level = 0]) {
     assert(level >= 0);
     if (level == 0) return this;
 
@@ -918,7 +918,7 @@ class MeshData {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MeshData &&
+      (other is MeshObject &&
           runtimeType == other.runtimeType &&
           normals == other.normals &&
           textureVertices == other.textureVertices &&
@@ -937,13 +937,13 @@ class MeshData {
         'faceGroups: $faceGroups}';
   }
 
-  MeshData copyWith({
+  MeshObject copyWith({
     List<Vector3>? vertices,
     List<Vector3>? normals,
     List<Vector3>? textureVertices,
     List<MeshFaceGroup>? faceGroups,
   }) {
-    return MeshData(
+    return MeshObject(
       vertices: vertices ?? this.vertices,
       normals: normals ?? this.normals,
       textureVertices: textureVertices ?? this.textureVertices,
@@ -954,45 +954,13 @@ class MeshData {
 //</editor-fold>
 }
 
-extension MeshDataArrayHelper on Iterable<MeshData> {
-  MeshData joinMeshData() {
-    final vertices = <Vector3>[];
-    final textureVertices = <Vector3>[];
-    final normals = <Vector3>[];
-    final faceGroups = <MeshFaceGroup>[];
+typedef MeshData = List<MeshObject>;
 
-    for (final data in this) {
-      final vertexIndex = vertices.length;
-      final textureVertexIndex = textureVertices.length;
-      final normalIndex = normals.length;
-
-      vertices.addAll(data.vertices);
-      textureVertices.addAll(data.textureVertices);
-      normals.addAll(data.normals);
-      for (final faceGroup in data.faceGroups) {
-        final faces = <MeshFace>[];
-        for (final face in faceGroup.faces) {
-          faces.add(face
-              .map(
-                (it) => MeshVertex(
-                  it.vertexIndex + vertexIndex,
-                  it.textureVertexIndex >= 0 ? it.textureVertexIndex + textureVertexIndex : -1,
-                  it.normalIndex >= 0 ? it.normalIndex + normalIndex : -1,
-                ),
-              )
-              .toList());
-        }
-        faceGroups.add(faceGroup.copyWith(faces: faces));
-      }
-    }
-
-    return MeshData(
-      vertices: vertices,
-      textureVertices: textureVertices,
-      normals: normals,
-      faceGroups: faceGroups,
-    );
-  }
+extension MeshDataHelper on Iterable<MeshObject> {
+  MeshData transformed(Matrix4 matrix) => map((it) => it.transformed(matrix)).toList();
+  MeshData mirrored() => map((it) => it.mirrored()).toList();
+  MeshData reversed() => map((it) => it.reversed()).toList();
+  MeshData tessellated([int level = 0]) => map((it) => it.tessellated(level)).toList();
 }
 
 //
@@ -1040,6 +1008,9 @@ class _NopModifier extends MeshModifier {
 /// リグ上にメッシュデータを配置する。
 @immutable
 class Mesh {
+  // ignore: unused_field
+  static final _logger = Logger('Mesh');
+
   final dynamic data;
   final String origin;
   final dynamic modifiers;
@@ -1052,8 +1023,9 @@ class Mesh {
         assert(modifiers is MeshModifier || modifiers is List<MeshModifier>);
 
   MeshData toMeshData({required final Node root}) {
+    _logger.fine('[i] toMeshData data.runtimeType=${data.runtimeType}');
     // メッシュデータ生成
-    var data_ = data is MeshBuilder ? (data as MeshBuilder).build() : data as MeshData;
+    MeshData data_ = data is MeshData ? data as MeshData : (data as MeshBuilder).build();
     // 変形
     if (modifiers is MeshModifier) {
       data_ = (modifiers as MeshModifier).transform(mesh: this, data: data_, root: root);

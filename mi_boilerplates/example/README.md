@@ -95,8 +95,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 * normalはmodifierと合いが悪い...削除すべきか？
   * 折れ目を考えると回転体もいまいちな感じ。ちょっと考える。
     * 母線に同じ頂点が並んだら折れ目でもいいかな
-  * vertices + (faces + smooth)*
-  * テクスチャは後でface groupにラップ
+  * ok テクスチャは後でface groupにラップ
 
 * ConsumeStatefulWidgetで、initStateでrefでプロバイダ初期化できるか？（awaitできないから、
   初期値をゲットできないが初期化だけならできそう）

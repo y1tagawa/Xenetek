@@ -210,9 +210,9 @@ Future<void> _setup(StringSink sink) async {
 
   final headObj = await rootBundle.loadString('assets/3d/head.obj');
   final headMesh =
-      mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
+      mi.WavefrontObjHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
   final footObj = await rootBundle.loadString('assets/3d/foot.obj');
-  final footMesh = mi.MeshDataHelper.fromWavefrontObj(footObj);
+  final footMesh = mi.WavefrontObjHelper.fromWavefrontObj(footObj);
 
   const dollBuilder = mi.HumanRig();
   var root = dollBuilder.build();
@@ -350,7 +350,7 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  <mi.MeshData>[dollMeshData, spindle].toWavefrontObj(sink: sink);
+  [...dollMeshData, ...spindle].toWavefrontObj(sink: sink);
 }
 
 Future<String> _getModelTempFileDir() async {

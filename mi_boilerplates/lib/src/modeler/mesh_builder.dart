@@ -75,7 +75,7 @@ const _cubeFaces = <MeshFace>[
   ],
 ];
 
-const _cubeMeshData = MeshData(
+const _cubeMeshObject = MeshObject(
   vertices: _cubeVertices,
   normals: _cubeNormals,
   faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _cubeFaces)],
@@ -107,7 +107,9 @@ class CubeBuilder extends MeshBuilder {
           ),
         )
         .toList();
-    return _cubeMeshData.copyWith(vertices: vertices).tessellated(tessellationLevel);
+    return <MeshObject>[
+      _cubeMeshObject.copyWith(vertices: vertices).tessellated(tessellationLevel),
+    ];
   }
 }
 
@@ -168,7 +170,7 @@ const _octahedronFaces = <MeshFace>[
 ];
 
 // ignore: unused_element
-const _octahedronMeshData = MeshData(
+const _octahedronMeshObject = MeshObject(
   vertices: _octahedronVertices,
   faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
 );
@@ -187,7 +189,7 @@ const _pinVertices = <Vector3>[
   Vector3(0, 0.25, -0.1),
 ];
 
-const pinMeshData = MeshData(
+const pinMeshObject = MeshObject(
   vertices: _pinVertices,
   faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
 );
@@ -287,7 +289,7 @@ abstract class _SorBuilder extends MeshBuilder {
       addFaces(i * n, (i + 1) * n);
     }
     addFaces(i * n, 0);
-    final data = MeshData(
+    final object = MeshObject(
       vertices: vertices,
       faceGroups: <MeshFaceGroup>[
         MeshFaceGroup(
@@ -298,7 +300,7 @@ abstract class _SorBuilder extends MeshBuilder {
         ),
       ],
     );
-    return reverse ? data.reversed() : data;
+    return [reverse ? object.reversed() : object];
   }
 }
 
