@@ -791,22 +791,24 @@ class MeshFaceGroup {
 //</editor-fold>
 }
 
-/// メッシュデータ
+/// メッシュオブジェクト
 @immutable
 class MeshObject {
   // ignore: unused_field
-  static final _logger = Logger('MeshOnject');
+  static final _logger = Logger('MeshObject');
 
   final List<Vector3> vertices;
   final List<Vector3> normals;
   final List<Vector3> textureVertices;
   final List<MeshFaceGroup> faceGroups;
+  final String tag;
 
   const MeshObject({
     this.vertices = const <Vector3>[],
     this.normals = const <Vector3>[],
     this.textureVertices = const <Vector3>[],
     this.faceGroups = const <MeshFaceGroup>[],
+    this.tag = '',
   });
 
   /// 変換
@@ -923,18 +925,24 @@ class MeshObject {
           normals == other.normals &&
           textureVertices == other.textureVertices &&
           vertices == other.vertices &&
-          faceGroups == other.faceGroups);
+          faceGroups == other.faceGroups &&
+          tag == other.tag);
 
   @override
   int get hashCode =>
-      vertices.hashCode ^ normals.hashCode ^ textureVertices.hashCode ^ faceGroups.hashCode;
+      vertices.hashCode ^
+      normals.hashCode ^
+      textureVertices.hashCode ^
+      faceGroups.hashCode ^
+      tag.hashCode;
 
   @override
   String toString() {
     return 'Mesh{ vertices: $vertices, '
         'normals: $normals, '
         'textureVertices: $textureVertices, '
-        'faceGroups: $faceGroups}';
+        'faceGroups: $faceGroups}, '
+        'tag: $tag}';
   }
 
   MeshObject copyWith({
@@ -942,18 +950,23 @@ class MeshObject {
     List<Vector3>? normals,
     List<Vector3>? textureVertices,
     List<MeshFaceGroup>? faceGroups,
+    String? tag,
   }) {
     return MeshObject(
       vertices: vertices ?? this.vertices,
       normals: normals ?? this.normals,
       textureVertices: textureVertices ?? this.textureVertices,
       faceGroups: faceGroups ?? this.faceGroups,
+      tag: tag ?? this.tag,
     );
   }
 
 //</editor-fold>
 }
 
+/// メッシュデータ
+///
+/// immutableにできないか？
 typedef MeshData = List<MeshObject>;
 
 extension MeshDataHelper on Iterable<MeshObject> {
@@ -961,6 +974,11 @@ extension MeshDataHelper on Iterable<MeshObject> {
   MeshData mirrored() => map((it) => it.mirrored()).toList();
   MeshData reversed() => map((it) => it.reversed()).toList();
   MeshData tessellated([int level = 0]) => map((it) => it.tessellated(level)).toList();
+
+  MeshData tagged(String tag) {
+    assert(length == 1);
+    return <MeshObject>[first.copyWith(tag: tag)];
+  }
 }
 
 //

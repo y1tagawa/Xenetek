@@ -234,6 +234,6 @@ class HumanMeshBuilder extends MeshBuilder {
       beginRadius: rigBuilder.elbowRadius,
       endRadius: rigBuilder.wristRadius,
     );
-    return buffer.values.flattened.toList();
+    return buffer.entries.map((it) => it.value.tagged(it.key)).flattened.toList();
   }
 }

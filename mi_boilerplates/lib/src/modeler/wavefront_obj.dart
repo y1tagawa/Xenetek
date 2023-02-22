@@ -128,7 +128,10 @@ extension WavefrontObjHelper on Iterable<MeshObject> {
     int faceCount = 0;
 
     for (final object in this) {
-      // 頂点
+      if (object.tag.isNotEmpty) {
+        sink.writeln('# tag: ${object.tag}');
+      }
+
       for (final vertex in object.vertices) {
         sink.writeln(
           'v'
