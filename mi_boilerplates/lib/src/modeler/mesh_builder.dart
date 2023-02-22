@@ -363,37 +363,21 @@ class SpindleBuilder extends _SorBuilder {
 
   final int heightDivision;
   final double height;
-  final double width;
-  final double depth;
-
-  const SpindleBuilder.elliptic({
-    super.longitudeDivision = 24,
-    this.heightDivision = 12,
-    this.height = 1.0,
-    this.width = 1.0,
-    this.depth = 1.0,
-    super.axis = Vector3.unitY,
-    super.materialLibrary = '',
-    super.material = '',
-    super.smooth = true,
-    super.reverse = false,
-  })  : assert(longitudeDivision >= 2),
-        assert(heightDivision >= 2);
+  final dynamic radius; // ベクトルの場合Y成分は無視される
 
   const SpindleBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     this.height = 1.0,
-    double radius = 0.5,
+    this.radius = Vector3.one,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',
     super.material = '',
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
-        assert(heightDivision >= 1),
-        width = radius * 2.0,
-        depth = radius * 2.0;
+        assert(heightDivision >= 2),
+        assert(radius is double || radius is Vector3);
 
   /// 母線生成(Y軸周り)
   @override
@@ -412,7 +396,11 @@ class SpindleBuilder extends _SorBuilder {
   /// todo: axis
   @override
   MeshData build() {
-    return super.build().transformed(Matrix4.fromScale(Vector3(width, height, depth)));
+    var radius_ = radius;
+    if (radius is Vector3) {
+      radius_ = (radius as Vector3).copyWith(y: 1);
+    }
+    return super.build().transformed(Matrix4.fromScale(radius_));
   }
 }
 
