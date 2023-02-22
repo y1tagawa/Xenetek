@@ -218,18 +218,40 @@ abstract class _SorBuilder extends MeshBuilder {
     this.reverse = false,
   }) : assert(longitudeDivision >= 2);
 
+  /// 母線生成(Y軸周り)
+  @protected
+  List<Vector3> makeGeneratingLine();
+
   /// 経線生成(Y軸周り)
   @protected
-  List<Vector3> makeLineOfLongitude({required int index});
+  List<Vector3> makeLineOfLongitude({
+    required List<Vector3> generatingLine,
+    required int index,
+  }) =>
+      generatingLine
+          .transformed(
+            Matrix4.fromAxisAngleRotation(
+              axis: Vector3.unitY,
+              radians: index * math.pi * 2.0 / longitudeDivision,
+            ),
+          )
+          .toList();
 
   /// 頂点生成
   @protected
   List<Vector3> makeVertices() {
-    final vertices = makeLineOfLongitude(index: 0);
+    final generatingLine = makeGeneratingLine();
+    final vertices = makeLineOfLongitude(
+      generatingLine: generatingLine,
+      index: 0,
+    );
     final n = vertices.length;
     assert(n >= 2);
     for (int i = 1; i < longitudeDivision; ++i) {
-      final lineOfLongitude = makeLineOfLongitude(index: i);
+      final lineOfLongitude = makeLineOfLongitude(
+        generatingLine: generatingLine,
+        index: i,
+      );
       // 全ての経線の頂点数は同一でなければならない
       assert(lineOfLongitude.length == n);
       vertices.addAll(lineOfLongitude);
@@ -310,10 +332,9 @@ class EllipsoidBuilder extends _SorBuilder {
         assert(latitudeDivision >= 1),
         assert(radius is double || radius is Vector3);
 
-  /// 経線生成(Y軸周り)
+  /// 母線生成(Y軸周り)
   @override
-  List<Vector3> makeLineOfLongitude({required int index}) {
-    // todo: 母線再利用
+  List<Vector3> makeGeneratingLine() {
     // 扁球面
     final vertices = <Vector3>[const Vector3(0.0, -0.5, 0.0)];
     for (int i = 1; i < latitudeDivision; ++i) {
@@ -321,14 +342,7 @@ class EllipsoidBuilder extends _SorBuilder {
       vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
     }
     vertices.add(const Vector3(0.0, 0.5, 0.0));
-    return vertices
-        .transformed(
-          Matrix4.fromAxisAngleRotation(
-            axis: Vector3.unitY,
-            radians: index * math.pi * 2.0 / longitudeDivision,
-          ),
-        )
-        .toList();
+    return vertices;
   }
 
   /// メッシュデータ生成
@@ -381,10 +395,9 @@ class SpindleBuilder extends _SorBuilder {
         width = radius * 2.0,
         depth = radius * 2.0;
 
-  /// 経線生成(Y軸周り)
+  /// 母線生成(Y軸周り)
   @override
-  List<Vector3> makeLineOfLongitude({required int index}) {
-    // todo: 母線再利用
+  List<Vector3> makeGeneratingLine() {
     // 紡錘面(正弦曲線)
     final vertices = <Vector3>[Vector3.zero];
     for (int i = 0; i <= heightDivision; ++i) {
@@ -392,14 +405,7 @@ class SpindleBuilder extends _SorBuilder {
       vertices.add(Vector3(math.sin(h * math.pi) * 0.5, h, 0.0));
     }
     vertices.add(Vector3.unitY);
-    return vertices
-        .transformed(
-          Matrix4.fromAxisAngleRotation(
-            axis: Vector3.unitY,
-            radians: index * math.pi * 2.0 / longitudeDivision,
-          ),
-        )
-        .toList();
+    return vertices;
   }
 
   /// メッシュデータ生成
@@ -436,7 +442,7 @@ class BezierSorBuilder extends _SorBuilder {
 
   /// 経線生成(Y軸周り)
   @override
-  List<Vector3> makeLineOfLongitude({required int index}) {
+  List<Vector3> makeGeneratingLine() {
     // TODO: implement build
     throw UnimplementedError();
   }
@@ -513,9 +519,9 @@ class TubeBuilder extends _SorBuilder {
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1);
 
-  /// 経線生成(Y軸周り)
+  /// 母線生成(Y軸周り)
   @override
-  List<Vector3> makeLineOfLongitude({required int index}) {
+  List<Vector3> makeGeneratingLine() {
     // todo: 母線再利用
     assert(longitudeDivision >= 2);
     assert(heightDivision >= 1);
@@ -574,14 +580,7 @@ class TubeBuilder extends _SorBuilder {
       default: // OpenEnd
         break;
     }
-    return vertices
-        .transformed(
-          Matrix4.fromAxisAngleRotation(
-            axis: Vector3.unitY,
-            radians: index * math.pi * 2.0 / longitudeDivision,
-          ),
-        )
-        .toList();
+    return vertices;
   }
 }
 
