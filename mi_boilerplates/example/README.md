@@ -85,7 +85,8 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
         transformed, mirrored, reversed, MeshData定数。大した数ではない。
         * BoxModifierみたいにVertices全体を参照することがある
     * tagが欲しいのはWavefront保存のときだけだから、MeshDataに入れる必要はあまり無い。
-      * だめだ、Dollの中で結局joinしてる...
+      * だめだ、Dollの中で結局joinしてる...やはりMeshData = List<MeshObject>が良いか。
+        MeshData.tagged(tag)で要素一個でなかったらエラーとかにする
 
 * cutter modifier
   * magnetに近いが、質点でなく一定の距離にする（スカルプト）

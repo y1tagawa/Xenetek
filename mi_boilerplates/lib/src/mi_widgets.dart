@@ -9,7 +9,7 @@ import 'package:flutter/material.dart' hide Drawer, Row;
 import 'package:flutter/material.dart' as material show Drawer, Row;
 import 'package:logging/logging.dart';
 
-import 'scope_functions.dart';
+import 'helpers.dart';
 
 extension DoubleHelper on double {
   static const degreeToRadian = math.pi / 180.0;
@@ -17,60 +17,6 @@ extension DoubleHelper on double {
 
   double toRadian() => this * degreeToRadian;
   double toDegree() => this * radianToDegree;
-}
-
-extension ListHelper<T> on List<T> {
-  List<T> added(T value) {
-    final t = toList();
-    t.add(value);
-    return t;
-  }
-
-  List<T> moved(int oldIndex, int newIndex) {
-    final t = toList();
-    t.insert(oldIndex < newIndex ? newIndex - 1 : newIndex, t.removeAt(oldIndex));
-    return t;
-  }
-
-  List<T> removed(T value) {
-    final t = toList();
-    t.remove(value);
-    return t;
-  }
-
-  List<T> removedAt(int index) {
-    final t = toList();
-    t.removeAt(index);
-    return t;
-  }
-
-  List<T> replacedAt(int index, T value) {
-    final t = toList();
-    t[index] = value;
-    return t;
-  }
-}
-
-extension SetHelper<T> on Set<T> {
-  Set<T> added(T value) {
-    final t = toSet();
-    t.add(value);
-    return t;
-  }
-
-  Set<T> removed(T value) {
-    final t = toSet();
-    t.remove(value);
-    return t;
-  }
-}
-
-extension IterableHelper<T> on Iterable<T> {
-  List<T> sorted({int Function<T>(T a, T b)? compare}) {
-    final t = toList();
-    t.sort(compare);
-    return t;
-  }
 }
 
 /// [DefaultTextStyle]+[IconTheme]

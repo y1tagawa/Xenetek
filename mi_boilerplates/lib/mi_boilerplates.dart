@@ -6,6 +6,7 @@ library mi_boilerplates;
 
 export 'src/color_helper.dart';
 export 'src/gradient_helper.dart';
+export 'src/helpers.dart';
 export 'src/jis_common_colors.dart';
 export 'src/mi_animation_controller.dart';
 export 'src/mi_app_bar.dart';
@@ -31,5 +32,4 @@ export 'src/modeler/mesh_builder.dart';
 export 'src/modeler/mesh_modifier.dart';
 export 'src/modeler/wavefront_obj.dart';
 export 'src/primary_color_names.dart';
-export 'src/scope_functions.dart';
 export 'src/x11_colors.dart';

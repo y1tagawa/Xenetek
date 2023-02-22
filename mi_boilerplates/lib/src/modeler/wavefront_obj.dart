@@ -4,7 +4,7 @@
 
 import 'package:logging/logging.dart';
 
-import '../scope_functions.dart';
+import '../helpers.dart';
 import 'basic.dart';
 
 //

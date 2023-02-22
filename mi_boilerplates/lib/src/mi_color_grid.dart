@@ -5,10 +5,10 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+import 'helpers.dart';
 import 'mi_dialogs.dart' as mi;
 import 'mi_tabs.dart' as mi;
 import 'mi_widgets.dart' as mi;
-import 'scope_functions.dart';
 
 /// カラーグリッド
 class ColorGrid extends StatelessWidget {

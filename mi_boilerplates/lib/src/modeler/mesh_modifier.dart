@@ -7,7 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-import '../scope_functions.dart';
+import '../helpers.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ

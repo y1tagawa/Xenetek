@@ -6,8 +6,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide PopupMenuButton, PopupMenuItem;
 import 'package:flutter/material.dart' as material show PopupMenuButton, PopupMenuItem;
 
+import 'helpers.dart';
 import 'mi_widgets.dart' as mi;
-import 'scope_functions.dart';
 
 /// カスタムポップアップメニューアイテム
 ///
