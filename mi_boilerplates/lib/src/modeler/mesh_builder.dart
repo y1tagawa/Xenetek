@@ -6,8 +6,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
 
+import '../helpers.dart';
 import 'basic.dart';
 
 // スクリプト的モデラ、メッシュデータ生成
@@ -196,11 +196,11 @@ const pinMeshObject = MeshObject(
 
 //</editor-fold>
 
-/// 回転体メッシュビルダ
+/// 回転体メッシュビルダ基底クラス
 @immutable
 abstract class _SorBuilder extends MeshBuilder {
   // ignore: unused_field
-  static final _logger = Logger('AbstractSorBuilder');
+  static final _logger = Logger('_SorBuilder');
 
   final int longitudeDivision;
   final Vector3 axis;
@@ -218,60 +218,33 @@ abstract class _SorBuilder extends MeshBuilder {
     this.reverse = false,
   }) : assert(longitudeDivision >= 2);
 
-  /// 母線頂点(Y軸周り)
-  List<Vector3> get generatingLine;
-
-  /// 輪郭線生成
-  List<Vector3> makeOutline({
-    required final List<Vector3> generatingLine,
-    required final int index,
-  }) {
-    final vertices_ = <Vector3>[];
-    final matrix = Matrix4.fromAxisAngleRotation(
-      axis: axis,
-      radians: index * 2.0 * math.pi / longitudeDivision,
-    );
-    for (final vertex in generatingLine) {
-      vertices_.add(vertex.transformed(matrix));
-    }
-    return vertices_;
-  }
+  /// 経線生成(Y軸周り)
+  @protected
+  List<Vector3> makeLineOfLongitude({required int index});
 
   /// 頂点生成
-  MapEntry<int, List<Vector3>> makeVertices({
-    required final List<Vector3> generatingLine,
-  }) {
-    final vertices = <Vector3>[];
-    vertices.addAll(
-      makeOutline(
-        generatingLine: generatingLine,
-        index: 0,
-      ),
-    );
+  @protected
+  List<Vector3> makeVertices() {
+    final vertices = makeLineOfLongitude(index: 0);
     final n = vertices.length;
     assert(n >= 2);
     for (int i = 1; i < longitudeDivision; ++i) {
-      final outline = makeOutline(
-        generatingLine: generatingLine,
-        index: i,
-      );
-      // 全ての輪郭線の頂点数は同じでなきゃならぬ
-      assert(outline.length == n);
-      vertices.addAll(outline);
+      final lineOfLongitude = makeLineOfLongitude(index: i);
+      // 全ての経線の頂点数は同一でなければならない
+      assert(lineOfLongitude.length == n);
+      vertices.addAll(lineOfLongitude);
     }
-    return MapEntry(n, vertices);
+    return vertices;
   }
 
-  /// メッシュデータ生成
-  /// todo: axis
-  @override
-  MeshData build() {
-    assert(longitudeDivision >= 2);
-    // 頂点生成
-    final outlines = makeVertices(generatingLine: generatingLine);
-    final n = outlines.key;
-    final vertices = outlines.value;
-    // 面生成
+  /// 面生成
+  @protected
+  List<MeshFace> makeFaces({
+    required List<Vector3> vertices,
+  }) {
+    assert(vertices.length % longitudeDivision == 0);
+    final n = vertices.length ~/ longitudeDivision;
+    assert(n >= 2);
     final faces = <MeshFace>[];
     void addFaces(final int j0, final int j1) {
       for (int i = 0; i < n - 1; ++i) {
@@ -284,11 +257,20 @@ abstract class _SorBuilder extends MeshBuilder {
       }
     }
 
-    int i = 0;
-    for (; i < longitudeDivision - 1; ++i) {
+    for (int i = 0; i < longitudeDivision - 1; ++i) {
       addFaces(i * n, (i + 1) * n);
     }
-    addFaces(i * n, 0);
+    addFaces((longitudeDivision - 1) * n, 0);
+    return faces;
+  }
+
+  /// メッシュデータ生成
+  /// todo: axis
+  @override
+  MeshData build() {
+    assert(longitudeDivision >= 2);
+    final vertices = makeVertices();
+    final faces = makeFaces(vertices: vertices);
     final object = MeshObject(
       vertices: vertices,
       faceGroups: <MeshFaceGroup>[
@@ -299,8 +281,8 @@ abstract class _SorBuilder extends MeshBuilder {
           smooth: smooth,
         ),
       ],
-    );
-    return [reverse ? object.reversed() : object];
+    ).let((it) => reverse ? it.reversed() : it);
+    return <MeshObject>[object];
   }
 }
 
@@ -328,9 +310,10 @@ class EllipsoidBuilder extends _SorBuilder {
         assert(latitudeDivision >= 1),
         assert(radius is double || radius is Vector3);
 
-  /// 母線頂点(Y軸周り)
+  /// 経線生成(Y軸周り)
   @override
-  List<Vector3> get generatingLine {
+  List<Vector3> makeLineOfLongitude({required int index}) {
+    // todo: 母線再利用
     // 扁球面
     final vertices = <Vector3>[const Vector3(0.0, -0.5, 0.0)];
     for (int i = 1; i < latitudeDivision; ++i) {
@@ -338,7 +321,21 @@ class EllipsoidBuilder extends _SorBuilder {
       vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
     }
     vertices.add(const Vector3(0.0, 0.5, 0.0));
-    return vertices.scaled(radius).toList();
+    return vertices
+        .transformed(
+          Matrix4.fromAxisAngleRotation(
+            axis: Vector3.unitY,
+            radians: index * math.pi * 2.0 / longitudeDivision,
+          ),
+        )
+        .toList();
+  }
+
+  /// メッシュデータ生成
+  /// todo: axis
+  @override
+  MeshData build() {
+    return super.build().transformed(Matrix4.fromScale(radius));
   }
 }
 
@@ -348,7 +345,7 @@ class EllipsoidBuilder extends _SorBuilder {
 @immutable
 class SpindleBuilder extends _SorBuilder {
   // ignore: unused_field
-  static final _logger = Logger('SorBuilder');
+  static final _logger = Logger('SpindleBuilder');
 
   final int heightDivision;
   final double height;
@@ -367,7 +364,7 @@ class SpindleBuilder extends _SorBuilder {
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
-        assert(heightDivision >= 1);
+        assert(heightDivision >= 2);
 
   const SpindleBuilder({
     super.longitudeDivision = 24,
@@ -384,17 +381,70 @@ class SpindleBuilder extends _SorBuilder {
         width = radius * 2.0,
         depth = radius * 2.0;
 
-  /// 母線頂点リスト(Y軸周り)
+  /// 経線生成(Y軸周り)
   @override
-  List<Vector3> get generatingLine {
+  List<Vector3> makeLineOfLongitude({required int index}) {
+    // todo: 母線再利用
     // 紡錘面(正弦曲線)
     final vertices = <Vector3>[Vector3.zero];
-    for (int i = 0; i < heightDivision; ++i) {
+    for (int i = 0; i <= heightDivision; ++i) {
       final h = i / heightDivision;
       vertices.add(Vector3(math.sin(h * math.pi) * 0.5, h, 0.0));
     }
     vertices.add(Vector3.unitY);
-    return vertices.scaled(Vector3(width, height, depth)).toList();
+    return vertices
+        .transformed(
+          Matrix4.fromAxisAngleRotation(
+            axis: Vector3.unitY,
+            radians: index * math.pi * 2.0 / longitudeDivision,
+          ),
+        )
+        .toList();
+  }
+
+  /// メッシュデータ生成
+  /// todo: axis
+  @override
+  MeshData build() {
+    return super.build().transformed(Matrix4.fromScale(Vector3(width, height, depth)));
+  }
+}
+
+/// ベジエ曲線回転表面ビルダ
+///
+///
+class BezierSorBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('BezierSorBuilder');
+
+  final int heightDivision;
+  final Bezier<Vector3> xGeneratingLine;
+  final Bezier<Vector3> zGeneratingLine;
+
+  const BezierSorBuilder({
+    this.heightDivision = 12,
+    required Bezier<Vector3> generatingLine,
+  })  : assert(heightDivision >= 1),
+        xGeneratingLine = generatingLine,
+        zGeneratingLine = generatingLine;
+
+  const BezierSorBuilder.fromXZ({
+    this.heightDivision = 12,
+    required this.xGeneratingLine,
+    required this.zGeneratingLine,
+  }) : assert(heightDivision >= 2);
+
+  /// 経線生成(Y軸周り)
+  @override
+  List<Vector3> makeLineOfLongitude({required int index}) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
+  @override
+  MeshData build() {
+    // TODO: implement build
+    throw UnimplementedError();
   }
 }
 
@@ -440,31 +490,34 @@ class TubeBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('TubeBuilder');
 
-  final double beginRadius;
-  final double endRadius;
   final double height;
   final int heightDivision;
+  final double beginRadius;
+  final double endRadius;
   final EndShape beginShape;
   final EndShape endShape;
 
   const TubeBuilder({
     super.axis = Vector3.unitY,
+    super.longitudeDivision = 12,
+    this.height = 1.0,
+    this.heightDivision = 1,
     this.beginRadius = 0.5,
     this.endRadius = 0.5,
-    this.height = 1.0,
-    super.longitudeDivision = 12,
-    this.heightDivision = 1,
     this.beginShape = const OpenEnd(),
     this.endShape = const OpenEnd(),
     super.materialLibrary = '',
     super.material = '',
     super.smooth = true,
     super.reverse = false,
-  });
+  })  : assert(longitudeDivision >= 2),
+        assert(heightDivision >= 1);
 
+  /// 経線生成(Y軸周り)
   @override
-  List<Vector3> get generatingLine {
-    assert(longitudeDivision >= 3);
+  List<Vector3> makeLineOfLongitude({required int index}) {
+    // todo: 母線再利用
+    assert(longitudeDivision >= 2);
     assert(heightDivision >= 1);
 
     // 母線頂点生成
@@ -476,7 +529,7 @@ class TubeBuilder extends _SorBuilder {
         final coneEnd = beginShape as ConeEnd;
         final coneHeight = coneEnd.height == double.infinity ? beginRadius : coneEnd.height;
         for (int i = 0; i < coneEnd.division; ++i) {
-          final t = i.toDouble() / coneEnd.division;
+          final t = i / coneEnd.division;
           vertices.add(Vector3(t * beginRadius, (1.0 - t) * -coneHeight, 0.0));
         }
         break;
@@ -484,7 +537,7 @@ class TubeBuilder extends _SorBuilder {
         final domeEnd = beginShape as DomeEnd;
         final domeHeight = domeEnd.height == double.infinity ? beginRadius : domeEnd.height;
         for (int i = 0; i < domeEnd.division; ++i) {
-          final t = i.toDouble() / domeEnd.division;
+          final t = i / domeEnd.division;
           final a = (1.0 - t) * math.pi * 0.5;
           vertices.add(Vector3(math.cos(a) * beginRadius, math.sin(a) * -domeHeight, 0.0));
         }
@@ -494,7 +547,7 @@ class TubeBuilder extends _SorBuilder {
     }
     // 胴
     for (int i = 0; i < heightDivision; ++i) {
-      final t = i.toDouble() / heightDivision;
+      final t = i / heightDivision;
       vertices.add(Vector3((endRadius - beginRadius) * t + beginRadius, t * height, 0.0));
     }
     vertices.add(Vector3(endRadius, height, 0.0));
@@ -505,7 +558,7 @@ class TubeBuilder extends _SorBuilder {
         final coneEnd = endShape as ConeEnd;
         final coneHeight = coneEnd.height == double.infinity ? endRadius : coneEnd.height;
         for (int i = 1; i <= coneEnd.division; ++i) {
-          final t = i.toDouble() / coneEnd.division;
+          final t = i / coneEnd.division;
           vertices.add(Vector3((1.0 - t) * endRadius, t * coneHeight + height, 0.0));
         }
         break;
@@ -513,7 +566,7 @@ class TubeBuilder extends _SorBuilder {
         final domeEnd = endShape as DomeEnd;
         final domeHeight = domeEnd.height == double.infinity ? endRadius : domeEnd.height;
         for (int i = 1; i <= domeEnd.division; ++i) {
-          final t = i.toDouble() / domeEnd.division;
+          final t = i / domeEnd.division;
           final a = t * math.pi * 0.5;
           vertices.add(Vector3(math.cos(a) * endRadius, math.sin(a) * domeHeight + height, 0.0));
         }
@@ -521,7 +574,14 @@ class TubeBuilder extends _SorBuilder {
       default: // OpenEnd
         break;
     }
-    return vertices;
+    return vertices
+        .transformed(
+          Matrix4.fromAxisAngleRotation(
+            axis: Vector3.unitY,
+            radians: index * math.pi * 2.0 / longitudeDivision,
+          ),
+        )
+        .toList();
   }
 }
 

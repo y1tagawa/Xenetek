@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/src/modeler/wavefront_obj.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 // スクリプト的モデラ
@@ -354,6 +355,7 @@ class _BezierDouble implements Bezier<double> {
             points[2] * (3.0 * t * t * t_) +
             points[3] * (t * t * t);
       default:
+        // todo: 4+3...,
         throw UnimplementedError();
     }
   }
@@ -970,6 +972,8 @@ class MeshObject {
 typedef MeshData = List<MeshObject>;
 
 extension MeshDataHelper on Iterable<MeshObject> {
+  static MeshData fromWavefrontObj(String data) => WavefrontObjReader.fromWavefrontObj(data);
+
   MeshData transformed(Matrix4 matrix) => map((it) => it.transformed(matrix)).toList();
   MeshData mirrored() => map((it) => it.mirrored()).toList();
   MeshData reversed() => map((it) => it.reversed()).toList();

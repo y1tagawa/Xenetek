@@ -7,9 +7,9 @@ import 'package:logging/logging.dart';
 import '../helpers.dart';
 import 'basic.dart';
 
-extension WavefrontObjHelper on Iterable<MeshObject> {
+class WavefrontObjReader {
   // ignore: unused_field
-  static final _logger = Logger('MeshDataHelper');
+  static final _logger = Logger('MeshDataReader');
 
   /// 単純なWavefront .objリーダ
   static MeshData fromWavefrontObj(String data) {
@@ -100,6 +100,11 @@ extension WavefrontObjHelper on Iterable<MeshObject> {
       }),
     ];
   }
+}
+
+extension WavefrontObjWriter on Iterable<MeshObject> {
+  // ignore: unused_field
+  static final _logger = Logger('WavefrontObjWriter');
 
   /// Wavefront .obj出力
   void toWavefrontObj({
@@ -130,6 +135,14 @@ extension WavefrontObjHelper on Iterable<MeshObject> {
     for (final object in this) {
       if (object.tag.isNotEmpty) {
         sink.writeln('# tag: ${object.tag}');
+      }
+      sink.writeln('# vertex: $vertexIndex - ${vertexIndex + object.vertices.length - 1}');
+      if (object.textureVertices.isNotEmpty) {
+        sink.writeln('# texture vertex: '
+            '$textureVertexIndex - ${textureVertexIndex + object.textureVertices.length - 1}');
+      }
+      if (object.normals.isNotEmpty) {
+        sink.writeln('# normal: $normalIndex - ${normalIndex + object.normals.length - 1}');
       }
 
       for (final vertex in object.vertices) {
