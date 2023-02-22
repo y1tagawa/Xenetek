@@ -9,7 +9,7 @@ import 'basic.dart';
 
 class WavefrontObjReader {
   // ignore: unused_field
-  static final _logger = Logger('MeshDataReader');
+  static final _logger = Logger('WavefrontObjReader');
 
   /// 単純なWavefront .objリーダ
   static MeshData fromWavefrontObj(String data) {

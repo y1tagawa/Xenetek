@@ -384,7 +384,7 @@ class SpindleBuilder extends _SorBuilder {
   List<Vector3> makeGeneratingLine() {
     // 紡錘面(正弦曲線)
     final vertices = <Vector3>[Vector3.zero];
-    for (int i = 0; i <= heightDivision; ++i) {
+    for (int i = 0; i < heightDivision; ++i) {
       final h = i / heightDivision;
       vertices.add(Vector3(math.sin(h * math.pi) * 0.5, h, 0.0));
     }
@@ -398,7 +398,7 @@ class SpindleBuilder extends _SorBuilder {
   MeshData build() {
     var radius_ = radius;
     if (radius is Vector3) {
-      radius_ = (radius as Vector3).copyWith(y: 1);
+      radius_ = (radius as Vector3).copyWith(y: height);
     }
     return super.build().transformed(Matrix4.fromScale(radius_));
   }
@@ -407,38 +407,70 @@ class SpindleBuilder extends _SorBuilder {
 /// ベジエ曲線回転表面ビルダ
 ///
 ///
-class BezierSorBuilder extends _SorBuilder {
+class BezierBuilder extends _SorBuilder {
   // ignore: unused_field
-  static final _logger = Logger('BezierSorBuilder');
+  static final _logger = Logger('BezierBuilder');
 
   final int heightDivision;
-  final Bezier<Vector3> xGeneratingLine;
-  final Bezier<Vector3> zGeneratingLine;
+  final Bezier<Vector3> xCurve; // X座標は幅(X)を表す
+  final Bezier<Vector3> zCurve; // X座標は厚さ(Z)を表す
 
-  const BezierSorBuilder({
+  const BezierBuilder({
+    super.longitudeDivision = 24,
     this.heightDivision = 12,
-    required Bezier<Vector3> generatingLine,
-  })  : assert(heightDivision >= 1),
-        xGeneratingLine = generatingLine,
-        zGeneratingLine = generatingLine;
+    required Bezier<Vector3> curve,
+    super.axis = Vector3.unitY,
+    super.materialLibrary = '',
+    super.material = '',
+    super.smooth = true,
+    super.reverse = false,
+  })  : assert(longitudeDivision >= 2),
+        assert(heightDivision >= 1),
+        xCurve = curve,
+        zCurve = curve;
 
-  const BezierSorBuilder.fromXZ({
+  const BezierBuilder.fromXZ({
+    super.longitudeDivision = 24,
     this.heightDivision = 12,
-    required this.xGeneratingLine,
-    required this.zGeneratingLine,
-  }) : assert(heightDivision >= 2);
+    required this.xCurve,
+    required this.zCurve,
+    super.axis = Vector3.unitY,
+    super.materialLibrary = '',
+    super.material = '',
+    super.smooth = true,
+    super.reverse = false,
+  })  : assert(longitudeDivision >= 2),
+        assert(heightDivision >= 2);
+
+  /// 母線(Y軸周り)は使用しない
+  @override
+  List<Vector3> makeGeneratingLine() => <Vector3>[];
 
   /// 経線生成(Y軸周り)
   @override
-  List<Vector3> makeGeneratingLine() {
-    // TODO: implement build
-    throw UnimplementedError();
-  }
-
-  @override
-  MeshData build() {
-    // TODO: implement build
-    throw UnimplementedError();
+  List<Vector3> makeLineOfLongitude({
+    required List<Vector3> generatingLine, //使用しない
+    required int index,
+  }) {
+    final longitude = index * 2.0 * math.pi / longitudeDivision;
+    final cosL = math.cos(longitude), sinL = math.sin(longitude);
+    final vertices = <Vector3>[];
+    for (int i = 0; i <= heightDivision; ++i) {
+      final t = i / heightDivision;
+      final x = xCurve.transform(t);
+      final z = zCurve.transform(t); //todo: zCurveは前後で変えられてもよい
+      // y座標は経度をもとに重みづけ
+      final y = math.sqrt(math.pow(cosL * x.y, 2) + math.pow(sinL * z.y, 2));
+      vertices.add(Vector3(x.x, y, z.x));
+    }
+    return vertices
+        .transformed(
+          Matrix4.fromAxisAngleRotation(
+            axis: Vector3.unitY,
+            radians: longitude * 2.0 * math.pi,
+          ),
+        )
+        .toList();
   }
 }
 
