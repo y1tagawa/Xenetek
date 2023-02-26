@@ -380,7 +380,7 @@ class _BezierVector3 implements Bezier<Vector3> {
       return _transform(0, t);
     } else if ((points.length - 1) % 3 == 0) {
       final segmentCount = (points.length - 1) ~/ 3;
-      return _transform((t ~/ segmentCount) * 3, (t * segmentCount) % 1.0);
+      return _transform((t * segmentCount).truncate() * 3, (t * segmentCount) % 1.0);
     } else {
       throw UnimplementedError();
     }
