@@ -417,7 +417,7 @@ class BezierBuilder extends _SorBuilder {
 
   const BezierBuilder({
     super.longitudeDivision = 24,
-    this.heightDivision = 24,
+    this.heightDivision = 12,
     required Bezier<Vector3> curve,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',

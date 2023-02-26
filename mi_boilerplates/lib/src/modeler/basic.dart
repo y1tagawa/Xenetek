@@ -377,18 +377,17 @@ class _BezierVector3 implements Bezier<Vector3> {
   Vector3 transform(double t) {
     assert(points.isNotEmpty);
     if (points.length <= 4) {
-      return _transform(0, t);
+      return _transform(0, points.length - 1, t);
     } else if ((points.length - 1) % 3 == 0) {
       final segmentCount = (points.length - 1) ~/ 3;
-      return _transform((t * segmentCount).truncate() * 3, (t * segmentCount) % 1.0);
+      return _transform((t * segmentCount).truncate() * 3, 3, (t * segmentCount) % 1.0);
     } else {
       throw UnimplementedError();
     }
   }
 
-  Vector3 _transform(int offset, double t) {
+  Vector3 _transform(int offset, int n, double t) {
     _logger.fine('_transform $offset $t');
-    final n = (points.length - offset) - 1;
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
@@ -399,11 +398,16 @@ class _BezierVector3 implements Bezier<Vector3> {
         return points[offset] * (t_ * t_) +
             points[offset + 1] * (2.0 * t * t_) +
             points[offset + 2] * (t * t);
-      default:
+      case 3:
+        if (offset + 3 >= points.length) {
+          return points.last;
+        }
         return points[offset] * (t_ * t_ * t_) +
             points[offset + 1] * (3.0 * t * t_ * t_) +
             points[offset + 2] * (3.0 * t * t * t_) +
             points[offset + 3] * (t * t * t);
+      default:
+        throw UnimplementedError();
     }
   }
 }

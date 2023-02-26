@@ -24,16 +24,15 @@ class SvgPathReader {
 
   // from d attribute
   static List<Vector3> fromString(String data) {
+    //todo: comma, space is optional
     var fields = data.split(' ').where((it) => it.isNotEmpty);
     var lastPoint = Vector3.zero;
     final points = <Vector3>[];
     void addPoint(Vector3 point) {
       points.add(point);
-      lastPoint = point;
       fields = fields.skip(1);
     }
 
-    bool f = false; // 最初の制御点
     fieldLoop:
     while (fields.isNotEmpty) {
       final command = fields.first;
@@ -41,32 +40,35 @@ class SvgPathReader {
       _logger.fine('command=$command');
       switch (command) {
         case 'm':
-          assert(!f);
+          assert(points.isEmpty);
           addPoint(lastPoint + _takePoint(fields.first));
-          f = true;
+          lastPoint = points.last;
           continue fieldLoop;
         case 'M':
-          assert(!f);
+          assert(points.isEmpty);
           addPoint(_takePoint(fields.first));
-          f = true;
+          lastPoint = points.last;
           continue fieldLoop;
         case 'c':
-          assert(f);
+          assert(points.isNotEmpty);
           while (fields.isNotEmpty && fields.first.length > 1) {
             addPoint(lastPoint + _takePoint(fields.first));
             addPoint(lastPoint + _takePoint(fields.first));
             addPoint(lastPoint + _takePoint(fields.first));
+            lastPoint = points.last;
           }
           continue fieldLoop;
         case 'C':
-          assert(f);
+          assert(points.isNotEmpty);
           while (fields.isNotEmpty && fields.first.length > 1) {
             addPoint(_takePoint(fields.first));
             addPoint(_takePoint(fields.first));
             addPoint(_takePoint(fields.first));
+            lastPoint = points.last;
           }
           continue fieldLoop;
         case 'z':
+        case 'Z':
           break fieldLoop;
         default:
           throw UnimplementedError('command=$command');
