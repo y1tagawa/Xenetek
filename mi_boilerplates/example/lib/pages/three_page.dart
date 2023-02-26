@@ -293,6 +293,23 @@ Future<void> _setup(StringSink sink) async {
   );
   final dollMeshData = dollMeshBuilder.build();
 
+  const tempData =
+      'm 49.999997,99.999995 c 0,0 26.763875,1.539535 34.999999,-14.999999 C 89.648188,75.665641 80.740521,67.872918 80.476852,55.572817 80.273326,46.078386 84.999996,33.509487 84.999996,24.999999 84.999996,4.9999998 49.999997,0 49.999997,0';
+  var tempPoints = mi.SvgPathReader.fromString(tempData);
+  tempPoints = tempPoints
+      .transformed(
+        mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
+            mi.Matrix4.fromTranslation(const mi.Vector3(-50, -100, 0)),
+      )
+      .toList();
+  final tempBezier = mi.Bezier<mi.Vector3>(points: tempPoints);
+  final tempMesh = mi.Mesh(
+    origin: 'ball',
+    data: mi.BezierBuilder(
+      curve: tempBezier,
+    ),
+  ).toMeshData(root: root);
+
   final spindle = const mi.Mesh(
     origin: 'spindle',
     data: mi.SpindleBuilder(
@@ -350,7 +367,8 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  [...dollMeshData, ...spindle].toWavefrontObj(sink: sink);
+  //[...dollMeshData, ...spindle, ...tempMesh].toWavefrontObj(sink: sink);
+  [...tempMesh].toWavefrontObj(sink: sink);
 }
 
 Future<String> _getModelTempFileDir() async {

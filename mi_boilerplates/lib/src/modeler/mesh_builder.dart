@@ -412,8 +412,8 @@ class BezierBuilder extends _SorBuilder {
   static final _logger = Logger('BezierBuilder');
 
   final int heightDivision;
-  final Bezier<Vector3> xCurve; // X座標は幅(X)を表す
-  final Bezier<Vector3> zCurve; // X座標は厚さ(Z)を表す
+  final Bezier<Vector3> xCurve; // X座標が幅(X)を表す
+  final Bezier<Vector3> zCurve; // X座標が厚さ(Z)を表す
 
   const BezierBuilder({
     super.longitudeDivision = 24,

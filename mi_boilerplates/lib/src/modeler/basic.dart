@@ -364,6 +364,9 @@ class _BezierDouble implements Bezier<double> {
 // Bezier補間(Vector3)
 @immutable
 class _BezierVector3 implements Bezier<Vector3> {
+  // ignore: unused_field
+  static final _logger = Logger('_BezierVector3');
+
   final List<Vector3> points;
 
   const _BezierVector3({
@@ -373,22 +376,34 @@ class _BezierVector3 implements Bezier<Vector3> {
   @override
   Vector3 transform(double t) {
     assert(points.isNotEmpty);
-    final n = points.length - 1;
+    if (points.length <= 4) {
+      return _transform(0, t);
+    } else if ((points.length - 1) % 3 == 0) {
+      final segmentCount = (points.length - 1) ~/ 3;
+      return _transform((t ~/ segmentCount) * 3, (t * segmentCount) % 1.0);
+    } else {
+      throw UnimplementedError();
+    }
+  }
+
+  Vector3 _transform(int offset, double t) {
+    _logger.fine('_transform $offset $t');
+    final n = (points.length - offset) - 1;
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
-        return points[0];
+        return points[offset];
       case 1:
-        return points[0] * (1.0 - t) + points[1] * t;
+        return points[offset] * (1.0 - t) + points[offset + 1] * t;
       case 2:
-        return points[0] * (t_ * t_) + points[1] * (2.0 * t * t_) + points[2] * (t * t);
-      case 3:
-        return points[0] * (t_ * t_ * t_) +
-            points[1] * (3.0 * t * t_ * t_) +
-            points[2] * (3.0 * t * t * t_) +
-            points[3] * (t * t * t);
+        return points[offset] * (t_ * t_) +
+            points[offset + 1] * (2.0 * t * t_) +
+            points[offset + 2] * (t * t);
       default:
-        throw UnimplementedError();
+        return points[offset] * (t_ * t_ * t_) +
+            points[offset + 1] * (3.0 * t * t_ * t_) +
+            points[offset + 2] * (3.0 * t * t * t_) +
+            points[offset + 3] * (t * t * t);
     }
   }
 }
