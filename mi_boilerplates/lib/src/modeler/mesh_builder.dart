@@ -468,7 +468,7 @@ class BezierBuilder extends _SorBuilder {
         .transformed(
           Matrix4.fromAxisAngleRotation(
             axis: Vector3.unitY,
-            radians: longitude * 2.0 * math.pi,
+            radians: longitude,
           ),
         )
         .toList();
