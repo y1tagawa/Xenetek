@@ -32,10 +32,6 @@ class SvgPathParser {
       return Vector3(x!, y!, 0.0);
     }
 
-    void addPoint(Vector3 point) {
-      points.add(point);
-    }
-
     fieldLoop:
     while (fields.isNotEmpty) {
       final command = fields.first;
@@ -44,49 +40,49 @@ class SvgPathParser {
       switch (command) {
         case 'm':
           assert(points.isEmpty);
-          addPoint(lastPoint + takePoint());
+          points.add(lastPoint + takePoint());
           lastPoint = points.last;
           continue CASE_LL;
         CASE_LL:
         case 'l':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
-            addPoint(points.last);
-            addPoint(lastPoint + takePoint());
-            addPoint(points.last);
+            points.add(points.last);
+            points.add(lastPoint + takePoint());
+            points.add(points.last);
             lastPoint = points.last;
           }
           continue fieldLoop;
         case 'M':
           assert(points.isEmpty);
-          addPoint(takePoint());
+          points.add(takePoint());
           lastPoint = points.last;
           continue CASE_L;
         CASE_L:
         case 'L':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
-            addPoint(points.last);
-            addPoint(takePoint());
-            addPoint(points.last);
+            points.add(points.last);
+            points.add(takePoint());
+            points.add(points.last);
             lastPoint = points.last;
           }
           continue fieldLoop;
         case 'c':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
-            addPoint(lastPoint + takePoint());
-            addPoint(lastPoint + takePoint());
-            addPoint(lastPoint + takePoint());
+            points.add(lastPoint + takePoint());
+            points.add(lastPoint + takePoint());
+            points.add(lastPoint + takePoint());
             lastPoint = points.last;
           }
           continue fieldLoop;
         case 'C':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
-            addPoint(takePoint());
-            addPoint(takePoint());
-            addPoint(takePoint());
+            points.add(takePoint());
+            points.add(takePoint());
+            points.add(takePoint());
             lastPoint = points.last;
           }
           continue fieldLoop;
@@ -98,5 +94,29 @@ class SvgPathParser {
       }
     }
     return points;
+  }
+}
+
+extension Vector3BezierFormatter on Bezier<Vector3> {
+  // ignore: unused_field
+  static final _logger = Logger('Vector3BezierFormatter');
+
+  String toSvgPathData() {
+    assert((points.length - 1) % 3 == 0);
+    final buffer = StringBuffer();
+
+    double round(double value) => (value * 10000).round() / 10000;
+
+    void writePoint(Vector3 point) {
+      buffer.write('${round(point.x)} ${round(point.y)} ');
+    }
+
+    buffer.write('M ');
+    writePoint(points.first);
+    buffer.write('C ');
+    for (final point in points.skip(1)) {
+      writePoint(point);
+    }
+    return buffer.toString();
   }
 }

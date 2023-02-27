@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'package:mi_boilerplates/src/modeler/wavefront_obj.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
@@ -325,34 +326,40 @@ abstract class Bezier<T> {
     }
   }
 
+  List<T> get points;
+
   T transform(double t);
 }
 
 // Bezier補間(double)
 @immutable
 class _BezierDouble implements Bezier<double> {
-  final List<double> points;
+  final List<double> _points;
 
   const _BezierDouble({
-    required this.points,
-  }) : assert(points.length >= 1);
+    required List<double> points,
+  })  : assert(points.length >= 1),
+        _points = points;
+
+  @override
+  List<double> get points => _points;
 
   @override
   double transform(double t) {
-    assert(points.isNotEmpty);
-    if (points.length <= 4) {
+    assert(_points.isNotEmpty);
+    if (_points.length <= 4) {
       // 0次～3次
-      return _transform(0, points.length - 1, t);
-    } else if ((points.length - 1) % 3 == 0) {
+      return _transform(0, _points.length - 1, t);
+    } else if ((_points.length - 1) % 3 == 0) {
       // 複数のセグメントがある場合は、[0,1]を等分割してそれぞれのセグメントに割り当てる。
       // ただしt<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
-      final m = (points.length - 1) ~/ 3;
+      final m = (_points.length - 1) ~/ 3;
       if (t < 0.0) {
         return _transform(0, 3, t / m);
       } else if (t == 1.0) {
-        return points.last;
+        return _points.last;
       } else if (t > 1.0) {
-        return _transform(points.length - 4, 3, (t - 1.0) / m);
+        return _transform(_points.length - 4, 3, (t - 1.0) / m);
       } else {
         return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
       }
@@ -364,20 +371,20 @@ class _BezierDouble implements Bezier<double> {
   // [o]:セグメントの開始オフセット [n]:次数
   // [t]:セグメント内の媒介変数、[0,1]が始点終点に対応するが、その範囲外である場合もある。
   double _transform(int o, int n, double t) {
-    assert(points.isNotEmpty);
+    assert(_points.isNotEmpty);
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
-        return points[o];
+        return _points[o];
       case 1:
-        return points[o] * t_ + points[o + 1] * t;
+        return _points[o] * t_ + _points[o + 1] * t;
       case 2:
-        return points[o] * (t_ * t_) + points[o + 1] * (2.0 * t * t_) + points[o + 2] * (t * t);
+        return _points[o] * (t_ * t_) + _points[o + 1] * (2.0 * t * t_) + _points[o + 2] * (t * t);
       case 3:
-        return points[o] * (t_ * t_ * t_) +
-            points[o + 1] * (3.0 * t * t_ * t_) +
-            points[o + 2] * (3.0 * t * t * t_) +
-            points[o + 3] * (t * t * t);
+        return _points[o] * (t_ * t_ * t_) +
+            _points[o + 1] * (3.0 * t * t_ * t_) +
+            _points[o + 2] * (3.0 * t * t * t_) +
+            _points[o + 3] * (t * t * t);
       default:
         throw UnimplementedError();
     }
@@ -390,28 +397,32 @@ class _BezierVector3 implements Bezier<Vector3> {
   // ignore: unused_field
   static final _logger = Logger('_BezierVector3');
 
-  final List<Vector3> points;
+  final List<Vector3> _points;
 
   const _BezierVector3({
-    required this.points,
-  }) : assert(points.length >= 1);
+    required List<Vector3> points,
+  })  : assert(points.length >= 1),
+        _points = points;
+
+  @override
+  List<Vector3> get points => _points;
 
   @override
   Vector3 transform(double t) {
-    assert(points.isNotEmpty);
-    if (points.length <= 4) {
+    assert(_points.isNotEmpty);
+    if (_points.length <= 4) {
       // 0次～3次
-      return _transform(0, points.length - 1, t);
-    } else if ((points.length - 1) % 3 == 0) {
+      return _transform(0, _points.length - 1, t);
+    } else if ((_points.length - 1) % 3 == 0) {
       // 複数のセグメントがある場合は、[0,1]を等分割してそれぞれのセグメントに割り当てる。
       // ただしt<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
-      final m = (points.length - 1) ~/ 3;
+      final m = (_points.length - 1) ~/ 3;
       if (t < 0.0) {
         return _transform(0, 3, t / m);
       } else if (t == 1.0) {
-        return points.last;
+        return _points.last;
       } else if (t > 1.0) {
-        return _transform(points.length - 4, 3, (t - 1.0) / m);
+        return _transform(_points.length - 4, 3, (t - 1.0) / m);
       } else {
         return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
       }
@@ -427,16 +438,16 @@ class _BezierVector3 implements Bezier<Vector3> {
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
-        return points[o];
+        return _points[o];
       case 1:
-        return points[o] * t_ + points[o + 1] * t;
+        return _points[o] * t_ + _points[o + 1] * t;
       case 2:
-        return points[o] * (t_ * t_) + points[o + 1] * (2.0 * t * t_) + points[o + 2] * (t * t);
+        return _points[o] * (t_ * t_) + _points[o + 1] * (2.0 * t * t_) + _points[o + 2] * (t * t);
       case 3:
-        return points[o] * (t_ * t_ * t_) +
-            points[o + 1] * (3.0 * t * t_ * t_) +
-            points[o + 2] * (3.0 * t * t * t_) +
-            points[o + 3] * (t * t * t);
+        return _points[o] * (t_ * t_ * t_) +
+            _points[o + 1] * (3.0 * t * t_ * t_) +
+            _points[o + 2] * (3.0 * t * t * t_) +
+            _points[o + 3] * (t * t * t);
       default:
         throw UnimplementedError();
     }

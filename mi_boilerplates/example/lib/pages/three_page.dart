@@ -311,6 +311,7 @@ Future<void> _setup(StringSink sink) async {
       .toList();
   final tempBezier = mi.Bezier<mi.Vector3>(points: tempPoints);
   final tempBezier2 = mi.Bezier<mi.Vector3>(points: tempPoints2);
+  logger.fine('t1=${tempBezier.toSvgPathData()}');
 
   final tempMesh = mi.Mesh(
     origin: 'ball',
