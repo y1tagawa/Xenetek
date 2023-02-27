@@ -14,16 +14,16 @@ class SvgPathParser {
   static final _delimiter = RegExp(r'[ ,]+');
   static final _command = RegExp(r'^[A-Za-z]$');
 
-  // from d attribute
+  /// SVG pathのd形式の文字列を3次Bezier曲線の制御点に変換する。
   static List<Vector3> fromString(String data) {
     var fields = data.split(_delimiter).where((it) => it.isNotEmpty);
-    _logger.fine('fields=$fields');
+    // _logger.fine('fields=$fields');
     var lastPoint = Vector3.zero;
     final points = <Vector3>[];
 
     Vector3 takePoint() {
       assert(fields.length >= 2);
-      _logger.fine('fields=$fields');
+      // _logger.fine('fields=$fields');
       final x = double.tryParse(fields.first);
       fields = fields.skip(1);
       final y = double.tryParse(fields.first);
@@ -36,7 +36,7 @@ class SvgPathParser {
     while (fields.isNotEmpty) {
       final command = fields.first;
       fields = fields.skip(1);
-      _logger.fine('command=$command');
+      // _logger.fine('command=$command');
       switch (command) {
         case 'm':
           assert(points.isEmpty);
@@ -97,24 +97,28 @@ class SvgPathParser {
   }
 }
 
-extension Vector3BezierFormatter on Bezier<Vector3> {
+extension Vector3BezierFormatter on List<Vector3> {
   // ignore: unused_field
   static final _logger = Logger('Vector3BezierFormatter');
 
+  static final _trailer = RegExp(r'\.0+$');
+
+  /// 点列をSVG pathのd形式に変換する。
   String toSvgPathData() {
-    assert((points.length - 1) % 3 == 0);
+    assert((length - 1) % 3 == 0);
     final buffer = StringBuffer();
 
-    double round(double value) => (value * 10000).round() / 10000;
+    String round(double value) =>
+        ((value * 10000).round() / 10000).toString().replaceAll(_trailer, '');
 
     void writePoint(Vector3 point) {
       buffer.write('${round(point.x)} ${round(point.y)} ');
     }
 
     buffer.write('M ');
-    writePoint(points.first);
+    writePoint(first);
     buffer.write('C ');
-    for (final point in points.skip(1)) {
+    for (final point in skip(1)) {
       writePoint(point);
     }
     return buffer.toString();

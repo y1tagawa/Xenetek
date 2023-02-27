@@ -294,24 +294,26 @@ Future<void> _setup(StringSink sink) async {
   final dollMeshData = dollMeshBuilder.build();
 
   const tempData =
-      'm 49.999997,99.999995 c 15,0 30.574826,3.135065 34.999999,-14.999999 C 87.471939,74.869578 80.740521,67.872918 80.476852,55.572817 80.273326,46.078386 84.999996,33.509487 84.999996,24.999999 84.999996,4.9999998 49.999997,0 49.999997,0';
+      'M 0.0 0.0 C 0.15 0.0 0.3057 -0.0314 0.35 0.15 0.3747 0.2513 0.3074 0.3213 0.3048 0.4443 0.3027 0.5392 0.35 0.6649 0.35 0.75 0.35 0.95 0.0 1.0 0.0 1.0';
   const tempData2 =
-      'M 5.0000001e-7,99.999995 C 15.000001,99.999995 30.574827,103.13506 35,84.999996 37.471943,74.869578 8.2709862,67.675817 8.0073172,55.375716 7.8037912,45.881285 23.371028,33.509487 23.371028,24.999999 23.371028,4.9999998 5.0000001e-7,0 5.0000001e-7,0';
+      'M 0 0 C 0.15 0 0.3057 -0.0314 0.35 0.15 0.3747 0.2513 0.0827 0.3232 0.0801 0.4462 0.078 0.5412 0.2337 0.6649 0.2337 0.75 0.2337 0.95 0 1 0 1';
+  //'M 5.0000001e-7,99.999995 C 15.000001,99.999995 30.574827,103.13506 35,84.999996 37.471943,74.869578 8.2709862,67.675817 8.0073172,55.375716 7.8037912,45.881285 23.371028,33.509487 23.371028,24.999999 23.371028,4.9999998 5.0000001e-7,0 5.0000001e-7,0';
   final tempPoints = mi.SvgPathParser.fromString(tempData)
-      .transformed(
-        mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
-            mi.Matrix4.fromTranslation(const mi.Vector3(-50, -100, 0)),
-      )
+      // .transformed(
+      //   mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
+      //       mi.Matrix4.fromTranslation(const mi.Vector3(-50, -100, 0)),
+      // )
       .toList();
   final tempPoints2 = mi.SvgPathParser.fromString(tempData2)
-      .transformed(
-        mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
-            mi.Matrix4.fromTranslation(const mi.Vector3(0, -100, 0)),
-      )
+      // .transformed(
+      //   mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
+      //       mi.Matrix4.fromTranslation(const mi.Vector3(0, -100, 0)),
+      // )
       .toList();
   final tempBezier = mi.Bezier<mi.Vector3>(points: tempPoints);
   final tempBezier2 = mi.Bezier<mi.Vector3>(points: tempPoints2);
-  logger.fine('t1=${tempBezier.toSvgPathData()}');
+  logger.fine('t1=${tempBezier.points.toSvgPathData()}');
+  logger.fine('t2=${tempBezier2.points.toSvgPathData()}');
 
   final tempMesh = mi.Mesh(
     origin: 'ball',
