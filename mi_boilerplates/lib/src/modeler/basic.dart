@@ -344,18 +344,23 @@ class _BezierDouble implements Bezier<double> {
       // 0次～3次
       return _transform(0, points.length - 1, t);
     } else if ((points.length - 1) % 3 == 0) {
-      // 複数のセグメントがある場合は、[0, 1]を等分割してそれぞれのセグメントに割り当てる。
-      // todo: t<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
-      if (t >= 1.0) {
-        return points.last;
-      }
+      // 複数のセグメントがある場合は、[0,1]を等分割してそれぞれのセグメントに割り当てる。
+      // ただしt<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
       final m = (points.length - 1) ~/ 3;
-      return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
+      if (t < 0.0) {
+        return _transform(0, 3, t / m);
+      } else if (t >= 1.0) {
+        return _transform(points.length - 4, 3, (t - 1.0) / m);
+      } else {
+        return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
+      }
     } else {
       throw UnimplementedError();
     }
   }
 
+  // [o]:セグメントの開始オフセット [n]:次数
+  // [t]:セグメント内の媒介変数、[0,1]が始点終点に対応するが、その範囲外である場合もある。
   double _transform(int o, int n, double t) {
     assert(points.isNotEmpty);
     final t_ = 1.0 - t;
@@ -396,18 +401,23 @@ class _BezierVector3 implements Bezier<Vector3> {
       // 0次～3次
       return _transform(0, points.length - 1, t);
     } else if ((points.length - 1) % 3 == 0) {
-      // 複数のセグメントがある場合は、[0, 1]を等分割してそれぞれのセグメントに割り当てる。
-      // todo: t<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
-      if (t >= 1.0) {
-        return points.last;
-      }
+      // 複数のセグメントがある場合は、[0,1]を等分割してそれぞれのセグメントに割り当てる。
+      // ただしt<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
       final m = (points.length - 1) ~/ 3;
-      return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
+      if (t < 0) {
+        return _transform(0, 3, t / m);
+      } else if (t >= 1) {
+        return _transform(points.length - 4, 3, (t - 1.0) / m);
+      } else {
+        return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
+      }
     } else {
       throw UnimplementedError();
     }
   }
 
+  // [o]:セグメントの開始オフセット [n]:次数
+  // [t]:セグメント内の媒介変数、[0,1]が始点終点に対応するが、その範囲外である場合もある。
   Vector3 _transform(int o, int n, double t) {
     //_logger.fine('_transform $offset $t');
     final t_ = 1.0 - t;
