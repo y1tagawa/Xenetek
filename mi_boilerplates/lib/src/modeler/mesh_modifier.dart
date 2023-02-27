@@ -23,31 +23,41 @@ class WickModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('name');
 
-  final List<Vector3> wicking; // Y=[0,1]に対応する中心線
-  final List<double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
-  final List<double> width; // Y=[0,1]に対応するX半径
-  final List<double> depth; // Y=[0,1]に対応するX半径
+  final Bezier<Vector3> wicking; // Y=[0,1]に対応する中心線
+  final dynamic twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
+  final dynamic width; // Y=[0,1]に対応するX半径
+  final dynamic depth; // Y=[0,1]に対応するX半径
 
   const WickModifier({
     required this.wicking,
-    this.twist = const <double>[0.0],
-    this.width = const <double>[1.0],
-    this.depth = const <double>[1.0],
+    this.twist = 0.0,
+    this.width = 1.0,
+    this.depth = 1.0,
   });
+
+  Bezier<double> _toBezierDouble(dynamic value) {
+    _logger.fine('${value.runtimeType}');
+    if (value is Bezier<double>) {
+      return value;
+    } else if (value is double) {
+      return Bezier<double>(points: <double>[value]);
+    } else {
+      throw UnimplementedError();
+    }
+  }
 
   @override
   MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
-    final wicking_ = Bezier<Vector3>(points: wicking);
-    final twist_ = Bezier<double>(points: twist);
-    final width_ = Bezier<double>(points: width);
-    final depth_ = Bezier<double>(points: depth);
+    final twist_ = _toBezierDouble(twist);
+    final width_ = _toBezierDouble(width);
+    final depth_ = _toBezierDouble(depth);
     final data_ = <MeshObject>[];
     for (final object in data) {
       final vertices = <Vector3>[];
       for (final vertex in object.vertices) {
         final t = vertex.y; // 0.0-1.0
-        final p = wicking_.transform(t);
-        final p1 = wicking_.transform(t - 0.01);
+        final p = wicking.transform(t);
+        final p1 = wicking.transform(t - 0.01);
         vertices.add(vertex.transformed(
           Matrix4.fromTranslation(p) *
               Matrix4.fromForwardTargetRotation(forward: p - p1, target: p) *

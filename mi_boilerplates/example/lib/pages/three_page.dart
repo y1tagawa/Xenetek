@@ -334,14 +334,14 @@ Future<void> _setup(StringSink sink) async {
     ),
     modifiers: [
       mi.WickModifier(
-        wicking: tempPoints,
+        wicking: mi.Bezier<mi.Vector3>(points: const [mi.Vector3.zero, mi.Vector3.unitY]),
         // <mi.Vector3>[
         //   mi.Vector3(0, 0, 0),
         //   mi.Vector3(0, 1, 0),
         //   mi.Vector3(0, 1, 0),
         //   mi.Vector3(1, 1, 0),
         // ],
-        twist: const <double>[0.0, math.pi],
+        twist: mi.Bezier(points: const <double>[0.0, math.pi]),
       ),
     ],
   ).toMeshData(root: root);
@@ -381,8 +381,8 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  //[...dollMeshData, ...spindle, ...tempMesh].toWavefrontObj(sink: sink);
-  [...tempMesh].toWavefrontObj(sink: sink);
+  [...dollMeshData, ...spindle, ...tempMesh].toWavefrontObj(sink: sink);
+  //[...tempMesh].toWavefrontObj(sink: sink);
 }
 
 Future<String> _getModelTempFileDir() async {
