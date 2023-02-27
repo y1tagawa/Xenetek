@@ -295,7 +295,7 @@ Future<void> _setup(StringSink sink) async {
 
   const tempData =
       'm 49.999997,99.999995 c 15,0 30.574826,3.135065 34.999999,-14.999999 C 87.471939,74.869578 80.740521,67.872918 80.476852,55.572817 80.273326,46.078386 84.999996,33.509487 84.999996,24.999999 84.999996,4.9999998 49.999997,0 49.999997,0';
-  var tempPoints = mi.SvgPathReader.fromString(tempData);
+  var tempPoints = mi.SvgPathParser.fromString(tempData);
   tempPoints = tempPoints
       .transformed(
         mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *

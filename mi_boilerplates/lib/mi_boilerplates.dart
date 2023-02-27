@@ -30,7 +30,7 @@ export 'src/modeler/human_mesh_builder.dart';
 export 'src/modeler/human_rig.dart';
 export 'src/modeler/mesh_builder.dart';
 export 'src/modeler/mesh_modifier.dart';
-export 'src/modeler/svg_path_reader.dart';
+export 'src/modeler/svg_path_parser.dart';
 export 'src/modeler/wavefront_obj.dart';
 export 'src/primary_color_names.dart';
 export 'src/x11_colors.dart';

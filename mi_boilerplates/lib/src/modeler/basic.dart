@@ -340,22 +340,38 @@ class _BezierDouble implements Bezier<double> {
   @override
   double transform(double t) {
     assert(points.isNotEmpty);
-    final n = points.length - 1;
+    if (points.length <= 4) {
+      // 0次～3次
+      return _transform(0, points.length - 1, t);
+    } else if ((points.length - 1) % 3 == 0) {
+      // 複数のセグメントがある場合は、[0, 1]を等分割してそれぞれのセグメントに割り当てる。
+      // todo: t<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
+      if (t >= 1.0) {
+        return points.last;
+      }
+      final m = (points.length - 1) ~/ 3;
+      return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
+    } else {
+      throw UnimplementedError();
+    }
+  }
+
+  double _transform(int o, int n, double t) {
+    assert(points.isNotEmpty);
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
-        return points[0];
+        return points[o];
       case 1:
-        return points[0] * (1.0 - t) + points[1] * t;
+        return points[o] * t_ + points[o + 1] * t;
       case 2:
-        return points[0] * (t_ * t_) + points[1] * (2.0 * t * t_) + points[2] * (t * t);
+        return points[o] * (t_ * t_) + points[o + 1] * (2.0 * t * t_) + points[o + 2] * (t * t);
       case 3:
-        return points[0] * (t_ * t_ * t_) +
-            points[1] * (3.0 * t * t_ * t_) +
-            points[2] * (3.0 * t * t * t_) +
-            points[3] * (t * t * t);
+        return points[o] * (t_ * t_ * t_) +
+            points[o + 1] * (3.0 * t * t_ * t_) +
+            points[o + 2] * (3.0 * t * t * t_) +
+            points[o + 3] * (t * t * t);
       default:
-        // todo: 4+3...,
         throw UnimplementedError();
     }
   }
@@ -377,35 +393,39 @@ class _BezierVector3 implements Bezier<Vector3> {
   Vector3 transform(double t) {
     assert(points.isNotEmpty);
     if (points.length <= 4) {
+      // 0次～3次
       return _transform(0, points.length - 1, t);
     } else if ((points.length - 1) % 3 == 0) {
-      final segmentCount = (points.length - 1) ~/ 3;
-      return _transform((t * segmentCount).truncate() * 3, 3, (t * segmentCount) % 1.0);
+      // 複数のセグメントがある場合は、[0, 1]を等分割してそれぞれのセグメントに割り当てる。
+      // todo: t<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
+      if (t >= 1.0) {
+        return points.last;
+      }
+      final m = (points.length - 1) ~/ 3;
+      return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
     } else {
       throw UnimplementedError();
     }
   }
 
-  Vector3 _transform(int offset, int n, double t) {
-    _logger.fine('_transform $offset $t');
+  Vector3 _transform(int o, int n, double t) {
+    //_logger.fine('_transform $offset $t');
     final t_ = 1.0 - t;
     switch (n) {
       case 0:
-        return points[offset];
+        return points[o];
       case 1:
-        return points[offset] * (1.0 - t) + points[offset + 1] * t;
+        return points[o] * t_ + points[o + 1] * t;
       case 2:
-        return points[offset] * (t_ * t_) +
-            points[offset + 1] * (2.0 * t * t_) +
-            points[offset + 2] * (t * t);
+        return points[o] * (t_ * t_) + points[o + 1] * (2.0 * t * t_) + points[o + 2] * (t * t);
       case 3:
-        if (offset + 3 >= points.length) {
+        if (o + 3 >= points.length) {
           return points.last;
         }
-        return points[offset] * (t_ * t_ * t_) +
-            points[offset + 1] * (3.0 * t * t_ * t_) +
-            points[offset + 2] * (3.0 * t * t * t_) +
-            points[offset + 3] * (t * t * t);
+        return points[o] * (t_ * t_ * t_) +
+            points[o + 1] * (3.0 * t * t_ * t_) +
+            points[o + 2] * (3.0 * t * t * t_) +
+            points[o + 3] * (t * t * t);
       default:
         throw UnimplementedError();
     }

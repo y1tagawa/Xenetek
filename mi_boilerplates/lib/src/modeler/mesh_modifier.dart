@@ -48,10 +48,9 @@ class WickModifier extends MeshModifier {
         final t = vertex.y; // 0.0-1.0
         final p = wicking_.transform(t);
         final p1 = wicking_.transform(t - 0.01);
-        final p2 = wicking_.transform(t + 0.01);
         vertices.add(vertex.transformed(
           Matrix4.fromTranslation(p) *
-              Matrix4.fromForwardTargetRotation(forward: p - p1, target: p2 - p) *
+              Matrix4.fromForwardTargetRotation(forward: p - p1, target: p) *
               Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist_.transform(t)) *
               Matrix4.fromScale(Vector3(width_.transform(t), 1, depth_.transform(t))),
         ));

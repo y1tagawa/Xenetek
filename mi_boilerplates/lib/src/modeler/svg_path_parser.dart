@@ -6,31 +6,33 @@ import 'package:logging/logging.dart';
 
 import 'basic.dart';
 
-class SvgPathReader {
+class SvgPathParser {
   // ignore: unused_field
   static final _logger = Logger('SvgPathReader');
 
-  static Vector3 _takePoint(
-    final String field,
-  ) {
-    assert(field.isNotEmpty);
-    final elements = field.split(',');
-    assert(elements.length == 2);
-    final x = double.tryParse(elements[0]);
-    final y = double.tryParse(elements[1]);
-    assert(x != null && y != null);
-    return Vector3(x!, y!, 0.0);
-  }
+  // todo: アルファベットの後も分離
+  static final _delimiter = RegExp('[ ,]+');
+  static final _commands = RegExp('[A-Za-z]');
 
   // from d attribute
   static List<Vector3> fromString(String data) {
-    //todo: comma, space is optional
-    var fields = data.split(' ').where((it) => it.isNotEmpty);
+    var fields = data.split(_delimiter).where((it) => it.isNotEmpty);
+    _logger.fine('fields=$fields');
     var lastPoint = Vector3.zero;
     final points = <Vector3>[];
+
+    Vector3 takePoint() {
+      assert(fields.length >= 2);
+      final x = double.tryParse(fields.first);
+      fields = fields.skip(1);
+      final y = double.tryParse(fields.first);
+      fields = fields.skip(1);
+      assert(x != null && y != null);
+      return Vector3(x!, y!, 0.0);
+    }
+
     void addPoint(Vector3 point) {
       points.add(point);
-      fields = fields.skip(1);
     }
 
     fieldLoop:
@@ -41,29 +43,29 @@ class SvgPathReader {
       switch (command) {
         case 'm':
           assert(points.isEmpty);
-          addPoint(lastPoint + _takePoint(fields.first));
+          addPoint(lastPoint + takePoint());
           lastPoint = points.last;
           continue fieldLoop;
         case 'M':
           assert(points.isEmpty);
-          addPoint(_takePoint(fields.first));
+          addPoint(takePoint());
           lastPoint = points.last;
           continue fieldLoop;
         case 'c':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && fields.first.length > 1) {
-            addPoint(lastPoint + _takePoint(fields.first));
-            addPoint(lastPoint + _takePoint(fields.first));
-            addPoint(lastPoint + _takePoint(fields.first));
+          while (fields.isNotEmpty && _commands.stringMatch(fields.first) == null) {
+            addPoint(lastPoint + takePoint());
+            addPoint(lastPoint + takePoint());
+            addPoint(lastPoint + takePoint());
             lastPoint = points.last;
           }
           continue fieldLoop;
         case 'C':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && fields.first.length > 1) {
-            addPoint(_takePoint(fields.first));
-            addPoint(_takePoint(fields.first));
-            addPoint(_takePoint(fields.first));
+          while (fields.isNotEmpty && _commands.stringMatch(fields.first) == null) {
+            addPoint(takePoint());
+            addPoint(takePoint());
+            addPoint(takePoint());
             lastPoint = points.last;
           }
           continue fieldLoop;
