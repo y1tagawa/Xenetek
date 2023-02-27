@@ -349,7 +349,9 @@ class _BezierDouble implements Bezier<double> {
       final m = (points.length - 1) ~/ 3;
       if (t < 0.0) {
         return _transform(0, 3, t / m);
-      } else if (t >= 1.0) {
+      } else if (t == 1.0) {
+        return points.last;
+      } else if (t > 1.0) {
         return _transform(points.length - 4, 3, (t - 1.0) / m);
       } else {
         return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);
@@ -404,9 +406,11 @@ class _BezierVector3 implements Bezier<Vector3> {
       // 複数のセグメントがある場合は、[0,1]を等分割してそれぞれのセグメントに割り当てる。
       // ただしt<0またはt>1の場合は、それぞれ最初・最後のセグメントで外挿する。
       final m = (points.length - 1) ~/ 3;
-      if (t < 0) {
+      if (t < 0.0) {
         return _transform(0, 3, t / m);
-      } else if (t >= 1) {
+      } else if (t == 1.0) {
+        return points.last;
+      } else if (t > 1.0) {
         return _transform(points.length - 4, 3, (t - 1.0) / m);
       } else {
         return _transform((t * m).truncate() * 3, 3, (t * m) % 1.0);

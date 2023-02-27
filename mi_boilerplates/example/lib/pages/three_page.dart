@@ -310,9 +310,9 @@ Future<void> _setup(StringSink sink) async {
     ),
   ).toMeshData(root: root);
 
-  final spindle = const mi.Mesh(
+  final spindle = mi.Mesh(
     origin: 'spindle',
-    data: mi.SpindleBuilder(
+    data: const mi.SpindleBuilder(
       materialLibrary: 'x11.mtl',
       material: 'firebrick',
       radius: 0.5,
@@ -321,13 +321,14 @@ Future<void> _setup(StringSink sink) async {
     ),
     modifiers: [
       mi.WickModifier(
-        wicking: <mi.Vector3>[
-          mi.Vector3(0, 0, 0),
-          mi.Vector3(0, 1, 0),
-          mi.Vector3(0, 1, 0),
-          mi.Vector3(1, 1, 0),
-        ],
-        twist: <double>[0.0, math.pi],
+        wicking: tempPoints,
+        // <mi.Vector3>[
+        //   mi.Vector3(0, 0, 0),
+        //   mi.Vector3(0, 1, 0),
+        //   mi.Vector3(0, 1, 0),
+        //   mi.Vector3(1, 1, 0),
+        // ],
+        twist: const <double>[0.0, math.pi],
       ),
     ],
   ).toMeshData(root: root);
