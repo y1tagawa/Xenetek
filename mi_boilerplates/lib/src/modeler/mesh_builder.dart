@@ -404,9 +404,10 @@ class SpindleBuilder extends _SorBuilder {
   }
 }
 
-/// ベジエ曲線回転表面ビルダ
+/// 輪郭線回転表面ビルダ
 ///
-///
+/// Bezier曲線を輪郭とする形状を生成する。
+/// todo: 曲線一般化
 class BezierBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('BezierBuilder');

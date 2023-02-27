@@ -17,40 +17,28 @@ import 'basic.dart';
 
 /// 芯材モディファイア
 ///
-/// Y軸[0,1]に沿ってBスプラインによって変形する。
+/// Y軸[0,1]に沿ってBezier曲線によって変形する。
+/// todo: 一般的な曲線
 @immutable
 class WickModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('name');
 
   final Bezier<Vector3> wicking; // Y=[0,1]に対応する中心線
-  final dynamic twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
-  final dynamic width; // Y=[0,1]に対応するX半径
-  final dynamic depth; // Y=[0,1]に対応するX半径
+  final Bezier<double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
+  final Bezier<double> width; // Y=[0,1]に対応するX半径
+  final Bezier<double> depth; // Y=[0,1]に対応するX半径
+  //todo: axis
 
   const WickModifier({
-    required this.wicking,
-    this.twist = 0.0,
-    this.width = 1.0,
-    this.depth = 1.0,
+    this.wicking = const BezierVector3(points: <Vector3>[Vector3.zero, Vector3.unitY]),
+    this.twist = const BezierDouble(points: <double>[0.0]),
+    this.width = const BezierDouble(points: <double>[1.0]),
+    this.depth = const BezierDouble(points: <double>[1.0]),
   });
-
-  Bezier<double> _toBezierDouble(dynamic value) {
-    _logger.fine('${value.runtimeType}');
-    if (value is Bezier<double>) {
-      return value;
-    } else if (value is double) {
-      return Bezier<double>(points: <double>[value]);
-    } else {
-      throw UnimplementedError();
-    }
-  }
 
   @override
   MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
-    final twist_ = _toBezierDouble(twist);
-    final width_ = _toBezierDouble(width);
-    final depth_ = _toBezierDouble(depth);
     final data_ = <MeshObject>[];
     for (final object in data) {
       final vertices = <Vector3>[];
@@ -61,8 +49,8 @@ class WickModifier extends MeshModifier {
         vertices.add(vertex.transformed(
           Matrix4.fromTranslation(p) *
               Matrix4.fromForwardTargetRotation(forward: p - p1, target: p) *
-              Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist_.transform(t)) *
-              Matrix4.fromScale(Vector3(width_.transform(t), 1, depth_.transform(t))),
+              Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
+              Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
         ));
       }
       data_.add(

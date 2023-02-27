@@ -318,9 +318,9 @@ abstract class Bezier<T> {
   }) {
     switch (points.runtimeType) {
       case List<double>:
-        return _BezierDouble(points: points as List<double>) as Bezier<T>;
+        return BezierDouble(points: points as List<double>) as Bezier<T>;
       case List<Vector3>:
-        return _BezierVector3(points: points as List<Vector3>) as Bezier<T>;
+        return BezierVector3(points: points as List<Vector3>) as Bezier<T>;
       default:
         throw UnimplementedError();
     }
@@ -333,13 +333,12 @@ abstract class Bezier<T> {
 
 // Bezier補間(double)
 @immutable
-class _BezierDouble implements Bezier<double> {
+class BezierDouble implements Bezier<double> {
   final List<double> _points;
 
-  const _BezierDouble({
+  const BezierDouble({
     required List<double> points,
-  })  : assert(points.length >= 1),
-        _points = points;
+  }) : _points = points;
 
   @override
   List<double> get points => _points;
@@ -393,16 +392,15 @@ class _BezierDouble implements Bezier<double> {
 
 // Bezier補間(Vector3)
 @immutable
-class _BezierVector3 implements Bezier<Vector3> {
+class BezierVector3 implements Bezier<Vector3> {
   // ignore: unused_field
   static final _logger = Logger('_BezierVector3');
 
   final List<Vector3> _points;
 
-  const _BezierVector3({
+  const BezierVector3({
     required List<Vector3> points,
-  })  : assert(points.length >= 1),
-        _points = points;
+  }) : _points = points;
 
   @override
   List<Vector3> get points => _points;
