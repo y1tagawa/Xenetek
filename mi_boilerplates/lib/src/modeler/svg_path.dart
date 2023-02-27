@@ -11,8 +11,8 @@ class SvgPathParser {
   static final _logger = Logger('SvgPathReader');
 
   // todo: アルファベットの後も分離
-  static final _delimiter = RegExp('[ ,]+');
-  static final _commands = RegExp('[A-Za-z]');
+  static final _delimiter = RegExp(r'[ ,]+');
+  static final _command = RegExp(r'^[A-Za-z]$');
 
   // from d attribute
   static List<Vector3> fromString(String data) {
@@ -23,6 +23,7 @@ class SvgPathParser {
 
     Vector3 takePoint() {
       assert(fields.length >= 2);
+      _logger.fine('fields=$fields');
       final x = double.tryParse(fields.first);
       fields = fields.skip(1);
       final y = double.tryParse(fields.first);
@@ -45,15 +46,35 @@ class SvgPathParser {
           assert(points.isEmpty);
           addPoint(lastPoint + takePoint());
           lastPoint = points.last;
+          continue CASE_LL;
+        CASE_LL:
+        case 'l':
+          assert(points.isNotEmpty);
+          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
+            addPoint(points.last);
+            addPoint(lastPoint + takePoint());
+            addPoint(points.last);
+            lastPoint = points.last;
+          }
           continue fieldLoop;
         case 'M':
           assert(points.isEmpty);
           addPoint(takePoint());
           lastPoint = points.last;
+          continue CASE_L;
+        CASE_L:
+        case 'L':
+          assert(points.isNotEmpty);
+          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
+            addPoint(points.last);
+            addPoint(takePoint());
+            addPoint(points.last);
+            lastPoint = points.last;
+          }
           continue fieldLoop;
         case 'c':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && _commands.stringMatch(fields.first) == null) {
+          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
             addPoint(lastPoint + takePoint());
             addPoint(lastPoint + takePoint());
             addPoint(lastPoint + takePoint());
@@ -62,7 +83,7 @@ class SvgPathParser {
           continue fieldLoop;
         case 'C':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && _commands.stringMatch(fields.first) == null) {
+          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
             addPoint(takePoint());
             addPoint(takePoint());
             addPoint(takePoint());

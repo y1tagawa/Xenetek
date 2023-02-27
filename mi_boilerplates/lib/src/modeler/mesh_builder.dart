@@ -459,9 +459,10 @@ class BezierBuilder extends _SorBuilder {
       final t = i / heightDivision;
       final x = xCurve.transform(t);
       final z = zCurve.transform(t); //todo: zCurveは前後で変えらるよう
-      // y座標は経度をもとに重みづけ
+      // 半径とy座標は経度をもとに重みづけ
+      final r = math.sqrt(math.pow(cosL * x.x, 2) + math.pow(sinL * z.x, 2));
       final y = math.sqrt(math.pow(cosL * x.y, 2) + math.pow(sinL * z.y, 2));
-      vertices.add(Vector3(x.x, y, z.x));
+      vertices.add(Vector3(r, y, 0.0));
     }
     return vertices
         .transformed(

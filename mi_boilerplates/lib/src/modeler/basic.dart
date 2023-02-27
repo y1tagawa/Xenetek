@@ -433,9 +433,6 @@ class _BezierVector3 implements Bezier<Vector3> {
       case 2:
         return points[o] * (t_ * t_) + points[o + 1] * (2.0 * t * t_) + points[o + 2] * (t * t);
       case 3:
-        if (o + 3 >= points.length) {
-          return points.last;
-        }
         return points[o] * (t_ * t_ * t_) +
             points[o + 1] * (3.0 * t * t_ * t_) +
             points[o + 2] * (3.0 * t * t * t_) +
