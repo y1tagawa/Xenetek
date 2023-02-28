@@ -408,17 +408,16 @@ class SpindleBuilder extends _SorBuilder {
 
 /// 輪郭線回転表面ビルダ
 ///
-/// Bezier曲線を輪郭とする形状を生成する。
-/// todo: 曲線一般化
-class BezierBuilder extends _SorBuilder {
+/// パラメトリック曲線を輪郭とする形状を生成する。
+class ParametricBuilder extends _SorBuilder {
   // ignore: unused_field
-  static final _logger = Logger('BezierBuilder');
+  static final _logger = Logger('ParametricBuilder');
 
   final int heightDivision;
   final Bezier<Vector3> xCurve; // X座標が幅(X)を表す
   final Bezier<Vector3> zCurve; // X座標が厚さ(Z)を表す
 
-  const BezierBuilder({
+  const ParametricBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     required Bezier<Vector3> curve,
@@ -432,7 +431,7 @@ class BezierBuilder extends _SorBuilder {
         xCurve = curve,
         zCurve = curve;
 
-  const BezierBuilder.fromXZ({
+  const ParametricBuilder.fromXZ({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     required this.xCurve,

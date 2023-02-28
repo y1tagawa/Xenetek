@@ -317,7 +317,7 @@ Future<void> _setup(StringSink sink) async {
 
   final tempMesh = mi.Mesh(
     origin: 'ball',
-    data: mi.BezierBuilder.fromXZ(
+    data: mi.ParametricBuilder.fromXZ(
       xCurve: tempBezier,
       zCurve: tempBezier2,
     ),
