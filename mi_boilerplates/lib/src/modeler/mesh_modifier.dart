@@ -4,8 +4,8 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 
 import '../helpers.dart';
 import 'basic.dart';
@@ -17,21 +17,21 @@ import 'basic.dart';
 
 /// 芯材モディファイア
 ///
-/// Y軸[0,1]に沿ってBezier曲線によって変形する。
+/// Y軸[0,1]に沿ってパラメトリック曲線によって変形する。
 /// todo: 一般的な曲線
 @immutable
-class WickModifier extends MeshModifier {
+class BendModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('name');
 
-  final Bezier<Vector3> wicking; // Y=[0,1]に対応する中心線
-  final Bezier<double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
-  final Bezier<double> width; // Y=[0,1]に対応するX半径
-  final Bezier<double> depth; // Y=[0,1]に対応するX半径
+  final Parametric<double, Vector3> bend; // Y=[0,1]に対応する中心線
+  final Parametric<double, double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
+  final Parametric<double, double> width; // Y=[0,1]に対応するX半径
+  final Parametric<double, double> depth; // Y=[0,1]に対応するX半径
   //todo: axis
 
-  const WickModifier({
-    this.wicking = const BezierVector3(points: <Vector3>[Vector3.zero, Vector3.unitY]),
+  const BendModifier({
+    this.bend = const BezierVector3(points: <Vector3>[Vector3.zero, Vector3.unitY]),
     this.twist = const BezierDouble(points: <double>[0.0]),
     this.width = const BezierDouble(points: <double>[1.0]),
     this.depth = const BezierDouble(points: <double>[1.0]),
@@ -44,8 +44,8 @@ class WickModifier extends MeshModifier {
       final vertices = <Vector3>[];
       for (final vertex in object.vertices) {
         final t = vertex.y; // 0.0-1.0
-        final p = wicking.transform(t);
-        final p1 = wicking.transform(t - 0.01);
+        final p = bend.transform(t);
+        final p1 = bend.transform(t - 0.01);
         vertices.add(vertex.transformed(
           Matrix4.fromTranslation(p) *
               Matrix4.fromForwardTargetRotation(forward: p - p1, target: p) *

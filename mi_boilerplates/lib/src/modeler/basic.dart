@@ -4,8 +4,8 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
 import 'package:mi_boilerplates/src/modeler/wavefront_obj.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
@@ -310,9 +310,16 @@ class Matrix4 {
 //</editor-fold>
 }
 
+/// パラメトリック曲線の基底クラス
+@immutable
+abstract class Parametric<T, U> {
+  const Parametric();
+  U transform(T t);
+}
+
 /// Bezier補間
 @immutable
-abstract class Bezier<T> {
+abstract class Bezier<T> extends Parametric<double, T> {
   factory Bezier({
     required List<T> points,
   }) {
@@ -328,10 +335,12 @@ abstract class Bezier<T> {
 
   List<T> get points;
 
+  @override
   T transform(double t);
 }
 
-// Bezier補間(double)
+/// Bezier補間(double)
+@internal
 @immutable
 class BezierDouble implements Bezier<double> {
   final List<double> _points;
@@ -390,7 +399,8 @@ class BezierDouble implements Bezier<double> {
   }
 }
 
-// Bezier補間(Vector3)
+/// Bezier補間(Vector3)
+@internal
 @immutable
 class BezierVector3 implements Bezier<Vector3> {
   // ignore: unused_field
@@ -486,7 +496,7 @@ class Node {
   static String formatPath(Iterable<String> path) => '[\'${path.join('\',\'')}\']';
 
   // (文字列等で与えられた)ノードパス正規化
-  static Iterable<String> toPath(dynamic path) {
+  static Iterable<String> _toPath(dynamic path) {
     switch (path.runtimeType) {
       case List<String>:
       case Iterable<String>:
@@ -528,7 +538,7 @@ class Node {
       return find_(this_: child, path: path.skip(1), matrix: matrix * this_.matrix, parent: this_);
     }
 
-    return find_(this_: this, path: toPath(path), matrix: Matrix4.identity, parent: null);
+    return find_(this_: this, path: _toPath(path), matrix: Matrix4.identity, parent: null);
   }
 
   /// [path]で指定するノードを[child]で置換または削除したコピーを返す。
@@ -559,7 +569,7 @@ class Node {
     required dynamic path,
     required Node child,
   }) {
-    final path_ = toPath(path);
+    final path_ = _toPath(path);
     return _addOrRemove(
         path: path_,
         onFind: (node, key) {
@@ -599,7 +609,7 @@ class Node {
     // 生成された関節ノードsを[path]に追加したコピーを返す。
     final child = t.children.entries.first;
     return add(
-      path: [...toPath(path), child.key],
+      path: [..._toPath(path), child.key],
       child: child.value,
     );
   }
@@ -609,7 +619,7 @@ class Node {
     dynamic path = const <String>[],
     required Matrix4 matrix,
   }) {
-    final path_ = toPath(path);
+    final path_ = _toPath(path);
     if (path_.isEmpty) {
       return Node(matrix: this.matrix * matrix, children: children);
     }
@@ -626,9 +636,9 @@ class Node {
     required dynamic targetPath,
     Vector3 forward = Vector3.unitY, // todo: -unitZ
   }) {
-    final path_ = toPath(path);
+    final path_ = _toPath(path);
     final matrix = find(path: path_)!.matrix;
-    final targetPath_ = toPath(targetPath);
+    final targetPath_ = _toPath(targetPath);
     final targetMatrix = find(path: targetPath_)!.matrix;
     return transform(
       path: path_,

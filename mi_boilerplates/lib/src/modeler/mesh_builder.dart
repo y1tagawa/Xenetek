@@ -4,8 +4,8 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
+import 'package:meta/meta.dart';
 
 import '../helpers.dart';
 import 'basic.dart';
@@ -333,6 +333,7 @@ class EllipsoidBuilder extends _SorBuilder {
         assert(radius is double || radius is Vector3);
 
   /// 母線生成(Y軸周り)
+  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     // 扁球面
@@ -380,6 +381,7 @@ class SpindleBuilder extends _SorBuilder {
         assert(radius is double || radius is Vector3);
 
   /// 母線生成(Y軸周り)
+  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     // 紡錘面(正弦曲線)
@@ -444,10 +446,12 @@ class BezierBuilder extends _SorBuilder {
         assert(heightDivision >= 2);
 
   /// 母線(Y軸周り)は使用しない
+  @protected
   @override
   List<Vector3> makeGeneratingLine() => <Vector3>[];
 
   /// 経線生成(Y軸周り)
+  @protected
   @override
   List<Vector3> makeLineOfLongitude({
     required List<Vector3> generatingLine, //使用しない
@@ -542,6 +546,7 @@ class TubeBuilder extends _SorBuilder {
         assert(heightDivision >= 1);
 
   /// 母線生成(Y軸周り)
+  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     // todo: 母線再利用

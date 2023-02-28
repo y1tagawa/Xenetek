@@ -333,7 +333,7 @@ Future<void> _setup(StringSink sink) async {
       heightDivision: 6,
     ),
     modifiers: [
-      mi.WickModifier(
+      mi.BendModifier(
         //wicking: mi.Bezier<mi.Vector3>(points: const [mi.Vector3.zero, mi.Vector3.unitY]),
         // <mi.Vector3>[
         //   mi.Vector3(0, 0, 0),

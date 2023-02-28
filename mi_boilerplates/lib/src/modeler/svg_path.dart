@@ -32,7 +32,7 @@ class SvgPathParser {
       return Vector3(x!, y!, 0.0);
     }
 
-    fieldLoop:
+    loop:
     while (fields.isNotEmpty) {
       final command = fields.first;
       fields = fields.skip(1);
@@ -42,8 +42,8 @@ class SvgPathParser {
           assert(points.isEmpty);
           points.add(lastPoint + takePoint());
           lastPoint = points.last;
-          continue CASE_LL;
-        CASE_LL:
+          continue fallthrough1;
+        fallthrough1:
         case 'l':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
@@ -52,13 +52,13 @@ class SvgPathParser {
             points.add(points.last);
             lastPoint = points.last;
           }
-          continue fieldLoop;
+          break;
         case 'M':
           assert(points.isEmpty);
           points.add(takePoint());
           lastPoint = points.last;
-          continue CASE_L;
-        CASE_L:
+          continue fallthrough2;
+        fallthrough2:
         case 'L':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
@@ -67,7 +67,7 @@ class SvgPathParser {
             points.add(points.last);
             lastPoint = points.last;
           }
-          continue fieldLoop;
+          break;
         case 'c':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
@@ -76,7 +76,7 @@ class SvgPathParser {
             points.add(lastPoint + takePoint());
             lastPoint = points.last;
           }
-          continue fieldLoop;
+          break;
         case 'C':
           assert(points.isNotEmpty);
           while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
@@ -85,10 +85,10 @@ class SvgPathParser {
             points.add(takePoint());
             lastPoint = points.last;
           }
-          continue fieldLoop;
+          break;
         case 'z':
         case 'Z':
-          break fieldLoop;
+          break loop;
         default:
           throw UnimplementedError('command=$command');
       }
@@ -101,15 +101,12 @@ extension Vector3BezierFormatter on List<Vector3> {
   // ignore: unused_field
   static final _logger = Logger('Vector3BezierFormatter');
 
-  static final _trailer = RegExp(r'\.0+$');
-
   /// 点列をSVG pathのd形式に変換する。
   String toSvgPathData() {
     assert((length - 1) % 3 == 0);
     final buffer = StringBuffer();
 
-    String round(double value) =>
-        ((value * 10000).round() / 10000).toString().replaceAll(_trailer, '');
+    String round(double value) => ((value * 10000).round() / 10000).toString();
 
     void writePoint(Vector3 point) {
       buffer.write('${round(point.x)} ${round(point.y)} ');
