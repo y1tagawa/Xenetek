@@ -5,7 +5,7 @@
 import 'dart:math' as math;
 
 import 'basic.dart';
-import 'human_rig.dart';
+import 'human_rig_builder.dart';
 
 // スクリプト的ドール(mk1)モデラ拡張
 // todo: むしろこの辺はdoll.dartに
@@ -33,53 +33,53 @@ extension NodeHelper on Node {
   // 頸
   Node bendNeck({double? radians, double? degrees}) {
     final radians_ = _toRadians(radians, degrees) * 0.5;
-    return _rotate(HumanRig.neck, Vector3.unitX, radians_)
-        ._rotate(HumanRig.head, Vector3.unitX, radians_);
+    return _rotate(HumanRigBuilder.neck, Vector3.unitX, radians_)
+        ._rotate(HumanRigBuilder.head, Vector3.unitX, radians_);
   }
 
   Node twistNeck({double? radians, double? degrees}) {
     final radians_ = _toRadians(radians, degrees) * 0.5;
-    return _rotate(HumanRig.neck, Vector3.unitY, radians_)
-        ._rotate(HumanRig.head, Vector3.unitY, radians_);
+    return _rotate(HumanRigBuilder.neck, Vector3.unitY, radians_)
+        ._rotate(HumanRigBuilder.head, Vector3.unitY, radians_);
   }
 
   // 右下肢
   Node twistRCoxa({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rCoxa, Vector3.unitY, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rCoxa, Vector3.unitY, _toRadians(radians, degrees));
   Node swingRCoxa({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rCoxa, Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rCoxa, Vector3.unitZ, _toRadians(radians, degrees));
   Node swingRAnkle({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rAnkle, Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rAnkle, Vector3.unitZ, _toRadians(radians, degrees));
 
   // 左下肢
   Node twistLCoxa({double? radians, double? degrees}) =>
-      _rotate(HumanRig.lCoxa, Vector3.unitY, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.lCoxa, Vector3.unitY, _toRadians(radians, degrees));
   Node swingLCoxa({double? radians, double? degrees}) =>
-      _rotate(HumanRig.lCoxa, Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.lCoxa, Vector3.unitZ, _toRadians(radians, degrees));
   Node swingLAnkle({double? radians, double? degrees}) =>
-      _rotate(HumanRig.lAnkle, Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.lAnkle, Vector3.unitZ, _toRadians(radians, degrees));
 
   // 右上肢
   //todo: テスト、それとIK的な腕の全関節の動き関数
   Node bendRSc({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rSc, Vector3.unitY, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rSc, Vector3.unitY, _toRadians(radians, degrees));
   Node twistRSc({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rSc, -Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rSc, -Vector3.unitZ, _toRadians(radians, degrees));
   Node bendRShoulder({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rShoulder, -Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rShoulder, -Vector3.unitZ, _toRadians(radians, degrees));
   Node twistRShoulder({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rShoulder, Vector3.unitX, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rShoulder, Vector3.unitX, _toRadians(radians, degrees));
   Node swingRShoulder({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rShoulder, Vector3.unitY, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rShoulder, Vector3.unitY, _toRadians(radians, degrees));
   Node bendRElbow({double? radians, double? degrees}) =>
-      _rotate(HumanRig.rElbow, Vector3.unitY, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.rElbow, Vector3.unitY, _toRadians(radians, degrees));
   // todo: 手首
 
   // 左上肢
   Node bendLShoulder({double? radians, double? degrees}) =>
-      _rotate(HumanRig.lShoulder, Vector3.unitZ, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.lShoulder, Vector3.unitZ, _toRadians(radians, degrees));
   Node bendLElbow({double? radians, double? degrees}) =>
-      _rotate(HumanRig.lElbow, -Vector3.unitY, _toRadians(radians, degrees));
+      _rotate(HumanRigBuilder.lElbow, -Vector3.unitY, _toRadians(radians, degrees));
   // todo: 手首
 
 }

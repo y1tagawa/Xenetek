@@ -35,18 +35,12 @@ class Vector3 {
 
   /// 要素ごとのスカラ積
   Vector3 operator *(dynamic other) {
-    switch (other.runtimeType) {
-      case double:
-        final a = other as double;
-        return Vector3(a * x, a * y, a * z);
-      case int:
-        final a = (other as int).toDouble();
-        return Vector3(a * x, a * y, a * z);
-      case Vector3:
-        final a = other as Vector3;
-        return Vector3(a.x * x, a.y * y, a.z * z);
-      default:
-        throw UnimplementedError();
+    if (other is num) {
+      return Vector3(other * x, other * y, other * z);
+    } else if (other is Vector3) {
+      return Vector3(other.x * x, other.y * y, other.z * z);
+    } else {
+      throw UnimplementedError();
     }
   }
 
@@ -130,18 +124,12 @@ class Vector3 {
 
 extension Vector3ListHelper on Iterable<Vector3> {
   Iterable<Vector3> scaled(dynamic scale) {
-    switch (scale.runtimeType) {
-      case double:
-        final a = scale as double;
-        return map((it) => Vector3(a * it.x, a * it.y, a * it.z));
-      case int:
-        final a = (scale as int).toDouble();
-        return map((it) => Vector3(a * it.x, a * it.y, a * it.z));
-      case Vector3:
-        final a = scale as Vector3;
-        return map((it) => Vector3(a.x * it.x, a.y * it.y, a.z * it.z));
-      default:
-        throw UnimplementedError();
+    if (scale is num) {
+      return map((it) => Vector3(scale * it.x, scale * it.y, scale * it.z));
+    } else if (scale is Vector3) {
+      return map((it) => Vector3(scale.x * it.x, scale.y * it.y, scale.z * it.z));
+    } else {
+      throw UnimplementedError();
     }
   }
 
@@ -198,18 +186,13 @@ class Matrix4 {
 
   /// 拡縮行列
   static Matrix4 fromScale(dynamic scale) {
-    switch (scale.runtimeType) {
-      case double:
-        final a = scale as double;
-        return Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(a, a, a));
-      case int:
-        final a = (scale as int).toDouble();
-        return Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(a, a, a));
-      case Vector3:
-        final a = scale as Vector3;
-        return Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(a.x, a.y, a.z));
-      default:
-        throw UnimplementedError();
+    if (scale is num) {
+      final scale_ = scale as double;
+      return Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(scale_, scale_, scale_));
+    } else if (scale is Vector3) {
+      return Matrix4.fromVmMatrix(vm.Matrix4.identity().scaled(scale.x, scale.y, scale.z));
+    } else {
+      throw UnimplementedError();
     }
   }
 
@@ -323,13 +306,12 @@ abstract class Bezier<T> extends Parametric<double, T> {
   factory Bezier({
     required List<T> points,
   }) {
-    switch (points.runtimeType) {
-      case List<double>:
-        return BezierDouble(points: points as List<double>) as Bezier<T>;
-      case List<Vector3>:
-        return BezierVector3(points: points as List<Vector3>) as Bezier<T>;
-      default:
-        throw UnimplementedError();
+    if (points is List<double>) {
+      return BezierDouble(points: points as List<double>) as Bezier<T>;
+    } else if (points is List<Vector3>) {
+      return BezierVector3(points: points as List<Vector3>) as Bezier<T>;
+    } else {
+      throw UnimplementedError();
     }
   }
 
@@ -497,14 +479,12 @@ class Node {
 
   // (文字列等で与えられた)ノードパス正規化
   static Iterable<String> _toPath(dynamic path) {
-    switch (path.runtimeType) {
-      case List<String>:
-      case Iterable<String>:
-        return path;
-      case String:
-        return path.isEmpty ? const <String>[] : path.split(pathDelimiter);
-      default:
-        throw UnimplementedError('path.runtimeType=${path.runtimeType}');
+    if (path is Iterable<String>) {
+      return path;
+    } else if (path is String) {
+      return path.isEmpty ? const <String>[] : path.split(pathDelimiter);
+    } else {
+      throw UnimplementedError('path=$path');
     }
   }
 

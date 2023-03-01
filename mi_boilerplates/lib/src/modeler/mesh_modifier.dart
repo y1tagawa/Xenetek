@@ -320,7 +320,7 @@ class MagnetModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('MagnetModifier');
 
-  final List<MapEntry<String, MagnetData>> magnets;
+  final List<MapEntry<dynamic, MagnetData>> magnets;
 
   const MagnetModifier({required this.magnets});
 
@@ -336,7 +336,14 @@ class MagnetModifier extends MeshModifier {
     // originから各磁石への変換行列
     final magnets_ = <MapEntry<Vector3, MagnetData>>[];
     for (final magnet in magnets) {
-      final p = (invOriginMatrix * root.find(path: magnet.key)!.matrix).translation;
+      Vector3 p;
+      if (magnet.key is String) {
+        p = (invOriginMatrix * root.find(path: magnet.key)!.matrix).translation;
+      } else if (magnet.key is Vector3) {
+        p = magnet.key;
+      } else {
+        throw UnimplementedError();
+      }
       magnets_.add(MapEntry(p, magnet.value));
       if (magnet.value.mirror) {
         magnets_.add(MapEntry(p.mirrored(), magnet.value));

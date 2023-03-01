@@ -22,19 +22,19 @@ extension _NodeHelper on Node {
       );
 }
 
-/// ドールモデル(mk1)を生成する。
+/// ドールリグ(mk1)を生成する。
 ///
 /// カスタマイズの基底クラス。
 /// todo: copyWithなど
-class HumanRig {
+class HumanRigBuilder {
   // ignore: unused_field
-  static final _logger = Logger('DollBuilder');
+  static final _logger = Logger('HumanRigBuilder');
 
   // ノードパス
   static const pelvis = 'pelvis';
   static const chest = 'pelvis.chest';
   static const neck = 'pelvis.chest.neck';
-  static const head = 'pelvis.chest.neck.head';
+  static const head = 'pelvis.chest.neck.head'; // Foramen magnum
   static const rSc = 'pelvis.chest.neck.rSc';
   static const lSc = 'pelvis.chest.neck.lSc';
   static const rShoulder = 'pelvis.chest.neck.rSc.shoulder';
@@ -84,7 +84,7 @@ class HumanRig {
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
   // todo: ここらの変数をDIに
-  const HumanRig({
+  const HumanRigBuilder({
     // 骨格
     this.pelvisPosition = Vector3.zero,
     this.bellyLength = 0.3,
@@ -172,4 +172,37 @@ class HumanRig {
         ._rotateX(lAnkle, footAngle);
     return root;
   }
+}
+
+/// ドールリグ頭部(mk1)を生成する。
+///
+class HumanHeadRigBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('HumanHeadRigBuilder');
+
+  // ノードパス
+  // todo: '...head.eye'とするか、'...head.foramen.eye'とするか。
+  static const foramen = 'foramen';
+  static const eye = 'foramen.eye';
+  static const nose = 'foramen.nose';
+  static const ear = 'foramen.ear';
+
+  final Vector3 foramenPosition; //
+  final Vector3 eyePosition; //
+  final Vector3 earPosition; //
+  final Vector3 nosePosition; //
+  final Vector3 mandiblePosition; //
+  final Vector3 skullSize;
+  final double mandibleSize; //
+
+  // TODO: 適当な初期値を適正に
+  const HumanHeadRigBuilder({
+    this.foramenPosition = Vector3.zero,
+    this.eyePosition = const Vector3(0.05, 0.1, -0.15),
+    this.earPosition = const Vector3(0.15, 0.15, 0.0),
+    this.nosePosition = const Vector3(0.0, 0.1, -0.2),
+    this.mandiblePosition = const Vector3(0.0, -0.15, -0.2),
+    this.skullSize = const Vector3(0.3, 0.2, 0.3),
+    this.mandibleSize = 0.5,
+  });
 }
