@@ -369,7 +369,7 @@ class MagnetModifier extends MeshModifier {
         }
         vertices.add(vertex + delta);
       }
-      data.add(
+      data_.add(
         object.copyWith(
           vertices: vertices,
           normals: <Vector3>[],

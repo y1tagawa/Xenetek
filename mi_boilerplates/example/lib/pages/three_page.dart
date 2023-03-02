@@ -385,6 +385,53 @@ Future<void> _setup(StringSink sink) async {
   //[...tempMesh].toWavefrontObj(sink: sink);
 }
 
+Future<void> _setup2(StringSink sink) async {
+  // ignore: unused_local_variable
+  final logger = Logger('_setup2');
+
+  const eyePosition = mi.Vector3(-0.15, 0.0, -0.25);
+  var root = const mi.Node(
+    matrix: mi.Matrix4.identity,
+  ).addAll(
+    entries: {
+      'rEye': mi.Node(
+        matrix: mi.Matrix4.fromTranslation(eyePosition),
+      ),
+      'lEye': mi.Node(
+        matrix: mi.Matrix4.fromTranslation(eyePosition.mirrored()),
+      ),
+    }.entries,
+  );
+
+  final face = mi.Mesh(
+    origin: '',
+    data: const mi.EllipsoidBuilder(
+      radius: mi.Vector3(0.3, 0.3, 0.3),
+      longitudeDivision: 64,
+      latitudeDivision: 32,
+    ),
+    modifiers: [
+      mi.MagnetModifier(
+        magnets: [
+          ...{
+            // chin
+            const mi.Vector3(0.0, -0.3, -0.4): const mi.MagnetData(force: 0.15, power: -3),
+            // nose
+            const mi.Vector3(0.0, 0.0, -0.35): const mi.MagnetData(force: 0.05, power: -4),
+            // eye sockets
+            const mi.Vector3(0.2, 0.05, -0.35): const mi.MagnetData(
+              force: -0.05,
+              power: -3,
+              mirror: true,
+            ),
+          }.entries
+        ],
+      ),
+    ],
+  ).toMeshData(root: root);
+  [...face].toWavefrontObj(sink: sink);
+}
+
 Future<String> _getModelTempFileDir() async {
   final docDir = await getApplicationDocumentsDirectory();
   return docDir.path;
@@ -444,7 +491,7 @@ class _ModelerTab extends ConsumerWidget {
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();
-            final meshDataArray = await _setup(sink);
+            await _setup2(sink);
             await sink.close();
             //_cubeDataStream.add(_toCube(meshDataArray));
             _cubeDataStream.add(await _getCube());

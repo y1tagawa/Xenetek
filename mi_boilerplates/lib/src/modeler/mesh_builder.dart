@@ -337,12 +337,12 @@ class EllipsoidBuilder extends _SorBuilder {
   @override
   List<Vector3> makeGeneratingLine() {
     // 扁球面
-    final vertices = <Vector3>[const Vector3(0.0, -0.5, 0.0)];
+    final vertices = <Vector3>[const Vector3(0.0, -1.0, 0.0)];
     for (int i = 1; i < latitudeDivision; ++i) {
       final t = i * math.pi / latitudeDivision;
       vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
     }
-    vertices.add(const Vector3(0.0, 0.5, 0.0));
+    vertices.add(const Vector3(0.0, 1.0, 0.0));
     return vertices;
   }
 

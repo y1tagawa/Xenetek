@@ -559,6 +559,14 @@ class Node {
         });
   }
 
+  Node addAll({required Iterable<MapEntry<dynamic, Node>> entries}) {
+    var this_ = this;
+    for (final entry in entries) {
+      this_ = this_.add(path: entry.key, child: entry.value);
+    }
+    return this_;
+  }
+
   // 連続した関節ノードを生成する。
   Node _makeLimb({
     required Iterable<MapEntry<String, Matrix4>> joints,
