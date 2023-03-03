@@ -299,17 +299,22 @@ class SkinModifier extends MeshModifier {
 }
 
 /// 磁石
+///
+/// [shape]: 成分を1より小さくすると、頂点の距離dが小さくなり、その軸方向に磁力が強く働く。
+///   例えばX成分を小さくすると横長の棒磁石みたいな。
 @immutable
 class MagnetData {
   final double radius;
   final double force;
   final double power;
+  final Vector3 shape;
   final bool mirror;
 
   const MagnetData({
     this.radius = double.maxFinite,
     this.force = 1.0,
     this.power = -2,
+    this.shape = Vector3.one,
     this.mirror = false,
   }) : assert(radius >= 1e-4);
 }
@@ -361,7 +366,8 @@ class MagnetModifier extends MeshModifier {
         var delta = Vector3.zero;
         for (final magnet in magnets_) {
           final v = magnet.key - vertex;
-          final d = v.length;
+          //final d = v.length;
+          final d = (v * magnet.value.shape).length;
           if (d >= 1e-6 && d <= magnet.value.radius) {
             // 距離による減衰
             delta += v.normalized() * magnet.value.force * math.pow(d + 1.0, magnet.value.power);

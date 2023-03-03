@@ -415,17 +415,21 @@ Future<void> _setup2(StringSink sink) async {
         magnets: [
           ...{
             // flat face
-            const mi.Vector3(0.0, 0.0, -0.4): const mi.MagnetData(force: -0.07, power: -2),
-            // chin
-            const mi.Vector3(0.0, -0.2, -0.4): const mi.MagnetData(force: 0.1, power: -3),
-            // nose
-            const mi.Vector3(0.0, 0.0, -0.35): const mi.MagnetData(force: 0.07, power: -3.5),
-            // eye sockets
-            const mi.Vector3(0.2, 0.1, -0.35): const mi.MagnetData(
-              force: -0.05,
-              power: -3,
-              mirror: true,
+            const mi.Vector3(0.0, 0.0, -0.4): const mi.MagnetData(
+              shape: mi.Vector3(0.01, 1.0, 1.0),
+              force: -0.1,
+              power: -4,
             ),
+            // // chin
+            // const mi.Vector3(0.0, -0.2, -0.4): const mi.MagnetData(force: 0.1, power: -3),
+            // // nose
+            // const mi.Vector3(0.0, 0.0, -0.35): const mi.MagnetData(force: 0.07, power: -3.5),
+            // // eye sockets
+            // const mi.Vector3(0.2, 0.1, -0.35): const mi.MagnetData(
+            //   force: -0.05,
+            //   power: -3,
+            //   mirror: true,
+            // ),
           }.entries
         ],
       ),
