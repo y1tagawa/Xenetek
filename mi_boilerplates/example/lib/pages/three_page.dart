@@ -389,7 +389,7 @@ Future<void> _setup2(StringSink sink) async {
   // ignore: unused_local_variable
   final logger = Logger('_setup2');
 
-  const eyePosition = mi.Vector3(-0.15, 0.0, -0.25);
+  const eyePosition = mi.Vector3(-0.12, 0.0, -0.15);
   var root = const mi.Node(
     matrix: mi.Matrix4.identity,
   ).addAll(
@@ -414,12 +414,14 @@ Future<void> _setup2(StringSink sink) async {
       mi.MagnetModifier(
         magnets: [
           ...{
+            // flat face
+            const mi.Vector3(0.0, 0.0, -0.4): const mi.MagnetData(force: -0.07, power: -2),
             // chin
-            const mi.Vector3(0.0, -0.3, -0.4): const mi.MagnetData(force: 0.15, power: -3),
+            const mi.Vector3(0.0, -0.2, -0.4): const mi.MagnetData(force: 0.1, power: -3),
             // nose
-            const mi.Vector3(0.0, 0.0, -0.35): const mi.MagnetData(force: 0.05, power: -4),
+            const mi.Vector3(0.0, 0.0, -0.35): const mi.MagnetData(force: 0.07, power: -3.5),
             // eye sockets
-            const mi.Vector3(0.2, 0.05, -0.35): const mi.MagnetData(
+            const mi.Vector3(0.2, 0.1, -0.35): const mi.MagnetData(
               force: -0.05,
               power: -3,
               mirror: true,
@@ -429,7 +431,19 @@ Future<void> _setup2(StringSink sink) async {
       ),
     ],
   ).toMeshData(root: root);
-  [...face].toWavefrontObj(sink: sink);
+  final rEye = const mi.Mesh(
+    origin: 'rEye',
+    data: mi.EllipsoidBuilder(
+      radius: 0.1,
+    ),
+  ).toMeshData(root: root);
+  final lEye = const mi.Mesh(
+    origin: 'lEye',
+    data: mi.EllipsoidBuilder(
+      radius: 0.1,
+    ),
+  ).toMeshData(root: root);
+  [...face, ...rEye, ...lEye].toWavefrontObj(sink: sink);
 }
 
 Future<String> _getModelTempFileDir() async {
