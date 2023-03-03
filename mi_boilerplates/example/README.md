@@ -64,10 +64,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
     * 下をやってみたが複雑すぎる！ union型ができるまでなんとかならないか
       * HumanRigへのmesh設定結果をtoMeshDataで一気にできない
       * マテリアルを一個で管理しにくい
-    * 今のMeshDataにmtllib, usemtlを追加し、MeshObjectとする
-    * <String, List<MeshObject>>をMeshDataとする
-      * シンプルなコンストラクタ（個々の図形用）およびマップからのコンストラクタ
-      * ok しまった、Stringがキーである必要は無い。コメントでもよい（キーとするなら前段階で）。リストに戻す
+    * ok 今のMeshDataにmtllib, usemtlを追加し、MeshObjectとする
       
 * rig mesh builderのリファクタリングで分かった事
   * HumanMeshBuilderには初期姿勢rRootとポージング後のrootが必要。
@@ -77,21 +74,11 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
     * basic configuration/initial posture/reference position 
   * リグのstatic変数(ノードパス)とインスタンス変数(サイズ系)の使い分けが意外と面倒。ただ統合すべきというほどでも。
   * 予定通りではあるが、上肢、下肢などサブルーチン化できるところはやるべき
-  * カスタマイズのために<String, MeshData>{}の段階で一回関数呼ぶ。
-    * keyでなくtagにするならリストにしてから
-    * FaceGroupでなくMeshDataにtagを付与したいが、joinすると消えてしまう。やっぱりverticesとかも分けるか、
-      MeshDataをMeshObjectのリストにするしかないのか？
-      * MeshBuilder.buildの戻り値、MeshModifier.transformのパラメタと戻り値、
-        transformed, mirrored, reversed, MeshData定数。大した数ではない。
-        * BoxModifierみたいにVertices全体を参照することがある
-    * tagが欲しいのはWavefront保存のときだけだから、MeshDataに入れる必要はあまり無い。
-      * だめだ、Dollの中で結局joinしてる...やはりMeshData = List<MeshObject>が良いか。
-        MeshData.tagged(tag)で要素一個でなかったらエラーとかにする
 
 * cutter modifier
   * magnetに近いが、質点でなく一定の距離にする（スカルプト）
-  * 点でなく三角形とかできないか
-  * むしろmagnetに頂点リストで形状を与えたい。今のままでモデリングは難しい
+  * 点でなく棒や三角形とかできないか
+  * ok むしろmagnetに頂点リストで形状を与えたい。今のままでモデリングは難しい
 * normalはmodifierと合いが悪い...削除すべきか？
   * 折れ目を考えると回転体もいまいちな感じ。ちょっと考える。
     * 母線に同じ頂点が並んだら折れ目でもいいかな
