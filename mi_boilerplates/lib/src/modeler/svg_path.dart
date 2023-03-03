@@ -11,12 +11,16 @@ class SvgPathParser {
   static final _logger = Logger('SvgPathReader');
 
   // todo: アルファベットの後も分離
-  static final _delimiter = RegExp(r'[ ,]+');
-  static final _command = RegExp(r'^[A-Za-z]$');
+  static final _lexer = RegExp(r'[A-Za-z]|[-+0-9.e][-+0-9.e]*|[ ,]+');
 
   /// SVG pathのd形式の文字列を3次Bezier曲線の制御点に変換する。
   static List<Vector3> fromString(String data) {
-    var fields = data.split(_delimiter).where((it) => it.isNotEmpty);
+    bool isField(String field) {
+      final c = field.codeUnitAt(0);
+      return c != 0x20 && c != 0x2C;
+    }
+
+    var fields = _lexer.allMatches(data).map((it) => it[0]!).where((it) => isField(it));
     // _logger.fine('fields=$fields');
     var lastPoint = Vector3.zero;
     final points = <Vector3>[];
@@ -46,7 +50,7 @@ class SvgPathParser {
         fallthrough1:
         case 'l':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
+          while (fields.isNotEmpty && double.tryParse(fields.first) != null) {
             points.add(points.last);
             points.add(lastPoint + takePoint());
             points.add(points.last);
@@ -61,7 +65,7 @@ class SvgPathParser {
         fallthrough2:
         case 'L':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
+          while (fields.isNotEmpty && double.tryParse(fields.first) != null) {
             points.add(points.last);
             points.add(takePoint());
             points.add(points.last);
@@ -70,7 +74,7 @@ class SvgPathParser {
           break;
         case 'c':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
+          while (fields.isNotEmpty && double.tryParse(fields.first) != null) {
             points.add(lastPoint + takePoint());
             points.add(lastPoint + takePoint());
             points.add(lastPoint + takePoint());
@@ -79,7 +83,7 @@ class SvgPathParser {
           break;
         case 'C':
           assert(points.isNotEmpty);
-          while (fields.isNotEmpty && _command.stringMatch(fields.first) == null) {
+          while (fields.isNotEmpty && double.tryParse(fields.first) != null) {
             points.add(takePoint());
             points.add(takePoint());
             points.add(takePoint());
