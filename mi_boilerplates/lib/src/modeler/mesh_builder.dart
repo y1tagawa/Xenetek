@@ -414,10 +414,12 @@ class ParametricBuilder extends _SorBuilder {
   static final _logger = Logger('ParametricBuilder');
 
   final int heightDivision;
-  final Bezier<Vector3> xCurve; // X座標が幅(X)を表す
-  final Bezier<Vector3> zCurve; // X座標が厚さ(Z)を表す
+  final Parametric<double, Vector3> rightCurve;
+  final Parametric<double, Vector3> leftCurve;
+  final Parametric<double, Vector3> frontCurve;
+  final Parametric<double, Vector3> backCurve;
 
-  const ParametricBuilder({
+  const ParametricBuilder.fromCurve({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     required Bezier<Vector3> curve,
@@ -428,14 +430,18 @@ class ParametricBuilder extends _SorBuilder {
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1),
-        xCurve = curve,
-        zCurve = curve;
+        rightCurve = curve,
+        leftCurve = curve,
+        frontCurve = curve,
+        backCurve = curve;
 
-  const ParametricBuilder.fromXZ({
+  const ParametricBuilder.fromRLFBCurves({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
-    required this.xCurve,
-    required this.zCurve,
+    required this.rightCurve,
+    required this.leftCurve,
+    required this.frontCurve,
+    required this.backCurve,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',
     super.material = '',
@@ -459,10 +465,13 @@ class ParametricBuilder extends _SorBuilder {
     final longitude = index * 2.0 * math.pi / longitudeDivision;
     final cosL = math.cos(longitude), sinL = math.sin(longitude);
     final vertices = <Vector3>[];
+    final xCurve =
+        (index - longitudeDivision ~/ 4) <= longitudeDivision ~/ 2 ? leftCurve : rightCurve;
+    final zCurve = index <= longitudeDivision ~/ 2 ? frontCurve : backCurve;
     for (int i = 0; i <= heightDivision; ++i) {
       final t = i / heightDivision;
       final x = xCurve.transform(t);
-      final z = zCurve.transform(t); //todo: zCurveは前後で変えらるよう
+      final z = zCurve.transform(t);
       // 半径とy座標は経度をもとに重みづけ
       final r = math.sqrt(math.pow(cosL * x.x, 2) + math.pow(sinL * z.x, 2));
       final y = math.sqrt(math.pow(cosL * x.y, 2) + math.pow(sinL * z.y, 2));

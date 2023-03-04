@@ -317,9 +317,11 @@ Future<void> _setup(StringSink sink) async {
 
   final tempMesh = mi.Mesh(
     origin: 'ball',
-    data: mi.ParametricBuilder.fromXZ(
-      xCurve: tempBezier,
-      zCurve: tempBezier2,
+    data: mi.ParametricBuilder.fromRLFBCurves(
+      rightCurve: tempBezier,
+      leftCurve: tempBezier,
+      frontCurve: tempBezier2,
+      backCurve: tempBezier,
     ),
   ).toMeshData(root: root);
 
@@ -415,8 +417,13 @@ Future<void> _setup2(StringSink sink) async {
         magnets: [
           ...{
             // flat face
-            const mi.Vector3(0.0, 0.0, -0.4): const mi.MagnetData(
-              shape: mi.Vector3(0.01, 1.0, 1.0),
+            const mi.Vector3(0.0, 0.0, -0.4): mi.MagnetData(
+              //shape: mi.Vector3(0.01, 1.0, 1.0),
+              matrix: mi.Matrix4.fromAxisAngleRotation(
+                    axis: mi.Vector3.unitZ,
+                    degrees: 10.0,
+                  ) *
+                  mi.Matrix4.fromScale(const mi.Vector3(0.01, 1.0, 1.0)),
               force: -0.1,
               power: -4,
             ),
@@ -498,6 +505,7 @@ class _ModelerTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
+
     final cubeData = ref.watch(_cubeDataProvider);
     return Column(
       children: [
@@ -509,7 +517,7 @@ class _ModelerTab extends ConsumerWidget {
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();
-            await _setup2(sink);
+            await _setup(sink);
             await sink.close();
             //_cubeDataStream.add(_toCube(meshDataArray));
             _cubeDataStream.add(await _getCube());
