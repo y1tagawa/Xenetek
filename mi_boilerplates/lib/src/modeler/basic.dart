@@ -325,6 +325,9 @@ abstract class Bezier<T> extends Parametric<double, T> {
 @internal
 @immutable
 class BezierDouble implements Bezier<double> {
+  // ignore: unused_field
+  static final _logger = Logger('BezierDouble');
+
   final List<double> _points;
 
   const BezierDouble({
@@ -386,7 +389,7 @@ class BezierDouble implements Bezier<double> {
 @immutable
 class BezierVector3 implements Bezier<Vector3> {
   // ignore: unused_field
-  static final _logger = Logger('_BezierVector3');
+  static final _logger = Logger('BezierVector3');
 
   final List<Vector3> _points;
 

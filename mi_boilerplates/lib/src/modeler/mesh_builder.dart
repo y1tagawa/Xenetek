@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
+import 'package:mi_boilerplates/mi_boilerplates.dart';
 
 import '../helpers.dart';
 import 'basic.dart';
@@ -406,6 +407,50 @@ class SpindleBuilder extends _SorBuilder {
   }
 }
 
+/// 涙滴型ビルダ
+///
+class TeardropBuilder extends _SorBuilder {
+  // ignore: unused_field
+  static final _logger = Logger('TearDropBuilder');
+
+  static const _points = <Vector3>[
+    Vector3(0.0, 0.0, 0.0),
+    Vector3(0.8, 0.0, 0.0),
+    Vector3(0.5, 0.75, 0.0),
+    Vector3(0.0, 1.0, 0.0),
+  ];
+
+  final int heightDivision;
+  final dynamic radius;
+  final double shape; // 1.0に近いほど胴が先端側に移動する
+
+  const TeardropBuilder({
+    super.longitudeDivision = 24,
+    this.heightDivision = 12,
+    this.radius = Vector3.one,
+    this.shape = 0.75,
+    super.axis = Vector3.unitY,
+    super.materialLibrary = '',
+    super.material = '',
+    super.smooth = true,
+    super.reverse = false,
+  })  : assert(longitudeDivision >= 2),
+        assert(heightDivision >= 1);
+
+  @override
+  List<Vector3> makeGeneratingLine() {
+    final points = _points.replacedAt(2, _points[2].copyWith(y: shape));
+    final bezier = Bezier<Vector3>(points: points);
+    final vertices = <Vector3>[Vector3.zero];
+    for (int i = 1; i < heightDivision; ++i) {
+      final t = i / heightDivision;
+      vertices.add(bezier.transform(t));
+    }
+    vertices.add(Vector3.unitY);
+    return vertices.scaled(radius).toList();
+  }
+}
+
 /// 輪郭線回転表面ビルダ
 ///
 /// パラメトリック曲線を輪郭とする形状を生成する。
@@ -419,7 +464,7 @@ class ParametricBuilder extends _SorBuilder {
   final Parametric<double, Vector3> frontCurve;
   final Parametric<double, Vector3> backCurve;
 
-  const ParametricBuilder.fromCurve({
+  const ParametricBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     required Bezier<Vector3> curve,

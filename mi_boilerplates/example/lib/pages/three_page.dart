@@ -315,13 +315,17 @@ Future<void> _setup(StringSink sink) async {
   logger.fine('t1=${tempBezier.points.toSvgPathData()}');
   logger.fine('t2=${tempBezier2.points.toSvgPathData()}');
 
-  final tempMesh = mi.Mesh(
+  final tempMesh = const mi.Mesh(
     origin: 'ball',
-    data: mi.ParametricBuilder.fromRLFBCurves(
-      rightCurve: tempBezier,
-      leftCurve: tempBezier,
-      frontCurve: tempBezier2,
-      backCurve: tempBezier,
+    // data: mi.ParametricBuilder.fromRLFBCurves(
+    //   rightCurve: tempBezier,
+    //   leftCurve: tempBezier,
+    //   frontCurve: tempBezier2,
+    //   backCurve: tempBezier,
+    // ),
+    data: mi.TeardropBuilder(
+      shape: 0.85,
+      radius: mi.Vector3(1, 2, 1),
     ),
   ).toMeshData(root: root);
 

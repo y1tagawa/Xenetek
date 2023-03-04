@@ -110,7 +110,7 @@ extension Vector3BezierFormatter on List<Vector3> {
     assert((length - 1) % 3 == 0);
     final buffer = StringBuffer();
 
-    String round(double value) => ((value * 10000).round() / 10000).toString();
+    String round(double value) => ((value * 1000).round() / 1000).toString();
 
     void writePoint(Vector3 point) {
       buffer.write('${round(point.x)} ${round(point.y)} ');
