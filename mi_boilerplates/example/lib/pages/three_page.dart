@@ -352,9 +352,8 @@ Future<void> _setup(StringSink sink) async {
     ),
     modifiers: [
       mi.ParametricModifier(
-        bend: mi.Bezier(
-          points: tempPoints3,
-        ),
+        bend: mi.Bezier(points: tempPoints3),
+        //twist: mi.Bezier(points: const <double>[0.0, math.pi * 0.5]),
       ),
     ],
   ).toMeshData(root: root);

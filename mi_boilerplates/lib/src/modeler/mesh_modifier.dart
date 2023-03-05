@@ -15,19 +15,18 @@ import 'basic.dart';
 //
 // リグ上に配置したメッシュデータを変換する。
 
-/// 芯材モディファイア
+/// パラメトリックモディファイア
 ///
-/// Y軸[0,1]に沿ってパラメトリック曲線によって変形する。
-/// todo: 一般的な曲線
+/// Y軸[0,1]に沿って、各頂点をパラメトリック曲線によって変形する。
 @immutable
 class ParametricModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('name');
 
   final Parametric<double, Vector3> bend; // Y=[0,1]に対応する中心線
-  final Parametric<double, double> twist; // Y=[0,1]に対応するY軸周りの回転(ラジアン)
-  final Parametric<double, double> width; // Y=[0,1]に対応するX半径
-  final Parametric<double, double> depth; // Y=[0,1]に対応するX半径
+  final Parametric<double, double> twist; // Y=[0,1]に対応するY軸周りの捻り(ラジアン)
+  final Parametric<double, double> width; // Y=[0,1]に対応するX方向の拡縮
+  final Parametric<double, double> depth; // Y=[0,1]に対応するZ方向の拡縮
   //todo: axis
 
   const ParametricModifier({
@@ -40,29 +39,20 @@ class ParametricModifier extends MeshModifier {
   @override
   MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
     final data_ = <MeshObject>[];
-    _logger.fine('bend=${(bend as BezierVector3).points}');
-    for (int i = 0; i <= 20; ++i) {
-      _logger.fine('y,p=${i / 20}, ${bend.transform(i / 20)}');
-    }
-
     for (final object in data) {
       final vertices = <Vector3>[];
       for (final vertex in object.vertices) {
         final t = vertex.y; // 0.0-1.0
         final p = bend.transform(t); // (0,y,0)->p
         final f = t >= 0.01 ? p - bend.transform(t - 0.01) : bend.transform(t + 0.01) - p;
-        // vertices.add(vertex.transformed(
-        //   Matrix4.fromTranslation(p) *
-        //       Matrix4.fromForwardTargetRotation(forward: f, target: p) *
-        //       Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
-        //       Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
-        // ));
-        var v = vertex.copyWith(y: 0);
-        v = v.transformed(Matrix4.fromForwardTargetRotation(forward: Vector3.unitY, target: f));
-        v = v + p;
-        vertices.add(v);
-        // Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
-        // Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
+        // 頂点を、(0,y,0)を中心に、捻り、XZ拡縮ののち曲線の接線に沿って回転
+        final v = vertex.copyWith(y: 0).transformed(
+              Matrix4.fromForwardTargetRotation(forward: Vector3.unitY, target: f) *
+                  Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
+                  Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
+            );
+        // (0,y,0)を、対応する曲線上の点に平行移動
+        vertices.add(v + p);
       }
       data_.add(
         object.copyWith(
