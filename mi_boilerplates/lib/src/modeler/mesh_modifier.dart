@@ -40,18 +40,27 @@ class ParametricModifier extends MeshModifier {
   @override
   MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
     final data_ = <MeshObject>[];
+    _logger.fine('bend=${(bend as BezierVector3).points}');
+    for (int i = 0; i <= 20; ++i) {
+      _logger.fine('y,p=${i / 20}, ${bend.transform(i / 20)}');
+    }
+
     for (final object in data) {
       final vertices = <Vector3>[];
       for (final vertex in object.vertices) {
         final t = vertex.y; // 0.0-1.0
-        final p = bend.transform(t);
+        final p = bend.transform(t); // (0,y,0)->p
         final f = t >= 0.01 ? p - bend.transform(t - 0.01) : bend.transform(t + 0.01) - p;
-        vertices.add(vertex.transformed(
-          Matrix4.fromTranslation(p) *
-              Matrix4.fromForwardTargetRotation(forward: f, target: p) *
-              Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
-              Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
-        ));
+        // vertices.add(vertex.transformed(
+        //   Matrix4.fromTranslation(p) *
+        //       Matrix4.fromForwardTargetRotation(forward: f, target: p) *
+        //       Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
+        //       Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
+        // ));
+        vertices.add((vertex - p)
+            // Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
+            // Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
+            );
       }
       data_.add(
         object.copyWith(

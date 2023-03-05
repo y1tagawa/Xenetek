@@ -171,7 +171,7 @@ const _octahedronFaces = <MeshFace>[
 ];
 
 // ignore: unused_element
-const _octahedronMeshObject = MeshObject(
+const octahedronMeshObject = MeshObject(
   vertices: _octahedronVertices,
   faceGroups: <MeshFaceGroup>[MeshFaceGroup(faces: _octahedronFaces)],
 );
@@ -313,14 +313,14 @@ abstract class _SorBuilder extends MeshBuilder {
 ///
 /// 原点を中心とする扁球体
 @immutable
-class EllipsoidBuilder extends _SorBuilder {
+class SphereBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('EllipsoidBuilder');
 
   final int latitudeDivision;
   final dynamic radius;
 
-  const EllipsoidBuilder({
+  const SphereBuilder({
     super.longitudeDivision = 24,
     this.latitudeDivision = 12,
     this.radius = 0.5,
@@ -357,7 +357,7 @@ class EllipsoidBuilder extends _SorBuilder {
 
 /// 紡錘体メッシュビルダ
 ///
-/// 原点を始点とする、母線が正弦曲線の紡錘形。
+/// 軸線Y=[0,radius.y]、母線が正弦曲線の紡錘形。
 /// todo: 共通基底をI/Fに
 @immutable
 class SpindleBuilder extends _SorBuilder {
@@ -365,7 +365,7 @@ class SpindleBuilder extends _SorBuilder {
   static final _logger = Logger('SpindleBuilder');
 
   final int heightDivision;
-  final dynamic radius; // ベクトルの場合Y成分は無視される
+  final dynamic radius;
 
   const SpindleBuilder({
     super.longitudeDivision = 24,
@@ -404,6 +404,7 @@ class SpindleBuilder extends _SorBuilder {
 
 /// 涙滴型ビルダ
 ///
+/// 軸線Y=[0,radius.y]の涙滴型。
 class TeardropBuilder extends SpindleBuilder {
   // ignore: unused_field
   static final _logger = Logger('TearDropBuilder');

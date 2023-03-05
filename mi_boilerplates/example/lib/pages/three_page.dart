@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Matrix4;
 import 'package:flutter/services.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
@@ -315,6 +316,27 @@ Future<void> _setup(StringSink sink) async {
   logger.fine('t1=${tempBezier.points.toSvgPathData()}');
   logger.fine('t2=${tempBezier2.points.toSvgPathData()}');
 
+  const tempPoints3 = [
+    mi.Vector3.zero,
+    mi.Vector3(0, 0.2, -0.2),
+    mi.Vector3(0, 0.5, 0.1),
+    mi.Vector3(0, 0.3, 0.2),
+  ];
+  final tempBezier3 = mi.Bezier<mi.Vector3>(points: tempPoints3);
+  final tempMesh3 = <mi.MeshData>[];
+  for (int i = 0; i < 10; ++i) {
+    final t = i / 10;
+    final p = tempBezier3.transform(t);
+    tempMesh3.add(mi.Mesh(
+      origin: 'ball',
+      data: [
+        mi.octahedronMeshObject.transformed(
+          mi.Matrix4.fromTranslation(p) * mi.Matrix4.fromScale(i == 0 ? 0.1 : 0.05),
+        ),
+      ],
+    ).toMeshData(root: root));
+  }
+
   final tempMesh = mi.Mesh(
     origin: 'ball',
     // data: mi.ParametricBuilder.fromRLFBCurves(
@@ -326,17 +348,12 @@ Future<void> _setup(StringSink sink) async {
     data: const mi.TeardropBuilder(
       //shape: 0.85,
       heightDivision: 24,
-      radius: mi.Vector3(0.5, 1, 0.2),
+      radius: mi.Vector3(0.5, 1, 0.01),
     ),
     modifiers: [
       mi.ParametricModifier(
         bend: mi.Bezier(
-          points: const [
-            mi.Vector3.zero,
-            mi.Vector3(0, 0.3, 0),
-            mi.Vector3(0, 0.3, 0.5),
-            mi.Vector3(0, 0.5, 0.5),
-          ],
+          points: tempPoints3,
         ),
       ),
     ],
@@ -400,7 +417,12 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
-  [...dollMeshData, ...spindle, ...tempMesh].toWavefrontObj(sink: sink);
+  [
+    ...(tempMesh3.flattened),
+    ...dollMeshData,
+    ...spindle,
+    ...tempMesh,
+  ].toWavefrontObj(sink: sink);
   //[...tempMesh].toWavefrontObj(sink: sink);
 }
 
@@ -424,7 +446,7 @@ Future<void> _setup2(StringSink sink) async {
 
   final face = mi.Mesh(
     origin: '',
-    data: const mi.EllipsoidBuilder(
+    data: const mi.SphereBuilder(
       radius: mi.Vector3(0.3, 0.3, 0.3),
       longitudeDivision: 64,
       latitudeDivision: 32,
@@ -461,13 +483,13 @@ Future<void> _setup2(StringSink sink) async {
   ).toMeshData(root: root);
   final rEye = const mi.Mesh(
     origin: 'rEye',
-    data: mi.EllipsoidBuilder(
+    data: mi.SphereBuilder(
       radius: 0.1,
     ),
   ).toMeshData(root: root);
   final lEye = const mi.Mesh(
     origin: 'lEye',
-    data: mi.EllipsoidBuilder(
+    data: mi.SphereBuilder(
       radius: 0.1,
     ),
   ).toMeshData(root: root);
