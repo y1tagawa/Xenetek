@@ -348,7 +348,7 @@ Future<void> _setup(StringSink sink) async {
     data: const mi.TeardropBuilder(
       //shape: 0.85,
       heightDivision: 24,
-      radius: mi.Vector3(0.5, 1, 0.01),
+      radius: mi.Vector3(0.5, 1, 0.2),
     ),
     modifiers: [
       mi.ParametricModifier(

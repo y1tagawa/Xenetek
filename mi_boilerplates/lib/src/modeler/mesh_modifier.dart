@@ -57,10 +57,12 @@ class ParametricModifier extends MeshModifier {
         //       Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
         //       Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
         // ));
-        vertices.add((vertex - p)
-            // Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
-            // Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
-            );
+        var v = vertex.copyWith(y: 0);
+        v = v.transformed(Matrix4.fromForwardTargetRotation(forward: Vector3.unitY, target: f));
+        v = v + p;
+        vertices.add(v);
+        // Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
+        // Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
       }
       data_.add(
         object.copyWith(
