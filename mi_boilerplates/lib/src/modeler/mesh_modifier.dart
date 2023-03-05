@@ -47,10 +47,9 @@ class ParametricModifier extends MeshModifier {
         final f = t >= 0.01 ? p - bend.transform(t - 0.01) : bend.transform(t + 0.01) - p;
         // 頂点を、(0,y,0)を中心に、捻り、XZ拡縮ののち曲線の接線に沿って回転
         final v = vertex.copyWith(y: 0).transformed(
-              Matrix4.fromForwardTargetRotation(forward: Vector3.unitY, target: f) *
-                  Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
-                  Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
-            );
+            Matrix4.fromForwardTargetRotation(forward: Vector3.unitY, target: f) *
+                Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
+                Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))));
         // (0,y,0)を、対応する曲線上の点に平行移動
         vertices.add(v + p);
       }
