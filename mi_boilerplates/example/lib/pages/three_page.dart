@@ -315,7 +315,7 @@ Future<void> _setup(StringSink sink) async {
   logger.fine('t1=${tempBezier.points.toSvgPathData()}');
   logger.fine('t2=${tempBezier2.points.toSvgPathData()}');
 
-  final tempMesh = const mi.Mesh(
+  final tempMesh = mi.Mesh(
     origin: 'ball',
     // data: mi.ParametricBuilder.fromRLFBCurves(
     //   rightCurve: tempBezier,
@@ -323,10 +323,23 @@ Future<void> _setup(StringSink sink) async {
     //   frontCurve: tempBezier2,
     //   backCurve: tempBezier,
     // ),
-    data: mi.TeardropBuilder(
-      shape: 0.85,
-      radius: mi.Vector3(1, 2, 1),
+    data: const mi.TeardropBuilder(
+      //shape: 0.85,
+      heightDivision: 24,
+      radius: mi.Vector3(0.5, 1, 0.2),
     ),
+    modifiers: [
+      mi.ParametricModifier(
+        bend: mi.Bezier(
+          points: const [
+            mi.Vector3.zero,
+            mi.Vector3(0, 0.3, 0),
+            mi.Vector3(0, 0.3, 0.5),
+            mi.Vector3(0, 0.5, 0.5),
+          ],
+        ),
+      ),
+    ],
   ).toMeshData(root: root);
 
   final spindle = mi.Mesh(
@@ -339,7 +352,7 @@ Future<void> _setup(StringSink sink) async {
       heightDivision: 6,
     ),
     modifiers: [
-      mi.BendModifier(
+      mi.ParametricModifier(
         //wicking: mi.Bezier<mi.Vector3>(points: const [mi.Vector3.zero, mi.Vector3.unitY]),
         // <mi.Vector3>[
         //   mi.Vector3(0, 0, 0),

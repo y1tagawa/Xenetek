@@ -358,19 +358,18 @@ class EllipsoidBuilder extends _SorBuilder {
 /// 紡錘体メッシュビルダ
 ///
 /// 原点を始点とする、母線が正弦曲線の紡錘形。
+/// todo: 共通基底をI/Fに
 @immutable
 class SpindleBuilder extends _SorBuilder {
   // ignore: unused_field
   static final _logger = Logger('SpindleBuilder');
 
   final int heightDivision;
-  final double height;
   final dynamic radius; // ベクトルの場合Y成分は無視される
 
   const SpindleBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
-    this.height = 1.0,
     this.radius = Vector3.one,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',
@@ -399,17 +398,13 @@ class SpindleBuilder extends _SorBuilder {
   /// todo: axis
   @override
   MeshData build() {
-    var radius_ = radius;
-    if (radius is Vector3) {
-      radius_ = (radius as Vector3).copyWith(y: height);
-    }
-    return super.build().transformed(Matrix4.fromScale(radius_));
+    return super.build().transformed(Matrix4.fromScale(radius));
   }
 }
 
 /// 涙滴型ビルダ
 ///
-class TeardropBuilder extends _SorBuilder {
+class TeardropBuilder extends SpindleBuilder {
   // ignore: unused_field
   static final _logger = Logger('TearDropBuilder');
 
@@ -420,14 +415,12 @@ class TeardropBuilder extends _SorBuilder {
     Vector3(0.0, 1.0, 0.0),
   ];
 
-  final int heightDivision;
-  final dynamic radius;
   final double shape; // 1.0に近いほど胴が先端側に移動する
 
   const TeardropBuilder({
     super.longitudeDivision = 24,
-    this.heightDivision = 12,
-    this.radius = Vector3.one,
+    super.heightDivision = 12,
+    super.radius = Vector3.one,
     this.shape = 0.75,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',
@@ -437,6 +430,7 @@ class TeardropBuilder extends _SorBuilder {
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1);
 
+  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     final points = _points.replacedAt(2, _points[2].copyWith(y: shape));
@@ -447,7 +441,7 @@ class TeardropBuilder extends _SorBuilder {
       vertices.add(bezier.transform(t));
     }
     vertices.add(Vector3.unitY);
-    return vertices.scaled(radius).toList();
+    return vertices;
   }
 }
 

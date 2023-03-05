@@ -20,7 +20,7 @@ import 'basic.dart';
 /// Y軸[0,1]に沿ってパラメトリック曲線によって変形する。
 /// todo: 一般的な曲線
 @immutable
-class BendModifier extends MeshModifier {
+class ParametricModifier extends MeshModifier {
   // ignore: unused_field
   static final _logger = Logger('name');
 
@@ -30,7 +30,7 @@ class BendModifier extends MeshModifier {
   final Parametric<double, double> depth; // Y=[0,1]に対応するX半径
   //todo: axis
 
-  const BendModifier({
+  const ParametricModifier({
     this.bend = const BezierVector3(points: <Vector3>[Vector3.zero, Vector3.unitY]),
     this.twist = const BezierDouble(points: <double>[0.0]),
     this.width = const BezierDouble(points: <double>[1.0]),
@@ -45,10 +45,10 @@ class BendModifier extends MeshModifier {
       for (final vertex in object.vertices) {
         final t = vertex.y; // 0.0-1.0
         final p = bend.transform(t);
-        final p1 = bend.transform(t - 0.01);
+        final f = t >= 0.01 ? p - bend.transform(t - 0.01) : bend.transform(t + 0.01) - p;
         vertices.add(vertex.transformed(
           Matrix4.fromTranslation(p) *
-              Matrix4.fromForwardTargetRotation(forward: p - p1, target: p) *
+              Matrix4.fromForwardTargetRotation(forward: f, target: p) *
               Matrix4.fromAxisAngleRotation(axis: Vector3.unitY, radians: twist.transform(t)) *
               Matrix4.fromScale(Vector3(width.transform(t), 1, depth.transform(t))),
         ));
