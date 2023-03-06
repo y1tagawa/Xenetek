@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Matrix4;
 import 'package:flutter/services.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
@@ -323,19 +322,22 @@ Future<void> _setup(StringSink sink) async {
     mi.Vector3(0, 0.3, 0.2),
   ];
   final tempBezier3 = mi.Bezier<mi.Vector3>(points: tempPoints3);
-  final tempMesh3 = <mi.MeshData>[];
-  for (int i = 0; i < 10; ++i) {
-    final t = i / 10;
-    final p = tempBezier3.transform(t);
-    tempMesh3.add(mi.Mesh(
-      origin: 'ball',
-      data: [
-        mi.octahedronMeshObject.transformed(
-          mi.Matrix4.fromTranslation(p) * mi.Matrix4.fromScale(i == 0 ? 0.1 : 0.05),
-        ),
-      ],
-    ).toMeshData(root: root));
-  }
+  final tempMesh3 = mi.Mesh(
+    origin: 'ball',
+    data: mi.octahedronMeshObject,
+    modifiers: [
+      mi.MultipleModifier(
+        matrices: [
+          for (int i = 0; i < 10; ++i)
+            () {
+              final t = i / 10;
+              final p = tempBezier3.transform(t);
+              return mi.Matrix4.fromTranslation(p) * mi.Matrix4.fromScale(i == 0 ? 0.1 : 0.05);
+            }(),
+        ],
+      ),
+    ],
+  ).toMeshData(root: root);
 
   final tempMesh = mi.Mesh(
     origin: 'ball',
@@ -417,7 +419,7 @@ Future<void> _setup(StringSink sink) async {
   // ).toMeshData(root: root);
 
   [
-    ...(tempMesh3.flattened),
+    ...tempMesh3,
     ...dollMeshData,
     ...spindle,
     ...tempMesh,

@@ -15,13 +15,37 @@ import 'basic.dart';
 //
 // リグ上に配置したメッシュデータを変換する。
 
+/// 分身モディファイア
+@immutable
+class MultipleModifier extends MeshModifier {
+  // ignore: unused_field
+  static final _logger = Logger('MultipleModifier');
+
+  final List<Matrix4> matrices;
+
+  const MultipleModifier({
+    required this.matrices,
+  });
+
+  @override
+  MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
+    final data_ = <MeshObject>[];
+    for (final matrix in matrices) {
+      for (final object in data) {
+        data_.add(object.transformed(matrix));
+      }
+    }
+    return data_;
+  }
+}
+
 /// パラメトリックモディファイア
 ///
 /// Y軸[0,1]に沿って、各頂点をパラメトリック曲線によって変形する。
 @immutable
 class ParametricModifier extends MeshModifier {
   // ignore: unused_field
-  static final _logger = Logger('name');
+  static final _logger = Logger('ParametricModifier');
 
   final Parametric<double, Vector3> bend; // Y=[0,1]に対応する中心線
   final Parametric<double, double> twist; // Y=[0,1]に対応するY軸周りの捻り(ラジアン)

@@ -1000,7 +1000,7 @@ class MeshObject {
 
   @override
   String toString() {
-    return 'Mesh{ vertices: $vertices, '
+    return 'MeshObject{ vertices: $vertices, '
         'normals: $normals, '
         'textureVertices: $textureVertices, '
         'faceGroups: $faceGroups}, '
@@ -1101,13 +1101,21 @@ class Mesh {
     required this.data,
     required this.origin,
     this.modifiers = const _NopModifier(),
-  })  : assert(data is MeshData || data is MeshBuilder),
+  })  : assert(data is MeshObject || data is MeshData || data is MeshBuilder),
         assert(modifiers is MeshModifier || modifiers is List<MeshModifier>);
 
   MeshData toMeshData({required final Node root}) {
-    _logger.fine('[i] toMeshData data.runtimeType=${data.runtimeType}');
     // メッシュデータ生成
-    MeshData data_ = data is MeshData ? data as MeshData : (data as MeshBuilder).build();
+    MeshData data_;
+    if (data is MeshObject) {
+      data_ = [data as MeshObject];
+    } else if (data is MeshData) {
+      data_ = data as MeshData;
+    } else if (data is MeshBuilder) {
+      data_ = (data as MeshBuilder).build();
+    } else {
+      throw UnimplementedError();
+    }
     // 変形
     if (modifiers is MeshModifier) {
       data_ = (modifiers as MeshModifier).transform(mesh: this, data: data_, root: root);
