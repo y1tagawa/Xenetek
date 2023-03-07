@@ -48,6 +48,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 * https://en.wikipedia.org/wiki/Box_modeling と言うらしい。
 
 * 腕、ボーンがまっすぐ優先とメッシュがまっすぐ優先をどちらか作って曲げてみる。（_setup3）
+  * → ボーン次第でかなり綺麗に曲げられるが、関節のところが潰れてしまう。
 
 * bend
   * rigに対しては、長さ・捻り角・曲げ方向・曲げ角度・分割数を指定。
