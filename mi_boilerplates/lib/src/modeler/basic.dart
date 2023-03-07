@@ -521,27 +521,41 @@ class Node {
       return find_(this_: child, path: path.skip(1), matrix: matrix * this_.matrix, parent: this_);
     }
 
-    return find_(this_: this, path: _toPath(path), matrix: Matrix4.identity, parent: null);
+    final it = find_(this_: this, path: _toPath(path), matrix: Matrix4.identity, parent: null);
+    if (it == null) {
+      _logger.fine('path $path not found.');
+    }
+    return it;
+  }
+
+  /// ディープコピー
+  Node copy() {
+    return Node(
+      matrix: matrix,
+      children: <String, Node>{
+        ...children.map((key, value) => MapEntry(key, value.copy())),
+      },
+    );
   }
 
   /// [path]で指定するノードを[child]で置換または削除したコピーを返す。
-  Node _addOrRemove({
+  Node _modified({
     required Iterable<String> path,
-    required Node Function(Node, String) onFind,
+    required Node Function(Node, String) modifier,
   }) {
     assert(path.isNotEmpty);
     // [path]が指すノードの親であれば
     if (path.length == 1) {
       // 指定の子を追加、置換または削除する。
-      return onFind(this, path.first);
+      return modifier(this, path.first);
     }
     // パスを途中で辿れなくなったらエラー
     assert(children.containsKey(path.first));
     // パスの途中の子を更新して返す
     final children_ = {...children};
-    children_[path.first] = children[path.first]!._addOrRemove(
+    children_[path.first] = children[path.first]!._modified(
       path: path.skip(1),
-      onFind: onFind,
+      modifier: modifier,
     );
     return Node(matrix: matrix, children: children_);
   }
@@ -553,9 +567,9 @@ class Node {
     required Node child,
   }) {
     final path_ = _toPath(path);
-    return _addOrRemove(
+    return _modified(
         path: path_,
-        onFind: (node, key) {
+        modifier: (node, key) {
           final children_ = {...node.children};
           children_[key] = child;
           return node.copyWith(children: children_);

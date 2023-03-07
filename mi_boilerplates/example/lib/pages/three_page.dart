@@ -17,6 +17,14 @@ import 'package:path_provider/path_provider.dart';
 
 import 'ex_app_bar.dart' as ex;
 
+typedef BoneData = mi.BoneData;
+typedef Matrix4 = mi.Matrix4;
+typedef Mesh = mi.Mesh;
+typedef MeshData = mi.MeshData;
+//typedef MeshDataHelper = mi.WavefrontObjWriter;
+typedef Node = mi.Node;
+typedef Vector3 = mi.Vector3;
+
 //
 // 3D examples page.
 //
@@ -164,7 +172,7 @@ Future<void> _createMtl() async {
   await sink.close();
 }
 
-// cube.Mesh _toMesh(Map<String, mi.MeshData> meshDataArray) {
+// cube.Mesh _toMesh(Map<String, MeshData> meshDataArray) {
 //   final vertices = <cube.Vector3>[];
 //   final indices = <cube.Polygon>[];
 //   int vertexIndex = 0;
@@ -184,7 +192,7 @@ Future<void> _createMtl() async {
 //   return cube.Mesh(vertices: vertices, indices: indices);
 // }
 //
-// cube.Cube _toCube(Map<String, mi.MeshData> meshDataArray) {
+// cube.Cube _toCube(Map<String, MeshData> meshDataArray) {
 //   final mesh = _toMesh(meshDataArray);
 //   ++_cubeKey;
 //   return cube.Cube(
@@ -210,8 +218,7 @@ Future<void> _setup(StringSink sink) async {
   final logger = Logger('_setup');
 
   final headObj = await rootBundle.loadString('assets/3d/head.obj');
-  final headMesh =
-      mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(mi.Matrix4.fromScale(0.3));
+  final headMesh = mi.MeshDataHelper.fromWavefrontObj(headObj).transformed(Matrix4.fromScale(0.3));
   final footObj = await rootBundle.loadString('assets/3d/foot.obj');
   final footMesh = mi.MeshDataHelper.fromWavefrontObj(footObj);
 
@@ -222,7 +229,7 @@ Future<void> _setup(StringSink sink) async {
   root = root.add(
     path: 'spindle',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(
+      matrix: Matrix4.fromTranslation(
         const mi.Vector3(-1, 1, 0),
       ),
     ),
@@ -230,7 +237,7 @@ Future<void> _setup(StringSink sink) async {
   root = root.add(
     path: 'ball',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(
+      matrix: Matrix4.fromTranslation(
         const mi.Vector3(1, 1, 0),
       ),
     ),
@@ -238,19 +245,19 @@ Future<void> _setup(StringSink sink) async {
   root = root.add(
     path: 'ball.magnet',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.7, 0, 0)),
+      matrix: Matrix4.fromTranslation(const mi.Vector3(0.7, 0, 0)),
     ),
   );
   root = root.add(
     path: 'ball.magnet2',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.65, 0, -0.1)),
+      matrix: Matrix4.fromTranslation(const mi.Vector3(0.65, 0, -0.1)),
     ),
   );
   root = root.add(
     path: 'ball.magnet3',
     child: mi.Node(
-      matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0.65, 0, 0.1)),
+      matrix: Matrix4.fromTranslation(const mi.Vector3(0.65, 0, 0.1)),
     ),
   );
 
@@ -282,7 +289,7 @@ Future<void> _setup(StringSink sink) async {
       )
       .transform(
         path: 'ball.magnet',
-        matrix: mi.Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitY, degrees: 30),
+        matrix: Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitY, degrees: 30),
       );
   //
   final dollMeshBuilder = mi.HumanMeshBuilder(
@@ -301,14 +308,14 @@ Future<void> _setup(StringSink sink) async {
   //'M 5.0000001e-7,99.999995 C 15.000001,99.999995 30.574827,103.13506 35,84.999996 37.471943,74.869578 8.2709862,67.675817 8.0073172,55.375716 7.8037912,45.881285 23.371028,33.509487 23.371028,24.999999 23.371028,4.9999998 5.0000001e-7,0 5.0000001e-7,0';
   final tempPoints = mi.SvgPathParser.fromString(tempData)
       // .transformed(
-      //   mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
-      //       mi.Matrix4.fromTranslation(const mi.Vector3(-50, -100, 0)),
+      //   Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
+      //       Matrix4.fromTranslation(const mi.Vector3(-50, -100, 0)),
       // )
       .toList();
   final tempPoints2 = mi.SvgPathParser.fromString(tempData2)
       // .transformed(
-      //   mi.Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
-      //       mi.Matrix4.fromTranslation(const mi.Vector3(0, -100, 0)),
+      //   Matrix4.fromScale(const mi.Vector3(0.01, -0.01, 0.01)) *
+      //       Matrix4.fromTranslation(const mi.Vector3(0, -100, 0)),
       // )
       .toList();
   final tempBezier = mi.Bezier<mi.Vector3>(points: tempPoints);
@@ -323,7 +330,7 @@ Future<void> _setup(StringSink sink) async {
     mi.Vector3(0, 0.3, 0.2),
   ];
   final tempBezier3 = mi.Bezier<mi.Vector3>(points: tempPoints3);
-  final tempMesh3 = mi.Mesh(
+  final tempMesh3 = Mesh(
     origin: 'ball',
     data: mi.octahedronMeshObject,
     modifiers: [
@@ -333,14 +340,14 @@ Future<void> _setup(StringSink sink) async {
             () {
               final t = i / 10;
               final p = tempBezier3.transform(t);
-              return mi.Matrix4.fromTranslation(p) * mi.Matrix4.fromScale(i == 0 ? 0.1 : 0.05);
+              return Matrix4.fromTranslation(p) * Matrix4.fromScale(i == 0 ? 0.1 : 0.05);
             }(),
         ],
       ),
     ],
   ).toMeshData(root: root);
 
-  final tempMesh = mi.Mesh(
+  final tempMesh = Mesh(
     origin: 'ball',
     // data: mi.ParametricBuilder.fromRLFBCurves(
     //   rightCurve: tempBezier,
@@ -361,7 +368,7 @@ Future<void> _setup(StringSink sink) async {
     ],
   ).toMeshData(root: root);
 
-  final spindle = mi.Mesh(
+  final spindle = Mesh(
     origin: 'spindle',
     data: const mi.SpindleBuilder(
       materialLibrary: 'x11.mtl',
@@ -383,7 +390,7 @@ Future<void> _setup(StringSink sink) async {
       ),
     ],
   ).toMeshData(root: root);
-  // meshDataArray['ball'] = mi.Mesh(
+  // meshDataArray['ball'] = Mesh(
   //   origin: 'ball',
   //   data: const mi.SorBuilder(
   //     shape: mi.SorShape.ellipsoid,
@@ -412,7 +419,7 @@ Future<void> _setup(StringSink sink) async {
   //   ],
   // ).toMeshData(root: root);
 
-  // meshDataArray['magnet'] = const mi.Mesh(
+  // meshDataArray['magnet'] = const Mesh(
   //   origin: 'ball.magnet',
   //   modifiers: mi.LookAtModifier(
   //     target: 'ball',
@@ -434,19 +441,19 @@ Future<void> _setup2(StringSink sink) async {
 
   const eyePosition = mi.Vector3(-0.12, 0.0, -0.15);
   var root = const mi.Node(
-    matrix: mi.Matrix4.identity,
+    matrix: Matrix4.identity,
   ).addAll(
     entries: {
       'rEye': mi.Node(
-        matrix: mi.Matrix4.fromTranslation(eyePosition),
+        matrix: Matrix4.fromTranslation(eyePosition),
       ),
       'lEye': mi.Node(
-        matrix: mi.Matrix4.fromTranslation(eyePosition.mirrored()),
+        matrix: Matrix4.fromTranslation(eyePosition.mirrored()),
       ),
     }.entries,
   );
 
-  final face = mi.Mesh(
+  final face = Mesh(
     origin: '',
     data: const mi.SphereBuilder(
       radius: mi.Vector3(0.3, 0.3, 0.3),
@@ -460,11 +467,11 @@ Future<void> _setup2(StringSink sink) async {
             // flat face
             const mi.Vector3(0.0, 0.0, -0.4): mi.MagnetData(
               //shape: mi.Vector3(0.01, 1.0, 1.0),
-              matrix: mi.Matrix4.fromAxisAngleRotation(
+              matrix: Matrix4.fromAxisAngleRotation(
                     axis: mi.Vector3.unitZ,
                     degrees: 10.0,
                   ) *
-                  mi.Matrix4.fromScale(const mi.Vector3(0.01, 1.0, 1.0)),
+                  Matrix4.fromScale(const mi.Vector3(0.01, 1.0, 1.0)),
               force: -0.1,
               power: -4,
             ),
@@ -483,13 +490,13 @@ Future<void> _setup2(StringSink sink) async {
       ),
     ],
   ).toMeshData(root: root);
-  final rEye = const mi.Mesh(
+  final rEye = const Mesh(
     origin: 'rEye',
     data: mi.SphereBuilder(
       radius: 0.1,
     ),
   ).toMeshData(root: root);
-  final lEye = const mi.Mesh(
+  final lEye = const Mesh(
     origin: 'lEye',
     data: mi.SphereBuilder(
       radius: 0.1,
@@ -502,59 +509,98 @@ Future<void> _setup3(StringSink sink) async {
   // ignore: unused_local_variable
   final logger = Logger('_setup3');
 
-  var root = const mi.Node(matrix: mi.Matrix4.identity);
-  root = root.add(
-    path: 'elbow',
-    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, 0))),
-  );
-  root = root.add(
-    path: 'elbow.wrist',
-    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, -0))),
-  );
-  final rRoot = root;
+  Node addArmRig({
+    required Node root,
+    required String path,
+    required Matrix4 matrix,
+  }) {
+    root = root.add(
+      path: path,
+      child: Node(matrix: matrix),
+    );
+    root = root.add(
+      path: '$path.elbow',
+      child: Node(matrix: Matrix4.fromTranslation(const Vector3(0, 0.5, 0))),
+    );
+    root = root.add(
+      path: '$path.elbow.wrist',
+      child: mi.Node(matrix: Matrix4.fromTranslation(const Vector3(0, 0.5, -0))),
+    );
+    return root;
+  }
 
-  root = root.transform(
-    path: 'elbow',
-    matrix: mi.Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitX, degrees: 120),
-  );
+  const int ii = 4;
+  var root = const mi.Node(matrix: Matrix4.identity);
+  for (int i = 0; i <= ii; ++i) {
+    root = addArmRig(
+      root: root,
+      path: 'arm$i',
+      matrix: Matrix4.fromTranslation(Vector3.unitX * 0.2 * i),
+    );
+  }
+  final ref = root;
 
-  final marks = [
-    mi.Mesh(
-      origin: '',
-      data: mi.octahedronMeshObject.transformed(mi.Matrix4.fromScale(0.05)),
-    ).toMeshData(root: root),
-    mi.Mesh(
-      origin: 'elbow',
-      data: mi.octahedronMeshObject.transformed(mi.Matrix4.fromScale(0.05)),
-    ).toMeshData(root: root),
-    mi.Mesh(
-      origin: 'elbow.wrist',
-      data: mi.octahedronMeshObject.transformed(mi.Matrix4.fromScale(0.05)),
-    ).toMeshData(root: root),
-  ].flattened;
+  for (int i = 0; i <= ii; ++i) {
+    root = root.transform(
+      path: 'arm$i.elbow',
+      matrix: Matrix4.fromAxisAngleRotation(axis: Vector3.unitX, degrees: 30.0 * i),
+    );
+  }
 
-  final arm = mi.Mesh(
-    origin: '',
-    data: const mi.TubeBuilder(
-      heightDivision: 48,
-      beginRadius: 0.05,
-      endRadius: 0.05,
-      beginShape: mi.FlatEnd(),
-      endShape: mi.OpenEnd(),
-    ),
-    modifiers: [
-      mi.SkinModifier(
-        bones: <String, mi.BoneData>{
-          '': const mi.BoneData(radius: 0.7, power: -24),
-          //'elbow': const mi.BoneData(radius: 0.1),
-          'elbow.wrist': const mi.BoneData(radius: 0.7, power: -24),
-        }.entries.toList(),
-        referencePosition: rRoot,
+  final t = StringBuffer();
+  root.format(sink: t);
+  print(t.toString());
+
+  MeshData addArmMeshes({
+    required Node root,
+    required Node refRoot,
+    required String path,
+  }) {
+    final marks = [
+      Mesh(
+        origin: path,
+        data: mi.octahedronMeshObject.transformed(Matrix4.fromScale(0.05)),
+      ).toMeshData(root: root),
+      Mesh(
+        origin: '$path.elbow',
+        data: mi.octahedronMeshObject.transformed(Matrix4.fromScale(0.05)),
+      ).toMeshData(root: root),
+      Mesh(
+        origin: '$path.elbow.wrist',
+        data: mi.octahedronMeshObject.transformed(Matrix4.fromScale(0.05)),
+      ).toMeshData(root: root),
+    ].flattened;
+
+    final arm = Mesh(
+      origin: path,
+      data: const mi.TubeBuilder(
+        heightDivision: 48,
+        beginRadius: 0.05,
+        endRadius: 0.05,
+        beginShape: mi.FlatEnd(),
+        endShape: mi.OpenEnd(),
       ),
-    ],
-  ).toMeshData(root: root);
+      modifier: mi.SkinModifier(
+        bones: <String, BoneData>{
+          path: const BoneData(radius: 0.7, power: -24),
+          //'elbow': const BoneData(radius: 0.1),
+          '$path.elbow.wrist': const BoneData(radius: 0.7, power: -24),
+        }.entries.toList(),
+        referencePosition: refRoot,
+      ),
+    ).toMeshData(root: root);
 
-  [...arm, ...marks].toWavefrontObj(sink: sink);
+    return [...marks, ...arm];
+  }
+
+  [
+    for (int i = 0; i <= ii; ++i)
+      ...addArmMeshes(
+        root: root,
+        refRoot: ref,
+        path: 'arm$i',
+      ),
+  ].toWavefrontObj(sink: sink);
 }
 
 Future<String> _getModelTempFileDir() async {
