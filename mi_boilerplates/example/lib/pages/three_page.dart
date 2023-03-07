@@ -505,11 +505,11 @@ Future<void> _setup3(StringSink sink) async {
   var root = const mi.Node(matrix: mi.Matrix4.identity);
   root = root.add(
     path: 'elbow',
-    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, 0.1))),
+    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, 0))),
   );
   root = root.add(
     path: 'elbow.wrist',
-    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, -0.1))),
+    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, -0))),
   );
   final rRoot = root;
 
@@ -545,9 +545,9 @@ Future<void> _setup3(StringSink sink) async {
     modifiers: [
       mi.SkinModifier(
         bones: <String, mi.BoneData>{
-          '': const mi.BoneData(radius: 0.6, power: -24),
+          '': const mi.BoneData(radius: 0.7, power: -24),
           //'elbow': const mi.BoneData(radius: 0.1),
-          'elbow.wrist': const mi.BoneData(radius: 0.6, power: -24),
+          'elbow.wrist': const mi.BoneData(radius: 0.7, power: -24),
         }.entries.toList(),
         referencePosition: rRoot,
       ),
