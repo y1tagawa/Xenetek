@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Matrix4;
 import 'package:flutter/services.dart';
 import 'package:flutter_cube/flutter_cube.dart' as cube;
@@ -497,6 +498,65 @@ Future<void> _setup2(StringSink sink) async {
   [...face, ...rEye, ...lEye].toWavefrontObj(sink: sink);
 }
 
+Future<void> _setup3(StringSink sink) async {
+  // ignore: unused_local_variable
+  final logger = Logger('_setup3');
+
+  var root = const mi.Node(matrix: mi.Matrix4.identity);
+  root = root.add(
+    path: 'elbow',
+    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, 0.05))),
+  );
+  root = root.add(
+    path: 'elbow.wrist',
+    child: mi.Node(matrix: mi.Matrix4.fromTranslation(const mi.Vector3(0, 0.5, -0.05))),
+  );
+  final rRoot = root;
+
+  root = root.transform(
+    path: 'elbow',
+    matrix: mi.Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitX, degrees: 120),
+  );
+
+  final marks = [
+    mi.Mesh(
+      origin: '',
+      data: mi.octahedronMeshObject.transformed(mi.Matrix4.fromScale(0.05)),
+    ).toMeshData(root: root),
+    mi.Mesh(
+      origin: 'elbow',
+      data: mi.octahedronMeshObject.transformed(mi.Matrix4.fromScale(0.05)),
+    ).toMeshData(root: root),
+    mi.Mesh(
+      origin: 'elbow.wrist',
+      data: mi.octahedronMeshObject.transformed(mi.Matrix4.fromScale(0.05)),
+    ).toMeshData(root: root),
+  ].flattened;
+
+  final arm = mi.Mesh(
+    origin: '',
+    data: const mi.TubeBuilder(
+      heightDivision: 12,
+      beginRadius: 0.05,
+      endRadius: 0.05,
+      beginShape: mi.DomeEnd(),
+      endShape: mi.OpenEnd(),
+    ),
+    modifiers: [
+      mi.SkinModifier(
+        bones: <String, mi.BoneData>{
+          '': const mi.BoneData(radius: 0.5),
+          //'elbow': const mi.BoneData(radius: 0.1),
+          'elbow.wrist': const mi.BoneData(radius: 0.5),
+        }.entries.toList(),
+        referencePosition: rRoot,
+      ),
+    ],
+  ).toMeshData(root: root);
+
+  [...arm, ...marks].toWavefrontObj(sink: sink);
+}
+
 Future<String> _getModelTempFileDir() async {
   final docDir = await getApplicationDocumentsDirectory();
   return docDir.path;
@@ -557,7 +617,7 @@ class _ModelerTab extends ConsumerWidget {
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();
-            await _setup(sink);
+            await _setup3(sink);
             await sink.close();
             //_cubeDataStream.add(_toCube(meshDataArray));
             _cubeDataStream.add(await _getCube());
