@@ -1059,6 +1059,8 @@ abstract class MeshBuilder {
 /// メッシュモディファイアの基底クラス
 @immutable
 abstract class MeshModifier {
+  static const MeshModifier invalid = _InvalidModifier();
+
   const MeshModifier();
 
   MeshData transform({
@@ -1068,26 +1070,20 @@ abstract class MeshModifier {
   });
 }
 
-/// デフォルトメッシュモディファイア
-///
-/// 何もしない
+/// 無効値
 @immutable
-class _NopModifier extends MeshModifier {
-  const _NopModifier();
-
+class _InvalidModifier extends MeshModifier {
+  const _InvalidModifier();
   @override
-  MeshData transform({
-    required Mesh mesh,
-    required MeshData data,
-    required Node root,
-  }) {
-    return data;
+  MeshData transform({required Mesh mesh, required MeshData data, required Node root}) {
+    throw UnimplementedError();
   }
 }
 
 /// メッシュ
 ///
 /// リグ上にメッシュデータを配置する。
+/// [modifier]と[modifiers]はどちらか一方しか指定できない。
 @immutable
 class Mesh {
   // ignore: unused_field
@@ -1095,14 +1091,15 @@ class Mesh {
 
   final dynamic data;
   final String origin;
-  final dynamic modifiers;
+  final MeshModifier modifier;
+  final List<MeshModifier> modifiers;
 
   const Mesh({
     required this.data,
     required this.origin,
-    this.modifiers = const _NopModifier(),
-  })  : assert(data is MeshObject || data is MeshData || data is MeshBuilder),
-        assert(modifiers is MeshModifier || modifiers is List<MeshModifier>);
+    this.modifier = MeshModifier.invalid,
+    this.modifiers = const <MeshModifier>[],
+  }) : assert(data is MeshObject || data is MeshData || data is MeshBuilder);
 
   MeshData toMeshData({required final Node root}) {
     // メッシュデータ生成
@@ -1117,11 +1114,14 @@ class Mesh {
       throw UnimplementedError();
     }
     // 変形
-    if (modifiers is MeshModifier) {
-      data_ = (modifiers as MeshModifier).transform(mesh: this, data: data_, root: root);
-    } else {
-      for (final modifier in (modifiers as List<MeshModifier>)) {
-        data_ = modifier.transform(mesh: this, data: data_, root: root);
+    if (modifier != MeshModifier.invalid) {
+      assert(modifiers.isEmpty);
+      data_ = modifier.transform(mesh: this, data: data_, root: root);
+    } else if (modifiers.isNotEmpty) {
+      assert(modifier == MeshModifier.invalid);
+      for (final modifier_ in modifiers) {
+        assert(modifier_ != MeshModifier.invalid);
+        data_ = modifier_.transform(mesh: this, data: data_, root: root);
       }
     }
     // root座標に変換

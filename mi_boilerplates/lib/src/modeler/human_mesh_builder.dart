@@ -19,7 +19,7 @@ MeshData _pin({
   return Mesh(
     origin: origin,
     data: const [pinMeshObject],
-    modifiers: LookAtModifier(
+    modifier: LookAtModifier(
       target: target,
       connect: true,
       proportional: true,
@@ -44,7 +44,7 @@ MeshData _limb({
       endShape: const DomeEnd(),
     ),
     origin: origin,
-    modifiers: LookAtModifier(
+    modifier: LookAtModifier(
       target: target,
       connect: true,
       minSlice: 0.0,
@@ -104,7 +104,7 @@ MeshData _belly({
       tessellationLevel: 3,
     ),
     origin: origin,
-    modifiers: SkinModifier(
+    modifier: SkinModifier(
       bones: {
         HumanRigBuilder.pelvis: const BoneData(power: -6),
         HumanRigBuilder.chest: const BoneData(power: -6),
