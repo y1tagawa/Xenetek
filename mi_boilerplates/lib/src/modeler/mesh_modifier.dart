@@ -355,20 +355,21 @@ class SkinModifier extends MeshModifier {
 @immutable
 class MagnetData {
   final double radius;
-  final double force;
-  final double power;
+  final double strength;
+  final int exponent;
   final Vector3 shape;
   final Matrix4 matrix;
   final bool mirror;
 
   const MagnetData({
-    this.radius = double.maxFinite,
-    this.force = 1.0,
-    this.power = -2,
+    this.radius = 1.0,
+    this.strength = 1.0,
+    this.exponent = 2,
     this.shape = Vector3.one,
     this.matrix = Matrix4.identity,
     this.mirror = false,
-  }) : assert(radius >= 1e-4);
+  })  : assert(radius >= 1e-4),
+        assert(exponent > 0);
 }
 
 /// マグネットモディファイア
@@ -418,10 +419,15 @@ class MagnetModifier extends MeshModifier {
         for (final magnet in magnets_) {
           final v = magnet.key - vertex.transformed(magnet.value.matrix);
           final d = v.length;
-          //final d = (v * magnet.value.shape).length;
-          if (d >= 1e-6 && d <= magnet.value.radius) {
+          if (d >= 1e-4 && d <= magnet.value.radius) {
             // 距離による減衰
-            delta += v.normalized() * magnet.value.force * math.pow(d + 1.0, magnet.value.power);
+            delta += v.normalized() *
+                _force(
+                  distance: d,
+                  radius: magnet.value.radius,
+                  strength: magnet.value.strength,
+                  exponent: magnet.value.exponent,
+                );
           }
         }
         vertices.add(vertex + delta);

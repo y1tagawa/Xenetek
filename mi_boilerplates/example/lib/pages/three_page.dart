@@ -18,11 +18,15 @@ import 'package:path_provider/path_provider.dart';
 import 'ex_app_bar.dart' as ex;
 
 typedef BoneData = mi.BoneData;
+typedef MagnetData = mi.MagnetData;
+typedef MagnetModifier = mi.MagnetModifier;
 typedef Matrix4 = mi.Matrix4;
 typedef Mesh = mi.Mesh;
 typedef MeshData = mi.MeshData;
-//typedef MeshDataHelper = mi.WavefrontObjWriter;
+typedef MeshDataHelper = mi.MeshDataHelper;
 typedef Node = mi.Node;
+typedef SkinModifier = mi.SkinModifier;
+typedef TubeBuilder = mi.TubeBuilder;
 typedef Vector3 = mi.Vector3;
 
 //
@@ -403,13 +407,13 @@ Future<void> _setup(StringSink sink) async {
   //       min: mi.Vector3(-0.5, -0.5, -0.5),
   //       max: mi.Vector3(0.5, 0.5, 0.5),
   //     ),
-  //     mi.MagnetModifier(
-  //       magnets: const <String, mi.MagnetData>{
-  //         'ball.magnet': mi.MagnetData(
+  //     MagnetModifier(
+  //       magnets: const <String, MagnetData>{
+  //         'ball.magnet': MagnetData(
   //           force: 0.2,
   //           power: -4,
   //         ),
-  //         'ball.magnet2': mi.MagnetData(
+  //         'ball.magnet2': MagnetData(
   //           force: -0.3,
   //           power: -2,
   //           mirror: true,
@@ -461,26 +465,27 @@ Future<void> _setup2(StringSink sink) async {
       latitudeDivision: 32,
     ),
     modifiers: [
-      mi.MagnetModifier(
+      MagnetModifier(
         magnets: [
           ...{
             // flat face
-            const mi.Vector3(0.0, 0.0, -0.4): mi.MagnetData(
-              //shape: mi.Vector3(0.01, 1.0, 1.0),
-              matrix: Matrix4.fromAxisAngleRotation(
-                    axis: mi.Vector3.unitZ,
-                    degrees: 10.0,
-                  ) *
-                  Matrix4.fromScale(const mi.Vector3(0.01, 1.0, 1.0)),
-              force: -0.1,
-              power: -4,
+            const mi.Vector3(0.0, 0.0, -0.4): MagnetData(
+              radius: 1.0,
+              strength: -0.1,
+              exponent: 2,
+              // //shape: mi.Vector3(0.01, 1.0, 1.0),
+              // matrix: Matrix4.fromAxisAngleRotation(
+              //       axis: mi.Vector3.unitZ,
+              //       degrees: 10.0,
+              //     ) *
+              //     Matrix4.fromScale(const mi.Vector3(0.01, 1.0, 1.0)),
             ),
             // // chin
-            // const mi.Vector3(0.0, -0.2, -0.4): const mi.MagnetData(force: 0.1, power: -3),
+            // const mi.Vector3(0.0, -0.2, -0.4): const MagnetData(force: 0.1, power: -3),
             // // nose
-            // const mi.Vector3(0.0, 0.0, -0.35): const mi.MagnetData(force: 0.07, power: -3.5),
+            // const mi.Vector3(0.0, 0.0, -0.35): const MagnetData(force: 0.07, power: -3.5),
             // // eye sockets
-            // const mi.Vector3(0.2, 0.1, -0.35): const mi.MagnetData(
+            // const mi.Vector3(0.2, 0.1, -0.35): const MagnetData(
             //   force: -0.05,
             //   power: -3,
             //   mirror: true,
@@ -576,11 +581,11 @@ Future<void> _setup3(StringSink sink) async {
         beginShape: mi.FlatEnd(),
         endShape: mi.OpenEnd(),
       ),
-      modifier: mi.SkinModifier(
+      modifier: SkinModifier(
         bones: <String, BoneData>{
-          path: const BoneData(radius: 0.57),
+          path: const BoneData(radius: 0.6),
           //'elbow': const BoneData(radius: 0.1),
-          '$path.elbow.wrist': const BoneData(radius: 0.57),
+          '$path.elbow.wrist': const BoneData(radius: 0.6),
         }.entries.toList(),
         referencePosition: refRoot,
       ),
@@ -659,7 +664,7 @@ class _ModelerTab extends ConsumerWidget {
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();
-            await _setup3(sink);
+            await _setup2(sink);
             await sink.close();
             //_cubeDataStream.add(_toCube(meshDataArray));
             _cubeDataStream.add(await _getCube());
