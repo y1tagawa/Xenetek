@@ -547,10 +547,6 @@ Future<void> _setup3(StringSink sink) async {
     );
   }
 
-  final t = StringBuffer();
-  root.format(sink: t);
-  print(t.toString());
-
   MeshData addArmMeshes({
     required Node root,
     required Node refRoot,
@@ -582,9 +578,9 @@ Future<void> _setup3(StringSink sink) async {
       ),
       modifier: mi.SkinModifier(
         bones: <String, BoneData>{
-          path: const BoneData(radius: 0.7, power: -24),
+          path: const BoneData(radius: 0.57),
           //'elbow': const BoneData(radius: 0.1),
-          '$path.elbow.wrist': const BoneData(radius: 0.7, power: -24),
+          '$path.elbow.wrist': const BoneData(radius: 0.57),
         }.entries.toList(),
         referencePosition: refRoot,
       ),

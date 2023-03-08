@@ -234,13 +234,33 @@ class LookAtModifier extends MeshModifier {
 @immutable
 class BoneData {
   final double radius;
-  final double force;
-  final double power;
+  final double strength;
+  final int exponent;
   const BoneData({
-    this.radius = double.maxFinite,
-    this.force = 1.0,
-    this.power = -2,
-  }) : assert(radius >= 1e-4);
+    this.radius = 1.0,
+    this.strength = 1.0,
+    this.exponent = 3,
+  })  : assert(radius >= 1e-4),
+        assert(exponent > 0);
+}
+
+double _force({
+  required double distance,
+  required double radius,
+  required double strength,
+  required int exponent,
+}) {
+  if (distance >= radius) {
+    return 0.0;
+  } else if (distance <= 1e-4) {
+    return strength * distance;
+  } else {
+    final sign = exponent % 1 == 0 ? 1.0 : -1.0;
+    return math.min(
+      strength * distance,
+      strength * sign * math.pow(distance / radius - 1.0, exponent).toDouble(),
+    );
+  }
 }
 
 /// スキンモディファイア
@@ -288,7 +308,13 @@ class SkinModifier extends MeshModifier {
           if (d <= bone.radius) {
             // 影響力(距離0において1.0、以後距離のpower乗に比例して0に漸近)
             // gnuplot> plot [0:2][0:1] (x+1)**-2
-            final value = bone.force * math.pow(d + 1.0, bone.power);
+            //final value = bone.strength * math.pow(d + 1.0, bone.exponent);
+            final value = _force(
+              distance: d,
+              radius: bone.radius,
+              strength: bone.strength,
+              exponent: bone.exponent,
+            );
             // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
             boneValues.add(
               MapEntry(
@@ -299,9 +325,9 @@ class SkinModifier extends MeshModifier {
             dominator += value;
           }
         }
-        if (boneValues.isEmpty) {
+        if (boneValues.isEmpty || dominator.abs() < 1e-4) {
           // ボーンから影響を受けなかった
-          vertices.add(vertex);
+          vertices.add(vertex.transformed(originMatrix));
         } else {
           // ボーンからの影響力による加重平均
           var p = Vector3.zero;

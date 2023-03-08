@@ -81,9 +81,9 @@ MeshData _chest({
     modifiers: [
       SkinModifier(
         bones: {
-          HumanRigBuilder.chest: const BoneData(power: -8),
-          HumanRigBuilder.rSc: const BoneData(power: -8),
-          HumanRigBuilder.lSc: const BoneData(power: -8),
+          HumanRigBuilder.chest: const BoneData(),
+          HumanRigBuilder.rSc: const BoneData(),
+          HumanRigBuilder.lSc: const BoneData(),
         }.entries.toList(),
         referencePosition: initRoot,
       ),
@@ -106,10 +106,10 @@ MeshData _belly({
     origin: origin,
     modifier: SkinModifier(
       bones: {
-        HumanRigBuilder.pelvis: const BoneData(power: -6),
-        HumanRigBuilder.chest: const BoneData(power: -6),
-        HumanRigBuilder.rCoxa: const BoneData(power: -6),
-        HumanRigBuilder.lCoxa: const BoneData(power: -6),
+        HumanRigBuilder.pelvis: const BoneData(),
+        HumanRigBuilder.chest: const BoneData(),
+        HumanRigBuilder.rCoxa: const BoneData(),
+        HumanRigBuilder.lCoxa: const BoneData(),
       }.entries.toList(),
       referencePosition: initRoot,
     ),
