@@ -26,6 +26,7 @@ typedef MeshData = mi.MeshData;
 typedef MeshDataHelper = mi.MeshDataHelper;
 typedef Node = mi.Node;
 typedef SkinModifier = mi.SkinModifier;
+typedef SphereBuilder = mi.SphereBuilder;
 typedef TubeBuilder = mi.TubeBuilder;
 typedef Vector3 = mi.Vector3;
 
@@ -459,20 +460,19 @@ Future<void> _setup2(StringSink sink) async {
 
   final face = Mesh(
     origin: '',
-    data: const mi.SphereBuilder(
-      radius: mi.Vector3(0.3, 0.3, 0.3),
-      longitudeDivision: 64,
-      latitudeDivision: 32,
+    data: const SphereBuilder(
+      radius: mi.Vector3(0.28, 0.3, 0.3),
+      longitudeDivision: 96,
+      latitudeDivision: 48,
     ),
     modifiers: [
       MagnetModifier(
         magnets: [
           ...{
             // flat face
-            const mi.Vector3(0.0, 0.0, -0.4): MagnetData(
-              radius: 1.0,
+            const Vector3(0.0, 0.0, -0.4): const MagnetData(
+              radius: 1.2,
               strength: -0.1,
-              exponent: 2,
               // //shape: mi.Vector3(0.01, 1.0, 1.0),
               // matrix: Matrix4.fromAxisAngleRotation(
               //       axis: mi.Vector3.unitZ,
@@ -480,10 +480,18 @@ Future<void> _setup2(StringSink sink) async {
               //     ) *
               //     Matrix4.fromScale(const mi.Vector3(0.01, 1.0, 1.0)),
             ),
-            // // chin
-            // const mi.Vector3(0.0, -0.2, -0.4): const MagnetData(force: 0.1, power: -3),
-            // // nose
-            // const mi.Vector3(0.0, 0.0, -0.35): const MagnetData(force: 0.07, power: -3.5),
+            // chin
+            const Vector3(0.0, -0.3, -0.4): const MagnetData(
+              radius: 0.6,
+              strength: 0.2,
+              exponent: 2,
+            ),
+            // nose
+            const Vector3(0.0, 0.0, -0.38): const MagnetData(
+              radius: 0.15,
+              strength: 1.0,
+              exponent: 4,
+            ),
             // // eye sockets
             // const mi.Vector3(0.2, 0.1, -0.35): const MagnetData(
             //   force: -0.05,

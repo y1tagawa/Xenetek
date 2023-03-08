@@ -1049,7 +1049,7 @@ class MeshDataHelper {
   static MeshData fromWavefrontObj(String data) => WavefrontObjReader.fromWavefrontObj(data);
 }
 
-extension MeshDataHelper2 on Iterable<MeshObject> {
+extension MeshObjectIterableHelper on Iterable<MeshObject> {
   MeshData transformed(Matrix4 matrix) => map((it) => it.transformed(matrix)).toList();
   MeshData mirrored() => map((it) => it.mirrored()).toList();
   MeshData reversed() => map((it) => it.reversed()).toList();

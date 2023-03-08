@@ -255,7 +255,7 @@ double _force({
   } else if (distance <= 1e-4) {
     return strength * distance;
   } else {
-    final sign = exponent % 1 == 0 ? 1.0 : -1.0;
+    final sign = exponent % 2 == 0 ? 1.0 : -1.0;
     return math.min(
       strength * distance,
       strength * sign * math.pow(distance / radius - 1.0, exponent).toDouble(),
