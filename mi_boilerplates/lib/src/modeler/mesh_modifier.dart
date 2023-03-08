@@ -244,13 +244,14 @@ class BoneData {
         assert(exponent > 0);
 }
 
-/// ボーンおよび磁石による影響
+/// ボーンまたは磁石による影響
 ///
 /// 力の中心からの距離[distance]にある頂点の移動量を算出する。
 /// 力は距離0において[strength], 距離[radius]において0となる[exponent]次曲線にしたがい減衰する。
-/// [radius]=0.5, [exponent]=1,2,3の減衰曲線の例:
-/// gnuplot: r=0.5
-/// gnuplot: plot [0:1][0:1] -(x/r-1),(x/r-1)**2,-(x/r-1)**3
+/// gnuplotによる[radius]=0.5, [exponent]=1,2,3の減衰曲線の例:
+/// r=0.5
+/// plot [0:1][0:1] -(x/r-1),(x/r-1)**2,-(x/r-1)**3
+///
 double _force({
   required double distance,
   required double radius,
