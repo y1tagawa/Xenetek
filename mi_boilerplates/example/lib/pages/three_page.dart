@@ -447,7 +447,7 @@ Future<void> _setup2(StringSink sink) async {
   // ignore: unused_local_variable
   final logger = Logger('_setup2');
 
-  const eyePosition = mi.Vector3(-0.12, 0.0, -0.15);
+  const eyePosition = mi.Vector3(-0.12, 0.0, -0.13);
   var root = const Node(
     matrix: Matrix4.identity,
   ).addAll(
@@ -476,12 +476,6 @@ Future<void> _setup2(StringSink sink) async {
             const Vector3(0.0, 0.0, -0.4): const MagnetData(
               radius: 1.2,
               strength: -0.1,
-              // //shape: Vector3(0.01, 1.0, 1.0),
-              // matrix: Matrix4.fromAxisAngleRotation(
-              //       axis: Vector3.unitZ,
-              //       degrees: 10.0,
-              //     ) *
-              //     Matrix4.fromScale(const Vector3(0.01, 1.0, 1.0)),
             ),
             // chin
             const Vector3(0.0, -0.3, -0.4): const MagnetData(
@@ -490,17 +484,20 @@ Future<void> _setup2(StringSink sink) async {
               exponent: 2,
             ),
             // nose
-            const Vector3(0.0, 0.0, -0.38): const MagnetData(
+            const Vector3(0.0, 0.02, -0.35): MagnetData(
               radius: 0.15,
               strength: 1.0,
               exponent: 4,
+              matrix: Matrix4.fromScale(const Vector3(1.4, 1.2, 1)) *
+                  Matrix4.fromAxisAngleRotation(axis: Vector3.unitX, degrees: 5.0),
             ),
-            // // eye sockets
-            // const Vector3(0.2, 0.1, -0.35): const MagnetData(
-            //   force: -0.05,
-            //   power: -3,
-            //   mirror: true,
-            // ),
+            // eye sockets
+            eyePosition.copyWith(z: -0.35): const MagnetData(
+              radius: 1.0,
+              strength: -0.05,
+              exponent: 5,
+              mirror: true,
+            ),
           }.entries
         ],
       ),
