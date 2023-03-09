@@ -242,32 +242,27 @@ class BoneData {
     this.exponent = 3,
   })  : assert(radius >= 1e-4),
         assert(exponent > 0);
-}
 
-/// ボーンまたは磁石による影響
-///
-/// 力の中心からの距離[distance]にある頂点の移動量を算出する。
-/// 力は距離0において[strength], 距離[radius]において0となる[exponent]次曲線にしたがい減衰する。
-/// gnuplotによる[radius]=0.5, [exponent]=1,2,3の減衰曲線の例:
-/// r=0.5
-/// plot [0:1][0:1] -(x/r-1),(x/r-1)**2,-(x/r-1)**3
-///
-double _force({
-  required double distance,
-  required double radius,
-  required double strength,
-  required int exponent,
-}) {
-  if (distance >= radius) {
-    return 0.0;
-  } else if (distance <= 1e-4) {
-    return strength * distance;
-  } else {
-    final sign = exponent % 2 == 0 ? 1.0 : -1.0;
-    return math.min(
-      strength * distance,
-      strength * sign * math.pow(distance / radius - 1.0, exponent).toDouble(),
-    );
+  /// ボーンまたは磁石による影響
+  ///
+  /// 力の中心からの距離[distance]にある頂点の移動量を算出する。
+  /// 力は距離0において[strength], 距離[radius]において0となる[exponent]次曲線にしたがい減衰する。
+  /// gnuplotによる[radius]=0.5, [exponent]=1,2,3の減衰曲線の例:
+  /// r=0.5
+  /// plot [0:1][0:1] -(x/r-1),(x/r-1)**2,-(x/r-1)**3
+  ///
+  double valueOf(double distance) {
+    if (distance >= radius) {
+      return 0.0;
+    } else if (distance <= 1e-4) {
+      return strength * distance;
+    } else {
+      final sign = exponent % 2 == 0 ? 1.0 : -1.0;
+      return math.min(
+        strength * distance,
+        strength * sign * math.pow(distance / radius - 1.0, exponent).toDouble(),
+      );
+    }
   }
 }
 
@@ -314,19 +309,9 @@ class SkinModifier extends MeshModifier {
           final p = rPos.transformed(rInvBoneMatrices[i]);
           final d = p.length;
           if (d <= bone.radius) {
-            final value = _force(
-              distance: d,
-              radius: bone.radius,
-              strength: bone.strength,
-              exponent: bone.exponent,
-            );
             // rootにおけるボーンからの相対位置に変換して、影響力とともにリストアップ
-            boneValues.add(
-              MapEntry(
-                p.transformed(boneMatrices[i]),
-                value,
-              ),
-            );
+            final value = bone.valueOf(d);
+            boneValues.add(MapEntry(p.transformed(boneMatrices[i]), value));
             dominator += value;
           }
         }
@@ -358,18 +343,15 @@ class SkinModifier extends MeshModifier {
 /// [shape]: 成分を1より小さくすると、頂点の距離dが小さくなり、その軸方向に磁力が強く働く。
 ///   例えばX成分を小さくすると横長の棒磁石みたいな。
 @immutable
-class MagnetData {
-  final double radius;
-  final double strength;
-  final int exponent;
+class MagnetData extends BoneData {
   final Vector3 shape;
   final Matrix4 matrix;
   final bool mirror;
 
   const MagnetData({
-    this.radius = 1.0,
-    this.strength = 1.0,
-    this.exponent = 2,
+    super.radius = 1.0,
+    super.strength = 1.0,
+    super.exponent = 2,
     this.shape = Vector3.one,
     this.matrix = Matrix4.identity,
     this.mirror = false,
@@ -426,13 +408,7 @@ class MagnetModifier extends MeshModifier {
           final d = v.length;
           if (d >= 1e-4 && d <= magnet.value.radius) {
             // 距離による減衰
-            delta += v.normalized() *
-                _force(
-                  distance: d,
-                  radius: magnet.value.radius,
-                  strength: magnet.value.strength,
-                  exponent: magnet.value.exponent,
-                );
+            delta += v.normalized() * magnet.value.valueOf(d);
           }
         }
         vertices.add(vertex + delta);
