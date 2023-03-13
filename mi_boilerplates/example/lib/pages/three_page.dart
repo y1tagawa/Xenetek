@@ -18,6 +18,7 @@ import 'package:path_provider/path_provider.dart';
 import 'ex_app_bar.dart' as ex;
 
 typedef BoneData = mi.BoneData;
+typedef BoneType = mi.BoneType;
 typedef FlatEnd = mi.FlatEnd;
 typedef MagnetData = mi.MagnetData;
 typedef MagnetModifier = mi.MagnetModifier;
@@ -473,24 +474,26 @@ Future<void> _setup2(StringSink sink) async {
         magnets: [
           ...{
             // flat face
-            const Vector3(0.0, 0.0, -0.4): const MagnetData(
-              radius: 1.2,
+            const Vector3(0.0, 0.0, -0.22): const MagnetData(
+              //radius: 0.6,
               strength: -0.1,
+              exponent: -6,
+              type: BoneType.type2,
             ),
-            // chin
+            //chin
             const Vector3(0.0, -0.3, -0.4): const MagnetData(
               radius: 0.6,
               strength: 0.2,
               exponent: 2,
             ),
             // nose
-            const Vector3(0.0, 0.02, -0.35): MagnetData(
-              radius: 0.15,
-              strength: 1.0,
-              exponent: 4,
-              matrix: Matrix4.fromScale(const Vector3(1.4, 1.2, 1)) *
-                  Matrix4.fromAxisAngleRotation(axis: Vector3.unitX, degrees: 5.0),
-            ),
+            // const Vector3(0.0, 0.02, -0.35): MagnetData(
+            //   radius: 0.15,
+            //   strength: 1.0,
+            //   type: BoneType.type2,
+            //   matrix: Matrix4.fromScale(const Vector3(1.4, 1.2, 1)) *
+            //       Matrix4.fromAxisAngleRotation(axis: Vector3.unitX, degrees: 5.0),
+            // ),
             // eye sockets
             eyePosition.copyWith(z: -0.35): const MagnetData(
               radius: 1.0,

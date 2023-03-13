@@ -49,7 +49,13 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
 
 * 腕、ボーンがまっすぐ優先とメッシュがまっすぐ優先をどちらか作って曲げてみる。（_setup3）
   * → ボーン次第でかなり綺麗に曲げられる。
-  * ok: 半径と減衰(power)の対応付け
+  * 半径と減衰(power)の対応付け
+  * 前の、radiusでゼロにならない方の式も使いたい。（radiusで不連続になるので）
+    * (x-1)^exp がradiusで0.01になる正のexpをlogで算出(exponentは無視される)
+      * radius=1では定義されない（かつ反対に強くなる）のでradius>=1.0の場合0とする
+
+* 今のMeshをBoxに？
+  * 内部的にはMeshBuilder, MeshModifierだから不要かも
 
 * rigの変換コピー
   * ディープコピーして根っこだけ変換してadd

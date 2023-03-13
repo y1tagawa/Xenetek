@@ -230,38 +230,57 @@ class LookAtModifier extends MeshModifier {
   }
 }
 
+/// ボーンの種類
+enum BoneType { type1, type2 }
+
 /// ボーン
 @immutable
 class BoneData {
   final double radius;
   final double strength;
   final int exponent;
+  final BoneType type;
   const BoneData({
     this.radius = 1.0,
     this.strength = 1.0,
     this.exponent = 3,
-  })  : assert(radius >= 1e-4),
-        assert(exponent > 0);
+    this.type = BoneType.type1,
+  }) : assert(radius >= 1e-4); //,
+  //assert(exponent > 0);
 
   /// ボーンまたは磁石による影響
   ///
   /// 力の中心からの距離[distance]にある頂点の移動量を算出する。
-  /// 力は距離0において[strength], 距離[radius]において0となる[exponent]次曲線にしたがい減衰する。
-  /// gnuplotによる[radius]=0.5, [exponent]=1,2,3の減衰曲線の例:
-  /// r=0.5
-  /// plot [0:1][0:1] -(x/r-1),(x/r-1)**2,-(x/r-1)**3
-  ///
+  /// 式1、
+  ///   力は距離0において[strength], 距離[radius]において0となる[exponent]次曲線にしたがい減衰する。
+  ///   gnuplotによる[radius]=0.5, [exponent]=1,2,3の減衰曲線の例:
+  ///   r=0.5
+  ///   plot [0:1][0:1] -(x/r-1),(x/r-1)**2,-(x/r-1)**3
+  /// 式
   double valueOf(double distance) {
-    if (distance >= radius) {
-      return 0.0;
-    } else if (distance <= 1e-4) {
-      return strength * distance;
-    } else {
-      final sign = exponent % 2 == 0 ? 1.0 : -1.0;
-      return math.min(
-        strength * distance,
-        strength * sign * math.pow(distance / radius - 1.0, exponent).toDouble(),
-      );
+    switch (type) {
+      case BoneType.type1:
+        assert(exponent > 0);
+        if (distance >= radius) {
+          return 0.0;
+        }
+        if (distance <= 1e-4) {
+          return strength * distance;
+        }
+        final sign = exponent % 2 == 0 ? 1.0 : -1.0;
+        return strength * math.min(distance, sign * math.pow(distance / radius - 1.0, exponent));
+
+      case BoneType.type2:
+        assert(exponent < 0);
+        // if (distance >= radius) {
+        //   return 0.0;
+        // }
+        if (distance <= 1e-4) {
+          return strength * distance;
+        }
+        //final n = -2 / math.log(radius + 1.0);
+        //print('$radius, ${math.pow(radius + 1.0, n)} $n, ${math.pow(distance + 1.0, n)}');
+        return strength * math.min(distance, math.pow(distance + 1.0, exponent));
     }
   }
 }
@@ -352,11 +371,12 @@ class MagnetData extends BoneData {
     super.radius = 1.0,
     super.strength = 1.0,
     super.exponent = 2,
+    super.type = BoneType.type1,
     this.shape = Vector3.one,
     this.matrix = Matrix4.identity,
     this.mirror = false,
-  })  : assert(radius >= 1e-4),
-        assert(exponent > 0);
+  }) : assert(radius >= 1e-4); //,
+  //assert(exponent > 0);
 }
 
 /// マグネットモディファイア
