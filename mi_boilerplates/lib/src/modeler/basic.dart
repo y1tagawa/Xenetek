@@ -447,28 +447,18 @@ class BezierVector3 implements Bezier<Vector3> {
   }
 }
 
-abstract class _Length<U> extends Parametric<double, U> {
+@immutable
+abstract class _Itinerary<U> extends Parametric<double, U> {
   final Parametric<double, U> original;
   final int resolution;
-  final List<MapEntry<double, U>> _points;
 
-  _Length({
+  const _Itinerary({
     required this.original,
     this.resolution = 100,
   })  : assert(resolution > 0),
-        _points = <MapEntry<double, U>>[],
         super();
 
-  List<MapEntry<double, U>> get points {
-    if (points.isEmpty) {
-      makePoints();
-    }
-    assert(_points.isNotEmpty);
-    return _points;
-  }
-
-  @protected
-  void makePoints();
+  List<MapEntry<double, U>> get points;
 
   @override
   U transform(double t) {
@@ -490,14 +480,24 @@ abstract class _Length<U> extends Parametric<double, U> {
   }
 }
 
-class LengthVector3 extends _Length<Vector3> {
-  LengthVector3({
+@immutable
+class ItineraryVector3 extends _Itinerary<Vector3> {
+  final _points = <MapEntry<double, Vector3>>[];
+
+  ItineraryVector3({
     required super.original,
     super.resolution = 100,
   });
 
   @override
-  void makePoints() {
+  List<MapEntry<double, Vector3>> get points {
+    if (_points.isEmpty) {
+      _makePoints();
+    }
+    return _points;
+  }
+
+  void _makePoints() {
     List<Vector3> t = <Vector3>[];
     for (int i = 0; i < resolution; ++i) {
       final u = i / resolution;
@@ -510,7 +510,7 @@ class LengthVector3 extends _Length<Vector3> {
       p += (t[i + 1] - t[i]).length;
     }
     u[p] = t.last;
-    _points.addAll(u.entries);
+    _points.addAll(u.entries.toList());
   }
 }
 
