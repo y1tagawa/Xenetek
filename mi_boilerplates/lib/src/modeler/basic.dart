@@ -447,6 +447,73 @@ class BezierVector3 implements Bezier<Vector3> {
   }
 }
 
+abstract class _Length<U> extends Parametric<double, U> {
+  final Parametric<double, U> original;
+  final int resolution;
+  final List<MapEntry<double, U>> _points;
+
+  _Length({
+    required this.original,
+    this.resolution = 100,
+  })  : assert(resolution > 0),
+        _points = <MapEntry<double, U>>[],
+        super();
+
+  List<MapEntry<double, U>> get points {
+    if (points.isEmpty) {
+      makePoints();
+    }
+    assert(_points.isNotEmpty);
+    return _points;
+  }
+
+  @protected
+  void makePoints();
+
+  @override
+  U transform(double t) {
+    if (t < 0.0) {
+      return points.first.value;
+    } else if (t > 1.0) {
+      return points.last.value;
+    } else {
+      assert(points.last.key >= 1e-4);
+      final t_ = t / points.last.key;
+      // todo: binary search
+      for (final u in points) {
+        if (u.key >= t_) {
+          return u.value;
+        }
+      }
+      return points.last.value;
+    }
+  }
+}
+
+class LengthVector3 extends _Length<Vector3> {
+  LengthVector3({
+    required super.original,
+    super.resolution = 100,
+  });
+
+  @override
+  void makePoints() {
+    List<Vector3> t = <Vector3>[];
+    for (int i = 0; i < resolution; ++i) {
+      final u = i / resolution;
+      t.add(original.transform(u));
+    }
+    Map<double, Vector3> u = <double, Vector3>{};
+    double p = 0;
+    for (int i = 0; i < resolution - 1; ++i) {
+      u[p] = t[i];
+      p += (t[i + 1] - t[i]).length;
+    }
+    u[p] = t.last;
+    _points.addAll(u.entries);
+  }
+}
+
 //
 // リグ
 //
