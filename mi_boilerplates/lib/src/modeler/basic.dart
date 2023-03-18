@@ -447,13 +447,16 @@ class BezierVector3 implements Bezier<Vector3> {
   }
 }
 
+/// 始点からの曲線に沿った距離（近似値）に比例した位置を返すパラメトリック関数
+///
+/// 原始関数F(0),F(1)がf(0),f(1)に対応する。
 @immutable
 abstract class _Itinerary<U> extends Parametric<double, U> {
-  final Parametric<double, U> original;
+  final Parametric<double, U> primitive;
   final int resolution;
 
   const _Itinerary({
-    required this.original,
+    required this.primitive,
     this.resolution = 100,
   })  : assert(resolution > 0),
         super();
@@ -480,12 +483,13 @@ abstract class _Itinerary<U> extends Parametric<double, U> {
   }
 }
 
+/// 始点からの曲線に沿った距離（近似値）に比例した位置を返すパラメトリック関数(Vector3)
 @immutable
 class ItineraryVector3 extends _Itinerary<Vector3> {
   final _points = <MapEntry<double, Vector3>>[];
 
   ItineraryVector3({
-    required super.original,
+    required super.primitive,
     super.resolution = 100,
   });
 
@@ -501,7 +505,7 @@ class ItineraryVector3 extends _Itinerary<Vector3> {
     List<Vector3> t = <Vector3>[];
     for (int i = 0; i < resolution; ++i) {
       final u = i / resolution;
-      t.add(original.transform(u));
+      t.add(primitive.transform(u));
     }
     Map<double, Vector3> u = <double, Vector3>{};
     double p = 0;
