@@ -217,11 +217,9 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   }) : assert(longitudeDivision >= 2);
 
   /// 母線生成(Y軸周り)
-  @protected
   List<Vector3> makeGeneratingLine();
 
   /// 経線生成(Y軸周り)
-  @protected
   List<Vector3> makeLineOfLongitude({
     required List<Vector3> generatingLine,
     required int index,
@@ -236,7 +234,6 @@ abstract class _SorBuilder extends PrimitiveBuilder {
           .toList();
 
   /// 頂点生成
-  @protected
   List<Vector3> makeVertices() {
     final generatingLine = makeGeneratingLine();
     final vertices = makeLineOfLongitude(
@@ -258,7 +255,6 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   }
 
   /// 面生成
-  @protected
   List<MeshFace> makeFaces({
     required List<Vector3> vertices,
   }) {
@@ -327,7 +323,6 @@ class SphereBuilder extends _SorBuilder {
         assert(radius is double || radius is Vector3);
 
   /// 母線生成(Y軸周り)
-  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     // 扁球面
@@ -374,7 +369,6 @@ class SpindleBuilder extends _SorBuilder {
         assert(radius is double || radius is Vector3);
 
   /// 母線生成(Y軸周り)
-  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     // 紡錘面(正弦曲線)
@@ -424,7 +418,6 @@ class TeardropBuilder extends SpindleBuilder {
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1);
 
-  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     final points = _points.replacedAt(2, _points[2].copyWith(y: shape));
@@ -439,7 +432,7 @@ class TeardropBuilder extends SpindleBuilder {
   }
 }
 
-/// 一般回転表面ビルダ
+/// パラメトリック回転表面ビルダ
 ///
 /// パラメトリック曲線を輪郭とする形状を生成する。
 class SorBuilder extends _SorBuilder {
@@ -452,6 +445,7 @@ class SorBuilder extends _SorBuilder {
   final Parametric<double, Vector3> frontCurve;
   final Parametric<double, Vector3> backCurve;
 
+  /// パラメトリック回転表面
   const SorBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
@@ -468,6 +462,7 @@ class SorBuilder extends _SorBuilder {
         frontCurve = curve,
         backCurve = curve;
 
+  /// 左右前後の輪郭線を補間する
   const SorBuilder.fromRLFBCurves({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
@@ -484,12 +479,10 @@ class SorBuilder extends _SorBuilder {
         assert(heightDivision >= 2);
 
   /// 母線(Y軸周り)は使用しない
-  @protected
   @override
   List<Vector3> makeGeneratingLine() => <Vector3>[];
 
   /// 経線生成(Y軸周り)
-  @protected
   @override
   List<Vector3> makeLineOfLongitude({
     required List<Vector3> generatingLine, //使用しない
@@ -587,7 +580,6 @@ class TubeBuilder extends _SorBuilder {
         assert(heightDivision >= 1);
 
   /// 母線生成(Y軸周り)
-  @protected
   @override
   List<Vector3> makeGeneratingLine() {
     // todo: 母線再利用
