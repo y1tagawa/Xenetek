@@ -675,7 +675,7 @@ class _ModelerTab extends ConsumerWidget {
             final tempDir = await _getModelTempFileDir();
             final file = File('$tempDir/temp.obj');
             final sink = file.openWrite();
-            await _setup2(sink);
+            await _setup(sink);
             await sink.close();
             //_cubeDataStream.add(_toCube(meshDataArray));
             _cubeDataStream.add(await _getCube());

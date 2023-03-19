@@ -1143,6 +1143,43 @@ abstract class MeshBuilder {
   MeshData build();
 }
 
+/// 単一のメッシュオブジェクトからなるメッシュデータを生成するメッシュビルダの基底クラス
+@immutable
+abstract class PrimitiveBuilder extends MeshBuilder {
+  final String materialLibrary;
+  final String material;
+  final bool smooth;
+  final bool reverse;
+
+  const PrimitiveBuilder({
+    this.materialLibrary = '',
+    this.material = '',
+    this.smooth = true,
+    this.reverse = false,
+  });
+
+  MeshObject makeObject();
+
+  @override
+  MeshData build() {
+    final object = makeObject();
+    final faceGroups = [
+      ...object.faceGroups.map(
+        (it) => it
+            .copyWith(
+              materialLibrary: materialLibrary,
+              material: material,
+              smooth: smooth,
+            )
+            .let((it) => reverse ? it.reversed() : it),
+      ),
+    ];
+    return <MeshObject>[
+      object.copyWith(faceGroups: faceGroups),
+    ];
+  }
+}
+
 /// メッシュモディファイアの基底クラス
 @immutable
 abstract class MeshModifier {

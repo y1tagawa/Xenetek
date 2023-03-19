@@ -85,7 +85,7 @@ const _cubeMeshObject = MeshObject(
 
 /// 直方体メッシュビルダ
 @immutable
-class CubeBuilder extends MeshBuilder {
+class CubeBuilder extends PrimitiveBuilder {
   final Vector3 min;
   final Vector3 max;
   final int tessellationLevel;
@@ -94,10 +94,14 @@ class CubeBuilder extends MeshBuilder {
     this.min = const Vector3(-0.5, 0, -0.5),
     this.max = const Vector3(0.5, 1, 0.5),
     this.tessellationLevel = 0,
+    super.materialLibrary = '',
+    super.material = '',
+    super.smooth = false,
+    super.reverse = false,
   }) : assert(tessellationLevel >= 0);
 
   @override
-  MeshData build() {
+  MeshObject makeObject() {
     final vertices = _cubeVertices
         .map(
           (it) => Vector3(
@@ -107,9 +111,7 @@ class CubeBuilder extends MeshBuilder {
           ),
         )
         .toList();
-    return <MeshObject>[
-      _cubeMeshObject.copyWith(vertices: vertices).tessellated(tessellationLevel),
-    ];
+    return _cubeMeshObject.copyWith(vertices: vertices).tessellated(tessellationLevel);
   }
 }
 
@@ -198,24 +200,20 @@ const pinMeshObject = MeshObject(
 
 /// 回転体メッシュビルダ基底クラス
 @immutable
-abstract class _SorBuilder extends MeshBuilder {
+abstract class _SorBuilder extends PrimitiveBuilder {
   // ignore: unused_field
   static final _logger = Logger('_SorBuilder');
 
   final int longitudeDivision;
   final Vector3 axis;
-  final String materialLibrary;
-  final String material;
-  final bool smooth;
-  final bool reverse;
 
   const _SorBuilder({
     this.longitudeDivision = 24,
     this.axis = Vector3.unitY,
-    this.materialLibrary = '',
-    this.material = '',
-    this.smooth = true,
-    this.reverse = false,
+    super.materialLibrary = '',
+    super.material = '',
+    super.smooth = true,
+    super.reverse = false,
   }) : assert(longitudeDivision >= 2);
 
   /// 母線生成(Y軸周り)
@@ -289,22 +287,18 @@ abstract class _SorBuilder extends MeshBuilder {
   /// メッシュデータ生成
   /// todo: axis
   @override
-  MeshData build() {
+  MeshObject makeObject() {
     assert(longitudeDivision >= 2);
     final vertices = makeVertices();
     final faces = makeFaces(vertices: vertices);
-    final object = MeshObject(
+    return MeshObject(
       vertices: vertices,
       faceGroups: <MeshFaceGroup>[
         MeshFaceGroup(
           faces: faces,
-          materialLibrary: materialLibrary,
-          material: material,
-          smooth: smooth,
         ),
       ],
-    ).let((it) => reverse ? it.reversed() : it);
-    return <MeshObject>[object];
+    );
   }
 }
 
@@ -445,12 +439,12 @@ class TeardropBuilder extends SpindleBuilder {
   }
 }
 
-/// 輪郭線回転表面ビルダ
+/// 一般回転表面ビルダ
 ///
 /// パラメトリック曲線を輪郭とする形状を生成する。
-class ParametricBuilder extends _SorBuilder {
+class SorBuilder extends _SorBuilder {
   // ignore: unused_field
-  static final _logger = Logger('ParametricBuilder');
+  static final _logger = Logger('SorBuilder');
 
   final int heightDivision;
   final Parametric<double, Vector3> rightCurve;
@@ -458,7 +452,7 @@ class ParametricBuilder extends _SorBuilder {
   final Parametric<double, Vector3> frontCurve;
   final Parametric<double, Vector3> backCurve;
 
-  const ParametricBuilder({
+  const SorBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     required Bezier<Vector3> curve,
@@ -474,7 +468,7 @@ class ParametricBuilder extends _SorBuilder {
         frontCurve = curve,
         backCurve = curve;
 
-  const ParametricBuilder.fromRLFBCurves({
+  const SorBuilder.fromRLFBCurves({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
     required this.rightCurve,

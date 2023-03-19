@@ -102,6 +102,8 @@ MeshData _belly({
       min: Vector3(-rig.coxaPosition.x * 1.5, 0, rig.scPosition.z),
       max: Vector3(rig.coxaPosition.x * 1.5, rig.bellyLength, -rig.scPosition.z * 0.5),
       tessellationLevel: 3,
+      materialLibrary: 'x11.mtl',
+      material: 'cornflowerBlue',
     ),
     origin: origin,
     modifier: SkinModifier(

@@ -172,7 +172,9 @@ extension WavefrontObjWriter on Iterable<MeshObject> {
       // 面グループ
       for (final faceGroup in object.faceGroups) {
         sink.writeln('s ${faceGroup.smooth ? 1 : 0}');
-        sink.writeln('usemtl ${faceGroup.material}'); // マテリアルが空ならデフォルトに戻る
+        if (materialLibraries.isNotEmpty) {
+          sink.writeln('usemtl ${faceGroup.material}'); // マテリアルが空ならデフォルトに戻る
+        }
         // 面頂点
         for (final face in faceGroup.faces) {
           assert(face.length >= 3);
@@ -197,6 +199,9 @@ extension WavefrontObjWriter on Iterable<MeshObject> {
             }
           }
           sink.writeln();
+        }
+        if (materialLibraries.isNotEmpty) {
+          sink.writeln('usemtl'); // マテリアルをデフォルトに
         }
       }
 
