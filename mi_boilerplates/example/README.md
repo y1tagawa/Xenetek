@@ -54,7 +54,7 @@ scripts/open_moji/assets/open_moji/*.svgを削除してから実行する。
     * (x-1)^exp がradiusで0.01になる正のexpをlogで算出(exponentは無視される)
       * radius=1では定義されない（かつ反対に強くなる）のでradius>=1.0の場合0とする
 
-* human->biped 熊とかエルフとか
+* usemtl だけだとデフォルトに戻ってくれないので工夫
 
 * 今のMeshをBoxに？
   * 内部的にはMeshBuilder, MeshModifierだから不要かも

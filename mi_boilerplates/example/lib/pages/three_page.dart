@@ -231,7 +231,7 @@ Future<void> _setup(StringSink sink) async {
   final footObj = await rootBundle.loadString('assets/3d/foot.obj');
   final footMesh = mi.MeshDataHelper.fromWavefrontObj(footObj);
 
-  const dollBuilder = mi.HumanRigBuilder();
+  const dollBuilder = mi.BipedRigBuilder();
   var root = dollBuilder.build();
   final initRoot = root;
 
@@ -301,7 +301,7 @@ Future<void> _setup(StringSink sink) async {
         matrix: Matrix4.fromAxisAngleRotation(axis: mi.Vector3.unitY, degrees: 30),
       );
   //
-  final dollMeshBuilder = mi.HumanMeshBuilder(
+  final dollMeshBuilder = mi.BipedMeshBuilder(
     rigBuilder: dollBuilder,
     referencePosition: initRoot,
     root: root,

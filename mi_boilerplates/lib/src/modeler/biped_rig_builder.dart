@@ -26,9 +26,9 @@ extension _NodeHelper on Node {
 ///
 /// カスタマイズの基底クラス。
 /// todo: copyWithなど
-class HumanRigBuilder {
+class BipedRigBuilder {
   // ignore: unused_field
-  static final _logger = Logger('HumanRigBuilder');
+  static final _logger = Logger('BipedRigBuilder');
 
   // ノードパス
   static const pelvis = 'pelvis';
@@ -84,7 +84,7 @@ class HumanRigBuilder {
   // TODO: 適当な初期値を適正に
   // https://www.airc.aist.go.jp/dhrt/91-92/data/search2.html
   // todo: ここらの変数をDIに
-  const HumanRigBuilder({
+  const BipedRigBuilder({
     // 骨格
     this.pelvisPosition = Vector3.zero,
     this.bellyLength = 0.3,
@@ -176,9 +176,9 @@ class HumanRigBuilder {
 
 /// ドールリグ頭部(mk1)を生成する。
 ///
-class HumanHeadRigBuilder {
+class HeadRigBuilder {
   // ignore: unused_field
-  static final _logger = Logger('HumanHeadRigBuilder');
+  static final _logger = Logger('HeadRigBuilder');
 
   // ノードパス
   // todo: '...head.eye'とするか、'...head.foramen.eye'とするか。
@@ -196,7 +196,7 @@ class HumanHeadRigBuilder {
   final double mandibleSize; //
 
   // TODO: 適当な初期値を適正に
-  const HumanHeadRigBuilder({
+  const HeadRigBuilder({
     this.foramenPosition = Vector3.zero,
     this.eyePosition = const Vector3(0.05, 0.1, -0.15),
     this.earPosition = const Vector3(0.15, 0.15, 0.0),

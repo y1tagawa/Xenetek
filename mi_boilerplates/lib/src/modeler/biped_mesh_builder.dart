@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:logging/logging.dart';
 
 import 'basic.dart';
-import 'human_rig_builder.dart';
+import 'biped_rig_builder.dart';
 import 'mesh_builder.dart';
 import 'mesh_modifier.dart';
 
@@ -65,7 +65,7 @@ MeshData _mesh({
 }
 
 MeshData _chest({
-  required HumanRigBuilder rig,
+  required BipedRigBuilder rig,
   required Node root,
   required Node initRoot,
   required String origin,
@@ -81,9 +81,9 @@ MeshData _chest({
     modifiers: [
       SkinModifier(
         bones: {
-          HumanRigBuilder.chest: const BoneData(),
-          HumanRigBuilder.rSc: const BoneData(),
-          HumanRigBuilder.lSc: const BoneData(),
+          BipedRigBuilder.chest: const BoneData(),
+          BipedRigBuilder.rSc: const BoneData(),
+          BipedRigBuilder.lSc: const BoneData(),
         }.entries.toList(),
         referencePosition: initRoot,
       ),
@@ -92,7 +92,7 @@ MeshData _chest({
 }
 
 MeshData _belly({
-  required HumanRigBuilder rig,
+  required BipedRigBuilder rig,
   required Node root,
   required Node initRoot,
   required String origin,
@@ -108,10 +108,10 @@ MeshData _belly({
     origin: origin,
     modifier: SkinModifier(
       bones: {
-        HumanRigBuilder.pelvis: const BoneData(),
-        HumanRigBuilder.chest: const BoneData(),
-        HumanRigBuilder.rCoxa: const BoneData(),
-        HumanRigBuilder.lCoxa: const BoneData(),
+        BipedRigBuilder.pelvis: const BoneData(),
+        BipedRigBuilder.chest: const BoneData(),
+        BipedRigBuilder.rCoxa: const BoneData(),
+        BipedRigBuilder.lCoxa: const BoneData(),
       }.entries.toList(),
       referencePosition: initRoot,
     ),
@@ -121,17 +121,17 @@ MeshData _belly({
 //
 
 /// ドール(mk1)リグに合わせてメッシュを配置する。
-class HumanMeshBuilder extends MeshBuilder {
+class BipedMeshBuilder extends MeshBuilder {
   // ignore: unused_field
-  static final _logger = Logger('HumanMeshBuilder');
+  static final _logger = Logger('BipedMeshBuilder');
 
-  final HumanRigBuilder rigBuilder;
+  final BipedRigBuilder rigBuilder;
   final Node referencePosition;
   final Node root;
   final MeshData? headMesh; // 頭
   final MeshData? footMesh; // 右足
 
-  const HumanMeshBuilder({
+  const BipedMeshBuilder({
     required this.rigBuilder,
     required this.referencePosition,
     required this.root,
@@ -148,94 +148,94 @@ class HumanMeshBuilder extends MeshBuilder {
       rig: rigBuilder,
       root: root,
       initRoot: referencePosition,
-      origin: HumanRigBuilder.pelvis,
+      origin: BipedRigBuilder.pelvis,
     );
     buffer['chest'] = _chest(
       rig: rigBuilder,
       root: root,
       initRoot: referencePosition,
-      origin: HumanRigBuilder.chest,
-      target: HumanRigBuilder.neck,
+      origin: BipedRigBuilder.chest,
+      target: BipedRigBuilder.neck,
     );
     buffer['neck'] = _limb(
       root: root,
-      origin: HumanRigBuilder.neck,
-      target: HumanRigBuilder.head,
+      origin: BipedRigBuilder.neck,
+      target: BipedRigBuilder.head,
       beginRadius: rigBuilder.neckRadius,
       endRadius: rigBuilder.neckRadius,
       heightDivision: 4,
     );
     if (headMesh != null) {
-      buffer['head'] = _mesh(root: root, origin: HumanRigBuilder.head, data: headMesh!);
+      buffer['head'] = _mesh(root: root, origin: BipedRigBuilder.head, data: headMesh!);
     }
     // 右下肢
     buffer['rThigh'] = _limb(
       root: root,
-      origin: HumanRigBuilder.rCoxa,
-      target: HumanRigBuilder.rKnee,
+      origin: BipedRigBuilder.rCoxa,
+      target: BipedRigBuilder.rKnee,
       beginRadius: rigBuilder.coxaRadius,
       endRadius: rigBuilder.kneeRadius,
     );
     buffer['rShank'] = _limb(
       root: root,
-      origin: HumanRigBuilder.rKnee,
-      target: HumanRigBuilder.rAnkle,
+      origin: BipedRigBuilder.rKnee,
+      target: BipedRigBuilder.rAnkle,
       beginRadius: rigBuilder.kneeRadius,
       endRadius: rigBuilder.ankleRadius,
     );
     if (footMesh != null) {
-      buffer['rFoot'] = _mesh(root: root, origin: HumanRigBuilder.rAnkle, data: footMesh!);
+      buffer['rFoot'] = _mesh(root: root, origin: BipedRigBuilder.rAnkle, data: footMesh!);
     }
     // 左下肢
     buffer['lThigh'] = _limb(
       root: root,
-      origin: HumanRigBuilder.lCoxa,
-      target: HumanRigBuilder.lKnee,
+      origin: BipedRigBuilder.lCoxa,
+      target: BipedRigBuilder.lKnee,
       beginRadius: rigBuilder.coxaRadius,
       endRadius: rigBuilder.kneeRadius,
     );
     buffer['lShank'] = _limb(
       root: root,
-      origin: HumanRigBuilder.lKnee,
-      target: HumanRigBuilder.lAnkle,
+      origin: BipedRigBuilder.lKnee,
+      target: BipedRigBuilder.lAnkle,
       beginRadius: rigBuilder.kneeRadius,
       endRadius: rigBuilder.ankleRadius,
     );
     if (footMesh != null) {
       buffer['lFoot'] =
-          _mesh(root: root, origin: HumanRigBuilder.lAnkle, data: footMesh!.mirrored());
+          _mesh(root: root, origin: BipedRigBuilder.lAnkle, data: footMesh!.mirrored());
     }
     // 右上肢
     buffer['rCollarBone'] =
-        _pin(root: root, origin: HumanRigBuilder.rSc, target: HumanRigBuilder.rShoulder);
+        _pin(root: root, origin: BipedRigBuilder.rSc, target: BipedRigBuilder.rShoulder);
     buffer['rUpperArm'] = _limb(
       root: root,
-      origin: HumanRigBuilder.rShoulder,
-      target: HumanRigBuilder.rElbow,
+      origin: BipedRigBuilder.rShoulder,
+      target: BipedRigBuilder.rElbow,
       beginRadius: rigBuilder.shoulderRadius,
       endRadius: rigBuilder.elbowRadius,
     );
     buffer['rForeArm'] = _limb(
       root: root,
-      origin: HumanRigBuilder.rElbow,
-      target: HumanRigBuilder.rWrist,
+      origin: BipedRigBuilder.rElbow,
+      target: BipedRigBuilder.rWrist,
       beginRadius: rigBuilder.elbowRadius,
       endRadius: rigBuilder.wristRadius,
     );
     // 左上肢
     buffer['lCollarBone'] =
-        _pin(root: root, origin: HumanRigBuilder.lSc, target: HumanRigBuilder.lShoulder);
+        _pin(root: root, origin: BipedRigBuilder.lSc, target: BipedRigBuilder.lShoulder);
     buffer['lUpperArm'] = _limb(
       root: root,
-      origin: HumanRigBuilder.lShoulder,
-      target: HumanRigBuilder.lElbow,
+      origin: BipedRigBuilder.lShoulder,
+      target: BipedRigBuilder.lElbow,
       beginRadius: rigBuilder.shoulderRadius,
       endRadius: rigBuilder.elbowRadius,
     );
     buffer['lForeArm'] = _limb(
       root: root,
-      origin: HumanRigBuilder.lElbow,
-      target: HumanRigBuilder.lWrist,
+      origin: BipedRigBuilder.lElbow,
+      target: BipedRigBuilder.lWrist,
       beginRadius: rigBuilder.elbowRadius,
       endRadius: rigBuilder.wristRadius,
     );

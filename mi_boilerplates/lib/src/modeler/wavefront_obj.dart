@@ -200,9 +200,6 @@ extension WavefrontObjWriter on Iterable<MeshObject> {
           }
           sink.writeln();
         }
-        if (materialLibraries.isNotEmpty) {
-          sink.writeln('usemtl'); // マテリアルをデフォルトに
-        }
       }
 
       vertexIndex += object.vertices.length;
