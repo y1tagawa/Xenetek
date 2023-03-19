@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
+import 'dart:math' as math hide pi, sin, cos;
+import 'dart:math' show pi, sin, cos;
 
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
@@ -222,13 +223,13 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   /// 経線生成(Y軸周り)
   List<Vector3> makeLineOfLongitude({
     required List<Vector3> generatingLine,
-    required int index,
+    required double longitude,
   }) =>
       generatingLine
           .transformed(
             Matrix4.fromAxisAngleRotation(
               axis: Vector3.unitY,
-              radians: index * math.pi * 2.0 / longitudeDivision,
+              radians: longitude,
             ),
           )
           .toList();
@@ -238,14 +239,14 @@ abstract class _SorBuilder extends PrimitiveBuilder {
     final generatingLine = makeGeneratingLine();
     final vertices = makeLineOfLongitude(
       generatingLine: generatingLine,
-      index: 0,
+      longitude: 0.0,
     );
     final n = vertices.length;
     assert(n >= 2);
     for (int i = 1; i < longitudeDivision; ++i) {
       final lineOfLongitude = makeLineOfLongitude(
         generatingLine: generatingLine,
-        index: i,
+        longitude: i * (2.0 * pi) / longitudeDivision,
       );
       // 全ての経線の頂点数は同一でなければならない
       assert(lineOfLongitude.length == n);
@@ -328,8 +329,8 @@ class SphereBuilder extends _SorBuilder {
     // 扁球面
     final vertices = <Vector3>[const Vector3(0.0, -1.0, 0.0)];
     for (int i = 1; i < latitudeDivision; ++i) {
-      final t = i * math.pi / latitudeDivision;
-      vertices.add(Vector3(math.sin(t), -math.cos(t), 0.0));
+      final t = i * pi / latitudeDivision;
+      vertices.add(Vector3(sin(t), -cos(t), 0.0));
     }
     vertices.add(const Vector3(0.0, 1.0, 0.0));
     return vertices;
@@ -375,7 +376,7 @@ class SpindleBuilder extends _SorBuilder {
     final vertices = <Vector3>[Vector3.zero];
     for (int i = 0; i < heightDivision; ++i) {
       final h = i / heightDivision;
-      vertices.add(Vector3(math.sin(h * math.pi) * 0.5, h, 0.0));
+      vertices.add(Vector3(sin(h * pi) * 0.5, h, 0.0));
     }
     vertices.add(Vector3.unitY);
     return vertices;
@@ -486,14 +487,12 @@ class SorBuilder extends _SorBuilder {
   @override
   List<Vector3> makeLineOfLongitude({
     required List<Vector3> generatingLine, //使用しない
-    required int index,
+    required double longitude,
   }) {
-    final longitude = index * 2.0 * math.pi / longitudeDivision;
-    final cosL = math.cos(longitude), sinL = math.sin(longitude);
+    final cosL = cos(longitude), sinL = sin(longitude);
     final vertices = <Vector3>[];
-    final xCurve =
-        (index - longitudeDivision ~/ 4) <= longitudeDivision ~/ 2 ? leftCurve : rightCurve;
-    final zCurve = index <= longitudeDivision ~/ 2 ? frontCurve : backCurve;
+    final xCurve = longitude < (0.5 * pi) || longitude > (1.5 * pi) ? leftCurve : rightCurve;
+    final zCurve = longitude <= pi ? frontCurve : backCurve;
     for (int i = 0; i <= heightDivision; ++i) {
       final t = i / heightDivision;
       final x = xCurve.transform(t);
@@ -604,8 +603,8 @@ class TubeBuilder extends _SorBuilder {
         final domeHeight = domeEnd.height == double.infinity ? beginRadius : domeEnd.height;
         for (int i = 0; i < domeEnd.division; ++i) {
           final t = i / domeEnd.division;
-          final a = (1.0 - t) * math.pi * 0.5;
-          vertices.add(Vector3(math.cos(a) * beginRadius, math.sin(a) * -domeHeight, 0.0));
+          final a = (1.0 - t) * (0.5 * pi);
+          vertices.add(Vector3(cos(a) * beginRadius, sin(a) * -domeHeight, 0.0));
         }
         break;
       default: // OpenEnd
@@ -633,8 +632,8 @@ class TubeBuilder extends _SorBuilder {
         final domeHeight = domeEnd.height == double.infinity ? endRadius : domeEnd.height;
         for (int i = 1; i <= domeEnd.division; ++i) {
           final t = i / domeEnd.division;
-          final a = t * math.pi * 0.5;
-          vertices.add(Vector3(math.cos(a) * endRadius, math.sin(a) * domeHeight + height, 0.0));
+          final a = t * (0.5 * pi);
+          vertices.add(Vector3(cos(a) * endRadius, sin(a) * domeHeight + height, 0.0));
         }
         break;
       default: // OpenEnd
