@@ -221,15 +221,17 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   List<Vector3> makeGeneratingLine();
 
   /// 経線生成(Y軸周り)
-  List<Vector3> makeLineOfLongitude({
+  ///
+  /// t=[0,1]が[0,2π]に対応する
+  List<Vector3> makeMeridian({
     required List<Vector3> generatingLine,
-    required double longitude,
+    required double t,
   }) =>
       generatingLine
           .transformed(
             Matrix4.fromAxisAngleRotation(
               axis: Vector3.unitY,
-              radians: longitude,
+              radians: t * (2.0 * pi),
             ),
           )
           .toList();
@@ -237,16 +239,16 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   /// 頂点生成
   List<Vector3> makeVertices() {
     final generatingLine = makeGeneratingLine();
-    final vertices = makeLineOfLongitude(
+    final vertices = makeMeridian(
       generatingLine: generatingLine,
-      longitude: 0.0,
+      t: 0.0,
     );
     final n = vertices.length;
     assert(n >= 2);
     for (int i = 1; i < longitudeDivision; ++i) {
-      final lineOfLongitude = makeLineOfLongitude(
+      final lineOfLongitude = makeMeridian(
         generatingLine: generatingLine,
-        longitude: i * (2.0 * pi) / longitudeDivision,
+        t: i / longitudeDivision,
       );
       // 全ての経線の頂点数は同一でなければならない
       assert(lineOfLongitude.length == n);
@@ -484,19 +486,22 @@ class SorBuilder extends _SorBuilder {
   List<Vector3> makeGeneratingLine() => <Vector3>[];
 
   /// 経線生成(Y軸周り)
+  ///
+  /// [slice]を未指定の場合、t=[0,1]が[0,2π]に対応する
   @override
-  List<Vector3> makeLineOfLongitude({
+  List<Vector3> makeMeridian({
     required List<Vector3> generatingLine, //使用しない
-    required double longitude,
+    required double t,
   }) {
+    final longitude = t * (2.0 * pi);
     final cosL = cos(longitude), sinL = sin(longitude);
     final vertices = <Vector3>[];
     final xCurve = longitude < (0.5 * pi) || longitude > (1.5 * pi) ? left : right;
     final zCurve = longitude <= pi ? front : back;
     for (int i = 0; i <= heightDivision; ++i) {
-      final t = i / heightDivision;
-      final x = xCurve.transform(t);
-      final z = zCurve.transform(t);
+      final u = i / heightDivision;
+      final x = xCurve.transform(u);
+      final z = zCurve.transform(u);
       // 半径とy座標は経度をもとに重みづけ
       final r = math.sqrt(math.pow(cosL * x.x, 2) + math.pow(sinL * z.x, 2));
       final y = math.sqrt(math.pow(cosL * x.y, 2) + math.pow(sinL * z.y, 2));
