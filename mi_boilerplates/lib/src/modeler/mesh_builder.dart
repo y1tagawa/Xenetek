@@ -496,8 +496,8 @@ class SorBuilder extends _SorBuilder {
     final longitude = t * (2.0 * pi);
     final cosL = cos(longitude), sinL = sin(longitude);
     final vertices = <Vector3>[];
-    final xCurve = longitude < (0.5 * pi) || longitude > (1.5 * pi) ? left : right;
-    final zCurve = longitude <= pi ? front : back;
+    final xCurve = t < 0.25 || t > 0.75 ? left : right;
+    final zCurve = t < 0.5 ? front : back;
     for (int i = 0; i <= heightDivision; ++i) {
       final u = i / heightDivision;
       final x = xCurve.transform(u);
