@@ -236,6 +236,14 @@ Future<void> _setup(StringSink sink) async {
   final initRoot = root;
 
   root = root.add(
+    path: 'lathe',
+    child: Node(
+      matrix: Matrix4.fromTranslation(
+        const mi.Vector3(-2, 1, 0),
+      ),
+    ),
+  );
+  root = root.add(
     path: 'spindle',
     child: Node(
       matrix: Matrix4.fromTranslation(
@@ -359,10 +367,10 @@ Future<void> _setup(StringSink sink) async {
   final tempMesh = Mesh(
     origin: 'ball',
     // data: mi.ParametricBuilder.fromRLFBCurves(
-    //   rightCurve: tempBezier,
-    //   leftCurve: tempBezier,
-    //   frontCurve: tempBezier2,
-    //   backCurve: tempBezier,
+    //   right: tempBezier,
+    //   left: tempBezier,
+    //   front: tempBezier2,
+    //   back: tempBezier,
     // ),
     data: const mi.TeardropBuilder(
       //shape: 0.85,
@@ -435,7 +443,21 @@ Future<void> _setup(StringSink sink) async {
   //   ),
   // ).toMeshData(root: root);
 
+  const tempData4 = 'M 2,0 C 2,0 0,2 0,0 0,2 -2,-0 -2,-0 -4,-1.3 -1.5,-2 0,-2 c 1.5,0 4,1.3 2,2';
+  final latheMesh = Mesh(
+    origin: 'lathe',
+    data: mi.SphereBuilder(
+      materialLibrary: 'x11.mtl',
+      material: 'cadetBlue',
+      radius: 0.25,
+      longitudeDivision: 36,
+      latitudeDivision: 36,
+      equator: mi.Bezier<mi.Vector3>(points: mi.SvgPathParser.fromString(tempData4)),
+    ),
+  ).toMeshData(root: root);
+
   [
+    ...latheMesh,
     ...tempMesh3,
     ...dollMeshData,
     ...spindle,

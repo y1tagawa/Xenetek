@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math hide pi, sin, cos;
-import 'dart:math' show pi, sin, cos;
+import 'dart:math' as math;
+import 'dart:math' show pi, sin, cos, atan2;
 
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
@@ -206,10 +206,12 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   static final _logger = Logger('_SorBuilder');
 
   final int longitudeDivision;
+  final Parametric<double, Vector3>? equator;
   final Vector3 axis;
 
   const _SorBuilder({
     this.longitudeDivision = 24,
+    this.equator,
     this.axis = Vector3.unitY,
     super.materialLibrary = '',
     super.material = '',
@@ -221,20 +223,39 @@ abstract class _SorBuilder extends PrimitiveBuilder {
   List<Vector3> makeGeneratingLine();
 
   /// 経線生成(Y軸周り)
-  ///
-  /// t=[0,1]が[0,2π]に対応する
   List<Vector3> makeMeridian({
     required List<Vector3> generatingLine,
     required double t,
-  }) =>
-      generatingLine
+  }) {
+    if (equator != null) {
+      // [equator]が指定されている場合、そのtに対応する位置の経度に拡縮、回転する。
+      final p = equator!.transform(t);
+      _logger.fine('equator: t=$t p=$p r=${p.length} angle=${atan2(p.y, p.x)}');
+      final r = p.length;
+      if (r < 1e-4) {
+        return List<Vector3>.filled(generatingLine.length, Vector3.zero);
+      }
+      return generatingLine
+          .map((it) => it * r)
+          .toList()
           .transformed(
             Matrix4.fromAxisAngleRotation(
               axis: Vector3.unitY,
-              radians: t * (2.0 * pi),
+              radians: atan2(p.y, p.x),
             ),
           )
           .toList();
+    }
+    // デフォルトではt=[0,1]が[0,2π]に対応する円周に沿って回転する。
+    return generatingLine
+        .transformed(
+          Matrix4.fromAxisAngleRotation(
+            axis: Vector3.unitY,
+            radians: t * (2.0 * pi),
+          ),
+        )
+        .toList();
+  }
 
   /// 頂点生成
   List<Vector3> makeVertices() {
@@ -314,6 +335,7 @@ class SphereBuilder extends _SorBuilder {
 
   const SphereBuilder({
     super.longitudeDivision = 24,
+    super.equator,
     this.latitudeDivision = 12,
     this.radius = 0.5,
     super.axis = Vector3.unitY,
@@ -360,6 +382,7 @@ class SpindleBuilder extends _SorBuilder {
 
   const SpindleBuilder({
     super.longitudeDivision = 24,
+    super.equator,
     this.heightDivision = 12,
     this.radius = Vector3.one,
     super.axis = Vector3.unitY,
@@ -410,6 +433,7 @@ class TeardropBuilder extends SpindleBuilder {
 
   const TeardropBuilder({
     super.longitudeDivision = 24,
+    super.equator,
     super.heightDivision = 12,
     super.radius = Vector3.one,
     this.shape = 0.75,
@@ -451,6 +475,7 @@ class SorBuilder extends _SorBuilder {
   /// パラメトリック回転表面
   const SorBuilder({
     super.longitudeDivision = 24,
+    super.equator,
     this.heightDivision = 12,
     required Parametric<double, Vector3> side,
     super.axis = Vector3.unitY,
@@ -487,7 +512,7 @@ class SorBuilder extends _SorBuilder {
 
   /// 経線生成(Y軸周り)
   ///
-  /// [slice]を未指定の場合、t=[0,1]が[0,2π]に対応する
+  /// [equator]未指定の場合、t=[0,1]が[0,2π]に対応する
   @override
   List<Vector3> makeMeridian({
     required List<Vector3> generatingLine, //使用しない
@@ -507,14 +532,10 @@ class SorBuilder extends _SorBuilder {
       final y = math.sqrt(math.pow(cosL * x.y, 2) + math.pow(sinL * z.y, 2));
       vertices.add(Vector3(r, y, 0.0));
     }
-    return vertices
-        .transformed(
-          Matrix4.fromAxisAngleRotation(
-            axis: Vector3.unitY,
-            radians: longitude,
-          ),
-        )
-        .toList();
+    return super.makeMeridian(
+      generatingLine: vertices,
+      t: t,
+    );
   }
 }
 
@@ -568,8 +589,9 @@ class TubeBuilder extends _SorBuilder {
   final EndShape endShape;
 
   const TubeBuilder({
-    super.axis = Vector3.unitY,
     super.longitudeDivision = 12,
+    super.equator,
+    super.axis = Vector3.unitY,
     this.height = 1.0,
     this.heightDivision = 1,
     this.beginRadius = 0.5,
@@ -586,7 +608,6 @@ class TubeBuilder extends _SorBuilder {
   /// 母線生成(Y軸周り)
   @override
   List<Vector3> makeGeneratingLine() {
-    // todo: 母線再利用
     assert(longitudeDivision >= 2);
     assert(heightDivision >= 1);
 
