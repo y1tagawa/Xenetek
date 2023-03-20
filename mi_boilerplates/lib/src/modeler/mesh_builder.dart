@@ -441,16 +441,16 @@ class SorBuilder extends _SorBuilder {
   static final _logger = Logger('SorBuilder');
 
   final int heightDivision;
-  final Parametric<double, Vector3> rightCurve;
-  final Parametric<double, Vector3> leftCurve;
-  final Parametric<double, Vector3> frontCurve;
-  final Parametric<double, Vector3> backCurve;
+  final Parametric<double, Vector3> right;
+  final Parametric<double, Vector3> left;
+  final Parametric<double, Vector3> front;
+  final Parametric<double, Vector3> back;
 
   /// パラメトリック回転表面
   const SorBuilder({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
-    required Bezier<Vector3> curve,
+    required Parametric<double, Vector3> side,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',
     super.material = '',
@@ -458,26 +458,26 @@ class SorBuilder extends _SorBuilder {
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1),
-        rightCurve = curve,
-        leftCurve = curve,
-        frontCurve = curve,
-        backCurve = curve;
+        right = side,
+        left = side,
+        front = side,
+        back = side;
 
   /// 左右前後の輪郭線を補間する
   const SorBuilder.fromRLFBCurves({
     super.longitudeDivision = 24,
     this.heightDivision = 12,
-    required this.rightCurve,
-    required this.leftCurve,
-    required this.frontCurve,
-    required this.backCurve,
+    required this.right,
+    required this.left,
+    required this.front,
+    required this.back,
     super.axis = Vector3.unitY,
     super.materialLibrary = '',
     super.material = '',
     super.smooth = true,
     super.reverse = false,
   })  : assert(longitudeDivision >= 2),
-        assert(heightDivision >= 2);
+        assert(heightDivision >= 1);
 
   /// 母線(Y軸周り)は使用しない
   @override
@@ -491,8 +491,8 @@ class SorBuilder extends _SorBuilder {
   }) {
     final cosL = cos(longitude), sinL = sin(longitude);
     final vertices = <Vector3>[];
-    final xCurve = longitude < (0.5 * pi) || longitude > (1.5 * pi) ? leftCurve : rightCurve;
-    final zCurve = longitude <= pi ? frontCurve : backCurve;
+    final xCurve = longitude < (0.5 * pi) || longitude > (1.5 * pi) ? left : right;
+    final zCurve = longitude <= pi ? front : back;
     for (int i = 0; i <= heightDivision; ++i) {
       final t = i / heightDivision;
       final x = xCurve.transform(t);
