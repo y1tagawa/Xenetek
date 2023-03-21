@@ -382,7 +382,6 @@ class SphereBuilder extends _SorBuilder {
 /// 紡錘体メッシュビルダ
 ///
 /// 軸線Y=[0,radius.y]、母線が正弦曲線の紡錘形。
-/// todo: 共通基底をI/Fに
 @immutable
 class SpindleBuilder extends _SorBuilder {
   // ignore: unused_field
@@ -517,14 +516,14 @@ class SorBuilder extends _SorBuilder {
   })  : assert(longitudeDivision >= 2),
         assert(heightDivision >= 1);
 
-  /// 母線(Y軸周り)は使用しない
+  /// 母線(Y軸周り)は一定でないため、使用しない。
   @override
   List<Vector3> makeGeneratingLine() => <Vector3>[];
 
   /// 経線生成(Y軸周り)
   @override
   List<Vector3> makeMeridian({
-    required List<Vector3> generatingLine, //使用しない
+    required List<Vector3> generatingLine, // 使用しない
     required double t,
   }) {
     final longitude = t * (2.0 * pi);
