@@ -199,19 +199,31 @@ const pinMeshObject = MeshObject(
 
 //</editor-fold>
 
+// 回転体のデフォルト断面形状
+@immutable
+class _DefaultEquator implements Parametric<double, Vector3> {
+  const _DefaultEquator();
+  @override
+  Vector3 transform(double t) {
+    throw UnimplementedError();
+  }
+}
+
 /// 回転体メッシュビルダ基底クラス
 @immutable
 abstract class _SorBuilder extends PrimitiveBuilder {
   // ignore: unused_field
   static final _logger = Logger('_SorBuilder');
 
+  static const defaultEquator = _DefaultEquator();
+
   final int longitudeDivision;
-  final Parametric<double, Vector3>? equator;
+  final Parametric<double, Vector3> equator; // 断面形状(立体の半径はXY半径と母線半径の積となる)
   final Vector3 axis;
 
   const _SorBuilder({
     this.longitudeDivision = 24,
-    this.equator,
+    this.equator = defaultEquator,
     this.axis = Vector3.unitY,
     super.materialLibrary = '',
     super.material = '',
@@ -227,17 +239,16 @@ abstract class _SorBuilder extends PrimitiveBuilder {
     required List<Vector3> generatingLine,
     required double t,
   }) {
-    if (equator != null) {
+    if (equator == defaultEquator) {
       // [equator]が指定されている場合、そのtに対応する位置の経度に拡縮、回転する。
-      final p = equator!.transform(t);
-      _logger.fine('equator: t=$t p=$p r=${p.length} angle=${atan2(p.y, p.x)}');
+      final p = equator.transform(t);
+      //_logger.fine('equator: t=$t p=$p r=${p.length} angle=${atan2(p.y, p.x)}');
       final r = p.length;
       if (r < 1e-4) {
         return List<Vector3>.filled(generatingLine.length, Vector3.zero);
       }
       return generatingLine
           .map((it) => it * r)
-          .toList()
           .transformed(
             Matrix4.fromAxisAngleRotation(
               axis: Vector3.unitY,
@@ -511,8 +522,6 @@ class SorBuilder extends _SorBuilder {
   List<Vector3> makeGeneratingLine() => <Vector3>[];
 
   /// 経線生成(Y軸周り)
-  ///
-  /// [equator]未指定の場合、t=[0,1]が[0,2π]に対応する
   @override
   List<Vector3> makeMeridian({
     required List<Vector3> generatingLine, //使用しない
