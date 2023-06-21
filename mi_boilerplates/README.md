@@ -53,6 +53,8 @@ APIも不安定ですのでライブラリとしての利用は推奨できま�
 
 # TODO
 
+* fromJson, toJsonはtoMap, fromMapを介してはいけない。（jsonEncodeですら要素のパースで嵌るから）
+
 * リリースビルド
 * 回避策の実態コメント
 * snack barのサンプル+toastの実験ページ

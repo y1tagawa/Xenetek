@@ -1,26 +1,15 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:math' as math;
 
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart' hide Row;
-import 'package:flutter/material.dart' as material show Row;
+import 'package:flutter/material.dart' hide Drawer, Row;
+import 'package:flutter/material.dart' as material show Drawer, Row;
 import 'package:logging/logging.dart';
 
-Iterable<int> iota(int n, {int start = 0}) => Iterable<int>.generate(n, (i) => i + start);
-
-T run<T>(T Function() fun) => fun();
-
-extension ScopeFunctions<T> on T {
-  T also(void Function(T it) fun) {
-    fun(this);
-    return this;
-  }
-
-  U let<U>(U Function(T it) fun) => fun(this);
-}
+import 'helpers.dart';
 
 extension DoubleHelper on double {
   static const degreeToRadian = math.pi / 180.0;
@@ -30,64 +19,9 @@ extension DoubleHelper on double {
   double toDegree() => this * radianToDegree;
 }
 
-extension ListHelper<T> on List<T> {
-  List<T> added(T value) {
-    final t = toList();
-    t.add(value);
-    return t;
-  }
-
-  List<T> moved(int oldIndex, int newIndex) {
-    final t = toList();
-    t.insert(oldIndex < newIndex ? newIndex - 1 : newIndex, t.removeAt(oldIndex));
-    return t;
-  }
-
-  List<T> removed(T value) {
-    final t = toList();
-    t.remove(value);
-    return t;
-  }
-
-  List<T> removedAt(int index) {
-    final t = toList();
-    t.removeAt(index);
-    return t;
-  }
-
-  List<T> replacedAt(int index, T value) {
-    final t = toList();
-    t[index] = value;
-    return t;
-  }
-}
-
-extension SetHelper<T> on Set<T> {
-  Set<T> added(T value) {
-    final t = toSet();
-    t.add(value);
-    return t;
-  }
-
-  Set<T> removed(T value) {
-    final t = toSet();
-    t.remove(value);
-    return t;
-  }
-}
-
-extension IterableHelper<T> on Iterable<T> {
-  List<T> sorted({int Function<T>(T a, T b)? compare}) {
-    final t = toList();
-    t.sort(compare);
-    return t;
-  }
-}
-
 /// [DefaultTextStyle]+[IconTheme]
 ///
 /// 頻出コード。末端でスタイル変更することになるのであまり公開したくないのだが……
-
 class DefaultTextColor extends StatelessWidget {
   final Color? color;
   final Widget child;
@@ -113,7 +47,6 @@ class DefaultTextColor extends StatelessWidget {
 /// ラベル
 ///
 /// * [icon]がnullの場合、アイコン部分は空白となる。
-
 class Label extends StatelessWidget {
   final bool enabled;
   final Widget? icon;
@@ -181,7 +114,6 @@ class Label extends StatelessWidget {
 /// カラーチップ
 ///
 /// アイコンと同じ大きさのカラーチップ。[Color]がnullの場合、[nullIcon]を表示する。
-
 class ColorChip extends StatelessWidget {
   final bool enabled;
   final Color? color;
@@ -238,7 +170,6 @@ class ColorChip extends StatelessWidget {
 }
 
 /// トグルアイコン
-
 class ToggleIcon extends StatelessWidget {
   final bool checked;
   final Widget checkIcon;
@@ -267,7 +198,6 @@ class ToggleIcon extends StatelessWidget {
 /// [Image] (PNGとか)をアイコンにする
 ///
 /// [SvgPicture]対応はflutter_svgに依存することになるので考え中。
-
 class ImageIcon extends StatelessWidget {
   final Image image;
   final double? size;
@@ -297,7 +227,6 @@ class ImageIcon extends StatelessWidget {
 }
 
 /// トグルアイコンボタン
-
 class CheckIconButton extends StatelessWidget {
   final bool enabled;
   final bool checked;
@@ -338,7 +267,6 @@ class CheckIconButton extends StatelessWidget {
 }
 
 /// 直前の[child]と最新の[child]をクロスフェードする
-
 class Fade extends StatefulWidget {
   final Duration duration;
   final Widget? placeHolder;
@@ -415,7 +343,6 @@ class _FadeState extends State<Fade> {
 }
 
 /// 明示的にintの値をとる[Slider]
-
 class IntSlider extends StatelessWidget {
   // ignore: unused_field
   static final _logger = Logger((IntSlider).toString());
@@ -465,7 +392,6 @@ class IntSlider extends StatelessWidget {
 /// * [crossAxisAlignment]のデフォルト値を[WrapCrossAlignment.center]に変更。
 /// * [flexes]を指定した場合、[children]の個々を[Flexible]でラップする。
 /// * [spacing]を指定した場合、[children]の間に空間を空ける。
-
 class Row extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final MainAxisSize mainAxisSize;
@@ -570,7 +496,6 @@ class Row extends StatelessWidget {
 }
 
 /// [SizedBox] * [Center]
-
 class SizedCenter extends StatelessWidget {
   final double? width;
   final double? height;
@@ -599,7 +524,6 @@ class SizedCenter extends StatelessWidget {
 /// https://docs.flutter.dev/testing/common-errors#vertical-viewport-was-given-unbounded-height
 /// [child] - [ListView]など[height]が不定のウィジェット。
 /// [top]/[tops], [bottom]/[bottoms] - [child]の上下に積まれる。
-
 class ExpandedColumn extends StatelessWidget {
   final Widget child;
   final Widget? top;
@@ -627,6 +551,73 @@ class ExpandedColumn extends StatelessWidget {
         if (bottom != null) bottom!,
         if (bottoms != null) ...bottoms!,
       ],
+    );
+  }
+}
+
+/// アプリの[HomePage]ウィジェットの親にして、[ScaffoldMessenger.of]などに使う
+class HomePageHelper extends StatelessWidget {
+  static final _key = GlobalKey();
+
+  final Widget child;
+
+  const HomePageHelper({
+    super.key,
+    required this.child,
+  });
+
+  static BuildContext? get context => _key.currentContext;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      key: _key,
+      builder: (_) {
+        return child;
+      },
+    );
+  }
+}
+
+/// カスタム[Drawer]
+class Drawer extends StatelessWidget {
+  final double headerHeight;
+  final Widget? icon;
+  final VoidCallback? onBackButtonPressed;
+  final List<Widget> children;
+
+  const Drawer({
+    super.key,
+    this.headerHeight = kToolbarHeight * 2.0,
+    this.icon,
+    this.onBackButtonPressed,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return material.Drawer(
+      child: Column(
+        children: [
+          SizedBox(
+            height: headerHeight,
+            child: DrawerHeader(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: onBackButtonPressed,
+                  icon: icon ?? const Icon(Icons.arrow_back),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              children: children,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

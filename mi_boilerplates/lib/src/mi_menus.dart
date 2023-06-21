@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide PopupMenuButton, PopupMenuItem;
 import 'package:flutter/material.dart' as material show PopupMenuButton, PopupMenuItem;
 
-import '../mi_boilerplates.dart' as mi;
+import 'helpers.dart';
+import 'mi_widgets.dart' as mi;
 
 /// カスタムポップアップメニューアイテム
 ///

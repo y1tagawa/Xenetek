@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'dart:async';
@@ -166,7 +166,10 @@ class ThreeTierPage extends ConsumerWidget {
           data: (data) {
             return Text(data.value.toString());
           },
-          error: (error, _) => Text(error.toString()),
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return Text(error.toString());
+          },
           loading: () => const CircularProgressIndicator(),
         ),
       ),

@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart';
+
+import 'gradient_helper.dart';
 
 /// [ColorSlider]の状態変数
 ///
@@ -130,6 +131,7 @@ class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
+    Offset? secondaryOffset,
     bool isDiscrete = false,
     bool isEnabled = false,
     double additionalActiveTrackHeight = 2,
@@ -152,6 +154,8 @@ class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
       ),
       Paint()..shader = gradient.createShader(trackRect),
     );
+
+    //todo: secondary track https://api.flutter.dev/flutter/material/RoundedRectSliderTrackShape/paint.html
   }
 }
 

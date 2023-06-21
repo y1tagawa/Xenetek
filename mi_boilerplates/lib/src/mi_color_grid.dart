@@ -1,14 +1,16 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import '../mi_boilerplates.dart' as mi;
+import 'helpers.dart';
+import 'mi_dialogs.dart' as mi;
+import 'mi_tabs.dart' as mi;
+import 'mi_widgets.dart' as mi;
 
 /// カラーグリッド
-
 class ColorGrid extends StatelessWidget {
   static const double kItemSize = 40.0;
 
@@ -39,7 +41,7 @@ class ColorGrid extends StatelessWidget {
             onTap: () {
               onChanged?.call(i);
             },
-            child: mi.run(
+            child: run(
               () {
                 Widget item = mi.ColorChip(
                   color: colors[i],
@@ -62,7 +64,6 @@ class ColorGrid extends StatelessWidget {
 }
 
 /// タブ付きカラーグリッド
-
 class TabbedColorGrid extends StatelessWidget {
   final int initialTabIndex;
   final List<Widget> tabs;
@@ -104,10 +105,12 @@ class TabbedColorGrid extends StatelessWidget {
   }
 }
 
-///
-
 class ColorGridHelper {
-  static Future<bool> showColorSelectDialog({
+  /// 色選択ダイアログ
+  ///
+  /// [initialColor]を初期値とする色選択ダイアログを表示する。
+  /// OKかキャンセルか、最後に選択した色(またはnull)のペアを返す。
+  static Future<MapEntry<bool, Color?>> showColorSelectDialog({
     required BuildContext context,
     Widget? title,
     Color? initialColor,
@@ -141,6 +144,6 @@ class ColorGridHelper {
           ),
         ),
       ),
-    ).then((value) => value ?? false);
+    ).then((value) => MapEntry(value ?? false, color));
   }
 }

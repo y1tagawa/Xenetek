@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,7 +93,7 @@ class AppBar extends StatelessWidget implements PreferredSizeWidget {
       checkColor: MaterialStateProperty.resolveWith(resolveCheckColor),
     );
 
-    final switchTheme = theme.switchTheme.modifyWith(
+    final switchTheme = theme.switchTheme.modify(
       thumbColor: theme.useMaterial3
           ? theme.colorScheme.onSurface
           : theme.isDark

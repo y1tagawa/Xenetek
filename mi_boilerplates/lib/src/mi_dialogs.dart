@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,21 @@ const _errorIcon = Icon(Icons.block_outlined, size: _iconSize);
 const _okText = Text('OK');
 const _cancelText = Text('CANCEL');
 
-/// Shows a dialog with an information icon and OK button.
+/// [data]を省略しても良い[Theme]
+class _Theme extends StatelessWidget {
+  final ThemeData? data;
+  final Widget child;
 
+  const _Theme({super.key, this.data, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return data != null ? Theme(data: data!, child: child) : child;
+  }
+}
+
+/// 情報アイコンとOKボタンを表示するダイアログ。
+///
 Future<void> showInfoOkDialog({
   required BuildContext context,
   Widget? icon,
@@ -25,29 +38,32 @@ Future<void> showInfoOkDialog({
   bool barrierDismissible = true,
   bool scrollable = false,
   Widget? okText,
+  ThemeData? theme,
 }) async {
   return await showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      icon: icon ?? _infoIcon,
-      title: title,
-      content: content,
-      scrollable: scrollable,
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: okText ?? _okText,
-        ),
-      ],
+    builder: (context) => _Theme(
+      data: theme,
+      child: AlertDialog(
+        icon: icon ?? _infoIcon,
+        title: title,
+        content: content,
+        scrollable: scrollable,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: okText ?? _okText,
+          ),
+        ],
+      ),
     ),
     barrierDismissible: barrierDismissible,
   );
 }
 
-/// Shows a dialog with an warning icon and OK and cancel buttons.
+/// 警告アイコンとOK、キャンセルボタンを表示するダイアログ。
 ///
-/// Returns `true` for OK, or `false` for cancel.
-
+/// OKに対して`true`、キャンセルに対して`false`を返す。
 Future<bool> showWarningOkCancelDialog({
   required BuildContext context,
   Widget? icon,
@@ -57,24 +73,28 @@ Future<bool> showWarningOkCancelDialog({
   bool scrollable = false,
   Widget? okText,
   Widget? cancelText,
+  ThemeData? theme,
 }) async {
   return await showDialog<bool>(
     context: context,
-    builder: (context) => AlertDialog(
-      icon: icon ?? _warningIcon,
-      title: title,
-      content: content,
-      scrollable: scrollable,
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: cancelText ?? _cancelText,
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: okText ?? _okText,
-        ),
-      ],
+    builder: (context) => _Theme(
+      data: theme,
+      child: AlertDialog(
+        icon: icon ?? _warningIcon,
+        title: title,
+        content: content,
+        scrollable: scrollable,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: cancelText ?? _cancelText,
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: okText ?? _okText,
+          ),
+        ],
+      ),
     ),
     barrierDismissible: barrierDismissible,
   ).then(

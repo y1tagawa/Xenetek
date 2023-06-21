@@ -1,9 +1,13 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:mi_boilerplates/mi_boilerplates.dart' as mi;
+
+import 'color_helper.dart';
+import 'helpers.dart';
 
 extension BrightnessHelper on Brightness {
   bool get isDark => this == Brightness.dark;
@@ -16,7 +20,7 @@ extension SliderThemeDataHelper on SliderThemeData {
 }
 
 extension SwitchThemeDataHelper on SwitchThemeData {
-  SwitchThemeData modifyWith({
+  SwitchThemeData modify({
     required Color thumbColor,
     Brightness brightness = Brightness.light,
   }) {
@@ -240,4 +244,178 @@ extension ThemeDataHelper on ThemeData {
       progressIndicatorTheme: progressIndicatorTheme_,
     );
   }
+
+  /// 色設定から[ThemeData]を生成する
+  ///
+  static ThemeData fromColorSettings({
+    required MaterialColor primarySwatch,
+    Color? secondaryColor,
+    Color? textColor,
+    Color? backgroundColor,
+    required Brightness brightness,
+    bool useMaterial3 = false,
+    bool doModify = true,
+  }) {
+    return ThemeData(
+      primarySwatch: primarySwatch,
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: primarySwatch,
+        accentColor: brightness.isDark ? secondaryColor : null,
+        brightness: brightness,
+      ),
+      useMaterial3: useMaterial3,
+    ).let(
+      (it) => doModify
+          ? it.modify(
+              textColor: textColor,
+              backgroundColor: backgroundColor,
+            )
+          : it,
+    );
+  }
+}
+
+/// 文字列化してシリアライズ可能な[Color?]のコンテナ
+class ColorOrNull {
+  final Color? value;
+
+  const ColorOrNull(this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ColorOrNull && runtimeType == other.runtimeType && value == other.value);
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'SerializableColor{ value: $value},}';
+  }
+
+  String? toStringOrNull() => value?.toHex(prefix: '0x');
+
+  factory ColorOrNull.fromStringOrNull(String? data) {
+    if (data != null) {
+      final value = int.tryParse(data);
+      if (value != null) {
+        return ColorOrNull(Color(value));
+      }
+    }
+    return const ColorOrNull(null);
+  }
+}
+
+/// 色設定
+///
+/// primarySwatchは一旦Colorとする
+class ColorSettings {
+  final ColorOrNull primarySwatch;
+  final ColorOrNull secondaryColor;
+  final ColorOrNull textColor;
+  final ColorOrNull backgroundColor;
+  final bool useMaterial3;
+  final bool doModify;
+
+  const ColorSettings({
+    this.primarySwatch = const ColorOrNull(null),
+    this.secondaryColor = const ColorOrNull(null),
+    this.textColor = const ColorOrNull(null),
+    this.backgroundColor = const ColorOrNull(null),
+    this.useMaterial3 = false,
+    this.doModify = true,
+  });
+
+  String toJson() {
+    return jsonEncode(this, toEncodable: (object) {
+      switch (object.runtimeType) {
+        case ColorSettings:
+          return (object as ColorSettings).toMap();
+      }
+      return object;
+    });
+  }
+
+  factory ColorSettings.fromJson(String? source) {
+    return ColorSettings.fromMap(jsonDecode(source ?? '{}'));
+  }
+
+  // fromMapとtoMapをカスタマイズしてるので、上書きするときは注意。
+//<editor-fold>
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ColorSettings &&
+          runtimeType == other.runtimeType &&
+          primarySwatch == other.primarySwatch &&
+          secondaryColor == other.secondaryColor &&
+          textColor == other.textColor &&
+          backgroundColor == other.backgroundColor &&
+          useMaterial3 == other.useMaterial3 &&
+          doModify == other.doModify);
+
+  @override
+  int get hashCode =>
+      primarySwatch.hashCode ^
+      secondaryColor.hashCode ^
+      textColor.hashCode ^
+      backgroundColor.hashCode ^
+      useMaterial3.hashCode ^
+      doModify.hashCode;
+
+  @override
+  String toString() {
+    return 'ColorSettings{'
+        ' primarySwatch: $primarySwatch,'
+        ' secondaryColor: $secondaryColor,'
+        ' textColor: $textColor,'
+        ' backgroundColor: $backgroundColor,'
+        ' useMaterial3: $useMaterial3,'
+        ' doModify: $doModify,'
+        '}';
+  }
+
+  ColorSettings copyWith({
+    ColorOrNull? primarySwatch,
+    ColorOrNull? secondaryColor,
+    ColorOrNull? textColor,
+    ColorOrNull? backgroundColor,
+    bool? useMaterial3,
+    bool? doModify,
+  }) {
+    return ColorSettings(
+      primarySwatch: primarySwatch ?? this.primarySwatch,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      textColor: textColor ?? this.textColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      useMaterial3: useMaterial3 ?? this.useMaterial3,
+      doModify: doModify ?? this.doModify,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'primarySwatch': primarySwatch.toStringOrNull(),
+      'secondaryColor': secondaryColor.toStringOrNull(),
+      'textColor': textColor.toStringOrNull(),
+      'backgroundColor': backgroundColor.toStringOrNull(),
+      'useMaterial3': useMaterial3,
+      'doModify': doModify,
+    };
+  }
+
+  factory ColorSettings.fromMap(Map<String, dynamic> map) {
+    return ColorSettings(
+      primarySwatch: ColorOrNull.fromStringOrNull(map['primarySwatch']),
+      secondaryColor: ColorOrNull.fromStringOrNull(map['secondaryColor']),
+      textColor: ColorOrNull.fromStringOrNull(map['textColor']),
+      backgroundColor: ColorOrNull.fromStringOrNull(map['backgroundColor']),
+      useMaterial3: (map['useMaterial3'] as bool?) ?? false,
+      doModify: (map['doModify'] as bool?) ?? true,
+    );
+  }
+
+//</editor-fold>
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,16 +21,25 @@ import 'knight_indicator.dart';
 //<editor-fold>
 
 final _tabIndexProvider = StateProvider((ref) => 0);
-final _toasterNotifier = ValueNotifier(false);
 
 final _pingNotifier = mi.SinkNotifier<mi.AnimationControllerCallback>();
 
-void _ping(WidgetRef ref) async {
+void _ping() {
   _pingNotifier.add((controller) {
     controller.reset();
     controller.forward();
   });
-  _toasterNotifier.value = true;
+  // ScaffoldMessenger.of(mi.HomePageHelper.context!).showSnackBar(
+  //   SnackBar(
+  //     content: const Text('Ping'),
+  //     action: SnackBarAction(
+  //       label: 'CLOSE',
+  //       onPressed: () {
+  //         ScaffoldMessenger.of(mi.HomePageHelper.context!).hideCurrentSnackBar();
+  //       },
+  //     ),
+  //   ),
+  // );
 }
 
 class ButtonsPage extends ConsumerWidget {
@@ -53,12 +62,12 @@ class ButtonsPage extends ConsumerWidget {
     ),
     mi.Tab(
       tooltip: 'Toggle buttons',
-      icon: Icon(Icons.more_horiz),
+      icon: Icon(Icons.view_module_outlined),
     ),
-    mi.Tab(
-      tooltip: ex.UnderConstruction.title,
-      icon: ex.UnderConstruction.icon,
-    ),
+    // mi.Tab(
+    //   tooltip: ex.UnderConstruction.title,
+    //   icon: ex.UnderConstruction.icon,
+    // ),
   ];
 
   const ButtonsPage({super.key});
@@ -87,7 +96,7 @@ class ButtonsPage extends ConsumerWidget {
             actions: [
               if (tabIndex == 0)
                 IconButton(
-                  onPressed: () => _ping(ref),
+                  onPressed: () => _ping(),
                   icon: const Icon(Icons.notifications_outlined),
                   tooltip: 'IconButton',
                 ),
@@ -106,17 +115,17 @@ class ButtonsPage extends ConsumerWidget {
                     _PushButtonsTab(),
                     _DropdownButtonTab(),
                     _ToggleButtonsTab(),
-                    _MonospaceTab(),
+                    // _MonospaceTab(),
                   ],
                 ),
               ),
-              mi.PageIndicator(
-                index: tabIndex,
-                length: _tabs.length,
-                onSelected: (index) {
-                  DefaultTabController.of(context)?.index = index;
-                },
-              ),
+              // mi.PageIndicator(
+              //   index: tabIndex,
+              //   length: _tabs.length,
+              //   onSelected: (index) {
+              //     DefaultTabController.of(context)?.index = index;
+              //   },
+              // ),
             ],
           ),
           // FABはdisable禁止なので代わりに非表示にする。
@@ -125,7 +134,7 @@ class ButtonsPage extends ConsumerWidget {
             switch (tabIndex) {
               case 0: // Push buttons tab
                 return FloatingActionButton(
-                  onPressed: enabled ? () => _ping(ref) : null,
+                  onPressed: enabled ? () => _ping() : null,
                   child: const Icon(Icons.notifications_outlined),
                 );
             }
@@ -167,7 +176,7 @@ class _PushButtonsTab extends ConsumerWidget {
         children: [
           ListTile(
             leading: TextButton(
-              onPressed: enabled ? () => _ping(ref) : null,
+              onPressed: enabled ? () => _ping() : null,
               child: const mi.Label(
                 icon: Icon(Icons.title),
                 spacing: 0,
@@ -177,7 +186,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ),
           ListTile(
             leading: TextButton.icon(
-              onPressed: enabled ? () => _ping(ref) : null,
+              onPressed: enabled ? () => _ping() : null,
               icon: const mi.Label(
                 icon: Text('TextButton.'),
                 spacing: 0,
@@ -188,7 +197,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ),
           ListTile(
             leading: OutlinedButton(
-              onPressed: enabled ? () => _ping(ref) : null,
+              onPressed: enabled ? () => _ping() : null,
               child: const mi.Label(
                 icon: Icon(Icons.center_focus_strong_outlined),
                 spacing: 0,
@@ -198,7 +207,7 @@ class _PushButtonsTab extends ConsumerWidget {
           ),
           ListTile(
             leading: ElevatedButton(
-              onPressed: enabled ? () => _ping(ref) : null,
+              onPressed: enabled ? () => _ping() : null,
               child: const mi.Label(
                 icon: Icon(
                   Icons.explicit,
@@ -213,12 +222,12 @@ class _PushButtonsTab extends ConsumerWidget {
             alignment: MainAxisAlignment.start,
             leading: const Icon(Icons.notifications_outlined),
             text: const Text('ListTile'),
-            onPressed: () => _ping(ref),
+            onPressed: () => _ping(),
           ),
           ListTile(
             iconColor: theme.colorScheme.onSurface,
             leading: IconButton(
-              onPressed: enabled ? () => _ping(ref) : null,
+              onPressed: enabled ? () => _ping() : null,
               icon: const Icon(Icons.notifications_outlined),
               tooltip: 'IconButton',
             ),

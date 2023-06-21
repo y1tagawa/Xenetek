@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,14 @@ class ListTilesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final enableActions = ref.watch(ex.enableActionsProvider);
-    final themeAdjustment = ref.watch(modifyThemeProvider);
+    final themeAdjustment = ref.watch(colorSettingsProvider).when(
+          data: (data) => data.doModify,
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return true;
+          },
+          loading: () => true,
+        );
     final check = ref.watch(_checkProvider);
     final radio = ref.watch(_radioProvider);
     final switch_ = ref.watch(_switchProvider);

@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,6 +92,12 @@ class DialogsPage extends ConsumerWidget {
                 showWarningOkCancel(context);
               },
             ),
+            IconButton(
+              onPressed: () async {
+                await _test();
+              },
+              icon: const Icon(Icons.telegram_sharp),
+            ),
             const Divider(),
             if (ping != null)
               Padding(
@@ -106,4 +112,12 @@ class DialogsPage extends ConsumerWidget {
       bottomNavigationBar: const ex.BottomNavigationBar(),
     );
   }
+}
+
+//
+// テスト機能
+//
+
+Future<void> _test() async {
+  final logger = Logger('_test');
 }

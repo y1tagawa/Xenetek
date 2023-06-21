@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // This program uses material from the Wikipedia article "Web colors",
 // https://en.wikipedia.org/wiki/Web_colors,
 // which is released under the Creative Commons Attribution-Share-Alike License 3.0.

@@ -1,8 +1,8 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:collection/collection.dart';
@@ -57,10 +57,10 @@ class _PageItem {
 
 final _pages = <_PageItem>[
   _PageItem(
-    icon: HomePage.icon,
-    title: HomePage.title,
+    icon: _HomePage.icon,
+    title: _HomePage.title,
     path: '/',
-    builder: (_, __) => const HomePage(),
+    builder: (_, __) => const mi.HomePageHelper(child: _HomePage()),
   ),
   _PageItem(
     icon: AnimationsPage.icon,
@@ -129,12 +129,6 @@ final _pages = <_PageItem>[
     builder: (_, __) => const GridDetailPage(),
   ),
   _PageItem(
-    icon: ThreeTierPage.icon,
-    title: ThreeTierPage.title,
-    path: '/three_tier',
-    builder: (_, __) => const ThreeTierPage(),
-  ),
-  _PageItem(
     icon: ListsPage.icon,
     title: ListsPage.title,
     path: '/lists',
@@ -149,7 +143,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: OverflowBarPage.icon,
     title: OverflowBarPage.title,
-    path: '/overflow_bar',
+    path: '/drawer/overflow_bar',
     builder: (_, __) => const OverflowBarPage(),
   ),
   _PageItem(
@@ -161,7 +155,7 @@ final _pages = <_PageItem>[
   _PageItem(
     icon: PageViewPage.icon,
     title: PageViewPage.title,
-    path: '/page_view',
+    path: '/drawer/page_view',
     builder: (_, __) => const PageViewPage(),
   ),
   _PageItem(
@@ -224,6 +218,12 @@ final _pages = <_PageItem>[
     path: '/three',
     builder: (_, __) => const ThreePage(),
   ),
+  _PageItem(
+    icon: ThreeTierPage.icon,
+    title: ThreeTierPage.title,
+    path: '/three_tier',
+    builder: (_, __) => const ThreeTierPage(),
+  ),
 ];
 
 final _router = GoRouter(
@@ -238,77 +238,21 @@ final _router = GoRouter(
 );
 
 // テーマ設定
-// ダークテーマの時に最初に明るい画面が出ないよう、初期値は暗くしておく
-const _initColor = Color(0xFF404040);
-final primarySwatchProvider = StateProvider((ref) => _initColor.toMaterialColor());
-final secondaryColorProvider = StateProvider<Color?>((ref) => _initColor);
-final textColorProvider = StateProvider<Color?>((ref) => _initColor);
-final backgroundColorProvider = StateProvider<Color?>((ref) => _initColor);
-final brightnessProvider = StateProvider((ref) => Brightness.dark);
-final useM3Provider = StateProvider((ref) => false);
-final modifyThemeProvider = StateProvider((ref) => true);
-
-final preferencesProvider = FutureProvider((ref) async {
-  final logger = Logger('preferenceProvider');
-
-  final preferences = await SharedPreferences.getInstance();
-
-  final data = preferences.getString('theme')?.let((it) => jsonDecode(it));
-
-  logger.fine('theme preferences=$data');
-  Color? colorOrNull(String key) {
-    if (data is Map<String, dynamic>) {
-      final value = data[key];
-      if (value is String) {
-        return int.tryParse(value)?.let((it) => Color(it));
-      }
+final _colorSettingsStream = StreamController<mi.ColorSettings>();
+final colorSettingsProvider = StreamProvider<mi.ColorSettings>(
+  (ref) async* {
+    final logger = Logger('colorSettingsProvider');
+    await MyApp.loadColorSettings();
+    await for (final data in _colorSettingsStream.stream) {
+      logger.fine('yielding data=${data.toString()}');
+      yield data;
     }
-    return null;
-  }
+  },
+);
 
-  ref.read(primarySwatchProvider.notifier).state =
-      colorOrNull('primary_swatch')?.toMaterialColor().toMaterialColor() ?? Colors.indigo;
-  ref.read(secondaryColorProvider.notifier).state = colorOrNull('secondary_color');
-  ref.read(textColorProvider.notifier).state = colorOrNull('text_color');
-  ref.read(backgroundColorProvider.notifier).state = colorOrNull('background_color');
-
-  ref.read(brightnessProvider.notifier).state =
-      WidgetsBinding.instance.window.platformBrightness.also((it) => logger.fine('brightness=$it'));
-
-  return preferences;
-});
-
-Future<void> saveThemePreferences(WidgetRef ref) async {
-  final logger = Logger('saveThemePreferences');
-
-  final preferences = ref.read(preferencesProvider).value;
-  if (preferences != null) {
-    final data = <String, dynamic>{
-      'primary_swatch': (ref.read(primarySwatchProvider).value.toString()),
-      'secondary_color': (ref.read(secondaryColorProvider)?.value).toString(),
-      'text_color': (ref.read(textColorProvider)?.value).toString(),
-      'background_color': (ref.read(backgroundColorProvider)?.value).toString(),
-    };
-    logger.fine('theme preferences=$data');
-    preferences.setString('theme', jsonEncode(data));
-  }
-}
-
-Future<void> clearThemePreferences(WidgetRef ref) async {
-  final preferences = ref.read(preferencesProvider).value;
-  if (preferences != null) {
-    await preferences.remove('theme');
-    ref.invalidate(preferencesProvider);
-  }
-}
-
-Future<void> clearPreferences(WidgetRef ref) async {
-  final preferences = ref.read(preferencesProvider).value;
-  if (preferences != null) {
-    await preferences.clear();
-    ref.invalidate(preferencesProvider);
-  }
-}
+final brightnessProvider =
+    StateProvider((ref) => WidgetsBinding.instance.window.platformBrightness);
+//    Brightness.dark);
 
 // main
 
@@ -324,19 +268,74 @@ void main() async {
 }
 
 class MyApp extends ConsumerWidget {
-  // ignore: unused_field
   static final _logger = Logger((MyApp).toString());
 
   const MyApp({super.key});
 
+  static Future<void> setColorSettings({
+    required mi.ColorSettings data,
+    bool save = false,
+  }) async {
+    try {
+      _logger.fine('[i] saveColorSettings: data=${data.toString()} save=$save');
+      if (save) {
+        final sp = await SharedPreferences.getInstance();
+        sp.setString('colorSettings', data.toJson());
+      }
+      _colorSettingsStream.sink.add(data);
+    } catch (error, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace, label: error.toString());
+    }
+    _logger.fine('[o] saveColorSettings');
+  }
+
+  static Future<void> loadColorSettings() async {
+    _logger.fine('[i] loadColorSettings');
+    try {
+      final sp = await SharedPreferences.getInstance();
+      final data = mi.ColorSettings.fromJson(sp.getString('colorSettings')).let(
+        (it) => it.copyWith(
+          // Primary swatchのデフォルト
+          primarySwatch: it.primarySwatch.value == null
+              ? const mi.ColorOrNull(Colors.indigo)
+              : it.primarySwatch,
+          // Theme adjustmentは必ずONにする
+          doModify: true,
+        ),
+      );
+      _logger.fine('loadColorSettings: data=${data.toString()}');
+      _colorSettingsStream.sink.add(data);
+    } catch (error, stackTrace) {
+      debugPrintStack(stackTrace: stackTrace, label: error.toString());
+    }
+    _logger.fine('[o] loadColorSettings');
+  }
+
+  static Future<void> clearPreferences() async {
+    _logger.fine('[i] clearPreferences');
+    final sp = await SharedPreferences.getInstance();
+    await sp.clear();
+    await loadColorSettings();
+    _logger.fine('[o] clearPreferences');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(preferencesProvider);
+    _logger.fine('[i] build');
 
-    final primarySwatch = ref.watch(primarySwatchProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
-    final textColor = ref.watch(textColorProvider);
-    final backgroundColor = ref.watch(backgroundColorProvider);
+    final data = ref.watch(colorSettingsProvider).when(
+      data: (data) {
+        _logger.fine('build: colorSettings=${data.toString()}');
+        return data;
+      },
+      error: (error, stackTrace) {
+        debugPrintStack(stackTrace: stackTrace, label: error.toString());
+        return const mi.ColorSettings(); // TODO: エラー色化
+      },
+      loading: () {
+        return const mi.ColorSettings(); // TODO: 暗色化
+      },
+    );
     final brightness = ref.watch(brightnessProvider);
 
     return Material(
@@ -345,36 +344,32 @@ class MyApp extends ConsumerWidget {
         routeInformationParser: _router.routeInformationParser,
         routerDelegate: _router.routerDelegate,
         title: 'Mi boilerplates example.',
-        theme: ThemeData(
-          primarySwatch: primarySwatch,
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: primarySwatch,
-            accentColor: brightness.isDark ? secondaryColor : null,
-            brightness: brightness,
-          ),
-          useMaterial3: ref.watch(useM3Provider),
-        ).let(
-          (it) => ref.watch(modifyThemeProvider)
-              ? it.modify(
-                  textColor: textColor,
-                  backgroundColor: backgroundColor,
-                )
-              : it,
+        theme: mi.ThemeDataHelper.fromColorSettings(
+          primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+          secondaryColor: data.secondaryColor.value,
+          textColor: data.textColor.value,
+          backgroundColor: data.backgroundColor.value,
+          brightness: brightness,
+          useMaterial3: data.useMaterial3,
+          doModify: data.doModify,
         ),
       ),
-    );
+    ).also((it) {
+      _logger.fine('[o] build');
+    });
   }
 }
 
 // サンプルアプリ ホームページ
 
-class HomePage extends ConsumerWidget {
+class _HomePage extends ConsumerWidget {
   static const icon = Icon(Icons.home_outlined);
   static const title = Text('Home');
 
-  static final _logger = Logger((HomePage).toString());
+  static final _logger = Logger((_HomePage).toString());
 
-  const HomePage({super.key});
+  // ignore: unused_element
+  const _HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -386,31 +381,21 @@ class HomePage extends ConsumerWidget {
         icon: icon,
         title: title,
       ),
-      drawer: Drawer(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            InkWell(
-              onTap: () => Navigator.pop(context),
-              child: const DrawerHeader(
-                child: HomePage.title,
+      drawer: mi.Drawer(
+        onBackButtonPressed: () => Navigator.pop(context),
+        children: _pages
+            .where((item) => item.path.startsWith('/drawer/'))
+            .map(
+              (item) => ListTile(
+                leading: item.icon,
+                title: item.title,
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(item.path);
+                },
               ),
-            ),
-            ..._pages
-                .skip(1) // Home
-                .where((item) => item.path.startsWith('/drawer/'))
-                .map(
-                  (item) => ListTile(
-                    leading: item.icon,
-                    title: item.title,
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.push(item.path);
-                    },
-                  ),
-                ),
-          ],
-        ),
+            )
+            .toList(),
       ),
       body: SingleChildScrollView(
         child: Center(

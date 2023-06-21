@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -209,44 +209,37 @@ class _ColorSchemeTab extends ConsumerWidget {
 
   const _ColorSchemeTab();
 
+  static const _dummy = mi.ColorSettings();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _logger.fine('[i] build');
-    final primarySwatch = ref.watch(primarySwatchProvider);
-    final secondaryColor = ref.watch(secondaryColorProvider);
-    final textColor = ref.watch(textColorProvider);
-    final backgroundColor = ref.watch(backgroundColorProvider);
-    final themeAdjustment = ref.watch(modifyThemeProvider);
+    final data = ref.watch(colorSettingsProvider).when(
+          data: (data) => data,
+          error: (error, stackTrace) {
+            debugPrintStack(stackTrace: stackTrace, label: error.toString());
+            return const mi.ColorSettings();
+          },
+          loading: () => const mi.ColorSettings(),
+        );
 
     final selectedColor = ref.watch(_selectedColorProvider);
 
-    final lightTheme = ThemeData(
-      primarySwatch: primarySwatch,
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: secondaryColor,
-        brightness: Brightness.light,
-      ),
-    ).let((it) => themeAdjustment
-        ? it.modify(
-            textColor: textColor,
-            backgroundColor: backgroundColor,
-          )
-        : it);
+    final lightTheme = mi.ThemeDataHelper.fromColorSettings(
+      primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+      secondaryColor: data.secondaryColor.value,
+      textColor: data.textColor.value,
+      brightness: Brightness.light,
+      doModify: data.doModify,
+    );
 
-    final darkTheme = ThemeData(
-      primarySwatch: primarySwatch,
-      colorScheme: ColorScheme.fromSwatch(
-        primarySwatch: primarySwatch,
-        accentColor: secondaryColor,
-        brightness: Brightness.dark,
-      ),
-    ).let((it) => themeAdjustment
-        ? it.modify(
-            textColor: textColor,
-            backgroundColor: backgroundColor,
-          )
-        : it);
+    final darkTheme = mi.ThemeDataHelper.fromColorSettings(
+      primarySwatch: data.primarySwatch.value?.toMaterialColor() ?? Colors.indigo,
+      secondaryColor: data.secondaryColor.value,
+      textColor: data.textColor.value,
+      brightness: Brightness.dark,
+      doModify: data.doModify,
+    );
 
     return Column(
       children: [

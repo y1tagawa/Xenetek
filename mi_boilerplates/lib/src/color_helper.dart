@@ -1,4 +1,4 @@
-// Copyright 2022 Xenetek. All rights reserved.
+// Copyright 2023 Xenetek. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,11 @@ extension ColorHelper on Color {
   // }
 
   /// [value]を表す16進数文字列を返す。
-  String toHex() => value.toRadixString(16).toUpperCase();
+  String toHex({
+    String prefix = '',
+  }) {
+    return '$prefix${value.toRadixString(16).toUpperCase()}';
+  }
 
   /// [value]が[Colors.primaries]に定義されていればその値を、
   /// MCGのアルゴリズムに則り、スウォッチを生成して、[MaterialColor]に変換して返す。
