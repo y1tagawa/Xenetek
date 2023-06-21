@@ -131,6 +131,7 @@ class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
+    Offset? secondaryOffset,
     bool isDiscrete = false,
     bool isEnabled = false,
     double additionalActiveTrackHeight = 2,
@@ -153,6 +154,8 @@ class _ColorSliderTrackShape extends RoundedRectSliderTrackShape {
       ),
       Paint()..shader = gradient.createShader(trackRect),
     );
+
+    //todo: secondary track https://api.flutter.dev/flutter/material/RoundedRectSliderTrackShape/paint.html
   }
 }
 

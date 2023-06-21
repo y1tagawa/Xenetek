@@ -264,7 +264,7 @@ class AppBar extends ConsumerWidget implements PreferredSizeWidget {
 //
 // テーマ調整ON/OFFによりTabBarを切り替える
 
-class TabBar extends ConsumerWidget with PreferredSizeWidget {
+class TabBar extends ConsumerWidget implements PreferredSizeWidget {
   final bool enabled;
   final List<Widget> tabs;
   final bool isScrollable;

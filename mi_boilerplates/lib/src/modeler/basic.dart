@@ -7,7 +7,6 @@ import 'dart:math' as math;
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:mi_boilerplates/mi_boilerplates.dart';
-import 'package:mi_boilerplates/src/modeler/wavefront_obj.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 // スクリプト的モデラ

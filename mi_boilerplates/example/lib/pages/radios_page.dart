@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -151,10 +153,11 @@ class _RadioButtonsTab extends ConsumerWidget {
 //<editor-fold>
 
 // https://lottiefiles.com/301-search-location
-const _rippleLottieUrl =
-    'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
+const _rippleLottieUrl = 'assets/lottie/search.json';
+//    'https://assets7.lottiefiles.com/datafiles/bef3daa39adedbe065d5efad0ae5ccb3/search.json';
 // https://lottiefiles.com/94-soda-loader
-const _sodaLottieUrl = 'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
+const _sodaLottieUrl = 'assets/lottie/data.json';
+//    'https://assets1.lottiefiles.com/datafiles/cFpiJtSizfCSZyW/data.json';
 
 const _menuItems = <String, Color>{
   'Soda': Colors.blue,
@@ -238,8 +241,10 @@ class _RadioMenuTab extends ConsumerWidget {
               color: _menuItems.values.skip(menuIndex).first.withAlpha(128),
               child: mi.AnimationControllerWidget(
                 builder: (_, controller, __) {
-                  return Lottie.network(
-                    menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,
+                  //return Lottie.network(
+                  // menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl,
+                  return Lottie.file(
+                    File(menuIndex == 6 ? _rippleLottieUrl : _sodaLottieUrl),
                     controller: controller,
                     repeat: true,
                     onLoaded: (composition) {
@@ -257,8 +262,9 @@ class _RadioMenuTab extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(height: 12),
           const Text(
-            'Animations by LottieFiles\nfrom lottiefiles.com.',
+            'Animations by LottieFiles',
             textAlign: TextAlign.center,
           ),
         ],
